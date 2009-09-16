@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "CppTestAI.h"
+#include "BrAIn.h"
 
 
 #include "ExternalAI/Interface/AISEvents.h"
@@ -26,14 +26,14 @@
 #include "UnitDef.h"
 #include "Engine.h"
 
-cpptestai::CCppTestAI::CCppTestAI(springai::AICallback* callback):
+brainSpace::BrAIn::BrAIn(brainSpace::AICallback* callback):
 		callback(callback),
 		teamId(callback != NULL ? callback->GetTeamId() : -1)
 		{}
 
-cpptestai::CCppTestAI::~CCppTestAI() {}
+brainSpace::BrAIn::~BrAIn() {}
 
-int cpptestai::CCppTestAI::HandleEvent(int topic, const void* data) {
+int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 
 	switch (topic) {
 		case EVENT_UNIT_CREATED: {
@@ -61,7 +61,7 @@ int cpptestai::CCppTestAI::HandleEvent(int topic, const void* data) {
 	return 0;
 }
 
-void cpptestai::CCppTestAI::ChatMsg(const char* msg, ...)
+void brainSpace::BrAIn::ChatMsg(const char* msg, ...)
 {
 	static char c[200];
 	va_list list;
@@ -74,7 +74,7 @@ void cpptestai::CCppTestAI::ChatMsg(const char* msg, ...)
 	callback->GetEngine()->HandleCommand(0, -1, COMMAND_SEND_TEXT_MESSAGE, &cmd);
 }
 
-void cpptestai::CCppTestAI::ChatMsg(std::string msg)
+void brainSpace::BrAIn::ChatMsg(std::string msg)
 {
 	SSendTextMessageCommand cmd;
 	cmd.text = msg.c_str();
