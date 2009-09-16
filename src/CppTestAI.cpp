@@ -26,8 +26,6 @@
 #include "UnitDef.h"
 #include "Engine.h"
 
-#include <string>
-
 cpptestai::CCppTestAI::CCppTestAI(springai::AICallback* callback):
 		callback(callback),
 		teamId(callback != NULL ? callback->GetTeamId() : -1)
@@ -41,9 +39,9 @@ int cpptestai::CCppTestAI::HandleEvent(int topic, const void* data) {
 		case EVENT_UNIT_CREATED: {
 			struct SUnitCreatedEvent* evt = (struct SUnitCreatedEvent*) data;
 			int unitId = evt->unit;
-
+			
 			// TODO: wrapp events and commands too
-
+			
 			std::string unitDefName = callback->GetFriendlyUnits()[0]->GetDef()->GetName();
 			
 			std::string msgText = "Hello Engine (from CppTestA), first friendly untis def name is: " + unitDefName;
