@@ -32,3 +32,18 @@ vector<UnitDef*> ConstructionUnitGroup::IsAbleToBuild()
 	}
 	return returnVals;
 }
+
+bool ConstructionUnitGroup::IsAbleToBuild(UnitDef* unit) {
+	for ( int i = 0 ; i < Units.size() ; i ++ )
+	{
+		vector<UnitDef*> units = Units[i]->GetDef()->GetBuildOptions();
+		
+		for ( int j = 0 ; j < units.size() ; j++ )
+		{
+			if ( units[j] == unit ) {
+				return true;
+			}
+		}
+	}
+	return false;
+}

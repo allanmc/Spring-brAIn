@@ -13,6 +13,7 @@ namespace brainSpace
 
 		const vector<UnitDef*> BuildableUnits();
 		vector<UnitDef*> IsAbleToBuild();
+		bool IsAbleToBuild(UnitDef* unit);
 	private:
 	};
 }
