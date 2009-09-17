@@ -21,8 +21,6 @@ namespace brainSpace {
 
 		void AddUnit( Unit* unit );
 		void RemoveUnit( Unit* unit );
-
-
 	private:
 		ConstructionGroupManager* ConstructionGroupMgr;
 		MilitaryGroupManager* MilitaryGroupMgr;

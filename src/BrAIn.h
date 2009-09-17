@@ -23,6 +23,8 @@
 #include <string>
 #include <stdarg.h>
 
+#include "Decision.h"
+
 namespace brainSpace {
 
 /**
@@ -35,6 +37,8 @@ class BrAIn {
 private:
 	springai::AICallback* callback;
 	int teamId;
+
+	Decision * decision;
 
 public:
 	BrAIn(springai::AICallback* callback);

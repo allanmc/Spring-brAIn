@@ -1,5 +1,8 @@
 #include "BrainGroup.h"
 
+#include "BrainGroup.h"
+
+using namespace brainSpace;
 using namespace brainSpace;
 using namespace springai;
 BrainGroup::BrainGroup( string name )
@@ -37,4 +40,20 @@ int BrainGroup::GetSize()
 bool BrainGroup::IsIdle()
 {
 	return Idle;
+}
+
+BrainGroup::BrainGroup()
+{
+}
+
+BrainGroup::~BrainGroup()
+{
+}
+
+BrainGroup::AddUnitToGroup(springai::Unit *unit)
+{
+}
+
+BrainGroup::RemoveUnitFromGroup(springai::Unit *unit)
+{
 }
