@@ -2,30 +2,35 @@
 #define _BRAINSPACE_GROUP_H
 
 #include <string>
+#include <vector>
 #include <set>
 #include "Unit.h"
+#include "UnitDef.h"
 
 using namespace std;
 using namespace springai;
 
-
 namespace brainSpace
 {
-	class Group
+	class BrainGroup
 	{
 	public:
-		Group();
-		virtual ~Group();
+		BrainGroup( string name );
+		virtual ~BrainGroup();
 
-		void AddUnitToGroup( Unit* unit );
-		void RemoveUnitFromGroup( Unit* unit );
+		void AddUnit( Unit* unit );
+		void RemoveUnit( Unit* unit );
+		int GetSize();
+		bool IsIdle();
 
 
-	private:
+	protected:
 		string GroupName;
-		int GroupSize;
-
-		
+		vector<Unit*> Units;
+		bool Idle;
 	};
 }
+
+using namespace brainSpace;
+
 #endif

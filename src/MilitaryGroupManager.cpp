@@ -12,9 +12,9 @@ brainSpace::MilitaryGroupManager::~MilitaryGroupManager()
 
 void brainSpace::MilitaryGroupManager::AddUnit( Unit* unit )
 {
-	set<set<Unit*>*>::iterator iter;
+	vector<vector<Unit*>*>::iterator iter;
 	
-	set<Unit*>* smallestSet = (*UnitGroups.begin());
+	vector<Unit*>* smallestSet = (*UnitGroups.begin());
 
 	if ( UnitGroups.size() == 0 )
 	{
@@ -22,7 +22,7 @@ void brainSpace::MilitaryGroupManager::AddUnit( Unit* unit )
 	}
 	for ( iter = UnitGroups.begin() ; iter != UnitGroups.end() ; iter ++ )
 	{
-		set<Unit*>* currentSet = (*iter);
+		vector<Unit*>* currentSet = (*iter);
 		if ( currentSet->size() < smallestSet->size() )
 		{
 			smallestSet = currentSet;

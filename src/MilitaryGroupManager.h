@@ -3,7 +3,7 @@
 
 #include "Unit.h"
 #include "UnitDef.h"
-#include <set>
+#include <vector>
 
 using namespace springai;
 using namespace std;
@@ -22,7 +22,7 @@ namespace brainSpace
 
 		void AddGroup();
 	private:
-		set<set<Unit*>*> UnitGroups;
+		vector<vector<Unit*>*> UnitGroups;
 	};
 }
 #endif
