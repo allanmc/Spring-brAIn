@@ -5,12 +5,12 @@
 using namespace brainSpace;
 using namespace springai;
 
-brainSpace::Decision::Decision(AICallback* clb)
+Decision::Decision(AICallback* clb)
 {
 	this->callback = clb;
 }
 
-brainSpace::Decision::~Decision(void)
+Decision::~Decision(void)
 {
 }
 
@@ -21,6 +21,7 @@ void Decision::UnitFinished(int unit)
 	if(ud->IsAbleToMove())
 	{
 		//add to groupController
+		gc->AddUnit(u);
 	}else{
 		//add to BuildingController
 	}
@@ -32,6 +33,7 @@ void Decision::UnitDestroyed(int unit, int attacker)
 	if(u->GetDef()->IsAbleToMove())
 	{
 		//remove from groupController
+		gc->RemoveUnit(u);
 	}else{
 		//remove from BuildingController
 	}
@@ -39,10 +41,28 @@ void Decision::UnitDestroyed(int unit, int attacker)
 	//build a repacement?
 }
 
+void Decision::EnemyEnterLOS(int enemy)
+{
+	//kill that jerk!
+}
+
+void Decision::EnemyDestroyed(int enemy, int attacker)
+{
+	//good job!
+}
+
 void Decision::Update(int frame)
 {
 	if(frame == 1)
 	{
 		//build some crap
+		//find 2 nearest mex-spots
+		//build mex at spot 1 (armmex)
+		//build mex at spot 2 (armmex)
+		//build solar (armsolar)
+		//build K-bot lab (armlab)
+		
+		//spam mex and solar ()
+		//spam kbots when lab is done (armflea)
 	}
 }

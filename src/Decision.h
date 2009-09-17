@@ -17,6 +17,8 @@ public:
 
 	void UnitFinished(int unit); 
 	void UnitDestroyed(int unit, int attacker);
+	void EnemyEnterLOS(int enemy);
+	void EnemyDestroyed(int enemy, int attacker);
 	void Update(int frame);
 
 	Decision(AICallback* clb);

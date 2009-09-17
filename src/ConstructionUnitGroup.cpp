@@ -1,6 +1,7 @@
 #include "ConstructionUnitGroup.h"
 using namespace brainSpace;
-ConstructionUnitGroup::ConstructionUnitGroup()
+
+ConstructionUnitGroup::ConstructionUnitGroup( string name ) : BrainGroup(name)
 {
 }
 
@@ -16,7 +17,7 @@ vector<UnitDef*> ConstructionUnitGroup::IsAbleToBuild()
 
 	for ( int i = 0 ; i < Units.size() ; i ++ )
 	{
-		vector<UnitDef*> units = Units[i].GetDef()->GetBuildOptions();
+		vector<UnitDef*> units = Units[i]->GetDef()->GetBuildOptions();
 		
 		for ( int j = 0 ; j < units.size() ; j++ )
 		{

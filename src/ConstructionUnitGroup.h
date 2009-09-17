@@ -8,11 +8,11 @@ namespace brainSpace
 	class ConstructionUnitGroup : public BrainGroup
 	{
 	public:
-		ConstructionUnitGroup();
+		ConstructionUnitGroup( string name );
 		virtual ~ConstructionUnitGroup();
 
 		const vector<UnitDef*> BuildableUnits();
-
+		vector<UnitDef*> IsAbleToBuild();
 	private:
 	};
 }
