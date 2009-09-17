@@ -29,7 +29,9 @@
 brainSpace::BrAIn::BrAIn(springai::AICallback* callback):
 		callback(callback),
 		teamId(callback != NULL ? callback->GetTeamId() : -1)
-		{}
+		{
+			decision = new Decision(callback);
+		}
 
 brainSpace::BrAIn::~BrAIn() {}
 
@@ -53,7 +55,30 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 
 			break;
 		}
+		case EVENT_UNIT_FINISHED:
+		{
+			struct SUnitFinishedEvent* evt = (struct SUnitFinishedEvent*) data;
+			int unitId = evt->unit;
+			decision->UnitFinished(unitId);
+			break;
+		}
+		case EVENT_UNIT_DESTROYED:
+		{
+			struct SUnitDestroyedEvent* evt = (struct SUnitDestroyedEvent*) data;
+			int unitId = evt->unit;
+			int attackerId = evt->attacker;
+			decision->UnitDestroyed(unitId, attackerId);
+			break;
+		}
+		case EVENT_UPDATE:
+		{
+			struct SUpdateEvent* evt = (struct SUpdateEvent*) data;
+			int frame = evt->frame;
+			decision->Update(frame);
+			break;
+		}
 		default: {
+			ChatMsg("recived an unhandled event with topic: %d",topic); 
 			break;
 		}
 	}

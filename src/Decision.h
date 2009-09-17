@@ -3,6 +3,9 @@
 
 #include "GroupController.h"
 #include "BuildingController.h"
+#include "AICallback.h"
+
+using namespace springai;
 
 namespace brainSpace {
 
@@ -12,8 +15,14 @@ public:
 	GroupController * gc;
 	BuildingController * bc;
 
-	Decision(void);
+	void UnitFinished(int unit); 
+	void UnitDestroyed(int unit, int attacker);
+	void Update(int frame);
+
+	Decision(AICallback* clb);
 	~Decision(void);
+private:
+	AICallback* callback;
 };
 
 }
