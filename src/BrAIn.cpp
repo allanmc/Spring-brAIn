@@ -26,7 +26,7 @@
 #include "UnitDef.h"
 #include "Engine.h"
 
-brainSpace::BrAIn::BrAIn(brainSpace::AICallback* callback):
+brainSpace::BrAIn::BrAIn(springai::AICallback* callback):
 		callback(callback),
 		teamId(callback != NULL ? callback->GetTeamId() : -1)
 		{}
@@ -49,6 +49,7 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 			cmd.text = msgText.c_str();
 			cmd.zone = 0;
 			int ret = callback->GetEngine()->HandleCommand(0, -1, COMMAND_SEND_TEXT_MESSAGE, &cmd);
+			
 
 			break;
 		}

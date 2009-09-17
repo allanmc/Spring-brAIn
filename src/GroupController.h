@@ -8,5 +8,6 @@ public:
 	GroupController(void);
 	~GroupController(void);
 };
+}
 
 #endif // _BRAINSPACE_GROUPCONTROLLER_H

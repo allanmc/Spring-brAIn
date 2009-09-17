@@ -9,5 +9,6 @@ public:
 	BuildingController(void);
 	~BuildingController(void);
 };
+}
 
 #endif // _BRAINSPACE_BUILDINGCONTROLLER_H
