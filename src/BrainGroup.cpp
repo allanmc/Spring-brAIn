@@ -41,19 +41,3 @@ bool BrainGroup::IsIdle()
 {
 	return Idle;
 }
-
-BrainGroup::BrainGroup()
-{
-}
-
-BrainGroup::~BrainGroup()
-{
-}
-
-BrainGroup::AddUnitToGroup(springai::Unit *unit)
-{
-}
-
-BrainGroup::RemoveUnitFromGroup(springai::Unit *unit)
-{
-}

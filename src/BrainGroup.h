@@ -34,6 +34,7 @@ namespace brainSpace
 using namespace brainSpace;
 
 #endif
+/*
 #ifndef _BRAINSPACE_GROUP_H
 #define _BRAINSPACE_GROUP_H
 
@@ -64,4 +65,4 @@ namespace brainSpace
 		
 	};
 }
-#endif
+#endif*/

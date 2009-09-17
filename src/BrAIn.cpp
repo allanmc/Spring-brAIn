@@ -53,10 +53,13 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 			break;
 		}
 		case EVENT_MESSAGE:
+		{
 			struct SMessageEvent* evt = (struct SMessageEvent*) data;
 			//why are you talking to me? im a bot!
 			break;
-		case EVENT_UNIT_CREATED: {
+		}
+		case EVENT_UNIT_CREATED:
+		{
 			struct SUnitCreatedEvent* evt = (struct SUnitCreatedEvent*) data;
 			int unitId = evt->unit;
 			
