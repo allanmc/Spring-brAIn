@@ -1,7 +1,6 @@
 #include "ConstructionUnitGroup.h"
-using namespace brainSpace;
 
-ConstructionUnitGroup::ConstructionUnitGroup()
+ConstructionUnitGroup::ConstructionUnitGroup( AICallback* callback ) : BrainGroup( callback )
 {
 }
 

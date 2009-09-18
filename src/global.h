@@ -5,12 +5,13 @@
 #include "UnitDef.h"
 #include "Engine.h"
 #include "AICallback.h"
-
+#include "ExternalAI/Interface/AISCommands.h"
 #include <string>
 #include <vector>
+#include <set>
 
 
-#include "Utitlity.h"
+#include "Utility.h"
 
 using namespace std;
 using namespace springai;

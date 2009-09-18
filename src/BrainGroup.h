@@ -1,11 +1,7 @@
 #ifndef _BRAINSPACE_GROUP_H
 #define _BRAINSPACE_GROUP_H
 
-#include <string>
-#include <vector>
-#include <set>
-#include "Unit.h"
-#include "UnitDef.h"
+#include "Global.h"
 
 using namespace std;
 using namespace springai;
@@ -15,7 +11,7 @@ namespace brainSpace
 	class BrainGroup
 	{
 	public:
-		BrainGroup( );
+		BrainGroup( AICallback* callback );
 		virtual ~BrainGroup();
 
 		void AddUnit( Unit* unit );
@@ -24,9 +20,14 @@ namespace brainSpace
 		bool IsIdle();
 
 
+		void AssignBuildOrder( SBuildUnitCommand order );
+
+
 	protected:
 		vector<Unit*> Units;
 		bool Idle;
+	private:
+		AICallback* Callback;
 	};
 }
 

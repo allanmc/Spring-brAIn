@@ -2,19 +2,20 @@
 
 
 
-brainSpace::ConstructionGroupManager::ConstructionGroupManager()
+ConstructionGroupManager::ConstructionGroupManager( AICallback* clb )
+{
+	Callback = clb;
+}
+
+ConstructionGroupManager::~ConstructionGroupManager()
 {
 }
 
-brainSpace::ConstructionGroupManager::~ConstructionGroupManager()
-{
-}
-
-void brainSpace::ConstructionGroupManager::AddUnit( Unit* unit )
+void ConstructionGroupManager::AddUnit( Unit* unit )
 {
 	if ( UnitGroups.size() == 0 )
 	{
-		UnitGroups.push_back( new BrainGroup() );
+		UnitGroups.push_back( new ConstructionUnitGroup( Callback ) );
 		UnitGroups[0]->AddUnit( unit );
 		return;
 	}
@@ -31,7 +32,21 @@ void brainSpace::ConstructionGroupManager::AddUnit( Unit* unit )
 	smallestSet->AddUnit( unit );
 }
 
-void brainSpace::ConstructionGroupManager::RemoveUnit( Unit* unit )
+void ConstructionGroupManager::RemoveUnit( Unit* unit )
 {
+
+}
+
+int ConstructionGroupManager::DelegateBuildOrder(SBuildUnitCommand order)
+{
+	for ( int i = 0 ; i < UnitGroups.size() ; i++ )
+	{
+		if ( UnitGroups[i]->IsIdle() )
+		{
+			UnitGroups[i]->AssignBuildOrder( order );
+			return 1;
+		}
+	}
+	//No groups were idle.
 
 }

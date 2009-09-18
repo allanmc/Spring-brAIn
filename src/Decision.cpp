@@ -9,7 +9,7 @@ using namespace springai;
 Decision::Decision(AICallback* clb)
 {
 	this->callback = clb;
-	gc = new GroupController();
+	gc = new GroupController( clb );
 }
 
 Decision::~Decision(void)
