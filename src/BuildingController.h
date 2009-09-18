@@ -2,9 +2,6 @@
 #define _BRAINSPACE_BUILDINGCONTROLLER_H
 #include "global.h"
 
-using namespace springai;
-using namespace std;
-
 namespace brainSpace {
 
 class BuildingController
@@ -14,6 +11,7 @@ public:
 	~BuildingController(void);
 	void AddBuilding(Unit* unit);
 	void RemoveBuilding(Unit* unit );
+	void ConstructUnit(SBuildUnitCommand order);
 
 private:
 	vector<Unit*> DefenceBuildings;
