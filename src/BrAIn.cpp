@@ -16,14 +16,15 @@
 */
 
 #include "BrAIn.h"
-
+#include "Utility.h"
+using namespace brainSpace;
 
 
 brainSpace::BrAIn::BrAIn(springai::AICallback* callback):
 		callback(callback),
 		teamId(callback != NULL ? callback->GetTeamId() : -1)
 		{
-			ChatMsg("Hello world i am team: %d",teamId);
+			Utility::GetInstance()->ChatMsg("Hello world i am team: %d",teamId);
 			decision = new Decision(callback);
 			UtilityInstance = Utility::GetInstance( callback );
 		}
@@ -38,20 +39,20 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 	cmd.zone = 0;
 	callback->GetEngine()->HandleCommand(0, -1, COMMAND_SEND_TEXT_MESSAGE, &cmd);
 
-	if(topic > 50) ChatMsg("wierd crap");
+	if(topic > 50) Utility::GetInstance()->ChatMsg("wierd crap");
 	switch (topic) {
 		case EVENT_INIT:
-			ChatMsg("init");
+			Utility::GetInstance()->ChatMsg("init");
 			//do i really need to do anything here? (i allready have a teamId and a callback)
 			break;
 		case EVENT_RELEASE:
-			ChatMsg("release");
+			Utility::GetInstance()->ChatMsg("release");
 			//i am no longer needed
 			delete(decision);
 			break;
 		case EVENT_UPDATE:
 		{
-			ChatMsg("update");
+			Utility::GetInstance()->ChatMsg("update");
 			struct SUpdateEvent* evt = (struct SUpdateEvent*) data;
 			int frame = evt->frame;
 			decision->Update(frame);
@@ -59,14 +60,14 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 		}
 		case EVENT_MESSAGE:
 		{
-			ChatMsg("message");
+			Utility::GetInstance()->ChatMsg("message");
 			struct SMessageEvent* evt = (struct SMessageEvent*) data;
 			//why are you talking to me? im a bot!
 			break;
 		}
 		case EVENT_UNIT_CREATED:
 		{
-			ChatMsg("unit created");
+			Utility::GetInstance()->ChatMsg("unit created");
 			struct SUnitCreatedEvent* evt = (struct SUnitCreatedEvent*) data;
 			int unitId = evt->unit;
 			
@@ -85,25 +86,25 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 		}
 		case EVENT_UNIT_FINISHED:
 		{
-			ChatMsg("Unit finished");
+			Utility::GetInstance()->ChatMsg("Unit finished");
 			struct SUnitFinishedEvent* evt = (struct SUnitFinishedEvent*) data;
 			int unitId = evt->unit;
 			decision->UnitFinished(unitId);
 			break;
 		}
 		case EVENT_UNIT_IDLE:
-			ChatMsg("unit idle");
+			Utility::GetInstance()->ChatMsg("unit idle");
 			//get back to work ya lazy git!
 			break;
 		case EVENT_UNIT_MOVE_FAILED:
-			ChatMsg("move failed");
+			Utility::GetInstance()->ChatMsg("move failed");
 			break;
 		case EVENT_UNIT_DAMAGED:
-			ChatMsg("unit damaged");
+			Utility::GetInstance()->ChatMsg("unit damaged");
 			break;
 		case EVENT_UNIT_DESTROYED:
 		{
-			ChatMsg("unit destroyed");
+			Utility::GetInstance()->ChatMsg("unit destroyed");
 			struct SUnitDestroyedEvent* evt = (struct SUnitDestroyedEvent*) data;
 			int unitId = evt->unit;
 			int attackerId = evt->attacker;
@@ -111,66 +112,66 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 			break;
 		}
 		case EVENT_UNIT_GIVEN:
-			ChatMsg("unit given");
+			Utility::GetInstance()->ChatMsg("unit given");
 			break;
 		case EVENT_UNIT_CAPTURED:
-			ChatMsg("unit captured");
+			Utility::GetInstance()->ChatMsg("unit captured");
 			break;
 		case EVENT_ENEMY_ENTER_LOS:
 		{
-			ChatMsg("enemy enter los");
+			Utility::GetInstance()->ChatMsg("enemy enter los");
 			//there he is, get him!
 			struct SEnemyEnterLOSEvent* evt = (struct SEnemyEnterLOSEvent*)data;
 			decision->EnemyEnterLOS(evt->enemy);
 			break;
 		}
 		case EVENT_ENEMY_LEAVE_LOS:
-			ChatMsg("enemy leave los");
+			Utility::GetInstance()->ChatMsg("enemy leave los");
 			//Where did he go?
 			break;
 		case EVENT_ENEMY_ENTER_RADAR:
-			ChatMsg("enemy enter radar");
+			Utility::GetInstance()->ChatMsg("enemy enter radar");
 			break;
 		case EVENT_ENEMY_LEAVE_RADAR:
-			ChatMsg("enemy leave radar");
+			Utility::GetInstance()->ChatMsg("enemy leave radar");
 			break;
 		case EVENT_ENEMY_DAMAGED:
-			ChatMsg("enemy damaged");
+			Utility::GetInstance()->ChatMsg("enemy damaged");
 			break;
 		case EVENT_ENEMY_DESTROYED:
 		{
-			ChatMsg("enemy destroyed");
+			Utility::GetInstance()->ChatMsg("enemy destroyed");
 			//gotcha bitch!
 			struct SEnemyDestroyedEvent* evt = (struct SEnemyDestroyedEvent*)data;
 			decision->EnemyDestroyed(evt->enemy, evt->attacker);
 			break;
 		}
 		case EVENT_WEAPON_FIRED:
-			ChatMsg("weapon fired");
+			Utility::GetInstance()->ChatMsg("weapon fired");
 			break;
 		case EVENT_PLAYER_COMMAND:
-			ChatMsg("player command");
+			Utility::GetInstance()->ChatMsg("player command");
 			//are you telling ME what to do?
 			break;
 		case EVENT_SEISMIC_PING:
-			ChatMsg("ping");
+			Utility::GetInstance()->ChatMsg("ping");
 			//WTH was that?
 			break;
 		case EVENT_COMMAND_FINISHED:
-			ChatMsg("command finished");
+			Utility::GetInstance()->ChatMsg("command finished");
 			break;
 		case EVENT_LOAD:
-			ChatMsg("load");
+			Utility::GetInstance()->ChatMsg("load");
 			break;
 		case EVENT_SAVE:
-			ChatMsg("save");
+			Utility::GetInstance()->ChatMsg("save");
 			break;
 		default: {
 			UtilityInstance->ChatMsg("recived an unhandled event with topic: %d",topic); 
 			break;
 		}
 	}
-	ChatMsg("Im done switching..."); 
+	Utility::GetInstance()->ChatMsg("Im done switching..."); 
 	// signal: everything went OK
 	return 0;
 }
