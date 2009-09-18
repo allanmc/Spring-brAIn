@@ -60,6 +60,19 @@ void Decision::Update(int frame)
 {
 	if(frame == 1)
 	{
+		SBuildUnitCommand o;
+		for ( int i = 0 ; i < callback->GetUnitDefs().size() ; i++ )
+		{
+			if ( strcmp( callback->GetUnitDefs()[i]->GetName(), "armsolar" ) == 0 )
+				o.toBuildUnitDefId = callback->GetUnitDefs()[i]->GetUnitDefId();
+		}
+		o.timeOut = 10000;
+		o.facing = 0;
+		o.options = 0;
+		
+		gc->ErectBuilding(o);
+		gc->ErectBuilding(o);
+		
 		//build some crap
 		//find 2 nearest mex-spots
 		//build mex at spot 1 (armmex)

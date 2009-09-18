@@ -29,6 +29,7 @@ namespace brainSpace
 		static Utility* GetInstance();
 		void ChatMsg(const char* msg, ...);
 
+		
 		void ChatMsg(string msg);
 
 	};

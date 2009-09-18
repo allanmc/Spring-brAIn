@@ -47,6 +47,8 @@ int ConstructionGroupManager::DelegateBuildOrder(SBuildUnitCommand order)
 			return 1;
 		}
 	}
-	//No groups were idle.
+	//No groups were idle so queue the build order.
+	//TODO: do this smarter -- check which group becomes idle soonest (aggregated remaining build time something something)
+	UnitGroups[0]->QueueBuildOrder( order );
 
 }

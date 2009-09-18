@@ -3,8 +3,7 @@
 
 #include "GroupController.h"
 #include "BuildingController.h"
-#include "AICallback.h"
-#include "Utility.h"
+#include "global.h"
 
 
 using namespace springai;

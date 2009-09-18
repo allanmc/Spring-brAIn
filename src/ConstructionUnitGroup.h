@@ -17,8 +17,9 @@ namespace brainSpace
 
 		bool IsAbleToBuild(UnitDef* unit);
 		void AssignBuildOrder( SBuildUnitCommand order );
-
+		void QueueBuildOrder( SBuildUnitCommand order );
 	private:
+		vector<SBuildUnitCommand> BuildQueue;
 	};
 }
 

@@ -17,7 +17,7 @@ vector<UnitDef*> ConstructionUnitGroup::IsAbleToBuild()
 	for ( int i = 0 ; i < Units.size() ; i ++ )
 	{
 		vector<UnitDef*> units = Units[i]->GetDef()->GetBuildOptions();
-		
+
 		for ( int j = 0 ; j < units.size() ; j++ )
 		{
 			buildableUnits.insert( units[j] );
@@ -36,7 +36,7 @@ bool ConstructionUnitGroup::IsAbleToBuild(UnitDef* unit) {
 	for ( int i = 0 ; i < Units.size() ; i ++ )
 	{
 		vector<UnitDef*> units = Units[i]->GetDef()->GetBuildOptions();
-		
+
 		for ( int j = 0 ; j < units.size() ; j++ )
 		{
 			if ( units[j] == unit ) {
@@ -51,5 +51,14 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 {
 	Idle = false;
 	order.unitId = Units[0]->GetUnitId();
+	order.buildPos = Units[0]->GetPos();
+	vector<UnitDef*> u = Callback->GetUnitDefs();
 	Callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &order );
+}
+
+void ConstructionUnitGroup::QueueBuildOrder( SBuildUnitCommand order )
+{
+	Utility* u = Utility::GetInstance( Callback );
+	BuildQueue.push_back( order );
+	u->ChatMsg( "Size of build queue: %d", BuildQueue.size() );
 }
