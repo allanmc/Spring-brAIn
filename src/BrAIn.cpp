@@ -20,15 +20,16 @@
 using namespace brainSpace;
 
 
-brainSpace::BrAIn::BrAIn(springai::AICallback* callback):
-		callback(callback),
-		teamId(callback != NULL ? callback->GetTeamId() : -1)
-		{			
-			decision = new Decision(callback);
-			UtilityInstance = new Utility( callback );
-			UtilityInstance->ChatMsg("Hello world i am team: %d",teamId);
-		}
-
+brainSpace::BrAIn::BrAIn(springai::AICallback* cb)
+{
+	callback = cb;
+	teamId = (callback != NULL ? callback->GetTeamId() : -1);
+	if (callback != NULL) {		
+		decision = new Decision(callback);
+		UtilityInstance = new Utility( callback );
+		UtilityInstance->ChatMsg("Hello world i am team: %d",teamId);
+	}
+}
 brainSpace::BrAIn::~BrAIn() {}
 
 int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
