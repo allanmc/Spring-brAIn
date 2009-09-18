@@ -6,7 +6,7 @@
 #include "Unit.h"
 #include "ConstructionGroupManager.h"
 #include "MilitaryGroupManager.h"
-
+#include "BrainGroup.h"
 
 using namespace springai;
 
@@ -17,10 +17,14 @@ namespace brainSpace {
 	{
 	public:
 		GroupController(void);
-		~GroupController(void);
+		virtual ~GroupController(void);
 
 		void AddUnit( Unit* unit );
 		void RemoveUnit( Unit* unit );
+	
+	protected:
+		vector<BrainGroup*> Groups;
+
 	private:
 		ConstructionGroupManager* ConstructionGroupMgr;
 		MilitaryGroupManager* MilitaryGroupMgr;
