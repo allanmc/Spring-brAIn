@@ -23,10 +23,10 @@ using namespace brainSpace;
 brainSpace::BrAIn::BrAIn(springai::AICallback* callback):
 		callback(callback),
 		teamId(callback != NULL ? callback->GetTeamId() : -1)
-		{
-			Utility::GetInstance()->ChatMsg("Hello world i am team: %d",teamId);
+		{			
 			decision = new Decision(callback);
 			UtilityInstance = Utility::GetInstance( callback );
+			Utility::GetInstance()->ChatMsg("Hello world i am team: %d",teamId);
 		}
 
 brainSpace::BrAIn::~BrAIn() {}
