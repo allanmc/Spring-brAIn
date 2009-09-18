@@ -15,10 +15,13 @@ void brainSpace::GroupController::AddUnit(Unit *unit)
 {
 	if ( unit->GetDef()->IsBuilder() )
 	{
+
+		Utility::GetInstance()->ChatMsg( "IS BUILDER!!!" );
 		ConstructionGroupMgr->AddUnit( unit );
 	}
 	else if ( unit->GetDef()->IsAbleToAttack() )
 	{
+		Utility::GetInstance()->ChatMsg( "IS ATTACKER!!!" );
 		MilitaryGroupMgr->AddUnit( unit );
 	}
 

@@ -4,6 +4,8 @@
 #include "GroupController.h"
 #include "BuildingController.h"
 #include "AICallback.h"
+#include "Utility.h"
+
 
 using namespace springai;
 
