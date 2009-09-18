@@ -2,33 +2,10 @@
 
 using namespace brainSpace;
 
-Utility* Utility::UtilityInstance = 0;
-
 Utility::Utility(AICallback* callback )
 {
 	Callback = callback;
 }
-
-Utility::Utility()
-{
-}
-
-
-Utility* Utility::GetInstance(AICallback* callback )
-{
-	if ( !UtilityInstance )
-	{
-		Utility::UtilityInstance = new Utility(callback);
-	}
-	return Utility::UtilityInstance;
-}
-
-
-Utility* Utility::GetInstance( )
-{
-	return Utility::UtilityInstance;
-}
-
 
 void Utility::ChatMsg(const char* msg, ...)
 {

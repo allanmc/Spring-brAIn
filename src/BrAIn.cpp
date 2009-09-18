@@ -25,7 +25,7 @@ brainSpace::BrAIn::BrAIn(springai::AICallback* callback):
 		{
 			ChatMsg("Hello world i am team: %d",teamId);
 			decision = new Decision(callback);
-			UtilityInstance = Utility::GetInstance( callback );
+			UtilityInstance = new Utility( callback );
 		}
 
 brainSpace::BrAIn::~BrAIn() {}
@@ -170,7 +170,7 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 			break;
 		}
 	}
-	ChatMsg("Im done switching..."); 
+	UtilityInstance->ChatMsg("Im done switching..."); 
 	// signal: everything went OK
 	return 0;
 }
