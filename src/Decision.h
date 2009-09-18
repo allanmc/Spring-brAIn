@@ -21,6 +21,7 @@ public:
 	void EnemyEnterLOS(int enemy);
 	void EnemyDestroyed(int enemy, int attacker);
 	void Update(int frame);
+	void UnitIdle( int unitID );
 
 	Decision(AICallback* clb);
 	~Decision(void);

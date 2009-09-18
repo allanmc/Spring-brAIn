@@ -14,6 +14,8 @@ namespace brainSpace
 
 		const vector<UnitDef*> BuildableUnits();
 		vector<UnitDef*> IsAbleToBuild();
+		
+		void SetAvailable( bool b );
 
 		bool IsAbleToBuild(UnitDef* unit);
 		void AssignBuildOrder( SBuildUnitCommand order );

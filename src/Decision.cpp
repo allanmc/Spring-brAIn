@@ -84,3 +84,9 @@ void Decision::Update(int frame)
 		//spam kbots when lab is done (armflea)
 	}
 }
+
+void Decision::UnitIdle( int id )
+{
+	Unit* u = Unit::GetInstance( callback, id );
+	gc->UnitIdle( u );
+}

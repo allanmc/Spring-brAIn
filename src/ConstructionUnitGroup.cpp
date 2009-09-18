@@ -58,7 +58,27 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 
 void ConstructionUnitGroup::QueueBuildOrder( SBuildUnitCommand order )
 {
-	Utility* u = Utility::GetInstance( Callback );
+	Utility* u = new Utility( Callback );
 	BuildQueue.push_back( order );
 	u->ChatMsg( "Size of build queue: %d", BuildQueue.size() );
+}
+
+void ConstructionUnitGroup::SetAvailable( bool b )
+{
+	Idle = b;
+	Utility* u = new Utility( Callback );
+	u->ChatMsg( "Unit gone idle!!" );
+	if ( BuildQueue.size() > 0 )
+	{
+		u->ChatMsg( "Build queue was not empty" );
+		SBuildUnitCommand next = BuildQueue.at(0);
+		for ( int i = 0 ; i < Callback->GetUnitDefs().size() ; i++ )
+		{
+			if ( Callback->GetUnitDefs()[i]->GetUnitDefId() == next.toBuildUnitDefId )
+			{
+				next.buildPos = Callback->GetMap()->FindClosestBuildSite( *Callback->GetUnitDefs()[i] , next.buildPos, 50, 20, 0 );
+			}
+		}
+		Callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &next );
+	}
 }

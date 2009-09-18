@@ -20,6 +20,7 @@ namespace brainSpace
 		bool IsIdle();
 
 
+
 	protected:
 		vector<Unit*> Units;
 		bool Idle;
