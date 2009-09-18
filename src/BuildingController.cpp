@@ -1,7 +1,6 @@
 #include "BuildingController.h"
 #include "Resource.h"
-#include "UnitDef.h"
-using namespace brainSpace;
+
 brainSpace::BuildingController::BuildingController(AICallback* clb)
 {
 	callback = clb;
@@ -40,4 +39,14 @@ void BuildingController::AddBuilding(springai::Unit *unit)
 void BuildingController::RemoveBuilding(springai::Unit *unit)
 {
 
+}
+
+
+void BuildingController::ConstructUnit(SBuildUnitCommand order)
+{
+	for(int i=0; i<ConstructionBuildings.size(); ++i)
+	{
+		order.unitId = ConstructionBuildings[i]->GetUnitId();
+		callback->GetEngine()->HandleCommand(0,-1,COMMAND_UNIT_BUILD, &order);
+	}
 }
