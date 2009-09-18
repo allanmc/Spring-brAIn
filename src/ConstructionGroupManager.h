@@ -8,6 +8,7 @@
 #include "Utility.h"
 
 
+using namespace brainSpace;
 using namespace springai;
 using namespace std;
 
@@ -21,12 +22,6 @@ namespace brainSpace
 
 		void AddUnit( Unit* unit );
 		void RemoveUnit( Unit* unit );
-
-
-		void AddGroup();
-
-	private:
-		set<set<Unit*>*> UnitGroups;
 		
 	};
 }
