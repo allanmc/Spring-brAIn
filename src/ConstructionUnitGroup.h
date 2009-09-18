@@ -2,19 +2,26 @@
 #define _BRAINSPACE_CONSTRUCTION_UNIT_GROUP_H
 
 #include "BrainGroup.h"
+#include "global.h"
 
 namespace brainSpace
 {
 	class ConstructionUnitGroup : public BrainGroup
 	{
 	public:
-		ConstructionUnitGroup( );
+		ConstructionUnitGroup( AICallback* callback );
 		virtual ~ConstructionUnitGroup();
 
 		const vector<UnitDef*> BuildableUnits();
 		vector<UnitDef*> IsAbleToBuild();
+		
+		void SetAvailable( bool b );
+
 		bool IsAbleToBuild(UnitDef* unit);
+		void AssignBuildOrder( SBuildUnitCommand order );
+		void QueueBuildOrder( SBuildUnitCommand order );
 	private:
+		vector<SBuildUnitCommand> BuildQueue;
 	};
 }
 

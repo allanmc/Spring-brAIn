@@ -3,28 +3,27 @@
 
 
 
-#include "Unit.h"
+#include "global.h"
 #include "ConstructionGroupManager.h"
 #include "MilitaryGroupManager.h"
 #include "BrainGroup.h"
-
-using namespace springai;
-
-
 
 namespace brainSpace {
 	class GroupController
 	{
 	public:
-		GroupController(void);
+		GroupController( AICallback* callback );
 		virtual ~GroupController(void);
 
 		void AddUnit( Unit* unit );
 		void RemoveUnit( Unit* unit );
+		int ErectBuilding( SBuildUnitCommand order );
+		void UnitIdle( Unit* unit );
 
 	private:
 		ConstructionGroupManager* ConstructionGroupMgr;
 		MilitaryGroupManager* MilitaryGroupMgr;
+		AICallback* Callback;
 
 	};
 }

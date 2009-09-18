@@ -2,11 +2,8 @@
 #define _BRAINSPACE_CONSTRUCTION_GROUP_MANAGER_H
 
 
-#include "Unit.h"
-#include "UnitDef.h"
-#include <set>
-#include "Utility.h"
-#include "BrainGroup.h"
+#include "global.h"
+#include "ConstructionUnitGroup.h"
 
 
 using namespace brainSpace;
@@ -18,13 +15,17 @@ namespace brainSpace
 	class ConstructionGroupManager
 	{
 	public:
-		ConstructionGroupManager();
+		ConstructionGroupManager( AICallback* callback );
 		virtual ~ConstructionGroupManager();
 
 		void AddUnit( Unit* unit );
 		void RemoveUnit( Unit* unit );
+
+		int DelegateBuildOrder( SBuildUnitCommand order );
+		void UnitIdle( Unit* unit );
 	private:
-		vector<BrainGroup*> UnitGroups;
+		vector<ConstructionUnitGroup*> UnitGroups;
+		AICallback* Callback;
 		
 	};
 }

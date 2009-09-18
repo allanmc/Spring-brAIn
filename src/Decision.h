@@ -3,8 +3,7 @@
 
 #include "GroupController.h"
 #include "BuildingController.h"
-#include "AICallback.h"
-#include "Utility.h"
+#include "global.h"
 
 
 using namespace springai;
@@ -22,6 +21,7 @@ public:
 	void EnemyEnterLOS(int enemy);
 	void EnemyDestroyed(int enemy, int attacker);
 	void Update(int frame);
+	void UnitIdle( int unitID );
 
 	Decision(AICallback* clb);
 	~Decision(void);

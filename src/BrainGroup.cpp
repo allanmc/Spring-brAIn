@@ -1,13 +1,12 @@
 #include "BrainGroup.h"
 
-#include "BrainGroup.h"
 
 using namespace brainSpace;
-using namespace brainSpace;
 using namespace springai;
-BrainGroup::BrainGroup( )
+BrainGroup::BrainGroup( AICallback* callback )
 {
 	Idle = true;
+	Callback = callback;
 }
 
 BrainGroup::~BrainGroup()

@@ -1,9 +1,10 @@
 #include "GroupController.h"
 
 
-brainSpace::GroupController::GroupController(void)
+GroupController::GroupController( AICallback* callback )
 {
-	ConstructionGroupMgr = new ConstructionGroupManager();
+	Callback = callback;
+	ConstructionGroupMgr = new ConstructionGroupManager( callback );
 	MilitaryGroupMgr = new MilitaryGroupManager();
 }
 
@@ -11,7 +12,7 @@ brainSpace::GroupController::~GroupController(void)
 {
 }
 
-void brainSpace::GroupController::AddUnit(Unit *unit)
+void GroupController::AddUnit(Unit *unit)
 {
 	if ( unit->GetDef()->IsBuilder() )
 	{
@@ -24,7 +25,7 @@ void brainSpace::GroupController::AddUnit(Unit *unit)
 
 }
 
-void brainSpace::GroupController::RemoveUnit(Unit *unit)
+void GroupController::RemoveUnit(Unit *unit)
 {
 	if ( unit->GetDef()->IsBuilder() )
 	{
@@ -33,5 +34,18 @@ void brainSpace::GroupController::RemoveUnit(Unit *unit)
 	else if ( unit->GetDef()->IsAbleToAttack() )
 	{
 		MilitaryGroupMgr->RemoveUnit( unit );
+	}
+}
+
+int GroupController::ErectBuilding(SBuildUnitCommand order)
+{
+	return ConstructionGroupMgr->DelegateBuildOrder( order );
+}
+
+void GroupController::UnitIdle( Unit* unit )
+{
+	if ( unit->GetDef()->IsBuilder() )
+	{
+		ConstructionGroupMgr->UnitIdle( unit );
 	}
 }
