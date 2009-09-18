@@ -10,6 +10,7 @@ Decision::Decision(AICallback* clb)
 {
 	this->callback = clb;
 	gc = new GroupController( clb );
+	bc = new BuildingController( clb);
 }
 
 Decision::~Decision(void)
@@ -29,6 +30,7 @@ void Decision::UnitFinished(int unit)
 		gc->AddUnit(u);
 	}else{
 		//add to BuildingController
+		bc->AddBuilding(u);
 	}
 }
 
@@ -41,6 +43,7 @@ void Decision::UnitDestroyed(int unit, int attacker)
 		gc->RemoveUnit(u);
 	}else{
 		//remove from BuildingController
+		bc->RemoveBuilding(u);
 	}
 
 	//build a repacement?
@@ -66,7 +69,7 @@ void Decision::Update(int frame)
 		SBuildUnitCommand o2;
 		for ( int i = 0 ; i < callback->GetUnitDefs().size() ; i++ )
 		{
-			if ( strcmp( callback->GetUnitDefs()[i]->GetName(), "armsolar" ) == 0 )
+			if ( strcmp( callback->GetUnitDefs()[i]->GetName(), "armlab" ) == 0 )
 			{
 				solar = callback->GetUnitDefs()[i];
 			}

@@ -7,7 +7,8 @@
 
 #include "ExternalAI/Interface/AISCommands.h"
 #include "Engine.h"
-
+#include "OptionValues.h"
+#include "Info.h"
 
 using namespace springai;
 using namespace std;
