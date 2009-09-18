@@ -41,7 +41,7 @@ int ConstructionGroupManager::DelegateBuildOrder(SBuildUnitCommand order)
 {
 	for ( int i = 0 ; i < UnitGroups.size() ; i++ )
 	{
-		if ( UnitGroups[i]->IsIdle() )
+		if ( UnitGroups[i]->IsIdle() && UnitGroups[i]->GetSize() > 0 )
 		{
 			UnitGroups[i]->AssignBuildOrder( order );
 			return 1;

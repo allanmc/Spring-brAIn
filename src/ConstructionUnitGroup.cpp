@@ -46,3 +46,10 @@ bool ConstructionUnitGroup::IsAbleToBuild(UnitDef* unit) {
 	}
 	return false;
 }
+
+void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
+{
+	Idle = false;
+	order.unitId = Units[0]->GetUnitId();
+	Callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &order );
+}

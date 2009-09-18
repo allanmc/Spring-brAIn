@@ -39,9 +39,3 @@ bool BrainGroup::IsIdle()
 {
 	return Idle;
 }
-
-void BrainGroup::AssignBuildOrder( SBuildUnitCommand order )
-{
-	Idle = false;
-	Callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &order );
-}

@@ -20,13 +20,9 @@ namespace brainSpace
 		bool IsIdle();
 
 
-		void AssignBuildOrder( SBuildUnitCommand order );
-
-
 	protected:
 		vector<Unit*> Units;
 		bool Idle;
-	private:
 		AICallback* Callback;
 	};
 }
