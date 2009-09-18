@@ -1,8 +1,6 @@
 #ifndef _BRAINSPACE_BUILDINGCONTROLLER_H
 #define _BRAINSPACE_BUILDINGCONTROLLER_H
-#include "Unit.h"
-#include <vector>
-#include "AICallback.h"
+#include "global.h"
 
 using namespace springai;
 using namespace std;
@@ -22,6 +20,7 @@ private:
 	vector<Unit*> ResourceBuildings;
 	vector<Unit*> ConstructionBuildings;
 	AICallback* callback;
+	Utility* u;
 };
 }
 
