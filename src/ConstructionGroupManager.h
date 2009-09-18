@@ -6,6 +6,7 @@
 #include "UnitDef.h"
 #include <set>
 #include "Utility.h"
+#include "BrainGroup.h"
 
 
 using namespace brainSpace;
@@ -22,6 +23,8 @@ namespace brainSpace
 
 		void AddUnit( Unit* unit );
 		void RemoveUnit( Unit* unit );
+	private:
+		vector<BrainGroup*> UnitGroups;
 		
 	};
 }

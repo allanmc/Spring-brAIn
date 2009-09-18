@@ -12,24 +12,22 @@ brainSpace::ConstructionGroupManager::~ConstructionGroupManager()
 
 void brainSpace::ConstructionGroupManager::AddUnit( Unit* unit )
 {
-	set<BrainGroup*>::iterator iter;
-	BrainGroup* smallestSet = (*UnitGroups.begin());
-	
-	Utility::GetInstance()->ChatMsg( "AddUnit - Const Mgr" );
 	if ( UnitGroups.size() == 0 )
 	{
-		Utility::GetInstance()->ChatMsg( "UnitGroups size 0" );
+		UnitGroups.push_back( new BrainGroup() );
+		UnitGroups[0]->AddUnit( unit );
 		return;
 	}
-	for ( iter = UnitGroups.begin() ; iter != UnitGroups.end() ; iter ++ )
-	{
-		BrainGroup* currentSet = (*iter);
 
-		if ( currentSet->GetSize() < smallestSet->GetSize() )
+	BrainGroup* smallestSet = (*UnitGroups.begin());
+	for ( int i = 0 ; i < UnitGroups.size() ; i++ )
+	{
+		if ( UnitGroups[i]->GetSize() < smallestSet->GetSize() )
 		{
-			smallestSet = currentSet;
+			smallestSet = UnitGroups[i];
 		}
 	}
+
 	smallestSet->AddUnit( unit );
 }
 

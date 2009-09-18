@@ -1,7 +1,7 @@
 #include "ConstructionUnitGroup.h"
 using namespace brainSpace;
 
-ConstructionUnitGroup::ConstructionUnitGroup( string name ) : BrainGroup(name)
+ConstructionUnitGroup::ConstructionUnitGroup()
 {
 }
 

@@ -4,10 +4,11 @@
 #include "Unit.h"
 #include "UnitDef.h"
 #include <set>
+#include "BrainGroup.h"
 
 using namespace springai;
 using namespace std;
-
+using namespace brainSpace;
 
 namespace brainSpace
 {
@@ -20,9 +21,8 @@ namespace brainSpace
 		void AddUnit( Unit* unit );
 		void RemoveUnit( Unit* unit );
 
-		void AddGroup();
 	private:
-		set<set<Unit*>*> UnitGroups;
+		vector<BrainGroup*> UnitGroups;
 	};
 }
 #endif

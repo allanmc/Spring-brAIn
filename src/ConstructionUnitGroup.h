@@ -8,7 +8,7 @@ namespace brainSpace
 	class ConstructionUnitGroup : public BrainGroup
 	{
 	public:
-		ConstructionUnitGroup( string name );
+		ConstructionUnitGroup( );
 		virtual ~ConstructionUnitGroup();
 
 		const vector<UnitDef*> BuildableUnits();

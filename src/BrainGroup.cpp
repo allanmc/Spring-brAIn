@@ -5,9 +5,8 @@
 using namespace brainSpace;
 using namespace brainSpace;
 using namespace springai;
-BrainGroup::BrainGroup( string name )
+BrainGroup::BrainGroup( )
 {
-	GroupName = name;
 	Idle = true;
 }
 

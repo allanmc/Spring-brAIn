@@ -15,7 +15,7 @@ namespace brainSpace
 	class BrainGroup
 	{
 	public:
-		BrainGroup( string name );
+		BrainGroup( );
 		virtual ~BrainGroup();
 
 		void AddUnit( Unit* unit );
@@ -25,7 +25,6 @@ namespace brainSpace
 
 
 	protected:
-		string GroupName;
 		vector<Unit*> Units;
 		bool Idle;
 	};

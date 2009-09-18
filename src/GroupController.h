@@ -21,9 +21,6 @@ namespace brainSpace {
 
 		void AddUnit( Unit* unit );
 		void RemoveUnit( Unit* unit );
-	
-	protected:
-		vector<BrainGroup*> Groups;
 
 	private:
 		ConstructionGroupManager* ConstructionGroupMgr;
