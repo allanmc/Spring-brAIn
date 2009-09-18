@@ -71,12 +71,7 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 			
 			std::string unitDefName = callback->GetFriendlyUnits()[0]->GetDef()->GetName();
 			
-			std::string msgText = "Hello Engine (from CppTestA), first friendly untis def name is: " + unitDefName;
-			SSendTextMessageCommand cmd;
-			cmd.text = msgText.c_str();
-			cmd.zone = 0;
-			int ret = callback->GetEngine()->HandleCommand(0, -1, COMMAND_SEND_TEXT_MESSAGE, &cmd);
-			
+			UtilityInstance->ChatMsg("Hello Engine (from brAIn), first friendly untis def name is: " + unitDefName);
 
 			break;
 		}
