@@ -18,7 +18,7 @@ namespace brainSpace
 	{
 	private:
 		AICallback* Callback;
-		virtual ~Utility();
+		~Utility();
 
 	public:
 		Utility(AICallback* callback );
