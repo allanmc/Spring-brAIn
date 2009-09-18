@@ -63,13 +63,15 @@ void Decision::Update(int frame)
 {
 	if(frame == 1)
 	{
+		Utility* u = new Utility(callback);
+		u->ChatMsg("Frame 1");
 		UnitDef* metalEx;
 		UnitDef* solar;
 		SBuildUnitCommand o;
 		SBuildUnitCommand o2;
 		for ( int i = 0 ; i < callback->GetUnitDefs().size() ; i++ )
 		{
-			if ( strcmp( callback->GetUnitDefs()[i]->GetName(), "armlab" ) == 0 )
+			if ( strcmp( callback->GetUnitDefs()[i]->GetName(), "armsolar" ) == 0 )
 			{
 				solar = callback->GetUnitDefs()[i];
 			}
@@ -94,6 +96,8 @@ void Decision::Update(int frame)
 		gc->ErectBuilding(o2);
 		gc->ErectBuilding(o2);
 		gc->ErectBuilding(o);
+
+		u->ChatMsg( "Building erections planned" );
 		//build some crap
 		//find 2 nearest mex-spots
 		//build mex at spot 1 (armmex)

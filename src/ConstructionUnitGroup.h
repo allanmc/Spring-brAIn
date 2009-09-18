@@ -23,7 +23,7 @@ namespace brainSpace
 		void AssignBuildOrder( SBuildUnitCommand order );
 		void QueueBuildOrder( SBuildUnitCommand order );
 	private:
-		SAIFloat3 FindClosestMetalExtractionSite( SAIFloat3 pos, Resource metal );
+		SAIFloat3 FindClosestMetalExtractionSite( SAIFloat3 pos, Resource* metal );
 		queue<SBuildUnitCommand> BuildQueue;
 	};
 }

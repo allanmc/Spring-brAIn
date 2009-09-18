@@ -1,5 +1,7 @@
 #include "ConstructionUnitGroup.h"
 
+UnitDef* metalExtractorUnit = NULL;
+
 ConstructionUnitGroup::ConstructionUnitGroup( AICallback* callback ) : BrainGroup( callback )
 {
 }
@@ -50,22 +52,26 @@ bool ConstructionUnitGroup::IsAbleToBuild(UnitDef* unit) {
 void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 {
 	Utility* u = new Utility( Callback );
+	SAIFloat3 buildPos = Units[0]->GetPos();
+
 	Idle = false;
+	
 	order.unitId = Units[0]->GetUnitId();
+	order.timeOut = 40000;
+	
 	vector<UnitDef*> defs = Callback->GetUnitDefs();
 	vector<Resource*> metal;
 
 	//Get the metal resource.
 	for ( int i = 0 ; i < Callback->GetResources().size() ;i++ )
 	{
-		if ( strcmp( Callback->GetResources()[i]->GetName(), "Metal" ) )
+		if ( strcmp( Callback->GetResources()[i]->GetName(), "Metal" ) == 0 )
 		{
 			metal.push_back( Callback->GetResources()[i] );
-			u->ChatMsg( "Metal found" );
 		}
 	}
 
-	bool metalExtractor = false;
+	bool isMetalExtractor = false;
 	int index = -1;
 	//Check if the unit to build extracts metal. Set the buildpos accordingly.
 	for ( int i = 0 ; i < defs.size() ; i++ )
@@ -73,18 +79,21 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 		if ( defs[i]->GetUnitDefId() == order.toBuildUnitDefId )
 		{
 			index = i;
-			if ( defs[i]->GetExtractsResource( *metal.at(0) ))
+			if ( strcmp( defs[i]->GetName(), "armmex" ) == 0 )
 			{
-				u->ChatMsg( "Building extracts metal" );
-				order.buildPos = FindClosestMetalExtractionSite( order.buildPos, *metal.at(0) );
-				metalExtractor = true;
+				metalExtractorUnit = defs[i];	
+				buildPos = FindClosestMetalExtractionSite( Units[0]->GetPos(), metal.at(0) );
+				isMetalExtractor = true;
 				break;
 			}
 		}
 	}
-	if ( !metalExtractor )
-		order.buildPos = Callback->GetMap()->FindClosestBuildSite( *defs[index] , Units[0]->GetPos(), 200, 20, 0 );
-
+	
+	//Make sure that we can build at the desired position by finding the closest available buildsite to the desired site
+	if ( !isMetalExtractor )
+		order.buildPos = Callback->GetMap()->FindClosestBuildSite( *defs[index] , buildPos, 200, 0, 0 );
+	else
+		order.buildPos = buildPos;
 	Callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &order );
 }
 
@@ -108,46 +117,39 @@ void ConstructionUnitGroup::SetAvailable()
 	}
 }
 
-SAIFloat3 ConstructionUnitGroup::FindClosestMetalExtractionSite(SAIFloat3 pos, Resource metal )
+SAIFloat3 ConstructionUnitGroup::FindClosestMetalExtractionSite(SAIFloat3 pos, Resource* metal )
 {
-
+	Utility* u = new Utility( Callback );
 	struct SAIFloat3 dummy;
-	vector<SAIFloat3> spots = Callback->GetMap()->GetResourceMapSpotsPositions( metal, &dummy );
+	vector<SAIFloat3> spots = Callback->GetMap()->GetResourceMapSpotsPositions( *metal, &dummy );
 	int numSpots = spots.size();
-	float closest = 9999999.9f;
 	int lowestIdx = -1;
+	float closest = 9999999.9f;
 
-	for ( int j  = 0 ; j < numSpots ; j++ )
+	for ( int i  = 0 ; i < numSpots ; i++ )
 	{
-		double distance = sqrt( pow( fabs( spots[j].x - pos.x ), 2 ) + pow( fabs( pos.z - spots[j].z ), 2  ) );
-		if ( distance < closest )
+		double distance = sqrt( pow( fabs( spots[i].x - pos.x ), 2 ) + pow( fabs( spots[i].z - pos.z ), 2  ) );
+		if ( distance < closest && Callback->GetMap()->IsPossibleToBuildAt( *metalExtractorUnit, spots[i], 0 ))
 		{
 			closest = distance;
-			lowestIdx = j;
+			lowestIdx = i;
 		}
 	}
 
-	float searchRadius = 50.0f;
+	pos = spots[lowestIdx];
+	float searchRadius = 20.0f;
 	float bestExtraction = 0.0f;
-	int finalLowestIdx = -1;
-	return spots[lowestIdx];
-	/*
-	if ( lowestIdx != -1 )
-	{
+
+	//Find the spot that gives the most metal inside a small radius of the already found metal spot
 	for ( int i = 0 ; i < numSpots ; i++ )
 	{
-	if ( i != lowestIdx )
-	{
-	double distance = sqrt( pow( fabs( spots[i].x - spots[lowestIdx].x ), 2 ) + pow( fabs( spots[lowestIdx].z - spots[i].z ), 2  ) );
-	if ( distance < searchRadius && spots[i].y > bestExtraction )
-	{
-	bestExtraction = spots[i].y;
-	finalLowestIdx = i;
+		double distance = sqrt( pow( fabs( spots[i].x - pos.x ), 2 ) + pow( fabs( pos.z - spots[i].z ), 2  ) );
+		if ( distance < searchRadius && spots[i].y > pos.y )
+		{
+			pos = Callback->GetMap()->FindClosestBuildSite( *metalExtractorUnit, spots[i], 16, 2, 0 );
+			bestExtraction = spots[i].y;
+		}
 	}
-	}
-	}
-	}
-	return spots[finalLowestIdx];
-	*/
+	return pos;
 
 }

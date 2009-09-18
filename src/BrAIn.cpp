@@ -86,7 +86,7 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 			}
 		case EVENT_UNIT_IDLE:
 			{
-				UtilityInstance->ChatMsg("unit idle");
+				UtilityInstance->ChatMsg("UNIT IDLE");
 				struct SUnitIdleEvent* evt = (struct SUnitIdleEvent*)data;
 				decision->UnitIdle( evt->unit );
 					//get back to work ya lazy git!
@@ -154,7 +154,7 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 			//WTH was that?
 			break;
 		case EVENT_COMMAND_FINISHED:
-			UtilityInstance->ChatMsg("command finished");
+			//UtilityInstance->ChatMsg("command finished");
 			break;
 		case EVENT_LOAD:
 			UtilityInstance->ChatMsg("load");
