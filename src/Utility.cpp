@@ -12,7 +12,7 @@ void Utility::ChatMsg(const char* msg, ...)
 	static char c[200];
 	va_list list;
 	va_start(list, msg);
-	SNPRINTF(c, 200, msg, list);
+	VSNPRINTF(c, 200, msg, list);
 	va_end(list);
 	SSendTextMessageCommand cmd;
 	cmd.text = c;

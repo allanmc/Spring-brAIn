@@ -32,15 +32,8 @@ brainSpace::BrAIn::BrAIn(springai::AICallback* callback):
 brainSpace::BrAIn::~BrAIn() {}
 
 int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
-	static char c[200];
-	
-	SNPRINTF(c, 200, "recived an event with topic: %i", topic);
-	SSendTextMessageCommand cmd;
-	cmd.text = c;
-	cmd.zone = 0;
-	callback->GetEngine()->HandleCommand(0, -1, COMMAND_SEND_TEXT_MESSAGE, &cmd);
-	
-	//UtilityInstance->ChatMsg("Recived an event with topic: %i", topic);
+
+	UtilityInstance->ChatMsg("Recived an event with topic: %i", topic);
 
 	if(topic > 50) UtilityInstance->ChatMsg("wierd crap");
 	switch (topic) {
