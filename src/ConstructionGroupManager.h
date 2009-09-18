@@ -5,6 +5,8 @@
 #include "Unit.h"
 #include "UnitDef.h"
 #include <set>
+#include "Utility.h"
+
 
 using namespace springai;
 using namespace std;

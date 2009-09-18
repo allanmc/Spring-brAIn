@@ -2,12 +2,14 @@
 #include "Unit.h"
 #include "UnitDef.h"
 
+
 using namespace brainSpace;
 using namespace springai;
 
 Decision::Decision(AICallback* clb)
 {
 	this->callback = clb;
+	gc = new GroupController();
 }
 
 Decision::~Decision(void)
@@ -16,7 +18,10 @@ Decision::~Decision(void)
 
 void Decision::UnitFinished(int unit)
 {
+
+	char msg[200];
 	Unit * u = Unit::GetInstance(callback,unit);
+
 	UnitDef * ud = u->GetDef();
 	if(ud->IsAbleToMove())
 	{
@@ -61,7 +66,7 @@ void Decision::Update(int frame)
 		//build mex at spot 2 (armmex)
 		//build solar (armsolar)
 		//build K-bot lab (armlab)
-		
+
 		//spam mex and solar ()
 		//spam kbots when lab is done (armflea)
 	}
