@@ -17,19 +17,13 @@ namespace brainSpace
 	class Utility
 	{
 	private:
-		static Utility* UtilityInstance;
 		AICallback* Callback;
-
-		Utility(AICallback* callback );
-		Utility();
 		~Utility();
 
 	public:
-		static Utility* GetInstance(AICallback* callback );
-		static Utility* GetInstance();
-		void ChatMsg(const char* msg, ...);
+		Utility(AICallback* callback );
 
-		
+		void ChatMsg(const char* msg, ...);
 		void ChatMsg(string msg);
 
 	};
