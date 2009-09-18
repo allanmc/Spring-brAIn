@@ -11,6 +11,7 @@
 #include <string.h>
 #include <vector>
 #include <set>
+#include <queue>
 
 #include "Utility.h"
 

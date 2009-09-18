@@ -60,19 +60,37 @@ void Decision::Update(int frame)
 {
 	if(frame == 1)
 	{
+		UnitDef* metalEx;
+		UnitDef* solar;
 		SBuildUnitCommand o;
+		SBuildUnitCommand o2;
 		for ( int i = 0 ; i < callback->GetUnitDefs().size() ; i++ )
 		{
 			if ( strcmp( callback->GetUnitDefs()[i]->GetName(), "armsolar" ) == 0 )
-				o.toBuildUnitDefId = callback->GetUnitDefs()[i]->GetUnitDefId();
+			{
+				solar = callback->GetUnitDefs()[i];
+			}
+			else if ( strcmp( callback->GetUnitDefs()[i]->GetName(), "armmex" ) == 0 )
+			{
+				metalEx = callback->GetUnitDefs()[i];
+			}
 		}
-		o.timeOut = 10000;
+		o.timeOut = 10000000;
 		o.facing = 0;
 		o.options = 0;
+		o.toBuildUnitDefId = solar->GetUnitDefId();
+
+		o2.timeOut = 10000000;
+		o2.facing = 0;
+		o2.options = 0;
+		o2.toBuildUnitDefId = metalEx->GetUnitDefId();
 		
 		gc->ErectBuilding(o);
+		gc->ErectBuilding(o2);
 		gc->ErectBuilding(o);
-		
+		gc->ErectBuilding(o2);
+		gc->ErectBuilding(o2);
+		gc->ErectBuilding(o);
 		//build some crap
 		//find 2 nearest mex-spots
 		//build mex at spot 1 (armmex)

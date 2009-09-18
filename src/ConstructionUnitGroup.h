@@ -3,6 +3,8 @@
 
 #include "BrainGroup.h"
 #include "global.h"
+#include "Resource.h"
+#include <math.h>
 
 namespace brainSpace
 {
@@ -15,13 +17,14 @@ namespace brainSpace
 		const vector<UnitDef*> BuildableUnits();
 		vector<UnitDef*> IsAbleToBuild();
 		
-		void SetAvailable( bool b );
+		void SetAvailable();
 
 		bool IsAbleToBuild(UnitDef* unit);
 		void AssignBuildOrder( SBuildUnitCommand order );
 		void QueueBuildOrder( SBuildUnitCommand order );
 	private:
-		vector<SBuildUnitCommand> BuildQueue;
+		SAIFloat3 FindClosestMetalExtractionSite( SAIFloat3 pos, Resource metal );
+		queue<SBuildUnitCommand> BuildQueue;
 	};
 }
 

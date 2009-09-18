@@ -55,5 +55,5 @@ int ConstructionGroupManager::DelegateBuildOrder(SBuildUnitCommand order)
 
 void ConstructionGroupManager::UnitIdle( Unit* unit )
 {
-	UnitGroups[0]->SetAvailable( true );
+	UnitGroups[0]->SetAvailable();
 }
