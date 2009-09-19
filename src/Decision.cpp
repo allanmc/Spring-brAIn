@@ -24,7 +24,7 @@ void Decision::UnitFinished(int unit)
 	Unit * u = Unit::GetInstance(callback,unit);
 
 	UnitDef * ud = u->GetDef();
-	if(ud->IsAbleToMove())
+	if(ud->GetSpeed() > 0)
 	{
 		//add to groupController
 		gc->AddUnit(u);
@@ -66,9 +66,9 @@ void Decision::Update(int frame)
 		Utility* u = new Utility(callback);
 		u->ChatMsg("Frame 1");
 		UnitDef* metalEx;
-		UnitDef* solar;
+		UnitDef* solar, *kbotLab;
 		SBuildUnitCommand o;
-		SBuildUnitCommand o2;
+		SBuildUnitCommand o2, o3;
 		for ( int i = 0 ; i < callback->GetUnitDefs().size() ; i++ )
 		{
 			if ( strcmp( callback->GetUnitDefs()[i]->GetName(), "armsolar" ) == 0 )
@@ -78,6 +78,10 @@ void Decision::Update(int frame)
 			else if ( strcmp( callback->GetUnitDefs()[i]->GetName(), "armmex" ) == 0 )
 			{
 				metalEx = callback->GetUnitDefs()[i];
+			}
+			else if ( strcmp( callback->GetUnitDefs()[i]->GetName(), "armlab" ) == 0 )
+			{
+				kbotLab = callback->GetUnitDefs()[i];
 			}
 		}
 		o.timeOut = 10000000;
@@ -90,12 +94,18 @@ void Decision::Update(int frame)
 		o2.options = 0;
 		o2.toBuildUnitDefId = metalEx->GetUnitDefId();
 		
-		gc->ErectBuilding(o);
+		o3.timeOut = 10000000;
+		o3.facing = 0;
+		o3.options = 0;
+		o3.toBuildUnitDefId = kbotLab->GetUnitDefId();
+
+		gc->ErectBuilding(o2);
 		gc->ErectBuilding(o2);
 		gc->ErectBuilding(o);
-		gc->ErectBuilding(o2);
-		gc->ErectBuilding(o2);
+		gc->ErectBuilding(o3);
 		gc->ErectBuilding(o);
+		gc->ErectBuilding(o2);
+		gc->ErectBuilding(o2);
 
 		u->ChatMsg( "Building erections planned" );
 		//build some crap
