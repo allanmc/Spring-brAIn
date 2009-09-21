@@ -5,6 +5,8 @@ UnitDef* metalExtractorUnit = NULL;
 ConstructionUnitGroup::ConstructionUnitGroup( AICallback* callback ) : BrainGroup( callback )
 {
 	BaseDefenseCounter = 0;
+	BaseDefenseCounterStart = 0; 
+	BaseDefenseHitBorder = false;
 }
 
 ConstructionUnitGroup::~ConstructionUnitGroup()
@@ -103,6 +105,7 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 		int baseX = buildPos.x;
 		int baseZ = buildPos.z; 
 		int deltaX, deltaZ;
+		int defenseDensity = 3;
 		float weaponRange = llt->GetMaxWeaponRange();
 		/*
 		1|2
@@ -112,40 +115,75 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 		if ( baseX <= mapSplitX && baseZ <= mapSplitZ ) //Quad 1
 		{
 			u->ChatMsg("Quad 1");
-			deltaX = weaponRange - ( BaseDefenseCounter%2==0 ? (BaseDefenseCounter/2)*(weaponRange/2) : 0 );
-			deltaZ = weaponRange - ( BaseDefenseCounter%2==1 ? (BaseDefenseCounter/2+1)*(weaponRange/2) : 0 );
+			deltaX = weaponRange - ( BaseDefenseCounter%2==0 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2)*(weaponRange/defenseDensity) : 0 );
+			deltaZ = weaponRange - ( BaseDefenseCounter%2==1 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2+1)*(weaponRange/defenseDensity) : 0 );
 		}
 		else if ( baseX > mapSplitX && baseZ <= mapSplitZ ) //Quad 2
 		{
 			u->ChatMsg("Quad 2");
-			deltaX = -weaponRange + ( BaseDefenseCounter%2==0 ? (BaseDefenseCounter/2)*(weaponRange/2) : 0 );
-			deltaZ = weaponRange - ( BaseDefenseCounter%2==1 ? (BaseDefenseCounter/2+1)*(weaponRange/2) : 0 );
+			deltaX = -weaponRange + ( BaseDefenseCounter%2==0 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2)*(weaponRange/defenseDensity) : 0 );
+			deltaZ = weaponRange - ( BaseDefenseCounter%2==1 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2+1)*(weaponRange/defenseDensity) : 0 );
 		}
 		else if ( baseX <= mapSplitX && baseZ > mapSplitZ ) //Quad 3
 		{
 			u->ChatMsg("Quad 3");
-			deltaX = weaponRange - ( BaseDefenseCounter%2==0 ? (BaseDefenseCounter/2)*(weaponRange/2) : 0 );
-			deltaZ = -weaponRange + ( BaseDefenseCounter%2==1 ? (BaseDefenseCounter/2+1)*(weaponRange/2) : 0 );
+			deltaX = weaponRange - ( BaseDefenseCounter%2==0 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2)*(weaponRange/defenseDensity) : 0 );
+			deltaZ = -weaponRange + ( BaseDefenseCounter%2==1 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2+1)*(weaponRange/defenseDensity) : 0 );
 		}
 		else //Quad 4
 		{
 			u->ChatMsg("Quad 4");
-			deltaX = -weaponRange + ( BaseDefenseCounter%2==0 ? (BaseDefenseCounter/2)*(weaponRange/2) : 0 );
-			deltaZ = -weaponRange + ( BaseDefenseCounter%2==1 ? (BaseDefenseCounter/2+1)*(weaponRange/2) : 0 );
+			deltaX = -weaponRange + ( BaseDefenseCounter%2==0 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2)*(weaponRange/defenseDensity) : 0 );
+			deltaZ = -weaponRange + ( BaseDefenseCounter%2==1 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2+1)*(weaponRange/defenseDensity) : 0 );
 		}
 		u->ChatMsg("WeaponRange: %f", weaponRange);
 		u->ChatMsg("deltX: %f", deltaX);
 		buildPos.x += deltaX;
 		buildPos.z += deltaZ;
+
+		
 		BaseDefenseCounter+=2;
-		if ( BaseDefenseCounter % 2 == 0 && (buildPos.x<0.0 || buildPos.x>mapSplitX*2 ))
+
+		if (BaseDefenseCounter >= 4) 
 		{
-			BaseDefenseCounter = 1;
+			if (BaseDefenseCounter%2==0)
+			{
+				BaseDefenseCounter = 1;
+			}
+			else
+			{
+				BaseDefenseCounter = 0;
+				BaseDefenseCounterStart += 4;
+			}
+			
 		}
-		if ( BaseDefenseCounter % 2 == 1 && (buildPos.z<0.0 || buildPos.z>mapSplitZ*2 ))
+		/*
+		if ( (BaseDefenseCounter % 2 == 0 && (buildPos.x<0.0 || buildPos.x>mapSplitX*2)) 
+			 ||
+			 (BaseDefenseCounter % 2 == 1 && (buildPos.z<0.0 || buildPos.z>mapSplitZ*2))
+			)
+		{
+			if (BaseDefenseHitBorder)
+			{
+				buildPos = Callback->GetMap()->GetStartPos();
+			}
+			else
+			{
+				BaseDefenseHitBorder = true;
+				BaseDefenseCounter+=2;
+			}
+		}*/
+		
+		/*
+		if ( BaseDefenseCounter % 2 == 0 && (buildPos.x<0.0 || buildPos.x>mapSplitX*2) )
+		{
+			BaseDefenseCounter=1;
+		}
+		else if ( BaseDefenseCounter % 2 == 1 && (buildPos.z<0.0 || buildPos.z>mapSplitZ*2) )
 		{
 			buildPos = Callback->GetMap()->GetStartPos();
-		}
+		}*/
+		
 	}
 	
 	//Make sure that we can build at the desired position by finding the closest available buildsite to the desired site
