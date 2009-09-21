@@ -12,6 +12,7 @@
 #include <vector>
 #include <set>
 #include <queue>
+#include <stdlib.h>
 
 #include "Utility.h"
 

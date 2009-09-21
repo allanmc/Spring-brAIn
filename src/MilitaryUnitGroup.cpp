@@ -46,3 +46,15 @@ void MilitaryUnitGroup::Scout(SAIFloat3 pos)
 		Callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &com);
 	}
 }
+
+void MilitaryUnitGroup::UnitIdle(springai::Unit *unit)
+{
+	for(int j = 0; j < Units.size(); j++)
+		{
+			if(Units[j]->GetUnitId() == unit->GetUnitId() && Units.size() > 9)
+			{
+				SetStatus(MilitaryUnitGroup::Idle);
+				break;
+			}
+		}
+}

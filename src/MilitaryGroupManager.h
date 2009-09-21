@@ -22,10 +22,11 @@ namespace brainSpace
 
 		void AddUnit( Unit* unit );
 		void RemoveUnit( Unit* unit );
-		void GiveScoutOrder(MilitaryUnitGroup* group, SAIFloat3 pos);
+		void GiveScoutOrder(MilitaryUnitGroup* group);
 		void GiveAttackOrder(MilitaryUnitGroup* group, int enemy );
 		vector<MilitaryUnitGroup*> GetIdleGroups();
 		void UnitIdle(Unit* unit );
+		vector<MilitaryUnitGroup*> GetNonAttackingGroups();
 
 		
 	private:
