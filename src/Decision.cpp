@@ -22,7 +22,8 @@ void Decision::UnitFinished(int unit)
 
 	char msg[200];
 	Unit * u = Unit::GetInstance(callback,unit);
-
+	Utility* ut = new Utility(callback);
+	ut->ChatMsg("unit pos:%f,%f", u->GetPos().x, u->GetPos().z);
 	UnitDef * ud = u->GetDef();
 	if(ud->GetSpeed() > 0)
 	{
@@ -56,7 +57,7 @@ void Decision::UnitDestroyed(int unit, int attacker)
 
 void Decision::EnemyEnterLOS(int enemy)
 {
-	//kill that jerk!
+	gc->AttackWithGroup(enemy);
 }
 
 void Decision::EnemyDestroyed(int enemy, int attacker)
@@ -110,20 +111,11 @@ void Decision::Update(int frame)
 		gc->ErectBuilding(metalExOrder);
 		gc->ErectBuilding(solarOrder);
 		gc->ErectBuilding(metalExOrder);
-
+		gc->ErectBuilding(solarOrder);
 		gc->ErectBuilding(kbotLabOrder);
 
-		gc->ErectBuilding(solarOrder);
+		
 		gc->ErectBuilding(metalExOrder);
-		gc->ErectBuilding(metalExOrder);
-		gc->ErectBuilding(solarOrder);
-		gc->ErectBuilding(metalExOrder);
-		gc->ErectBuilding(metalExOrder);
-
-		gc->ErectBuilding(kbotLabOrder);
-
-		gc->ErectBuilding(metalExOrder);
-		gc->ErectBuilding(solarOrder);
 		gc->ErectBuilding(metalExOrder);
 		gc->ErectBuilding(solarOrder);
 		gc->ErectBuilding(metalExOrder);
@@ -131,12 +123,21 @@ void Decision::Update(int frame)
 
 		gc->ErectBuilding(kbotLabOrder);
 
-		gc->ErectBuilding(metalExOrder);
-		gc->ErectBuilding(solarOrder);
-		gc->ErectBuilding(metalExOrder);
-		gc->ErectBuilding(solarOrder);
-		gc->ErectBuilding(metalExOrder);
-		gc->ErectBuilding(solarOrder);
+		//gc->ErectBuilding(metalExOrder);
+		//gc->ErectBuilding(solarOrder);
+		//gc->ErectBuilding(metalExOrder);
+		//gc->ErectBuilding(solarOrder);
+		//gc->ErectBuilding(metalExOrder);
+		//gc->ErectBuilding(metalExOrder);
+
+		//gc->ErectBuilding(kbotLabOrder);
+
+		//gc->ErectBuilding(metalExOrder);
+		//gc->ErectBuilding(solarOrder);
+		//gc->ErectBuilding(metalExOrder);
+		//gc->ErectBuilding(solarOrder);
+		//gc->ErectBuilding(metalExOrder);
+		//gc->ErectBuilding(solarOrder);
 		
 
 		u->ChatMsg( "Building erections planned" );
@@ -151,9 +152,12 @@ void Decision::Update(int frame)
 		//spam kbots when lab is done (armflea)
 	}
 
-	if(frame % 30)
+	if(frame % 60 == 0)
 	{
-		
+		Utility* u = new Utility(callback);
+		//u->ChatMsg("Scout command begin");
+		gc->ScoutWithIdleGroup();
+		//u->ChatMsg("Scout command sent");
 	}
 }
 

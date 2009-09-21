@@ -26,6 +26,7 @@ namespace brainSpace
 		void SetStatus(Status status);
 		void Attack(int enemy);
 		void Scout(SAIFloat3 pos);
+		void UnitIdle(Unit* unit);
 
 	private:
 		Status status;
