@@ -20,6 +20,9 @@ namespace brainSpace {
 		int ErectBuilding( SBuildUnitCommand order );
 		void UnitIdle( Unit* unit );
 
+		void ScoutWithIdleGroup();
+		void AttackWithGroup(int enemy);
+
 	private:
 		ConstructionGroupManager* ConstructionGroupMgr;
 		MilitaryGroupManager* MilitaryGroupMgr;

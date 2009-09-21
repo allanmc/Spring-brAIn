@@ -150,6 +150,11 @@ void Decision::Update(int frame)
 		//spam mex and solar ()
 		//spam kbots when lab is done (armflea)
 	}
+
+	if(frame % 30)
+	{
+		
+	}
 }
 
 void Decision::UnitIdle( int id )

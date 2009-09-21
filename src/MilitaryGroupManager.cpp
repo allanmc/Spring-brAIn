@@ -66,3 +66,8 @@ void MilitaryGroupManager::GiveScoutOrder(brainSpace::MilitaryUnitGroup* group, 
 {
 	group->SetStatus(MilitaryUnitGroup::Scouting);
 }
+
+void MilitaryGroupManager::UnitIdle(Unit* unit)
+{
+
+}

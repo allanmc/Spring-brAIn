@@ -25,8 +25,9 @@ namespace brainSpace
 		void GiveScoutOrder(MilitaryUnitGroup* group, SAIFloat3 pos);
 		void GiveAttackOrder(MilitaryUnitGroup* group, int enemy );
 		vector<MilitaryUnitGroup*> GetIdleGroups();
+		void UnitIdle(Unit* unit );
 
-
+		
 	private:
 		vector<MilitaryUnitGroup*> UnitGroups;
 		AICallback* Callback;
