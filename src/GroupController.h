@@ -18,6 +18,7 @@ namespace brainSpace {
 		void AddUnit( Unit* unit );
 		void RemoveUnit( Unit* unit );
 		int ErectBuilding( SBuildUnitCommand order );
+		
 		void UnitIdle( Unit* unit );
 
 		void ScoutWithIdleGroup();

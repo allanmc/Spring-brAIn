@@ -40,3 +40,17 @@ void Utility::ChatMsg(std::string msg)
 	cmd.zone = 0;
 	Callback->GetEngine()->HandleCommand(0, -1, COMMAND_SEND_TEXT_MESSAGE, &cmd);
 }
+
+UnitDef* Utility::GetUnitDef(const char* unitDefName)
+{
+	vector<UnitDef*> defs = Callback->GetUnitDefs();
+
+	for ( int i = 0 ; i < defs.size() ; i++ )
+	{
+		if ( strcmp( defs[i]->GetName(), unitDefName ) == 0 )
+		{
+			return defs[i];
+		}
+	}
+	return NULL;
+}

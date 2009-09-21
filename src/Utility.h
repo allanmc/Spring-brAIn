@@ -10,6 +10,7 @@
 #include "Engine.h"
 #include "OptionValues.h"
 #include "Info.h"
+#include "UnitDef.h"
 
 using namespace springai;
 using namespace std;
@@ -27,6 +28,7 @@ namespace brainSpace
 
 		void ChatMsg(const char* msg, ...);
 		void ChatMsg(string msg);
+		UnitDef* GetUnitDef(const char* unitDefName);
 
 	};
 }

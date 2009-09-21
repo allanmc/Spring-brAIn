@@ -88,6 +88,11 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 			}
 		}
 	}
+
+	//Check to see if unit-to-build is LLT, the defense structure, and find good spot
+	if (order.toBuildUnitDefId == u->GetUnitDef("armllt")->GetUnitDefId()) {
+		u->ChatMsg("WE ARE BUILDING A DEFENSE STRUCTURE");
+	}
 	
 	//Make sure that we can build at the desired position by finding the closest available buildsite to the desired site
 	if ( !isMetalExtractor )

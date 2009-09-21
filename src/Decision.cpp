@@ -70,10 +70,8 @@ void Decision::Update(int frame)
 	{
 		Utility* u = new Utility(callback);
 		u->ChatMsg("Frame 1");
-		UnitDef* metalEx;
-		UnitDef* solar, *kbotLab;
-		SBuildUnitCommand solarOrder;
-		SBuildUnitCommand metalExOrder, kbotLabOrder;
+		UnitDef *solar, *kbotLab, *metalEx, *lltDef;
+		SBuildUnitCommand metalExOrder, kbotLabOrder, solarOrder, lltDefOrder;
 		for ( int i = 0 ; i < callback->GetUnitDefs().size() ; i++ )
 		{
 			if ( strcmp( callback->GetUnitDefs()[i]->GetName(), "armsolar" ) == 0 )
@@ -87,6 +85,10 @@ void Decision::Update(int frame)
 			else if ( strcmp( callback->GetUnitDefs()[i]->GetName(), "armlab" ) == 0 )
 			{
 				kbotLab = callback->GetUnitDefs()[i];
+			}
+			else if ( strcmp( callback->GetUnitDefs()[i]->GetName(), "armllt" ) == 0 ) 
+			{
+				lltDef = callback->GetUnitDefs()[i];
 			}
 		}
 		solarOrder.timeOut = 10000000;
@@ -104,7 +106,11 @@ void Decision::Update(int frame)
 		kbotLabOrder.options = 0;
 		kbotLabOrder.toBuildUnitDefId = kbotLab->GetUnitDefId();
 
-	
+		lltDefOrder.timeOut = 10000000;
+		lltDefOrder.facing = 0;
+		lltDefOrder.options = 0;
+		lltDefOrder.toBuildUnitDefId = lltDef->GetUnitDefId();
+
 		gc->ErectBuilding(metalExOrder);
 		gc->ErectBuilding(solarOrder);
 		gc->ErectBuilding(metalExOrder);
@@ -112,6 +118,10 @@ void Decision::Update(int frame)
 		gc->ErectBuilding(metalExOrder);
 
 		gc->ErectBuilding(kbotLabOrder);
+
+		gc->ErectBuilding(lltDefOrder);
+		gc->ErectBuilding(lltDefOrder);
+		gc->ErectBuilding(lltDefOrder);
 
 		gc->ErectBuilding(solarOrder);
 		gc->ErectBuilding(metalExOrder);
