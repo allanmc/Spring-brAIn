@@ -53,6 +53,11 @@ local infos = {
 		value  = '0.1', -- AI Interface version - !This comment is used for parsing!
 		desc   = 'the minimum version of the AI interface this AI needs',
 	},
+	{
+		key="debug",
+		value="true",
+		desc="Set brAIn in debug mode? true/false",
+	},
 }
 
 return infos
