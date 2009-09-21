@@ -28,9 +28,14 @@ void Decision::UnitFinished(int unit)
 	{
 		//add to groupController
 		gc->AddUnit(u);
+		if (!ud->IsBuilder())
+		{
+			BuildAttackUnit();
+		}
 	}else{
 		//add to BuildingController
 		bc->AddBuilding(u);
+		BuildAttackUnit();
 	}
 }
 
@@ -67,8 +72,8 @@ void Decision::Update(int frame)
 		u->ChatMsg("Frame 1");
 		UnitDef* metalEx;
 		UnitDef* solar, *kbotLab;
-		SBuildUnitCommand o;
-		SBuildUnitCommand o2, o3;
+		SBuildUnitCommand solarOrder;
+		SBuildUnitCommand metalExOrder, kbotLabOrder;
 		for ( int i = 0 ; i < callback->GetUnitDefs().size() ; i++ )
 		{
 			if ( strcmp( callback->GetUnitDefs()[i]->GetName(), "armsolar" ) == 0 )
@@ -84,28 +89,55 @@ void Decision::Update(int frame)
 				kbotLab = callback->GetUnitDefs()[i];
 			}
 		}
-		o.timeOut = 10000000;
-		o.facing = 0;
-		o.options = 0;
-		o.toBuildUnitDefId = solar->GetUnitDefId();
+		solarOrder.timeOut = 10000000;
+		solarOrder.facing = 0;
+		solarOrder.options = 0;
+		solarOrder.toBuildUnitDefId = solar->GetUnitDefId();
 
-		o2.timeOut = 10000000;
-		o2.facing = 0;
-		o2.options = 0;
-		o2.toBuildUnitDefId = metalEx->GetUnitDefId();
+		metalExOrder.timeOut = 10000000;
+		metalExOrder.facing = 0;
+		metalExOrder.options = 0;
+		metalExOrder.toBuildUnitDefId = metalEx->GetUnitDefId();
 		
-		o3.timeOut = 10000000;
-		o3.facing = 0;
-		o3.options = 0;
-		o3.toBuildUnitDefId = kbotLab->GetUnitDefId();
+		kbotLabOrder.timeOut = 10000000;
+		kbotLabOrder.facing = 0;
+		kbotLabOrder.options = 0;
+		kbotLabOrder.toBuildUnitDefId = kbotLab->GetUnitDefId();
 
-		gc->ErectBuilding(o2);
-		gc->ErectBuilding(o2);
-		gc->ErectBuilding(o);
-		gc->ErectBuilding(o3);
-		gc->ErectBuilding(o);
-		gc->ErectBuilding(o2);
-		gc->ErectBuilding(o2);
+	
+		gc->ErectBuilding(metalExOrder);
+		gc->ErectBuilding(solarOrder);
+		gc->ErectBuilding(metalExOrder);
+		gc->ErectBuilding(solarOrder);
+		gc->ErectBuilding(metalExOrder);
+
+		gc->ErectBuilding(kbotLabOrder);
+
+		gc->ErectBuilding(solarOrder);
+		gc->ErectBuilding(metalExOrder);
+		gc->ErectBuilding(metalExOrder);
+		gc->ErectBuilding(solarOrder);
+		gc->ErectBuilding(metalExOrder);
+		gc->ErectBuilding(metalExOrder);
+
+		gc->ErectBuilding(kbotLabOrder);
+
+		gc->ErectBuilding(metalExOrder);
+		gc->ErectBuilding(solarOrder);
+		gc->ErectBuilding(metalExOrder);
+		gc->ErectBuilding(solarOrder);
+		gc->ErectBuilding(metalExOrder);
+		gc->ErectBuilding(metalExOrder);
+
+		gc->ErectBuilding(kbotLabOrder);
+
+		gc->ErectBuilding(metalExOrder);
+		gc->ErectBuilding(solarOrder);
+		gc->ErectBuilding(metalExOrder);
+		gc->ErectBuilding(solarOrder);
+		gc->ErectBuilding(metalExOrder);
+		gc->ErectBuilding(solarOrder);
+		
 
 		u->ChatMsg( "Building erections planned" );
 		//build some crap
@@ -124,4 +156,37 @@ void Decision::UnitIdle( int id )
 {
 	Unit* u = Unit::GetInstance( callback, id );
 	gc->UnitIdle( u );
+}
+
+void Decision::BuildAttackUnit() {
+	static UnitDef* unitToBuild = 0;
+	Utility* utility = new Utility(callback);
+	SBuildUnitCommand o;
+
+	utility->ChatMsg("Trying to build attack unit...");
+	if (!unitToBuild)
+	{
+		utility->ChatMsg("Searching for Rocko...");
+		for ( int i = 0 ; i < callback->GetUnitDefs().size() ; i++ )
+		{
+			if ( strcmp( callback->GetUnitDefs()[i]->GetName(), "armrock" ) == 0 )
+			{
+				unitToBuild = callback->GetUnitDefs()[i];
+				break;
+			}
+		}
+	}
+
+	if (unitToBuild)
+	{
+		utility->ChatMsg("Found Rocko, so building him...");
+		o.timeOut = 10000000;
+		o.facing = 0;
+		o.options = 0;
+		o.toBuildUnitDefId = unitToBuild->GetUnitDefId();
+		bc->ConstructUnit(o);
+	}
+
+
+
 }
