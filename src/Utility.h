@@ -4,6 +4,7 @@
 #include "AICallback.h"
 #include <stdarg.h>
 #include <string>
+#include <string.h>
 
 #include "ExternalAI/Interface/AISCommands.h"
 #include "Engine.h"
