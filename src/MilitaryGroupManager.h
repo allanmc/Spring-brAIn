@@ -5,6 +5,8 @@
 #include "UnitDef.h"
 #include <set>
 #include "BrainGroup.h"
+#include "global.h"
+#include "MilitaryUnitGroup.h"
 
 using namespace springai;
 using namespace std;
@@ -15,14 +17,19 @@ namespace brainSpace
 	class MilitaryGroupManager
 	{
 	public:
-		MilitaryGroupManager();
+		MilitaryGroupManager( AICallback* callback );
 		virtual ~MilitaryGroupManager();
 
 		void AddUnit( Unit* unit );
 		void RemoveUnit( Unit* unit );
+		void GiveScoutOrder(MilitaryUnitGroup* group, SAIFloat3 pos);
+		void GiveAttackOrder(MilitaryUnitGroup* group, int enemy );
+		vector<MilitaryUnitGroup*> GetIdleGroups();
+
 
 	private:
-		vector<BrainGroup*> UnitGroups;
+		vector<MilitaryUnitGroup*> UnitGroups;
+		AICallback* Callback;
 	};
 }
 #endif

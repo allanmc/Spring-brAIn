@@ -37,7 +37,7 @@ void Decision::UnitFinished(int unit)
 void Decision::UnitDestroyed(int unit, int attacker)
 {
 	Unit * u = Unit::GetInstance(callback,unit);
-	if(u->GetDef()->IsAbleToMove())
+	if(u->GetDef()->GetSpeed() > 0)
 	{
 		//remove from groupController
 		gc->RemoveUnit(u);

@@ -5,7 +5,7 @@ GroupController::GroupController( AICallback* callback )
 {
 	Callback = callback;
 	ConstructionGroupMgr = new ConstructionGroupManager( callback );
-	MilitaryGroupMgr = new MilitaryGroupManager();
+	MilitaryGroupMgr = new MilitaryGroupManager( callback );
 }
 
 brainSpace::GroupController::~GroupController(void)
