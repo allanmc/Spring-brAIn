@@ -119,35 +119,37 @@ void Decision::Update(int frame)
 
 		gc->ErectBuilding(kbotLabOrder);
 
-		gc->ErectBuilding(lltDefOrder);
-		gc->ErectBuilding(lltDefOrder);
-		gc->ErectBuilding(lltDefOrder);
-
-		gc->ErectBuilding(solarOrder);
-		gc->ErectBuilding(metalExOrder);
-		gc->ErectBuilding(metalExOrder);
-		gc->ErectBuilding(solarOrder);
-		gc->ErectBuilding(metalExOrder);
-		gc->ErectBuilding(metalExOrder);
-
-		gc->ErectBuilding(kbotLabOrder);
-
-		gc->ErectBuilding(metalExOrder);
-		gc->ErectBuilding(solarOrder);
-		gc->ErectBuilding(metalExOrder);
-		gc->ErectBuilding(solarOrder);
-		gc->ErectBuilding(metalExOrder);
-		gc->ErectBuilding(metalExOrder);
-
-		gc->ErectBuilding(kbotLabOrder);
-
-		gc->ErectBuilding(metalExOrder);
-		gc->ErectBuilding(solarOrder);
-		gc->ErectBuilding(metalExOrder);
-		gc->ErectBuilding(solarOrder);
-		gc->ErectBuilding(metalExOrder);
-		gc->ErectBuilding(solarOrder);
+		int num = 100;
+		while (num--) {
+			gc->ErectBuilding(lltDefOrder);
+		}
 		
+		/*
+		gc->ErectBuilding(solarOrder);
+		gc->ErectBuilding(metalExOrder);
+		gc->ErectBuilding(metalExOrder);
+		gc->ErectBuilding(solarOrder);
+		gc->ErectBuilding(metalExOrder);
+		gc->ErectBuilding(metalExOrder);
+
+		gc->ErectBuilding(kbotLabOrder);
+
+		gc->ErectBuilding(metalExOrder);
+		gc->ErectBuilding(solarOrder);
+		gc->ErectBuilding(metalExOrder);
+		gc->ErectBuilding(solarOrder);
+		gc->ErectBuilding(metalExOrder);
+		gc->ErectBuilding(metalExOrder);
+
+		gc->ErectBuilding(kbotLabOrder);
+
+		gc->ErectBuilding(metalExOrder);
+		gc->ErectBuilding(solarOrder);
+		gc->ErectBuilding(metalExOrder);
+		gc->ErectBuilding(solarOrder);
+		gc->ErectBuilding(metalExOrder);
+		gc->ErectBuilding(solarOrder);
+		*/
 
 		u->ChatMsg( "Building erections planned" );
 		//build some crap
