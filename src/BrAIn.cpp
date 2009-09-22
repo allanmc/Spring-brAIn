@@ -42,13 +42,6 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 		case EVENT_INIT:
 			//UtilityInstance->ChatMsg("init");
 			//do i really need to do anything here? (i allready have a teamId and a callback)
-			{
-				SAIFloat3 pos = SAIFloat3();
-				pos.x = 1;
-				pos.y = 2;
-				pos.z = 3;
-				UtilityInstance->GetBestMetalSpot(pos, UtilityInstance->GetResource("Metal"));
-			}
 			break;
 		case EVENT_RELEASE:
 			//UtilityInstance->ChatMsg("release");

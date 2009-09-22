@@ -219,7 +219,8 @@ SAIFloat3 ConstructionUnitGroup::FindClosestMetalExtractionSite(SAIFloat3 pos/*,
 		if ( strcmp( Callback->GetResources()[i]->GetName(), "Metal" ) == 0 )
 		{
 			struct SAIFloat3 dummy;
-			spots = Callback->GetMap()->GetResourceMapSpotsPositions( *Callback->GetResources()[i], &dummy );
+			spots.push_back(u->GetBestMetalSpot(&dummy, Callback->GetResources()[i]));
+			//spots = Callback->GetMap()->GetResourceMapSpotsPositions( *Callback->GetResources()[i], &dummy );
 		}
 	}
 	

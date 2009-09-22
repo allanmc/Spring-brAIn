@@ -33,8 +33,6 @@ namespace brainSpace
 		void ChatMsg(string msg);
 		UnitDef* GetUnitDef(const char* unitDefName);
 		Resource* GetResource(const char* resourceName);
-		SAIFloat3 GetBestMetalSpot(SAIFloat3 position, Resource* resource);
-
 	};
 }
 #endif
