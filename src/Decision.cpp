@@ -93,6 +93,8 @@ void Decision::Update(int frame)
 				lltDef = callback->GetUnitDefs()[i];
 			}
 		}
+		
+
 		solarOrder.timeOut = 10000000;
 		solarOrder.facing = 0;
 		solarOrder.options = 0;
