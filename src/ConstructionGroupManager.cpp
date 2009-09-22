@@ -1,7 +1,6 @@
 #include "ConstructionGroupManager.h"
 
 
-
 ConstructionGroupManager::ConstructionGroupManager( AICallback* clb )
 {
 	Callback = clb;

@@ -25,6 +25,9 @@ namespace brainSpace
 	private:
 		SAIFloat3 FindClosestMetalExtractionSite( SAIFloat3 pos, Resource* metal );
 		queue<SBuildUnitCommand> BuildQueue;
+		int BaseDefenseCounter;
+		int BaseDefenseCounterStart;
+		bool BaseDefenseHitBorder;
 	};
 }
 

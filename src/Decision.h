@@ -22,6 +22,7 @@ public:
 	void EnemyDestroyed(int enemy, int attacker);
 	void Update(int frame);
 	void UnitIdle( int unitID );
+	void BuildAttackUnit();
 
 	Decision(AICallback* clb);
 	~Decision(void);

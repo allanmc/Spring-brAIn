@@ -1,11 +1,14 @@
 #include "GroupController.h"
 
 
+
+
 GroupController::GroupController( AICallback* callback )
 {
 	Callback = callback;
 	ConstructionGroupMgr = new ConstructionGroupManager( callback );
-	MilitaryGroupMgr = new MilitaryGroupManager();
+	MilitaryGroupMgr = new MilitaryGroupManager( callback );
+	
 }
 
 brainSpace::GroupController::~GroupController(void)
@@ -47,5 +50,25 @@ void GroupController::UnitIdle( Unit* unit )
 	if ( unit->GetDef()->IsBuilder() )
 	{
 		ConstructionGroupMgr->UnitIdle( unit );
+	}
+	else
+	{
+		MilitaryGroupMgr->UnitIdle(unit);
+	}
+}
+
+void GroupController::AttackWithGroup(int enemy)
+{
+	if(MilitaryGroupMgr->GetNonAttackingGroups().size() > 0)
+	{
+		MilitaryGroupMgr->GiveAttackOrder(MilitaryGroupMgr->GetNonAttackingGroups()[0], enemy);
+	}
+}
+
+void GroupController::ScoutWithIdleGroup()
+{
+	if(!MilitaryGroupMgr->GetIdleGroups().empty())
+	{
+		MilitaryGroupMgr->GiveScoutOrder(MilitaryGroupMgr->GetIdleGroups()[0]);
 	}
 }

@@ -17,11 +17,13 @@ brainSpace::BuildingController::~BuildingController(void)
 void BuildingController::AddBuilding(springai::Unit *unit)
 {
 	UnitDef* def = unit->GetDef();
+	u->ChatMsg("Recieved building! type: %s, name: %s",def->GetType(), def->GetName());
 	vector<Resource*> resources = callback->GetResources();
 	bool isResource = false;
 	for(int i = 0; i < resources.size(); i++)
 	{
-		if(def->IsResourceMaker(*resources[i]) || def->GetUpkeep(*resources[i]) < 0 )
+		if(def->IsResourceMaker(*resources[i]) || def->GetUpkeep(*resources[i]) < 0 || def->GetExtractsResource(*resources[i]) > 0
+			|| def->GetResourceMake(*resources[i]) > 0)
 		{
 			isResource = true;
 			break;

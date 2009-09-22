@@ -29,6 +29,7 @@ brainSpace::BrAIn::BrAIn(springai::AICallback* cb)
 		UtilityInstance = new Utility( callback );
 		UtilityInstance->ChatMsg("Hello world i am team: %d",teamId);
 	}
+	srand(0);
 }
 brainSpace::BrAIn::~BrAIn() {}
 
@@ -72,13 +73,13 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 
 				std::string unitDefName = callback->GetFriendlyUnits()[0]->GetDef()->GetName();
 
-				UtilityInstance->ChatMsg("Hello Engine (from brAIn), first friendly untis def name is: " + unitDefName);
+				//UtilityInstance->ChatMsg("Hello Engine (from brAIn), first friendly untis def name is: " + unitDefName);
 
 				break;
 			}
 		case EVENT_UNIT_FINISHED:
 			{
-				//UtilityInstance->ChatMsg("Unit finished");
+				UtilityInstance->ChatMsg("Unit finished");
 				struct SUnitFinishedEvent* evt = (struct SUnitFinishedEvent*) data;
 				int unitId = evt->unit;
 				decision->UnitFinished(unitId);
@@ -115,7 +116,7 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 			break;
 		case EVENT_ENEMY_ENTER_LOS:
 			{
-				//UtilityInstance->ChatMsg("enemy enter los");
+				UtilityInstance->ChatMsg("enemy enter los");
 				//there he is, get him!
 				struct SEnemyEnterLOSEvent* evt = (struct SEnemyEnterLOSEvent*)data;
 				decision->EnemyEnterLOS(evt->enemy);
