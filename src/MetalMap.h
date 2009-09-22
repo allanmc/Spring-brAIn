@@ -11,15 +11,20 @@ class MetalMap
 public:
 	MetalMap( AICallback* callback );
 	virtual ~MetalMap();
-
+	void Init();
 
 private:
+
+	void GetMetalPoints();
+	void SaveMetalMap();
+	bool LoadMetalMap();
+
 
 	AICallback* Callback;
 
 	Resource* Metal;
 
-	void GetMetalPoints();
+
 	std::vector<SAIFloat3> VectoredSpots;
 	SAIFloat3 BufferSpot;
 	int NumSpotsFound;
