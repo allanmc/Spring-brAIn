@@ -112,7 +112,7 @@ void ConstructionUnitGroup::SetAvailable()
 	{
 		const SBuildUnitCommand next = BuildQueue.front();
 		BuildQueue.pop();
-		u->ChatMsg( "Queue is now: %d units long", BuildQueue.size() );
+		//u->ChatMsg( "Queue is now: %d units long", BuildQueue.size() );
 		AssignBuildOrder( next );
 	}
 }
