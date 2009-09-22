@@ -67,6 +67,7 @@ void Decision::EnemyDestroyed(int enemy, int attacker)
 
 void Decision::Update(int frame)
 {
+
 	if(frame == 1)
 	{
 		Utility* u = new Utility(callback);
@@ -170,11 +171,15 @@ void Decision::Update(int frame)
 		//u->ChatMsg("Scout command begin");
 		gc->ScoutWithIdleGroup();
 		//u->ChatMsg("Scout command sent");
+
 	}
+
+
 }
 
 void Decision::UnitIdle( int id )
 {
+		Utility* ut = new Utility(callback);
 	Unit* u = Unit::GetInstance( callback, id );
 	gc->UnitIdle( u );
 }

@@ -39,12 +39,12 @@ void ConstructionGroupManager::RemoveUnit( Unit* unit )
 int ConstructionGroupManager::DelegateBuildOrder(SBuildUnitCommand order)
 {
 	Utility* u = new Utility( Callback );
-	u->ChatMsg( "Unitgroups size: %d", UnitGroups.size() );
+	//u->ChatMsg( "Unitgroups size: %d", UnitGroups.size() );
 	for ( int i = 0 ; i < UnitGroups.size() ; i++ )
 	{
 		if ( UnitGroups[i]->IsIdle() && UnitGroups[i]->GetSize() > 0 )
 		{
-			u->ChatMsg( "Assigning order to unit group %d", i );
+			//u->ChatMsg( "Assigning order to unit group %d", i );
 			UnitGroups[i]->AssignBuildOrder( order );
 			return 1;
 		}

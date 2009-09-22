@@ -6,6 +6,7 @@
 #include "Engine.h"
 #include "Map.h"
 #include "AICallback.h"
+#include "SSkirmishAICallback.h"
 #include "ExternalAI/Interface/AISCommands.h"
 #include <string>
 #include <string.h>
