@@ -2,6 +2,10 @@
 #define _BRAINSPACE_METALMAP_H
 
 #include "global.h"
+#include "Resource.h"
+#include <math.h>
+#include "Map.h"
+
 class MetalMap
 {
 public:
@@ -11,11 +15,15 @@ public:
 
 private:
 
-	AICallback* m_callback;
-	
-	
-	void GetMetalPoints();
+	AICallback* Callback;
 
+	Resource* Metal;
+
+	void GetMetalPoints();
+	std::vector<SAIFloat3> VectoredSpots;
+	SAIFloat3 BufferSpot;
+	int NumSpotsFound;
+	float AverageMetal;
 	bool Stopme;
 	int MaxSpots;
 	int MetalMapHeight;
