@@ -405,3 +405,21 @@ void MetalMap::GetMetalPoints()
 	// 0.95 used for for reliability
 	// bool isMetalMap = (NumSpotsFound > MaxSpots * 0.95);
 }
+
+
+void MetalMap::Init() {
+	// leave this line if you want to use this class in your AI
+	//ai->cb->SendTextMsg("KAI Metal Class by Krogothe", 0);
+
+	// if there's no available load file, create one and save it
+	
+	/*if (!LoadMetalMap()) {
+		GetMetalPoints();
+		SaveMetalMap();
+*/
+		// std::string mapname = std::string("Metal - ") + ai->cb->GetMapName();
+		// mapname.resize(mapname.size() - 4);
+		// ai->debug->MakeBWTGA(MexArrayC, MetalMapWidth, MetalMapHeight, mapname
+
+	// "Metal Spots Found: %i", NumSpotsFound);
+}

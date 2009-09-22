@@ -249,7 +249,7 @@ SAIFloat3 ConstructionUnitGroup::FindClosestMetalExtractionSite(SAIFloat3 pos/*,
 		}
 	}
 
-	MetalMap* m = new MetalMap(Callback);
+	//MetalMap* m = new MetalMap(Callback);
 	pos = spots[lowestIdx];
 
 
