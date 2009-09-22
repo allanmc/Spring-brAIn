@@ -87,7 +87,7 @@ SAIFloat3 Utility::GetBestMetalSpot(SAIFloat3 position, Resource* resource)
 			 * - the value for the full resolution position (x, z) is at index (x/2 * width + z/2)
 			 * - the last value, bottom right, is at index (width/2 * height/2 - 1)
 			 */
-			ChatMsg("Raw map info %i:%i = %c", x, z, rawMap[z * width + x]);
+			ChatMsg("..Raw map info %i:%i = %X", x, z, rawMap[z * width + x]);
 		}
 	}
 }
