@@ -155,7 +155,7 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 				BaseDefenseCounter = 0;
 				BaseDefenseCounterStart += 4;
 			}
-			
+
 		}
 		/*
 		if ( (BaseDefenseCounter % 2 == 0 && (buildPos.x<0.0 || buildPos.x>mapSplitX*2)) 

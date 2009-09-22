@@ -54,3 +54,40 @@ UnitDef* Utility::GetUnitDef(const char* unitDefName)
 	}
 	return NULL;
 }
+
+Resource* Utility::GetResource(const char* resourceName)
+{
+	vector<Resource*> resources = Callback->GetResources();
+
+	for ( int i = 0 ; i < resources.size() ; i++ )
+	{
+		if ( strcmp( resources[i]->GetName(), resourceName ) == 0 )
+		{
+			return resources[i];
+		}
+	}
+	return NULL;
+}
+
+SAIFloat3 Utility::GetBestMetalSpot(SAIFloat3 position, Resource* resource)
+{
+	vector<unsigned char> rawMap = Callback->GetMap()->GetResourceMapRaw(*resource);
+	int rawMapSize = rawMap.size();
+	int width = Callback->GetMap()->GetWidth() / 2;
+	int height = Callback->GetMap()->GetHeight() / 2;
+	for (int z = 0; z < height; z++) {
+		for (int x = 0; x < width; x++) {
+			/**
+			 * @brief resource maps
+			 * This map shows the resource density on the map.
+			 * 
+			 * - do NOT modify or delete the height-map (native code relevant only)
+			 * - index 0 is top left
+			 * - each data position is 2*2 in size
+			 * - the value for the full resolution position (x, z) is at index (x/2 * width + z/2)
+			 * - the last value, bottom right, is at index (width/2 * height/2 - 1)
+			 */
+			ChatMsg("Raw map info %i:%i = %c", x, z, rawMap[z * width + x]);
+		}
+	}
+}

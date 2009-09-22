@@ -11,6 +11,9 @@
 #include "OptionValues.h"
 #include "Info.h"
 #include "UnitDef.h"
+#include "Resource.h"
+#include "Map.h"
+
 
 using namespace springai;
 using namespace std;
@@ -29,6 +32,8 @@ namespace brainSpace
 		void ChatMsg(const char* msg, ...);
 		void ChatMsg(string msg);
 		UnitDef* GetUnitDef(const char* unitDefName);
+		Resource* GetResource(const char* resourceName);
+		SAIFloat3 GetBestMetalSpot(SAIFloat3 position, Resource* resource);
 
 	};
 }
