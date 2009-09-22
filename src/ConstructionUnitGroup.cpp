@@ -64,16 +64,7 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	order.timeOut = 40000;
 	
 	vector<UnitDef*> defs = Callback->GetUnitDefs();
-	vector<Resource*> metal;
 
-	//Get the metal resource.
-	for ( int i = 0 ; i < Callback->GetResources().size() ;i++ )
-	{
-		if ( strcmp( Callback->GetResources()[i]->GetName(), "Metal" ) == 0 )
-		{
-			metal.push_back( Callback->GetResources()[i] );
-		}
-	}
 
 	bool isMetalExtractor = false;
 	bool isDefense = false;
@@ -87,8 +78,9 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 			if ( strcmp( defs[i]->GetName(), "armmex" ) == 0 )
 			{
 				metalExtractorUnit = defs[i];	
-				buildPos = FindClosestMetalExtractionSite( Units[0]->GetPos(), metal.at(0) );
+				buildPos = FindClosestMetalExtractionSite( Units[0]->GetPos() /*, metal.at(0) */ );
 				isMetalExtractor = true;
+				u->ChatMsg( "MetalExtractor: %s", metalExtractorUnit->GetHumanName() );
 				break;
 			}
 		}
@@ -190,7 +182,10 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	if ( !isMetalExtractor )
 		order.buildPos = Callback->GetMap()->FindClosestBuildSite( *defs[index] , buildPos, 200, 0, 0 );
 	else
+	{
+		u->ChatMsg( "Metal extractor build position set" );
 		order.buildPos = buildPos;
+	}
 	Callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &order );
 }
 
@@ -198,7 +193,7 @@ void ConstructionUnitGroup::QueueBuildOrder( SBuildUnitCommand order )
 {
 	Utility* u = new Utility( Callback );
 	BuildQueue.push( order );
-	u->ChatMsg( "Size of build queue: %d", BuildQueue.size() );
+	//u->ChatMsg( "Size of build queue: %d", BuildQueue.size() );
 }
 
 void ConstructionUnitGroup::SetAvailable()
@@ -214,18 +209,39 @@ void ConstructionUnitGroup::SetAvailable()
 	}
 }
 
-SAIFloat3 ConstructionUnitGroup::FindClosestMetalExtractionSite(SAIFloat3 pos, Resource* metal )
+SAIFloat3 ConstructionUnitGroup::FindClosestMetalExtractionSite(SAIFloat3 pos/*, Resource* metal */ )
 {
 	Utility* u = new Utility( Callback );
-	struct SAIFloat3 dummy;
-	vector<SAIFloat3> spots = Callback->GetMap()->GetResourceMapSpotsPositions( *metal, &dummy );
+	vector<SAIFloat3> spots;
+	//Get the metal resource.
+	for ( int i = 0 ; i < Callback->GetResources().size() ;i++ )
+	{
+		if ( strcmp( Callback->GetResources()[i]->GetName(), "Metal" ) == 0 )
+		{
+			struct SAIFloat3 dummy;
+			spots = Callback->GetMap()->GetResourceMapSpotsPositions( *Callback->GetResources()[i], &dummy );
+		}
+	}
+	
+
+
+
+
 	int numSpots = spots.size();
 	int lowestIdx = -1;
 	float closest = 9999999.9f;
 
+	/*
+	u->ChatMsg( "Unit name: %s - team %d", Units[0]->GetDef()->GetHumanName(), Units[0]->GetTeam() );
+	u->ChatMsg( "Unit pos: x: %f y: %f z: %f", pos.x, pos.y, pos.z );
+	u->ChatMsg( "%d metal spots", numSpots );
+	*/
 	for ( int i  = 0 ; i < numSpots ; i++ )
 	{
+		//u->ChatMsg( "Metal spot: x: %f y: %f z: %f", spots[i].x, spots[i].y, spots[i].z ); 
 		double distance = sqrt( pow( fabs( spots[i].x - pos.x ), 2 ) + pow( fabs( spots[i].z - pos.z ), 2  ) );
+		//u->ChatMsg( "Distance: %f", distance );
+
 		if ( distance < closest && Callback->GetMap()->IsPossibleToBuildAt( *metalExtractorUnit, spots[i], 0 ))
 		{
 			closest = distance;
@@ -233,8 +249,14 @@ SAIFloat3 ConstructionUnitGroup::FindClosestMetalExtractionSite(SAIFloat3 pos, R
 		}
 	}
 
+	MetalMap* m = new MetalMap(Callback);
 	pos = spots[lowestIdx];
-	float searchRadius = 20.0f;
+
+
+	//u->ChatMsg( "Found spot: x: %f y: %f z: %f", pos.x, pos.y, pos.z );
+
+	/*
+	float searchRadius = 100.0f;
 	float bestExtraction = 0.0f;
 
 	//Find the spot that gives the most metal inside a small radius of the already found metal spot
@@ -243,10 +265,12 @@ SAIFloat3 ConstructionUnitGroup::FindClosestMetalExtractionSite(SAIFloat3 pos, R
 		double distance = sqrt( pow( fabs( spots[i].x - pos.x ), 2 ) + pow( fabs( pos.z - spots[i].z ), 2  ) );
 		if ( distance < searchRadius && spots[i].y > pos.y )
 		{
-			pos = Callback->GetMap()->FindClosestBuildSite( *metalExtractorUnit, spots[i], 16, 2, 0 );
+			pos = Callback->GetMap()->FindClosestBuildSite( *metalExtractorUnit, spots[i], 16, 0, 0 );
 			bestExtraction = spots[i].y;
 		}
 	}
+	u->ChatMsg( "Improved spot: x: %f y: %f z: %f", pos.x, pos.y, pos.z );
+	*/
 	return pos;
 
 }
