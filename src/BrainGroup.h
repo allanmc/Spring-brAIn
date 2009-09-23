@@ -1,7 +1,7 @@
 #ifndef _BRAINSPACE_GROUP_H
 #define _BRAINSPACE_GROUP_H
 
-#include "Global.h"
+#include "global.h"
 
 using namespace std;
 using namespace springai;
