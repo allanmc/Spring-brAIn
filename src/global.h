@@ -1,3 +1,6 @@
+#ifndef _BRAIN_GLOBAL_H
+#define _BRAIN_GLOBAL_H
+
 #include "IncludesHeaders.h"
 
 namespace brainSpace {
@@ -9,9 +12,6 @@ namespace brainSpace {
 	class EnemyInfo;
 	class ResourceInfo;
 }
-
-#ifndef _BRAIN_GLOBAL_H
-#define _BRAIN_GLOBAL_H
 
 using namespace std;
 using namespace springai;
@@ -43,9 +43,9 @@ using namespace brainSpace;
 
 namespace brainSpace {
 	typedef struct AIClasses {
-		AICallback		*callback;
-		Knowledge	*knowledge;
-		Utility	*utility;
+		AICallback *callback;
+		Knowledge *knowledge;
+		Utility *utility;
 	} AIClasses;
 }
 
