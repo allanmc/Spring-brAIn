@@ -6,7 +6,6 @@
 #include "Resource.h"
 #include <math.h>
 #include "SSkirmishAICallback.h"
-#include "MetalMap.h"
 
 namespace brainSpace
 {
