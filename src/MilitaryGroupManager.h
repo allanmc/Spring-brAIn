@@ -17,7 +17,7 @@ namespace brainSpace
 	class MilitaryGroupManager
 	{
 	public:
-		MilitaryGroupManager( AICallback* callback );
+		MilitaryGroupManager( AIClasses* aiClasses );
 		virtual ~MilitaryGroupManager();
 
 		void AddUnit( Unit* unit );
@@ -31,7 +31,7 @@ namespace brainSpace
 		
 	private:
 		vector<MilitaryUnitGroup*> UnitGroups;
-		AICallback* Callback;
+		AIClasses* AI;
 	};
 }
 #endif

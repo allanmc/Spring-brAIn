@@ -2,7 +2,7 @@
 
 UnitDef* metalExtractorUnit = NULL;
 
-ConstructionUnitGroup::ConstructionUnitGroup( AICallback* callback ) : BrainGroup( callback )
+ConstructionUnitGroup::ConstructionUnitGroup( AIClasses* aiClasses ) : BrainGroup( aiClasses )
 {
 	BaseDefenseCounter = 0;
 	BaseDefenseCounterStart = 0; 
@@ -54,16 +54,15 @@ bool ConstructionUnitGroup::IsAbleToBuild(UnitDef* unit) {
 
 void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 {
-	Utility* u = new Utility( Callback );
 	//SAIFloat3 buildPos = Units[0]->GetPos();
-	SAIFloat3 buildPos = Callback->GetMap()->GetStartPos();
-
+	SAIFloat3 buildPos = AI->Callback->GetMap()->GetStartPos();
+	
 	Idle = false;
 	
 	order.unitId = Units[0]->GetUnitId();
 	order.timeOut = 40000;
 	
-	vector<UnitDef*> defs = Callback->GetUnitDefs();
+	vector<UnitDef*> defs = AI->Callback->GetUnitDefs();
 
 
 	bool isMetalExtractor = false;
@@ -80,20 +79,20 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 				metalExtractorUnit = defs[i];	
 				buildPos = FindClosestMetalExtractionSite( Units[0]->GetPos() /*, metal.at(0) */ );
 				isMetalExtractor = true;
-				u->ChatMsg( "MetalExtractor: %s", metalExtractorUnit->GetHumanName() );
+				AI->Utility->ChatMsg( "MetalExtractor: %s", metalExtractorUnit->GetHumanName() );
 				break;
 			}
 		}
 	}
 
 	//Check to see if unit-to-build is LLT, the defense structure, and find good spot
-	if (order.toBuildUnitDefId == u->GetUnitDef("armllt")->GetUnitDefId()) {
-		UnitDef* llt = u->GetUnitDef("armllt");
+	if (order.toBuildUnitDefId == AI->Utility->GetUnitDef("armllt")->GetUnitDefId()) {
+		UnitDef* llt = AI->Utility->GetUnitDef("armllt");
 		isDefense = true;
-		u->ChatMsg("We are now building a Defense structure, LLT");
+		AI->Utility->ChatMsg("We are now building a Defense structure, LLT");
 		//Divide map into quads, and find corner which buildPos is within
-		int mapSplitX = (Callback->GetMap()->GetWidth() / 2) * 8;
-		int mapSplitZ = (Callback->GetMap()->GetHeight() / 2) * 8;
+		int mapSplitX = (AI->Callback->GetMap()->GetWidth() / 2) * 8;
+		int mapSplitZ = (AI->Callback->GetMap()->GetHeight() / 2) * 8;
 		int baseX = buildPos.x;
 		int baseZ = buildPos.z; 
 		int deltaX, deltaZ;
@@ -106,30 +105,30 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 		*/
 		if ( baseX <= mapSplitX && baseZ <= mapSplitZ ) //Quad 1
 		{
-			u->ChatMsg("Quad 1");
+			AI->Utility->ChatMsg("Quad 1");
 			deltaX = weaponRange - ( BaseDefenseCounter%2==0 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2)*(weaponRange/defenseDensity) : 0 );
 			deltaZ = weaponRange - ( BaseDefenseCounter%2==1 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2+1)*(weaponRange/defenseDensity) : 0 );
 		}
 		else if ( baseX > mapSplitX && baseZ <= mapSplitZ ) //Quad 2
 		{
-			u->ChatMsg("Quad 2");
+			AI->Utility->ChatMsg("Quad 2");
 			deltaX = -weaponRange + ( BaseDefenseCounter%2==0 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2)*(weaponRange/defenseDensity) : 0 );
 			deltaZ = weaponRange - ( BaseDefenseCounter%2==1 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2+1)*(weaponRange/defenseDensity) : 0 );
 		}
 		else if ( baseX <= mapSplitX && baseZ > mapSplitZ ) //Quad 3
 		{
-			u->ChatMsg("Quad 3");
+			AI->Utility->ChatMsg("Quad 3");
 			deltaX = weaponRange - ( BaseDefenseCounter%2==0 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2)*(weaponRange/defenseDensity) : 0 );
 			deltaZ = -weaponRange + ( BaseDefenseCounter%2==1 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2+1)*(weaponRange/defenseDensity) : 0 );
 		}
 		else //Quad 4
 		{
-			u->ChatMsg("Quad 4");
+			AI->Utility->ChatMsg("Quad 4");
 			deltaX = -weaponRange + ( BaseDefenseCounter%2==0 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2)*(weaponRange/defenseDensity) : 0 );
 			deltaZ = -weaponRange + ( BaseDefenseCounter%2==1 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2+1)*(weaponRange/defenseDensity) : 0 );
 		}
-		u->ChatMsg("WeaponRange: %f", weaponRange);
-		u->ChatMsg("deltX: %f", deltaX);
+		AI->Utility->ChatMsg("WeaponRange: %f", weaponRange);
+		AI->Utility->ChatMsg("deltX: %f", deltaX);
 		buildPos.x += deltaX;
 		buildPos.z += deltaZ;
 
@@ -180,18 +179,17 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	
 	//Make sure that we can build at the desired position by finding the closest available buildsite to the desired site
 	if ( !isMetalExtractor )
-		order.buildPos = Callback->GetMap()->FindClosestBuildSite( *defs[index] , buildPos, 200, 0, 0 );
+		order.buildPos = AI->Callback->GetMap()->FindClosestBuildSite( *defs[index] , buildPos, 200, 0, 0 );
 	else
 	{
-		u->ChatMsg( "Metal extractor build position set" );
+		AI->Utility->ChatMsg( "Metal extractor build position set" );
 		order.buildPos = buildPos;
 	}
-	Callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &order );
+	AI->Callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &order );
 }
 
 void ConstructionUnitGroup::QueueBuildOrder( SBuildUnitCommand order )
 {
-	Utility* u = new Utility( Callback );
 	BuildQueue.push( order );
 	//u->ChatMsg( "Size of build queue: %d", BuildQueue.size() );
 }
@@ -199,7 +197,6 @@ void ConstructionUnitGroup::QueueBuildOrder( SBuildUnitCommand order )
 void ConstructionUnitGroup::SetAvailable()
 {
 	Idle = true;
-	Utility* u = new Utility( Callback );
 	if ( BuildQueue.size() > 0 )
 	{
 		const SBuildUnitCommand next = BuildQueue.front();
@@ -211,15 +208,14 @@ void ConstructionUnitGroup::SetAvailable()
 
 SAIFloat3 ConstructionUnitGroup::FindClosestMetalExtractionSite(SAIFloat3 pos/*, Resource* metal */ )
 {
-	Utility* u = new Utility( Callback );
 	vector<SAIFloat3> spots;
 	//Get the metal resource.
-	for ( int i = 0 ; i < Callback->GetResources().size() ;i++ )
+	for ( int i = 0 ; i < AI->Callback->GetResources().size() ;i++ )
 	{
-		if ( strcmp( Callback->GetResources()[i]->GetName(), "Metal" ) == 0 )
+		if ( strcmp( AI->Callback->GetResources()[i]->GetName(), "Metal" ) == 0 )
 		{
 			struct SAIFloat3 dummy;
-			spots = Callback->GetMap()->GetResourceMapSpotsPositions( *Callback->GetResources()[i], &dummy );
+			spots = AI->Callback->GetMap()->GetResourceMapSpotsPositions( *AI->Callback->GetResources()[i], &dummy );
 		}
 	}
 	
@@ -242,7 +238,7 @@ SAIFloat3 ConstructionUnitGroup::FindClosestMetalExtractionSite(SAIFloat3 pos/*,
 		double distance = sqrt( pow( fabs( spots[i].x - pos.x ), 2 ) + pow( fabs( spots[i].z - pos.z ), 2  ) );
 		//u->ChatMsg( "Distance: %f", distance );
 
-		if ( distance < closest && Callback->GetMap()->IsPossibleToBuildAt( *metalExtractorUnit, spots[i], 0 ))
+		if ( distance < closest && AI->Callback->GetMap()->IsPossibleToBuildAt( *metalExtractorUnit, spots[i], 0 ))
 		{
 			closest = distance;
 			lowestIdx = i;

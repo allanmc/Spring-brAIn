@@ -8,14 +8,16 @@ using namespace springai;
 
 namespace brainSpace
 {
-	class Knowledge
+	class KnowledgeClass
 	{
 	public:
-		Knowledge();
-		virtual ~Knowledge();
+		KnowledgeClass( AIClasses* aiClasses );
+		virtual ~KnowledgeClass();
 
 	protected:
 
+	private:
+		AIClasses* AI;
 	};
 }
 #endif

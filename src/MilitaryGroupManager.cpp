@@ -1,10 +1,10 @@
 #include "MilitaryGroupManager.h"
 
 
-brainSpace::MilitaryGroupManager::MilitaryGroupManager( AICallback* callback )
+brainSpace::MilitaryGroupManager::MilitaryGroupManager( AIClasses* aiClasses )
 {
-	Callback = callback;
-	MilitaryUnitGroup* group1 = new MilitaryUnitGroup(Callback);
+	AI = aiClasses;
+	MilitaryUnitGroup* group1 = new MilitaryUnitGroup(AI);
 	UnitGroups.push_back(group1);
 }
 
@@ -26,7 +26,7 @@ void brainSpace::MilitaryGroupManager::AddUnit( Unit* unit )
 	}
 	if(tmpGroup == NULL)
 	{
-		tmpGroup = new MilitaryUnitGroup(Callback);
+		tmpGroup = new MilitaryUnitGroup(AI);
 		UnitGroups.push_back(tmpGroup);
 	}
 	tmpGroup->AddUnit(unit);
@@ -77,18 +77,17 @@ void MilitaryGroupManager::GiveAttackOrder(brainSpace::MilitaryUnitGroup* group,
 void MilitaryGroupManager::GiveScoutOrder(brainSpace::MilitaryUnitGroup* group)
 {
 	group->SetStatus(MilitaryUnitGroup::Scouting);
-	Utility* u = new Utility(Callback);
-	int h = Callback->GetMap()->GetHeight();
-	int w = Callback->GetMap()->GetWidth();
-	u->ChatMsg("Height:%d", h);
-	u->ChatMsg("Width:%d", w);
+	int h = AI->Callback->GetMap()->GetHeight();
+	int w = AI->Callback->GetMap()->GetWidth();
+	AI->Utility->ChatMsg("Height:%d", h);
+	AI->Utility->ChatMsg("Width:%d", w);
 	SAIFloat3 pos;
 	pos.x = (rand() % w)*8;
 	pos.z = (rand() % h)*8;
 	pos.y = 0;
-	u->ChatMsg("newHeight:%f", pos.x);
-	u->ChatMsg("newWidth:%f", pos.z);
-	u->ChatMsg("random generation scout position done");
+	AI->Utility->ChatMsg("newHeight:%f", pos.x);
+	AI->Utility->ChatMsg("newWidth:%f", pos.z);
+	AI->Utility->ChatMsg("random generation scout position done");
 	group->Scout(pos);
 
 }

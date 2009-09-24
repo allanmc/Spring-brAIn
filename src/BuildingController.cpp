@@ -1,13 +1,12 @@
 #include "BuildingController.h"
-#include "Resource.h"
-#include "UnitDef.h"
-#include "Utility.h"
+//#include "Resource.h"
+//#include "UnitDef.h"
+//#include "Utility.h"
 
 using namespace brainSpace;
-brainSpace::BuildingController::BuildingController(AICallback* clb)
+brainSpace::BuildingController::BuildingController( AIClasses* aiClasses )
 {
-	callback = clb;
-	u = new Utility(clb);
+	AI = aiClasses;
 }
 
 brainSpace::BuildingController::~BuildingController(void)
@@ -17,8 +16,8 @@ brainSpace::BuildingController::~BuildingController(void)
 void BuildingController::AddBuilding(springai::Unit *unit)
 {
 	UnitDef* def = unit->GetDef();
-	u->ChatMsg("Recieved building! type: %s, name: %s",def->GetType(), def->GetName());
-	vector<Resource*> resources = callback->GetResources();
+	AI->Utility->ChatMsg("Recieved building! type: %s, name: %s",def->GetType(), def->GetName());
+	vector<Resource*> resources = AI->Callback->GetResources();
 	bool isResource = false;
 	for(int i = 0; i < resources.size(); i++)
 	{
@@ -33,17 +32,17 @@ void BuildingController::AddBuilding(springai::Unit *unit)
 	if (def->GetWeaponMounts().size() > 0)
 	{
 		DefenceBuildings.push_back(unit);
-		u->ChatMsg("Defence building built and added to manager");
+		AI->Utility->ChatMsg("Defence building built and added to manager");
 	}
 	else if (isResource)
 	{
 		ResourceBuildings.push_back(unit);
-		u->ChatMsg("Resource building built and added to manager");
+		AI->Utility->ChatMsg("Resource building built and added to manager");
 	}
 	else
 	{
 		ConstructionBuildings.push_back(unit);
-		u->ChatMsg("Construction building built and added to manager");
+		AI->Utility->ChatMsg("Construction building built and added to manager");
 	}
 
 }
@@ -59,6 +58,6 @@ void BuildingController::ConstructUnit(SBuildUnitCommand order)
 	for(int i=0; i<ConstructionBuildings.size(); ++i)
 	{
 		order.unitId = ConstructionBuildings[i]->GetUnitId();
-		callback->GetEngine()->HandleCommand(0,-1,COMMAND_UNIT_BUILD, &order);
+		AI->Callback->GetEngine()->HandleCommand(0,-1,COMMAND_UNIT_BUILD, &order);
 	}
 }

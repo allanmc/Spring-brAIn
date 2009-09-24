@@ -19,7 +19,7 @@ namespace brainSpace
 			Regrouping
 		};
 
-		MilitaryUnitGroup( AICallback* callback );
+		MilitaryUnitGroup( AIClasses* aiClasses );
 		virtual ~MilitaryUnitGroup();
 
 		Status GetStatus();

@@ -13,7 +13,7 @@ namespace brainSpace
 	class ConstructionUnitGroup : public BrainGroup
 	{
 	public:
-		ConstructionUnitGroup( AICallback* callback );
+		ConstructionUnitGroup( AIClasses* aiClasses );
 		virtual ~ConstructionUnitGroup();
 
 		const vector<UnitDef*> BuildableUnits();

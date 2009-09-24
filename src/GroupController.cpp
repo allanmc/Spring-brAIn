@@ -3,11 +3,11 @@
 
 
 
-GroupController::GroupController( AICallback* callback )
+GroupController::GroupController( AIClasses* aiClasses )
 {
-	Callback = callback;
-	ConstructionGroupMgr = new ConstructionGroupManager( callback );
-	MilitaryGroupMgr = new MilitaryGroupManager( callback );
+	AI = aiClasses;
+	ConstructionGroupMgr = new ConstructionGroupManager( AI );
+	MilitaryGroupMgr = new MilitaryGroupManager( AI );
 	
 }
 
