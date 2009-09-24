@@ -1,7 +1,5 @@
 #include "Utility.h"
 
-using namespace brainSpace;
-
 Utility::Utility( AIClasses* aiClasses )
 {
 	ai = aiClasses;

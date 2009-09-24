@@ -4,9 +4,10 @@
 using namespace brainSpace;
 using namespace springai;
 
-SelfInfo::SelfInfo()
+SelfInfo::SelfInfo(AIClasses *ai)
 {
-
+	this->ai = ai;
+	this->resourceInfo = new ResourceInfo(ai);
 }
 
 SelfInfo::~SelfInfo()

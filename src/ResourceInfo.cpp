@@ -3,6 +3,7 @@
 ResourceInfo::ResourceInfo(AIClasses* ai)
 {
 	this->ai = ai;
+	this->economy = ai->callback->GetEconomy();
 }
 
 ResourceInfo::~ResourceInfo()

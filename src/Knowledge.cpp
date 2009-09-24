@@ -1,12 +1,9 @@
 #include "Knowledge.h"
 
-
-using namespace brainSpace;
-using namespace springai;
-
 Knowledge::Knowledge( AIClasses* aiClasses )
 {
 	ai = aiClasses;
+	selfInfo = new SelfInfo(aiClasses);
 }
 
 Knowledge::~Knowledge()

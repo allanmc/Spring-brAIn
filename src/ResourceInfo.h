@@ -4,15 +4,12 @@
 #include "global.h"
 #include "Economy.h"
 
-using namespace std;
-using namespace springai;
-
 namespace brainSpace
 {
 	class ResourceInfo
 	{
 	public:
-		ResourceInfo();
+		ResourceInfo(AIClasses* ai);
 		virtual ~ResourceInfo();
 
 		float GetCurrentConsumption(Resource res);
@@ -35,7 +32,6 @@ namespace brainSpace
 		AIClasses* ai;
 
 		Economy* economy;
-	protected:
 	
 	};
 }

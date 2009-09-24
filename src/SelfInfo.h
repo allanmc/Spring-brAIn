@@ -3,19 +3,17 @@
 
 #include "global.h"
 
-using namespace std;
-using namespace springai;
-
 namespace brainSpace
 {
 	class SelfInfo
 	{
 	public:
-		SelfInfo();
+		SelfInfo(AIClasses *ai);
 		virtual ~SelfInfo();
 
 	protected:
-
+		AIClasses *ai;
+		ResourceInfo *resourceInfo;
 	};
 }
 
