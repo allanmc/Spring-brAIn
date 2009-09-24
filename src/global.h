@@ -2,8 +2,8 @@
 #define _BRAIN_GLOBAL_H
 
 namespace brainSpace {
-	class KnowledgeClass;
-	class UtilityClass;
+	class Knowledge;
+	class Utility;
 	struct AIClasses;
 }
 
@@ -22,8 +22,8 @@ namespace brainSpace {
 #include <queue>
 #include <stdlib.h>
 
-#include "UtilityClass.h"
-#include "KnowledgeClass.h"
+#include "Utility.h"
+#include "Knowledge.h"
 
 using namespace std;
 using namespace springai;
@@ -31,9 +31,9 @@ using namespace brainSpace;
 
 namespace brainSpace {
 	typedef struct AIClasses {
-		AICallback		*Callback;
-		KnowledgeClass	*Knowledge;
-		UtilityClass	*Utility;
+		AICallback		*callback;
+		Knowledge	*knowledge;
+		Utility	*utility;
 	} AIClasses;
 }
 

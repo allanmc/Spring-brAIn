@@ -13,14 +13,14 @@ using namespace std;
 
 namespace brainSpace
 {
-	class UtilityClass
+	class Utility
 	{
 	private:
-		AIClasses* AI;
-		~UtilityClass();
+		AIClasses* ai;
+		~Utility();
 
 	public:
-		UtilityClass( AIClasses* aiClasses );
+		Utility( AIClasses* aiClasses );
 
 		void ChatMsg(const char* msg, ...);
 		void ChatMsg(string msg);

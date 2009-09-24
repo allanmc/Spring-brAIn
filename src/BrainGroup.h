@@ -24,7 +24,7 @@ namespace brainSpace
 	protected:
 		vector<Unit*> Units;
 		bool Idle;
-		AIClasses* AI;
+		AIClasses* ai;
 	};
 }
 

@@ -31,7 +31,7 @@ namespace brainSpace
 		
 	private:
 		vector<MilitaryUnitGroup*> UnitGroups;
-		AIClasses* AI;
+		AIClasses* ai;
 	};
 }
 #endif

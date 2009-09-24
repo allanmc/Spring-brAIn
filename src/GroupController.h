@@ -27,7 +27,7 @@ namespace brainSpace {
 	private:
 		ConstructionGroupManager* ConstructionGroupMgr;
 		MilitaryGroupManager* MilitaryGroupMgr;
-		AIClasses* AI;
+		AIClasses* ai;
 
 	};
 }

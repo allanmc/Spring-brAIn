@@ -27,7 +27,7 @@ public:
 	Decision(AIClasses* aiClasses);
 	~Decision(void);
 private:
-	AIClasses* AI;
+	AIClasses* ai;
 };
 
 }

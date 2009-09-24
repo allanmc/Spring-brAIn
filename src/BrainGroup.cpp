@@ -7,7 +7,7 @@ using namespace springai;
 BrainGroup::BrainGroup( AIClasses* aiClasses )
 {
 	Idle = true;
-	AI = aiClasses;
+	ai = aiClasses;
 }
 
 BrainGroup::~BrainGroup()

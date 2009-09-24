@@ -3,7 +3,7 @@
 
 ConstructionGroupManager::ConstructionGroupManager( AIClasses* aiClasses )
 {
-	AI = aiClasses;
+	ai = aiClasses;
 }
 
 ConstructionGroupManager::~ConstructionGroupManager()
@@ -14,7 +14,7 @@ void ConstructionGroupManager::AddUnit( Unit* unit )
 {
 	if ( UnitGroups.size() == 0 )
 	{
-		UnitGroups.push_back( new ConstructionUnitGroup( AI ) );
+		UnitGroups.push_back( new ConstructionUnitGroup( ai ) );
 		UnitGroups[0]->AddUnit( unit );
 		return;
 	}

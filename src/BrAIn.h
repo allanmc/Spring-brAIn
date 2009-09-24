@@ -43,7 +43,7 @@ class BrAIn {
 private:
 	int teamId;
 
-	AIClasses *AI;
+	AIClasses *ai;
 	Decision *decision;
 
 public:

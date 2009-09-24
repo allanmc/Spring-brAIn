@@ -22,15 +22,15 @@ using namespace brainSpace;
 
 brainSpace::BrAIn::BrAIn(springai::AICallback* cb)
 {
-	AI = new AIClasses();
-	AI->Callback = cb;
-	AI->Utility = new UtilityClass(AI);
-	AI->Knowledge = new KnowledgeClass(AI);
+	ai = new AIClasses();
+	ai->callback = cb;
+	ai->utility = new Utility(ai);
+	ai->knowledge = new Knowledge(ai);
 
-	teamId = (AI->Callback != NULL ? AI->Callback->GetTeamId() : -1);
+	teamId = (ai->callback != NULL ? ai->callback->GetTeamId() : -1);
 
-	decision = new Decision(AI);
-	AI->Utility->ChatMsg("Hello world i am team: %d",teamId);
+	decision = new Decision(ai);
+	ai->utility->ChatMsg("Hello world i am team: %d",teamId);
 	srand(0);
 }
 brainSpace::BrAIn::~BrAIn() {}
@@ -39,7 +39,7 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 
 	//UtilityInstance->ChatMsg("Recived an event with topic: %i", topic);
 
-	if(topic > 50) AI->Utility->ChatMsg("wierd crap");
+	if(topic > 50) ai->utility->ChatMsg("wierd crap");
 	switch (topic) {
 		case EVENT_INIT:
 			//UtilityInstance->ChatMsg("init");
@@ -73,7 +73,7 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 
 				// TODO: wrapp events and commands too
 
-				std::string unitDefName = AI->Callback->GetFriendlyUnits()[0]->GetDef()->GetName();
+				std::string unitDefName = ai->callback->GetFriendlyUnits()[0]->GetDef()->GetName();
 
 				//UtilityInstance->ChatMsg("Hello Engine (from brAIn), first friendly untis def name is: " + unitDefName);
 
@@ -81,7 +81,7 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 			}
 		case EVENT_UNIT_FINISHED:
 			{
-				AI->Utility->ChatMsg("Unit finished");
+				ai->utility->ChatMsg("Unit finished");
 				struct SUnitFinishedEvent* evt = (struct SUnitFinishedEvent*) data;
 				int unitId = evt->unit;
 				decision->UnitFinished(unitId);
@@ -89,7 +89,7 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 			}
 		case EVENT_UNIT_IDLE:
 			{
-				AI->Utility->ChatMsg("UNIT IDLE");
+				ai->utility->ChatMsg("UNIT IDLE");
 				struct SUnitIdleEvent* evt = (struct SUnitIdleEvent*)data;
 				decision->UnitIdle( evt->unit );
 					//get back to work ya lazy git!
@@ -118,55 +118,55 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 			break;
 		case EVENT_ENEMY_ENTER_LOS:
 			{
-				AI->Utility->ChatMsg("enemy enter los");
+				ai->utility->ChatMsg("enemy enter los");
 				//there he is, get him!
 				struct SEnemyEnterLOSEvent* evt = (struct SEnemyEnterLOSEvent*)data;
 				decision->EnemyEnterLOS(evt->enemy);
 				break;
 			}
 		case EVENT_ENEMY_LEAVE_LOS:
-			AI->Utility->ChatMsg("enemy leave los");
+			ai->utility->ChatMsg("enemy leave los");
 			//Where did he go?
 			break;
 		case EVENT_ENEMY_ENTER_RADAR:
-			AI->Utility->ChatMsg("enemy enter radar");
+			ai->utility->ChatMsg("enemy enter radar");
 			break;
 		case EVENT_ENEMY_LEAVE_RADAR:
-			AI->Utility->ChatMsg("enemy leave radar");
+			ai->utility->ChatMsg("enemy leave radar");
 			break;
 		case EVENT_ENEMY_DAMAGED:
-			AI->Utility->ChatMsg("enemy damaged");
+			ai->utility->ChatMsg("enemy damaged");
 			break;
 		case EVENT_ENEMY_DESTROYED:
 			{
-				AI->Utility->ChatMsg("enemy destroyed");
+				ai->utility->ChatMsg("enemy destroyed");
 				//gotcha bitch!
 				struct SEnemyDestroyedEvent* evt = (struct SEnemyDestroyedEvent*)data;
 				decision->EnemyDestroyed(evt->enemy, evt->attacker);
 				break;
 			}
 		case EVENT_WEAPON_FIRED:
-			AI->Utility->ChatMsg("weapon fired");
+			ai->utility->ChatMsg("weapon fired");
 			break;
 		case EVENT_PLAYER_COMMAND:
-			AI->Utility->ChatMsg("player command");
+			ai->utility->ChatMsg("player command");
 			//are you telling ME what to do?
 			break;
 		case EVENT_SEISMIC_PING:
-			AI->Utility->ChatMsg("ping");
+			ai->utility->ChatMsg("ping");
 			//WTH was that?
 			break;
 		case EVENT_COMMAND_FINISHED:
 			//UtilityInstance->ChatMsg("command finished");
 			break;
 		case EVENT_LOAD:
-			AI->Utility->ChatMsg("load");
+			ai->utility->ChatMsg("load");
 			break;
 		case EVENT_SAVE:
-			AI->Utility->ChatMsg("save");
+			ai->utility->ChatMsg("save");
 			break;
 		default: {
-			AI->Utility->ChatMsg("recived an unhandled event with topic: %d",topic); 
+			ai->utility->ChatMsg("recived an unhandled event with topic: %d",topic); 
 			break;
 				 }
 	}

@@ -26,7 +26,7 @@ namespace brainSpace
 		void UnitIdle( Unit* unit );
 	private:
 		vector<ConstructionUnitGroup*> UnitGroups;
-		AIClasses* AI;
+		AIClasses* ai;
 		
 	};
 }

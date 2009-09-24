@@ -17,7 +17,7 @@ private:
 	vector<Unit*> DefenceBuildings;
 	vector<Unit*> ResourceBuildings;
 	vector<Unit*> ConstructionBuildings;
-	AIClasses* AI;
+	AIClasses* ai;
 };
 }
 

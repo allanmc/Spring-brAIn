@@ -29,7 +29,7 @@ void MilitaryUnitGroup::Attack(int enemy)
 	for(int i = 0; i < Units.size(); i++)
 	{
 		com.unitId = Units[i]->GetUnitId();
-		AI->Callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_ATTACK, &com);
+		ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_ATTACK, &com);
 	}
 }
 
@@ -43,7 +43,7 @@ void MilitaryUnitGroup::Scout(SAIFloat3 pos)
 	for(int i = 0; i < Units.size(); i++)
 	{
 		com.unitId = Units[i]->GetUnitId();
-		AI->Callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &com);
+		ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &com);
 	}
 }
 

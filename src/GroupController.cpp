@@ -5,9 +5,9 @@
 
 GroupController::GroupController( AIClasses* aiClasses )
 {
-	AI = aiClasses;
-	ConstructionGroupMgr = new ConstructionGroupManager( AI );
-	MilitaryGroupMgr = new MilitaryGroupManager( AI );
+	ai = aiClasses;
+	ConstructionGroupMgr = new ConstructionGroupManager( ai );
+	MilitaryGroupMgr = new MilitaryGroupManager( ai );
 	
 }
 
