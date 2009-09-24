@@ -94,9 +94,9 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 		//Divide map into quads, and find corner which buildPos is within
 		int mapSplitX = (Callback->GetMap()->GetWidth() / 2) * 8;
 		int mapSplitZ = (Callback->GetMap()->GetHeight() / 2) * 8;
-		int baseX = buildPos.x;
-		int baseZ = buildPos.z; 
-		int deltaX, deltaZ;
+		float baseX = buildPos.x;
+		float baseZ = buildPos.z; 
+		float deltaX, deltaZ;
 		int defenseDensity = 3;
 		float weaponRange = llt->GetMaxWeaponRange();
 		/*
