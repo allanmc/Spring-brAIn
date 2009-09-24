@@ -1,8 +1,8 @@
 #include "ResourceInfo.h"
 
-ResourceInfo::ResourceInfo()
+ResourceInfo::ResourceInfo(AIClasses* ai)
 {
-
+	this->ai = ai;
 }
 
 ResourceInfo::~ResourceInfo()
@@ -16,7 +16,7 @@ float ResourceInfo::GetCurrentConsumption(Resource res)
 }
 float ResourceInfo::GetCurrentProduction(Resource res)
 {
-	return economy->GetIncome(res;
+	return economy->GetIncome(res);
 }
 
 float ResourceInfo::GetCurrentAvailable(Resource res)
@@ -30,7 +30,7 @@ float ResourceInfo::GetCurrentStorage(Resource res)
 
 float ResourceInfo::GetTimeToDepletion(Resource res)
 {
-	return economy->GetCurrent()/(economy->GetUsage() - economy->GetIncome());
+	return economy->GetCurrent(res)/(economy->GetUsage(res) - economy->GetIncome(res));
 }
 
 /*

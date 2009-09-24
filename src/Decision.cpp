@@ -6,11 +6,11 @@
 using namespace brainSpace;
 using namespace springai;
 
-Decision::Decision(AICallback* clb)
+Decision::Decision(AIClasses* aiClasses)
 {
-	this->callback = clb;
-	gc = new GroupController( clb );
-	bc = new BuildingController( clb);
+	ai = aiClasses;
+	gc = new GroupController( ai );
+	bc = new BuildingController( ai );
 }
 
 Decision::~Decision(void)
@@ -21,9 +21,8 @@ void Decision::UnitFinished(int unit)
 {
 
 	char msg[200];
-	Unit * u = Unit::GetInstance(callback,unit);
-	Utility* ut = new Utility(callback);
-	ut->ChatMsg("unit pos:%f,%f", u->GetPos().x, u->GetPos().z);
+	Unit * u = Unit::GetInstance(ai->callback,unit);
+	ai->utility->ChatMsg("unit pos:%f,%f", u->GetPos().x, u->GetPos().z);
 	UnitDef * ud = u->GetDef();
 	if(ud->GetSpeed() > 0)
 	{
@@ -42,7 +41,7 @@ void Decision::UnitFinished(int unit)
 
 void Decision::UnitDestroyed(int unit, int attacker)
 {
-	Unit * u = Unit::GetInstance(callback,unit);
+	Unit * u = Unit::GetInstance(ai->callback,unit);
 	if(u->GetDef()->GetSpeed() > 0)
 	{
 		//remove from groupController
@@ -70,27 +69,26 @@ void Decision::Update(int frame)
 
 	if(frame == 1)
 	{
-		Utility* u = new Utility(callback);
-		u->ChatMsg("Frame 1");
+		ai->utility->ChatMsg("Frame 1");
 		UnitDef *solar, *kbotLab, *metalEx, *lltDef;
 		SBuildUnitCommand metalExOrder, kbotLabOrder, solarOrder, lltDefOrder;
-		for ( int i = 0 ; i < callback->GetUnitDefs().size() ; i++ )
+		for ( int i = 0 ; i < ai->callback->GetUnitDefs().size() ; i++ )
 		{
-			if ( strcmp( callback->GetUnitDefs()[i]->GetName(), "armsolar" ) == 0 )
+			if ( strcmp( ai->callback->GetUnitDefs()[i]->GetName(), "armsolar" ) == 0 )
 			{
-				solar = callback->GetUnitDefs()[i];
+				solar = ai->callback->GetUnitDefs()[i];
 			}
-			else if ( strcmp( callback->GetUnitDefs()[i]->GetName(), "armmex" ) == 0 )
+			else if ( strcmp( ai->callback->GetUnitDefs()[i]->GetName(), "armmex" ) == 0 )
 			{
-				metalEx = callback->GetUnitDefs()[i];
+				metalEx = ai->callback->GetUnitDefs()[i];
 			}
-			else if ( strcmp( callback->GetUnitDefs()[i]->GetName(), "armlab" ) == 0 )
+			else if ( strcmp( ai->callback->GetUnitDefs()[i]->GetName(), "armlab" ) == 0 )
 			{
-				kbotLab = callback->GetUnitDefs()[i];
+				kbotLab = ai->callback->GetUnitDefs()[i];
 			}
-			else if ( strcmp( callback->GetUnitDefs()[i]->GetName(), "armllt" ) == 0 ) 
+			else if ( strcmp( ai->callback->GetUnitDefs()[i]->GetName(), "armllt" ) == 0 ) 
 			{
-				lltDef = callback->GetUnitDefs()[i];
+				lltDef = ai->callback->GetUnitDefs()[i];
 			}
 		}
 		
@@ -155,7 +153,7 @@ void Decision::Update(int frame)
 		//gc->ErectBuilding(solarOrder);
 		*/
 
-		u->ChatMsg( "Building erections planned" );
+		ai->utility->ChatMsg( "Building erections planned" );
 		//build some crap
 		//find 2 nearest mex-spots
 		//build mex at spot 1 (armmex)
@@ -169,7 +167,6 @@ void Decision::Update(int frame)
 
 	if(frame % 60 == 0)
 	{
-		Utility* u = new Utility(callback);
 		//u->ChatMsg("Scout command begin");
 		gc->ScoutWithIdleGroup();
 		//u->ChatMsg("Scout command sent");
@@ -181,25 +178,23 @@ void Decision::Update(int frame)
 
 void Decision::UnitIdle( int id )
 {
-		Utility* ut = new Utility(callback);
-	Unit* u = Unit::GetInstance( callback, id );
+	Unit* u = Unit::GetInstance( ai->callback, id );
 	gc->UnitIdle( u );
 }
 
 void Decision::BuildAttackUnit() {
 	static UnitDef* unitToBuild = 0;
-	Utility* utility = new Utility(callback);
 	SBuildUnitCommand o;
 
-	utility->ChatMsg("Trying to build attack unit...");
+	ai->utility->ChatMsg("Trying to build attack unit...");
 	if (!unitToBuild)
 	{
-		utility->ChatMsg("Searching for Rocko...");
-		for ( int i = 0 ; i < callback->GetUnitDefs().size() ; i++ )
+		ai->utility->ChatMsg("Searching for Rocko...");
+		for ( int i = 0 ; i < ai->callback->GetUnitDefs().size() ; i++ )
 		{
-			if ( strcmp( callback->GetUnitDefs()[i]->GetName(), "armrock" ) == 0 )
+			if ( strcmp( ai->callback->GetUnitDefs()[i]->GetName(), "armrock" ) == 0 )
 			{
-				unitToBuild = callback->GetUnitDefs()[i];
+				unitToBuild = ai->callback->GetUnitDefs()[i];
 				break;
 			}
 		}
@@ -207,7 +202,7 @@ void Decision::BuildAttackUnit() {
 
 	if (unitToBuild)
 	{
-		utility->ChatMsg("Found Rocko, so building him...");
+		ai->utility->ChatMsg("Found Rocko, so building him...");
 		o.timeOut = 10000000;
 		o.facing = 0;
 		o.options = 0;

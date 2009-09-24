@@ -12,7 +12,7 @@ namespace brainSpace {
 	class GroupController
 	{
 	public:
-		GroupController( AICallback* callback );
+		GroupController( AIClasses* aiClasses );
 		virtual ~GroupController(void);
 
 		void AddUnit( Unit* unit );
@@ -27,7 +27,7 @@ namespace brainSpace {
 	private:
 		ConstructionGroupManager* ConstructionGroupMgr;
 		MilitaryGroupManager* MilitaryGroupMgr;
-		AICallback* Callback;
+		AIClasses* ai;
 
 	};
 }

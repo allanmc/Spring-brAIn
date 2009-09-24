@@ -4,10 +4,10 @@
 
 using namespace brainSpace;
 using namespace springai;
-BrainGroup::BrainGroup( AICallback* callback )
+BrainGroup::BrainGroup( AIClasses* aiClasses )
 {
 	Idle = true;
-	Callback = callback;
+	ai = aiClasses;
 }
 
 BrainGroup::~BrainGroup()

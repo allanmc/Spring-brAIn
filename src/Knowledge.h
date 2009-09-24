@@ -11,11 +11,13 @@ namespace brainSpace
 	class Knowledge
 	{
 	public:
-		Knowledge();
+		Knowledge( AIClasses* aiClasses );
 		virtual ~Knowledge();
 
 	protected:
 
+	private:
+		AIClasses* ai;
 	};
 }
 #endif

@@ -30,7 +30,6 @@
 
 
 #include "Decision.h"
-#include "Utility.h"
 
 namespace brainSpace {
 
@@ -42,11 +41,10 @@ namespace brainSpace {
 class BrAIn {
 
 private:
-	springai::AICallback* callback;
 	int teamId;
 
-	Decision * decision;
-	Utility* UtilityInstance;
+	AIClasses *ai;
+	Decision *decision;
 
 public:
 	BrAIn(springai::AICallback* callback);

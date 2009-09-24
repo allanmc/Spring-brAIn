@@ -11,7 +11,7 @@ namespace brainSpace
 	class BrainGroup
 	{
 	public:
-		BrainGroup( AICallback* callback );
+		BrainGroup( AIClasses* aiClasses );
 		virtual ~BrainGroup();
 
 		void AddUnit( Unit* unit );
@@ -24,7 +24,7 @@ namespace brainSpace
 	protected:
 		vector<Unit*> Units;
 		bool Idle;
-		AICallback* Callback;
+		AIClasses* ai;
 	};
 }
 

@@ -15,7 +15,7 @@ namespace brainSpace
 	class ConstructionGroupManager
 	{
 	public:
-		ConstructionGroupManager( AICallback* callback );
+		ConstructionGroupManager( AIClasses* aiClasses );
 		virtual ~ConstructionGroupManager();
 
 		void AddUnit( Unit* unit );
@@ -26,7 +26,7 @@ namespace brainSpace
 		void UnitIdle( Unit* unit );
 	private:
 		vector<ConstructionUnitGroup*> UnitGroups;
-		AICallback* Callback;
+		AIClasses* ai;
 		
 	};
 }

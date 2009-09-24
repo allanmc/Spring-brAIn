@@ -24,10 +24,10 @@ public:
 	void UnitIdle( int unitID );
 	void BuildAttackUnit();
 
-	Decision(AICallback* clb);
+	Decision(AIClasses* aiClasses);
 	~Decision(void);
 private:
-	AICallback* callback;
+	AIClasses* ai;
 };
 
 }

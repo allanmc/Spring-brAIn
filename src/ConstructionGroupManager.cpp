@@ -1,9 +1,9 @@
 #include "ConstructionGroupManager.h"
 
 
-ConstructionGroupManager::ConstructionGroupManager( AICallback* clb )
+ConstructionGroupManager::ConstructionGroupManager( AIClasses* aiClasses )
 {
-	Callback = clb;
+	ai = aiClasses;
 }
 
 ConstructionGroupManager::~ConstructionGroupManager()
@@ -14,7 +14,7 @@ void ConstructionGroupManager::AddUnit( Unit* unit )
 {
 	if ( UnitGroups.size() == 0 )
 	{
-		UnitGroups.push_back( new ConstructionUnitGroup( Callback ) );
+		UnitGroups.push_back( new ConstructionUnitGroup( ai ) );
 		UnitGroups[0]->AddUnit( unit );
 		return;
 	}
@@ -38,7 +38,6 @@ void ConstructionGroupManager::RemoveUnit( Unit* unit )
 
 int ConstructionGroupManager::DelegateBuildOrder(SBuildUnitCommand order)
 {
-	Utility* u = new Utility( Callback );
 	//u->ChatMsg( "Unitgroups size: %d", UnitGroups.size() );
 	for ( int i = 0 ; i < UnitGroups.size() ; i++ )
 	{

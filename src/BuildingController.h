@@ -7,7 +7,7 @@ namespace brainSpace {
 class BuildingController
 {
 public:
-	BuildingController(AICallback* clb);
+	BuildingController( AIClasses* aiClasses );
 	~BuildingController(void);
 	void AddBuilding(Unit* unit);
 	void RemoveBuilding(Unit* unit );
@@ -17,8 +17,7 @@ private:
 	vector<Unit*> DefenceBuildings;
 	vector<Unit*> ResourceBuildings;
 	vector<Unit*> ConstructionBuildings;
-	AICallback* callback;
-	Utility* u;
+	AIClasses* ai;
 };
 }
 

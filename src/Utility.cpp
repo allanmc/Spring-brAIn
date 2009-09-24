@@ -2,16 +2,16 @@
 
 using namespace brainSpace;
 
-Utility::Utility(AICallback* callback )
+Utility::Utility( AIClasses* aiClasses )
 {
-	Callback = callback;
+	ai = aiClasses;
 }
 
 void Utility::ChatMsg(const char* msg, ...)
 {
 	static char c[200];
 
-	if (strcmp(Info::GetInstance(Callback)->GetValueByKey("debug"),"true")!=0)
+	if (strcmp(Info::GetInstance(ai->callback)->GetValueByKey("debug"),"true")!=0)
 	{
 		return;
 	}
@@ -23,14 +23,14 @@ void Utility::ChatMsg(const char* msg, ...)
 	SSendTextMessageCommand cmd;
 	cmd.text = c;
 	cmd.zone = 0;
-	Callback->GetEngine()->HandleCommand(0, -1, COMMAND_SEND_TEXT_MESSAGE, &cmd);
+	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_SEND_TEXT_MESSAGE, &cmd);
 	
 }
 
 
 void Utility::ChatMsg(std::string msg)
 {
-	if (strcmp(Info::GetInstance(Callback)->GetValueByKey("debug"),"true")!=0)
+	if (strcmp(Info::GetInstance(ai->callback)->GetValueByKey("debug"),"true")!=0)
 	{
 		return;
 	}
@@ -38,12 +38,12 @@ void Utility::ChatMsg(std::string msg)
 	SSendTextMessageCommand cmd;
 	cmd.text = msg.c_str();
 	cmd.zone = 0;
-	Callback->GetEngine()->HandleCommand(0, -1, COMMAND_SEND_TEXT_MESSAGE, &cmd);
+	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_SEND_TEXT_MESSAGE, &cmd);
 }
 
 UnitDef* Utility::GetUnitDef(const char* unitDefName)
 {
-	vector<UnitDef*> defs = Callback->GetUnitDefs();
+	vector<UnitDef*> defs = ai->callback->GetUnitDefs();
 
 	for ( int i = 0 ; i < defs.size() ; i++ )
 	{
@@ -57,7 +57,7 @@ UnitDef* Utility::GetUnitDef(const char* unitDefName)
 
 Resource* Utility::GetResource(const char* resourceName)
 {
-	vector<Resource*> resources = Callback->GetResources();
+	vector<Resource*> resources = ai->callback->GetResources();
 
 	for ( int i = 0 ; i < resources.size() ; i++ )
 	{

@@ -32,6 +32,8 @@ namespace brainSpace
 		void RemoveProductionToCome(int id);
 
 	private:
+		AIClasses* ai;
+
 		Economy* economy;
 	protected:
 	
