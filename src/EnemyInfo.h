@@ -3,19 +3,18 @@
 
 #include "global.h"
 
-using namespace std;
-using namespace springai;
-
 namespace brainSpace
 {
 	class EnemyInfo
 	{
 	public:
-		EnemyInfo();
+		EnemyInfo( AIClasses* aiClasses );
 		virtual ~EnemyInfo();
+		ArmyInfo* armyInfo;
+		BaseInfo* baseInfo;
 
 	protected:
-
+		AIClasses *ai;
 	};
 }
 

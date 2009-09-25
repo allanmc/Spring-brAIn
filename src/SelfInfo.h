@@ -10,10 +10,13 @@ namespace brainSpace
 	public:
 		SelfInfo(AIClasses *ai);
 		virtual ~SelfInfo();
+		ResourceInfo *resourceInfo;
+		ArmyInfo* armyInfo;
+		BaseInfo* baseInfo;
 
 	protected:
 		AIClasses *ai;
-		ResourceInfo *resourceInfo;
+
 	};
 }
 

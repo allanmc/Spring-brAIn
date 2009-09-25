@@ -11,6 +11,8 @@ namespace brainSpace {
 	class SelfInfo;
 	class EnemyInfo;
 	class ResourceInfo;
+	class ArmyInfo;
+	class BaseInfo;
 }
 
 using namespace std;
@@ -36,11 +38,15 @@ using namespace brainSpace;
 #include <queue>
 #include <list>
 #include <stdlib.h>
+#include <map>
 
 #include "Utility.h"
 #include "Knowledge.h"
 #include "ResourceInfo.h"
 #include "SelfInfo.h"
+#include "ArmyInfo.h"
+#include "BaseInfo.h"
+#include "EnemyInfo.h"
 
 namespace brainSpace {
 	typedef struct AIClasses {

@@ -10,12 +10,15 @@ namespace brainSpace
 	public:
 		Knowledge( AIClasses* aiClasses );
 		virtual ~Knowledge();
+		SelfInfo* selfInfo;
+		EnemyInfo* enemyInfo;
 
 	protected:
 
 	private:
 		AIClasses* ai;
-		SelfInfo* selfInfo;
+		
+
 	};
 }
 #endif
