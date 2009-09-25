@@ -11,6 +11,35 @@ QuadTree::~QuadTree()
 {
 }
 
+void QuadTree::RemoveUnit( int unitID )
+{
+	QuadTreeNode *iter = RootNode;
+	SAIFloat3 pos = units[unitID];
+	while ( true )
+	{
+		if ( !iter->IsLeafNode() )
+		{
+			//Let iter point to the childnode and run the while loop again
+			iter = iter->GetContainingNode( pos );
+			continue;
+		}
+		//The node has no children. Attempt to insert the unit here.
+		else
+		{
+			iter->RemoveUnit(unitID);
+			units.erase(unitID);
+			break;
+		}
+
+	}
+}
+
+void QuadTree::UpdateUnit( int unitID, SAIFloat3 pos )
+{
+	RemoveUnit( unitID );
+	InsertUnit( unitID, pos );
+}
+
 void QuadTree::InsertUnit( int unitID, SAIFloat3 pos )
 {
 	QuadTreeNode *iter = RootNode;
@@ -27,6 +56,7 @@ void QuadTree::InsertUnit( int unitID, SAIFloat3 pos )
 		else if ( iter->CheckBucketSize() )
 		{
 			iter->InsertUnit( unitID, pos );
+			units[unitID] = pos;
 			break;
 		}
 		//The current node was full, so split it.

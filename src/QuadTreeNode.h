@@ -45,6 +45,7 @@ public:
 	bool CheckBucketSize();
 
 	void InsertUnit( int unitID, SAIFloat3 pos );
+	void RemoveUnit( int unitID );
 
 	void MoveUnitsToChildren();
 

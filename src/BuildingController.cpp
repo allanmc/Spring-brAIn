@@ -58,6 +58,11 @@ void BuildingController::ConstructUnit(SBuildUnitCommand order)
 	for(int i=0; i<ConstructionBuildings.size(); ++i)
 	{
 		order.unitId = ConstructionBuildings[i]->GetUnitId();
+		
+		ai->utility->ChatMsg("I (%s) am building: %s",
+			Unit::GetInstance(ai->callback, order.unitId)->GetDef()->GetName(),
+			UnitDef::GetInstance(ai->callback, order.toBuildUnitDefId)->GetName()
+			);
 		ai->callback->GetEngine()->HandleCommand(0,-1,COMMAND_UNIT_BUILD, &order);
 	}
 }

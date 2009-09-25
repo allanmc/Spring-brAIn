@@ -23,7 +23,7 @@ void Decision::UnitFinished(int unit)
 	char msg[200];
 	Unit * u = Unit::GetInstance(ai->callback,unit);
 	
-	ai->utility->ChatMsg("unit pos:%f,%f", u->GetPos().x, u->GetPos().z);
+	ai->utility->ChatMsg("Unit finised, \"%s\", pos:%f,%f", u->GetDef()->GetName(), u->GetPos().x, u->GetPos().z);
 	UnitDef * ud = u->GetDef();
 	if(ud->GetSpeed() > 0)
 	{

@@ -21,7 +21,6 @@ namespace brainSpace
 
 	private:
 		AIClasses* ai;
-		map<int, SAIFloat3> positions;
 		QuadTree* quadTree;
 	};
 }

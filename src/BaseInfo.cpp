@@ -20,9 +20,8 @@ BaseInfo::~BaseInfo()
 
 void BaseInfo::AddBuilding(Unit* building)
 {
-	positions[building->GetUnitId()] = building->GetPos();
-
-	quadTree->InsertUnit(building->GetUnitId(), building->GetPos());
+	ai->utility->ChatMsg("Adding base unit...");
+	//quadTree->InsertUnit(building->GetUnitId(), building->GetPos());
 
 	buildingCount++;
 }
@@ -33,9 +32,7 @@ void BaseInfo::RemoveBuilding(Unit* building)
 	{
 		return;
 	}
-	SAIFloat3 pos = positions[building->GetUnitId()];
-	positions.erase(building->GetUnitId());
-
+	//quadTree->RemoveUnit( building->GetUnitId() );
 	//remove unit from quadtree, using pos
 
 	buildingCount--;

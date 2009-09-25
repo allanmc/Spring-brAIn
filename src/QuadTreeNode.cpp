@@ -112,16 +112,20 @@ bool QuadTreeNode::CheckBucketSize()
 
 }
 
+void QuadTreeNode::RemoveUnit( int unitID )
+{
+	UnitsContained.erase( unitID );
+}
 void QuadTreeNode::InsertUnit( int unitID, SAIFloat3 pos )
 {
-		map<int, SAIFloat3>::iterator iter;
-		for ( iter = UnitsContained.begin() ; iter != UnitsContained.end() ; iter ++ )
+	map<int, SAIFloat3>::iterator iter;
+	for ( iter = UnitsContained.begin() ; iter != UnitsContained.end() ; iter ++ )
+	{
+		if (( *iter).second.x == pos.x && (*iter).second.z == pos.z )
 		{
-			if (( *iter).second.x == pos.x && (*iter).second.z == pos.z )
-			{
-				pos.z += 5.0f;
-			}
+			pos.z += 5.0f;
 		}
+	}
 	UnitsContained.insert( make_pair( unitID, pos ) );
 }
 
