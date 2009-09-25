@@ -4,47 +4,101 @@ ResourceInfo::ResourceInfo(AIClasses* ai)
 {
 	this->ai = ai;
 	this->economy = ai->callback->GetEconomy();
+	changeIdCounter = 0;
+	currentFrame = 0;
 }
 
 ResourceInfo::~ResourceInfo()
 {
 }
 
-
-float ResourceInfo::GetCurrentConsumption(Resource res)
+void ResourceInfo::Update(int frame)
 {
-	return economy->GetUsage(res);
-}
-float ResourceInfo::GetCurrentProduction(Resource res)
-{
-	return economy->GetIncome(res);
+	currentFrame = frame;
 }
 
-float ResourceInfo::GetCurrentAvailable(Resource res)
+float ResourceInfo::GetCurrentConsumption(Resource *res)
 {
-	return economy->GetCurrent(res);
+	return economy->GetUsage(*res);
 }
-float ResourceInfo::GetCurrentStorage(Resource res)
+float ResourceInfo::GetCurrentProduction(Resource *res)
 {
-	return economy->GetStorage(res);
+	return economy->GetIncome(*res);
 }
 
-float ResourceInfo::GetTimeToDepletion(Resource res)
+float ResourceInfo::GetCurrentAvailable(Resource *res)
 {
-	return economy->GetCurrent(res)/(economy->GetUsage(res) - economy->GetIncome(res));
+	return economy->GetCurrent(*res);
+}
+float ResourceInfo::GetCurrentStorage(Resource *res)
+{
+	return economy->GetStorage(*res);
+}
+
+//returns -1 if storage will never get depleted
+//else returns seconds to depletion
+float ResourceInfo::GetTimeToDepletion(Resource *res)
+{
+	float storage = economy->GetCurrent(*res);
+	float production = (economy->GetUsage(*res) - economy->GetIncome(*res));
+	int frame = currentFrame;
+	list<Change>::iterator it;
+	for(it = changes.begin(); it != changes.end(); it++)
+	{
+		if( ((Change)*it).ETA <= currentFrame )
+		{
+			production += ((Change)*it).production;
+		}
+		else
+		{
+			float tmpStorage = storage + production*( ((Change)*it).ETA - frame );
+			if(tmpStorage < 0)
+			{
+				return (frame + (storage / production))/AIFRAMES_PR_SECOND;
+			}
+			else
+			{
+				storage = tmpStorage;
+				frame = ((Change)*it).ETA;
+			}
+		}
+	}
+	return -1;
 }
 
 /*
 production in amount/sec
-ETA in seconds
+ETA, the build time in frames
 returns an id, to be used for removal
 */
-int ResourceInfo::AddProductionToCome(Resource res, float production, float ETA)
+int ResourceInfo::AddChangeToCome(Resource *res, float production, int ETA)
 {
-	//TODO implement this!
-	return -1;
+	Change temp;
+	temp.ETA = currentFrame + ETA;
+	temp.id = ++changeIdCounter;
+	temp.res = res;
+	temp.production = production;
+
+	list<Change>::iterator it;
+	for(it = changes.begin(); it != changes.end(); it++)
+	{
+		if(((Change)*it).ETA > temp.ETA)
+		{
+			changes.insert(it,temp);
+			break;
+		}
+	}
+	return temp.id;
 }
-void ResourceInfo::RemoveProductionToCome(int id)
+void ResourceInfo::RemoveChangeToCome(int id)
 {
-	//TODO implement this!
+	list<Change>::iterator it;
+	for(it = changes.begin(); it != changes.end(); it++)
+	{
+		if(((Change)*it).id == id)
+		{
+			changes.erase(it);
+			break;
+		}
+	}
 }
