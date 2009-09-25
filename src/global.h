@@ -34,6 +34,7 @@ using namespace brainSpace;
 #include <vector>
 #include <set>
 #include <queue>
+#include <list>
 #include <stdlib.h>
 
 #include "Utility.h"

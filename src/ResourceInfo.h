@@ -4,6 +4,8 @@
 #include "global.h"
 #include "Economy.h"
 
+#define AIFRAMES_PR_SECOND 30
+
 namespace brainSpace
 {
 	class ResourceInfo
@@ -12,27 +14,38 @@ namespace brainSpace
 		ResourceInfo(AIClasses* ai);
 		virtual ~ResourceInfo();
 
-		float GetCurrentConsumption(Resource res);
-		float GetCurrentProduction(Resource res);
+		void Update(int frame);
 
-		float GetCurrentAvailable(Resource res);
-		float GetCurrentStorage(Resource res);
+		float GetCurrentConsumption(Resource *res);
+		float GetCurrentProduction(Resource *res);
 
-		float GetTimeToDepletion(Resource res);
+		float GetCurrentAvailable(Resource *res);
+		float GetCurrentStorage(Resource *res);
+
+		float GetTimeToDepletion(Resource *res);
 
 		/*
 		production in amount/sec
-		ETA in seconds
+		ETA, the build time in frames
 		returns an id, to be used for removal
 		*/
-		int AddProductionToCome(Resource res, float production, float ETA);
-		void RemoveProductionToCome(int id);
+		int AddChangeToCome(Resource *res, float production, int ETA);
+		void RemoveChangeToCome(int id);
 
 	private:
 		AIClasses* ai;
-
 		Economy* economy;
-	
+
+		unsigned int changeIdCounter;
+		struct Change{
+			Change(){}
+			unsigned int id;
+			Resource *res;
+			float production;
+			unsigned int ETA; //the frame where it is expected to be finished
+		};
+		list<Change> changes;
+		unsigned int currentFrame;
 	};
 }
 
