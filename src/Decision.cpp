@@ -22,6 +22,7 @@ void Decision::UnitFinished(int unit)
 
 	char msg[200];
 	Unit * u = Unit::GetInstance(ai->callback,unit);
+	
 	ai->utility->ChatMsg("unit pos:%f,%f", u->GetPos().x, u->GetPos().z);
 	UnitDef * ud = u->GetDef();
 	if(ud->GetSpeed() > 0)
@@ -37,11 +38,21 @@ void Decision::UnitFinished(int unit)
 		bc->AddBuilding(u);
 		BuildAttackUnit();
 	}
+
+	if (ud->GetWeaponMounts().size()>0) 
+	{
+		ai->knowledge->selfInfo->armyInfo->AddUnit(u);
+	}
+	else 
+	{
+		ai->knowledge->selfInfo->baseInfo->AddBuilding(u);
+	}
 }
 
 void Decision::UnitDestroyed(int unit, int attacker)
 {
 	Unit * u = Unit::GetInstance(ai->callback,unit);
+	ai->knowledge->selfInfo->armyInfo->RemoveUnit(u);
 	if(u->GetDef()->GetSpeed() > 0)
 	{
 		//remove from groupController
@@ -57,11 +68,27 @@ void Decision::UnitDestroyed(int unit, int attacker)
 void Decision::EnemyEnterLOS(int enemy)
 {
 	gc->AttackWithGroup(enemy);
+
+	Unit * unit = Unit::GetInstance(ai->callback,enemy);
+
+	if (unit->GetDef()->GetWeaponMounts().size()>0) 
+	{
+		ai->knowledge->enemyInfo->armyInfo->UpdateUnit(unit);
+	}
 }
 
 void Decision::EnemyDestroyed(int enemy, int attacker)
 {
 	//good job!
+	Unit * unit = Unit::GetInstance(ai->callback,enemy);
+	if (unit->GetDef()->GetWeaponMounts().size()>0) 
+	{
+		ai->knowledge->enemyInfo->armyInfo->RemoveUnit(unit);
+	}
+	else 
+	{
+		ai->knowledge->enemyInfo->baseInfo->RemoveBuilding(unit);
+	}
 }
 
 void Decision::Update(int frame)

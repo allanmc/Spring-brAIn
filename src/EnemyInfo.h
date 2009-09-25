@@ -11,11 +11,13 @@ namespace brainSpace
 	class EnemyInfo
 	{
 	public:
-		EnemyInfo();
+		EnemyInfo( AIClasses* aiClasses );
 		virtual ~EnemyInfo();
+		ArmyInfo* armyInfo;
+		BaseInfo* baseInfo;
 
 	protected:
-
+		AIClasses *ai;
 	};
 }
 

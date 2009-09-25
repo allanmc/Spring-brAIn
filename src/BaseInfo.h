@@ -11,10 +11,16 @@ namespace brainSpace
 	class BaseInfo
 	{
 	public:
-		BaseInfo();
+		BaseInfo( AIClasses* aiClasses );
 		virtual ~BaseInfo();
+		void AddBuilding(Unit* building);
+		void RemoveBuilding(Unit* building);
 
-	protected:
+		unsigned int buildingCount;
+
+	private:
+		AIClasses* ai;
+		map<int, SAIFloat3> positions;
 
 	};
 }
