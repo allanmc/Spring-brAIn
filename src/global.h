@@ -45,7 +45,7 @@ using namespace brainSpace;
 #include "SelfInfo.h"
 #include "ArmyInfo.h"
 #include "BaseInfo.h"
-
+#include "EnemyInfo.h"
 
 namespace brainSpace {
 	typedef struct AIClasses {

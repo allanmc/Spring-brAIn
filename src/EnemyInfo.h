@@ -3,9 +3,6 @@
 
 #include "global.h"
 
-using namespace std;
-using namespace springai;
-
 namespace brainSpace
 {
 	class EnemyInfo

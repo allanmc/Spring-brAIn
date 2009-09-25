@@ -7,7 +7,12 @@ using namespace springai;
 ArmyInfo::ArmyInfo( AIClasses* aiClasses )
 {
 	ai = aiClasses;
-	
+	CBoundingBox bbox;
+	bbox.topLeft = (SAIFloat3){0,0,0};
+	bbox.bottomRight = (SAIFloat3){	ai->callback->GetMap()->GetWidth()*8,
+									ai->callback->GetMap()->GetHeight()*8,
+									0};
+	quadTree = new QuadTree( bbox );
 }
 
 ArmyInfo::~ArmyInfo()
@@ -18,7 +23,7 @@ void ArmyInfo::AddUnit(Unit* unit)
 {
 	positions[unit->GetUnitId()] = unit->GetPos();
 
-	//Add unit to quadtree, using pos
+	quadTree->InsertUnit(unit->GetUnitId(), unit->GetPos());
 
 	unitCount++;
 }

@@ -10,7 +10,7 @@ public:
 	virtual ~QuadTree();
 
 	void InsertUnit( int unitID, SAIFloat3 pos );
-
+	
 	QuadTreeNode* GetRootNode();
 
 	void Print( QuadTreeNode* node );

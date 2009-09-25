@@ -74,6 +74,7 @@ void Decision::EnemyEnterLOS(int enemy)
 	if (unit->GetDef()->GetWeaponMounts().size()>0) 
 	{
 		ai->knowledge->enemyInfo->armyInfo->UpdateUnit(unit);
+		
 	}
 }
 

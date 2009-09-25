@@ -2,6 +2,7 @@
 #define _BRAINSPACE_BBASEINFO_H
 
 #include "global.h"
+#include "QuadTree.h"
 
 using namespace std;
 using namespace springai;
@@ -21,7 +22,7 @@ namespace brainSpace
 	private:
 		AIClasses* ai;
 		map<int, SAIFloat3> positions;
-
+		QuadTree* quadTree;
 	};
 }
 
