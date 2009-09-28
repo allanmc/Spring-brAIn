@@ -92,6 +92,24 @@ void Decision::EnemyDestroyed(int enemy, int attacker)
 	}
 }
 
+void Decision::UpdateFrindlyPositions()
+{
+	
+	vector<Unit*> units = ai->callback->GetFriendlyUnits();
+	ArmyInfo* armyUnits = ai->knowledge->selfInfo->armyInfo;
+	int unitCount = units.size();
+	//Run though all frindly units
+	for (int i; i < unitCount; i++)
+	{
+		//If position has changed compred to the one stored in the QuadTree, update the QuadTree.
+		if (units[i]->GetPos().x != armyUnits->GetUnitPos(units[i]->GetUnitId()).x ||
+			units[i]->GetPos().z != armyUnits->GetUnitPos(units[i]->GetUnitId()).z)
+		{
+			armyUnits->UpdateUnit( units[i] );
+		}
+	}
+}
+
 void Decision::Update(int frame)
 {
 
@@ -201,6 +219,11 @@ void Decision::Update(int frame)
 
 	}
 
+	if ( frame % 120 ==0 )
+	{
+		UpdateFrindlyPositions();
+	}
+
 
 }
 
@@ -218,14 +241,8 @@ void Decision::BuildAttackUnit() {
 	if (!unitToBuild)
 	{
 		ai->utility->ChatMsg("Searching for Rocko...");
-		for ( int i = 0 ; i < ai->callback->GetUnitDefs().size() ; i++ )
-		{
-			if ( strcmp( ai->callback->GetUnitDefs()[i]->GetName(), "armrock" ) == 0 )
-			{
-				unitToBuild = ai->callback->GetUnitDefs()[i];
-				break;
-			}
-		}
+		
+		unitToBuild = ai->utility->GetUnitDef("armrock");
 	}
 
 	if (unitToBuild)

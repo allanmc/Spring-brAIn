@@ -1,6 +1,8 @@
 #ifndef _BRAINSPACE_QUADTREENODE_H
 #define _BRAINSPACE_QUADTREENODE_H
 
+#include "global.h"
+
 #include "SAIFloat3.h"
 #include "Unit.h"
 #include <vector>
@@ -12,12 +14,12 @@ using namespace std;
 #define BUCKET_SIZE 1
 
 
-typedef struct 
+struct CBoundingBox
 {
 	SAIFloat3 topLeft;
 	SAIFloat3 bottomRight;
 
-} CBoundingBox;
+};
 
 
 
@@ -25,7 +27,7 @@ class QuadTreeNode
 {
 public:
 
-	QuadTreeNode( CBoundingBox box, int level );
+	QuadTreeNode( AIClasses* aiClasses, CBoundingBox box, int level, QuadTreeNode* parentNode );
 
 	bool IsLeafNode();
 
@@ -50,16 +52,22 @@ public:
 	void MoveUnitsToChildren();
 
 	int GetLevel();
-	
+
+	map<int, SAIFloat3> UnitsContained;
+
+	static bool IsInsideBoundingBox( SAIFloat3 pos, CBoundingBox box );
+
+	QuadTreeNode* GetParentNode();
+
 private:
 
-	bool IsInsideBoundingBox( SAIFloat3 pos, CBoundingBox box );
-
+	
 	QuadTreeNode* Children[4];
 	CBoundingBox BoundingBox;
 	bool IsLeaf;
 	int Level;
-	map<int, SAIFloat3> UnitsContained;
+	QuadTreeNode* parent;
+	AIClasses *ai;
 };
 
 
