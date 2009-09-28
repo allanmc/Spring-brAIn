@@ -15,6 +15,11 @@ namespace brainSpace {
 	class BaseInfo;
 }
 
+struct CBoundingBox;
+class QuadTreeNode;
+class QuadTree;
+
+
 using namespace std;
 using namespace springai;
 using namespace brainSpace;

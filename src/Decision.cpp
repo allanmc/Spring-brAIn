@@ -92,6 +92,24 @@ void Decision::EnemyDestroyed(int enemy, int attacker)
 	}
 }
 
+void Decision::UpdateFrindlyPositions()
+{
+	
+	vector<Unit*> units = ai->callback->GetFriendlyUnits();
+	ArmyInfo* armyUnits = ai->knowledge->selfInfo->armyInfo;
+	int unitCount = units.size();
+	//Run though all frindly units
+	for (int i; i < unitCount; i++)
+	{
+		//If position has changed compred to the one stored in the QuadTree, update the QuadTree.
+		if (units[i]->GetPos().x != armyUnits->GetUnitPos(units[i]->GetUnitId()).x ||
+			units[i]->GetPos().z != armyUnits->GetUnitPos(units[i]->GetUnitId()).z)
+		{
+			armyUnits->UpdateUnit( units[i] );
+		}
+	}
+}
+
 void Decision::Update(int frame)
 {
 
@@ -199,6 +217,11 @@ void Decision::Update(int frame)
 		gc->ScoutWithIdleGroup();
 		//u->ChatMsg("Scout command sent");
 
+	}
+
+	if ( frame % 120 ==0 )
+	{
+		UpdateFrindlyPositions();
 	}
 
 

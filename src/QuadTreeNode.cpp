@@ -1,8 +1,9 @@
+
 #include "QuadTreeNode.h"
 
-
-QuadTreeNode::QuadTreeNode( CBoundingBox box, int level )
+QuadTreeNode::QuadTreeNode( AIClasses* aiClasses, CBoundingBox box, int level )
 {
+	ai = aiClasses;
 	BoundingBox = box;
 	IsLeaf = true;
 	Level = level;
@@ -20,8 +21,10 @@ CBoundingBox QuadTreeNode::GetBoundingBox()
 
 QuadTreeNode* QuadTreeNode::GetContainingNode( SAIFloat3 pos )
 {
+
 	if ( !IsInsideBoundingBox( pos, BoundingBox ) )
 		return NULL;
+
 	if ( !IsLeafNode() )
 	{
 		for ( int i = 0 ; i < 4 ; i++ )
@@ -30,6 +33,7 @@ QuadTreeNode* QuadTreeNode::GetContainingNode( SAIFloat3 pos )
 				return Children[i];
 		}
 	}
+
 	return this;
 }
 
@@ -95,10 +99,10 @@ void QuadTreeNode::Split()
 
 	boxes[3].bottomRight = BoundingBox.bottomRight;
 
-
 	for ( int i = 0 ; i < 4 ; i++ )
 	{
-		Children[i] = new QuadTreeNode( boxes[i], Level+1 );
+	
+		Children[i] = new QuadTreeNode( ai, boxes[i], Level+1 );
 	}
 	IsLeaf = false;
 }
@@ -126,6 +130,7 @@ void QuadTreeNode::InsertUnit( int unitID, SAIFloat3 pos )
 			pos.z += 5.0f;
 		}
 	}
+	
 	UnitsContained.insert( make_pair( unitID, pos ) );
 }
 

@@ -9,9 +9,9 @@ BaseInfo::BaseInfo( AIClasses* aiClasses )
 	CBoundingBox bbox;
 	bbox.topLeft = (SAIFloat3){0,0,0};
 	bbox.bottomRight = (SAIFloat3){	ai->callback->GetMap()->GetWidth()*8,
-									ai->callback->GetMap()->GetHeight()*8,
-									0};
-	quadTree = new QuadTree( bbox );
+									0,
+									ai->callback->GetMap()->GetHeight()*8};
+	quadTree = new QuadTree( ai, bbox );
 }
 
 BaseInfo::~BaseInfo()

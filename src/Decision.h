@@ -23,6 +23,7 @@ public:
 	void Update(int frame);
 	void UnitIdle( int unitID );
 	void BuildAttackUnit();
+	void UpdateFrindlyPositions();
 
 	Decision(AIClasses* aiClasses);
 	~Decision(void);
