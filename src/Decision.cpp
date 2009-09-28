@@ -218,14 +218,8 @@ void Decision::BuildAttackUnit() {
 	if (!unitToBuild)
 	{
 		ai->utility->ChatMsg("Searching for Rocko...");
-		for ( int i = 0 ; i < ai->callback->GetUnitDefs().size() ; i++ )
-		{
-			if ( strcmp( ai->callback->GetUnitDefs()[i]->GetName(), "armrock" ) == 0 )
-			{
-				unitToBuild = ai->callback->GetUnitDefs()[i];
-				break;
-			}
-		}
+		
+		unitToBuild = ai->utility->GetUnitDef("armrock");
 	}
 
 	if (unitToBuild)
