@@ -1,12 +1,18 @@
 
 #include "QuadTreeNode.h"
 
-QuadTreeNode::QuadTreeNode( AIClasses* aiClasses, CBoundingBox box, int level )
+QuadTreeNode::QuadTreeNode( AIClasses* aiClasses, CBoundingBox box, int level, QuadTreeNode* parentNode )
 {
 	ai = aiClasses;
 	BoundingBox = box;
 	IsLeaf = true;
 	Level = level;
+	parent = parentNode;
+}
+
+QuadTreeNode* QuadTreeNode::GetParentNode()
+{
+	return parent;
 }
 
 bool QuadTreeNode::IsLeafNode()
@@ -102,7 +108,7 @@ void QuadTreeNode::Split()
 	for ( int i = 0 ; i < 4 ; i++ )
 	{
 	
-		Children[i] = new QuadTreeNode( ai, boxes[i], Level+1 );
+		Children[i] = new QuadTreeNode( ai, boxes[i], Level+1, this );
 	}
 	IsLeaf = false;
 }

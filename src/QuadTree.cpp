@@ -4,7 +4,7 @@
 QuadTree::QuadTree( AIClasses* aiClasses, CBoundingBox box )
 {
 	ai = aiClasses,
-	RootNode = new QuadTreeNode( ai, box, 0 );
+	RootNode = new QuadTreeNode( ai, box, 0, NULL );
 }
 
 QuadTree::~QuadTree()
@@ -28,6 +28,20 @@ void QuadTree::RemoveUnit( int unitID )
 		{
 			iter->RemoveUnit(unitID);
 			units.erase(unitID);
+			QuadTreeNode* parent = iter->GetParentNode();
+			if (!parent)
+				break;
+			int count = 0;
+			for (int i = 0; i < 4 ; i++)
+			{
+				count+=iter->GetChildAtIndex(i)->GetNumberOfUnits();
+			}
+			if (count<=BUCKET_SIZE)
+			{
+				//Merge
+				
+			}
+
 			break;
 		}
 

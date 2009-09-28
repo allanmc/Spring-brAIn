@@ -27,7 +27,7 @@ class QuadTreeNode
 {
 public:
 
-	QuadTreeNode( AIClasses* aiClasses, CBoundingBox box, int level );
+	QuadTreeNode( AIClasses* aiClasses, CBoundingBox box, int level, QuadTreeNode* parentNode );
 
 	bool IsLeafNode();
 
@@ -57,6 +57,7 @@ public:
 
 	static bool IsInsideBoundingBox( SAIFloat3 pos, CBoundingBox box );
 
+	QuadTreeNode* GetParentNode();
 
 private:
 
@@ -65,7 +66,7 @@ private:
 	CBoundingBox BoundingBox;
 	bool IsLeaf;
 	int Level;
-	
+	QuadTreeNode* parent;
 	AIClasses *ai;
 };
 
