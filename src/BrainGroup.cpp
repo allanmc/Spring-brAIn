@@ -40,3 +40,9 @@ bool BrainGroup::IsIdle()
 {
 	return Idle;
 }
+
+
+SAIFloat3 BrainGroup::GetPos()
+{
+	return Units[0]->GetPos();
+}

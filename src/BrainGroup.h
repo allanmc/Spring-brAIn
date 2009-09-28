@@ -18,6 +18,7 @@ namespace brainSpace
 		void RemoveUnit( Unit* unit );
 		int GetSize();
 		bool IsIdle();
+		SAIFloat3 GetPos();
 
 
 

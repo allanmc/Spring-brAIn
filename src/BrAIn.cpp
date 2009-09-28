@@ -58,7 +58,7 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 
 				std::string unitDefName = ai->callback->GetFriendlyUnits()[0]->GetDef()->GetName();
 
-				//UtilityInstance->ChatMsg("Hello Engine (from brAIn), first friendly untis def name is: " + unitDefName);
+				ai->utility->ChatMsg("Hello Engine (from brAIn), first friendly untis def name is: " + unitDefName);
 
 				break;
 			}

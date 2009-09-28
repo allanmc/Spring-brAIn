@@ -88,6 +88,7 @@ void MilitaryGroupManager::GiveScoutOrder(brainSpace::MilitaryUnitGroup* group)
 	ai->utility->ChatMsg("newHeight:%f", pos.x);
 	ai->utility->ChatMsg("newWidth:%f", pos.z);
 	ai->utility->ChatMsg("random generation scout position done");
+	ai->utility->DrawCircle(group->GetPos(), 100);
 	group->Scout(pos);
 
 }
