@@ -66,3 +66,58 @@ Resource* Utility::GetResource(const char* resourceName)
 	}
 	return NULL;
 }
+
+void Utility::DrawCircle(SAIFloat3 pos, float radius)
+{
+	SCreateSplineFigureDrawerCommand circle;
+	circle.lifeTime = -1;
+	circle.figureGroupId = 0;
+	circle.width = 20;
+	circle.arrow = false;
+	circle.pos1 = pos;
+	circle.pos4 = pos;
+
+	circle.pos1.z += radius;
+	circle.pos4.x += radius;
+	circle.pos2 = circle.pos1;
+	circle.pos3 = circle.pos4;
+	circle.pos2.x += MAGIC_CIRCLE_NUMBER*radius;
+	circle.pos3.z += MAGIC_CIRCLE_NUMBER*radius;
+	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_DRAWER_FIGURE_CREATE_SPLINE, &circle);
+	circle.figureGroupId = circle.ret_newFigureGroupId;
+
+	circle.pos1 = circle.pos4;
+	circle.pos4 = pos;
+	circle.pos4.z -= radius;
+	circle.pos2 = circle.pos1;
+	circle.pos3 = circle.pos4;
+	circle.pos2.z -= MAGIC_CIRCLE_NUMBER*radius;
+	circle.pos3.x += MAGIC_CIRCLE_NUMBER*radius;
+	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_DRAWER_FIGURE_CREATE_SPLINE, &circle);
+
+	circle.pos1 = circle.pos4;
+	circle.pos4 = pos;
+	circle.pos4.x -= radius;
+	circle.pos2 = circle.pos1;
+	circle.pos3 = circle.pos4;
+	circle.pos2.x -= MAGIC_CIRCLE_NUMBER*radius;
+	circle.pos3.z -= MAGIC_CIRCLE_NUMBER*radius;
+	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_DRAWER_FIGURE_CREATE_SPLINE, &circle);
+
+	circle.pos1 = circle.pos4;
+	circle.pos4 = pos;
+	circle.pos4.z += radius;
+	circle.pos2 = circle.pos1;
+	circle.pos3 = circle.pos4;
+	circle.pos2.z += MAGIC_CIRCLE_NUMBER*radius;
+	circle.pos3.x -= MAGIC_CIRCLE_NUMBER*radius;
+	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_DRAWER_FIGURE_CREATE_SPLINE, &circle);
+
+	SSetColorFigureDrawerCommand color;
+	color.figureGroupId = circle.figureGroupId;
+	color.color.x = 255;
+	color.color.z = 0;
+	color.color.y = 0;
+	color.alpha = 255;
+	ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_DRAWER_FIGURE_SET_COLOR, &color);
+}

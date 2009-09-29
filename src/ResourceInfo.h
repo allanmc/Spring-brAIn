@@ -22,26 +22,29 @@ namespace brainSpace
 		float GetCurrentAvailable(Resource *res);
 		float GetCurrentStorage(Resource *res);
 
-		float GetTimeToDepletion(Resource *res);
+		float GetTimeToMetalDepletion();
+		float GetTimeToEnergyDepletion();
 
 		/*
 		production in amount/sec
 		ETA, the build time in frames
 		returns an id, to be used for removal
 		*/
-		int AddChangeToCome(Resource *res, float production, int ETA);
-		void RemoveChangeToCome(int id);
+		int AddChangeToCome(Unit* unit, int ETA);
+		void RemoveChangeToCome(Unit* unit);
 
 	private:
 		AIClasses* ai;
 		Economy* economy;
 
-		unsigned int changeIdCounter;
+		Resource *metal;
+		Resource *energy;
+
 		struct Change{
-			Change(){}
+			Change(){}//dummy contructor
 			unsigned int id;
-			Resource *res;
-			float production;
+			float metalProduction;
+			float energyProduction;
 			unsigned int ETA; //the frame where it is expected to be finished
 		};
 		list<Change> changes;

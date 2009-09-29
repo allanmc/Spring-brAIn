@@ -1,6 +1,6 @@
 #ifndef _BRAINSPACE_UTILITY_H
 #define _BRAINSPACE_UTILITY_H
-
+#define MAGIC_CIRCLE_NUMBER 0.55228475
 #include "global.h"
 
 namespace brainSpace
@@ -18,6 +18,7 @@ namespace brainSpace
 		void ChatMsg(string msg);
 		UnitDef* GetUnitDef(const char* unitDefName);
 		Resource* GetResource(const char* resourceName);
+		void DrawCircle(SAIFloat3 pos, float radius);
 	};
 }
 #endif
