@@ -16,7 +16,8 @@ class Decision
 public:
 	GroupController * gc;
 	BuildingController * bc;
-
+	
+	void UnitCreated(int unit, int builder);
 	void UnitFinished(int unit); 
 	void UnitDestroyed(int unit, int attacker);
 

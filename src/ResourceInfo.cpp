@@ -112,7 +112,7 @@ int ResourceInfo::AddChangeToCome(Unit *unit, int ETA)
 	temp.metalProduction = - ud->GetUpkeep(*metal) + ud->GetResourceMake(*metal) + ud->GetExtractsResource(*metal);
 	temp.energyProduction = - ud->GetUpkeep(*energy) + ud->GetResourceMake(*energy) + ud->GetExtractsResource(*energy);
 	
-	ai->utility->ChatMsg("%s has production of (%f,%f)",ud->GetName(),temp.metalProduction,temp.energyProduction);
+	//ai->utility->ChatMsg("%s has production of (%f,%f)",ud->GetName(),temp.metalProduction,temp.energyProduction);
 
 	list<Change>::iterator it;
 	for(it = changes.begin(); it != changes.end(); it++)
