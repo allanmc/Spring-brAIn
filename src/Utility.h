@@ -9,11 +9,13 @@ namespace brainSpace
 	{
 	private:
 		AIClasses* ai;
+		FILE *fp;
 
 	public:
 		Utility( AIClasses* aiClasses );
 		~Utility();
 
+		void Log(int logLevel, int logType, const char* msg, ...);
 		void ChatMsg(const char* msg, ...);
 		void ChatMsg(string msg);
 		UnitDef* GetUnitDef(const char* unitDefName);

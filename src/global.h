@@ -1,6 +1,29 @@
 #ifndef _BRAIN_GLOBAL_H
 #define _BRAIN_GLOBAL_H
 
+#define LOG_TYPE CHAT|QUADTREE|DECISION|KNOWLEDGE|UTILITY
+#define LOG_LEVEL ALL
+
+//namespace brainSpace {
+enum LogTypes {
+	CHAT		= 1<<0,
+	QUADTREE	= 1<<1,
+	DECISION	= 1<<2,
+	KNOWLEDGE	= 1<<3,
+	UTILITY		= 1<<4
+};
+
+
+
+enum LogLevels {
+	NONE		= 0,
+	CRITICAL	= 1,
+	IMPORTANT	= 2,
+	DEBUG		= 3,
+	ALL			= 4
+};
+//}
+
 //#include "IncludesHeaders.h"
 
 #include "Unit.h"
@@ -25,7 +48,6 @@ namespace brainSpace {
 	class ArmyInfo;
 	class BaseInfo;
 }
-
 using namespace std;
 using namespace springai;
 using namespace brainSpace;

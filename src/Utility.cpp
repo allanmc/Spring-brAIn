@@ -4,6 +4,29 @@
 Utility::Utility( AIClasses* aiClasses )
 {
 	ai = aiClasses;
+	fp = FOPEN("brAIn-log.txt", "w");
+}
+
+void Utility::Log(int logLevel, int logType, const char* msg, ...)
+{		
+	if (LOG_LEVEL < logLevel)
+	{
+		return;
+	}
+	else if ((LOG_TYPE & logType) == 0)
+	{
+		return;
+	}
+	static char c[200];
+	
+	if (fp)
+	{
+		va_list list;
+		va_start(list, msg);
+		vfprintf(fp, msg, list);
+		va_end(list);
+	}
+	fputc('\n', fp);
 }
 
 void Utility::ChatMsg(const char* msg, ...)
