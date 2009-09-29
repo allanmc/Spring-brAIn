@@ -29,7 +29,7 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 			//do i really need to do anything here? (i allready have a teamId and a callback)
 			break;
 		case EVENT_RELEASE:
-			//ai->utility->ChatMsg("THE END!");
+			ai->utility->ChatMsg("THE END!");
 			//i am no longer needed
 			delete(decision);
 			break;
@@ -84,7 +84,6 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 		case EVENT_UNIT_DAMAGED:
 			{
 				struct SUnitDamagedEvent* evt = (struct SUnitDamagedEvent*)data;
-				ai->utility->ChatMsg( "Unit damaged" );
 				decision->UnitDamaged( evt->unit, evt->attacker );
 
 				break;
