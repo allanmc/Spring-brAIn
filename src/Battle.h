@@ -1,6 +1,8 @@
 #ifndef _BRAINSPACE_BATTLE_H
 #define _BRAINSPACE_BATTLE_H
 
+#define BATTLE_RADIUS 150
+
 #include "global.h"
 
 namespace brainSpace
@@ -12,13 +14,15 @@ namespace brainSpace
 		virtual ~Battle();
 
 
-		void UpdateUnitPosition( int unitID, bool enemy );
+		void UpdateUnitPosition( Unit* u, bool enemy );
 
-		void UnitDied( int unitID, bool enemy );
+		void UnitDied( Unit* u, bool enemy );
 
-		void UnitEnteredBattle( int unitID, bool enemy );
+		void UnitEnteredBattle( Unit* u, bool enemy );
 
-		bool Contains( int unitID );
+		bool Contains( Unit* u );
+
+		SAIFloat3 GetCenter();
 
 	private:
 		map<UnitDef*, int> DeadFriendlyUnits;

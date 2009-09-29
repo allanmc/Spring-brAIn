@@ -16,9 +16,9 @@ namespace brainSpace
 
 		virtual ~BattlesInfo();
 
-		void UnitDamaged( int unitID, int attackerID );
+		void UnitDamaged( Unit* friendlyUnit, Unit* attackingUnit );
 		
-		void UnitDestroyed( int unitID, int attackerID );
+		void UnitDestroyed( Unit* friendlyUnit, Unit* attackingUnit );
 		
 		void EnemyDestroyed( int unitID );
 
@@ -30,9 +30,9 @@ namespace brainSpace
 
 	private:
 
-		Battle* FindBattleContaining( int unitID );
-
-
+		Battle* FindBattleContaining( Unit* unit );
+		Battle* FindNearestBattle( SAIFloat3 pos );
+		
 		AIClasses* ai;
 
 		list<Battle*> CurrentBattles;

@@ -214,8 +214,8 @@ SAIFloat3 ConstructionUnitGroup::FindClosestMetalExtractionSite(SAIFloat3 pos/*,
 	*/
 	for ( int i  = 0 ; i < numSpots ; i++ )
 	{
-		//u->ChatMsg( "Metal spot: x: %f y: %f z: %f", spots[i].x, spots[i].y, spots[i].z ); 
-		double distance = sqrt( pow( fabs( spots[i].x - pos.x ), 2 ) + pow( fabs( spots[i].z - pos.z ), 2  ) );
+		//u->ChatMsg( "Metal spot: x: %f y: %f z: %f", spots[i].x, spots[i].y, spots[i].z );
+		double distance = ai->utility->EuclideanDistance( spots[i], pos );
 		//u->ChatMsg( "Distance: %f", distance );
 
 		if ( distance < closest && ai->callback->GetMap()->IsPossibleToBuildAt( *metalExtractorUnit, spots[i], 0 ))
