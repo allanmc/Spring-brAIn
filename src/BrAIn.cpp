@@ -101,6 +101,8 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 			break;
 		case EVENT_ENEMY_ENTER_LOS:
 			{
+				ai->knowledge->selfInfo->armyInfo->Print();
+
 				ai->utility->ChatMsg("enemy enter los");
 				//there he is, get him!
 				struct SEnemyEnterLOSEvent* evt = (struct SEnemyEnterLOSEvent*)data;

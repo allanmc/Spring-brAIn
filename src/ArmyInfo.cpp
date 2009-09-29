@@ -19,6 +19,26 @@ ArmyInfo::~ArmyInfo()
 {
 }
 
+void ArmyInfo::Print()
+{
+	quadTree->Print();
+}
+
+vector<Unit*> ArmyInfo::RangeQuery(float topLeftX, float topLeftZ, float bottomRightX, float bottomRightZ)
+{
+	return quadTree->RangeQuery(topLeftX, topLeftZ, bottomRightX, bottomRightZ);
+}
+
+vector<Unit*> ArmyInfo::RangeQuery(SAIFloat3 topLeft, SAIFloat3 bottomRight)
+{
+	return quadTree->RangeQuery(topLeft, bottomRight);
+}
+
+vector<Unit*> ArmyInfo::RangeQuery(CBoundingBox bbox)
+{
+	return quadTree->RangeQuery(bbox);
+}
+
 void ArmyInfo::AddUnit(Unit* unit)
 {
 	ai->utility->ChatMsg("Adding army unit...");
