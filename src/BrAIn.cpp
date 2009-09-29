@@ -53,12 +53,15 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 				//UtilityInstance->ChatMsg("unit created");
 				struct SUnitCreatedEvent* evt = (struct SUnitCreatedEvent*) data;
 				int unitId = evt->unit;
+				int builder = evt->builder;
+				
+				decision->UnitCreated(unitId, builder);
 
 				// TODO: wrapp events and commands too
 
-				std::string unitDefName = ai->callback->GetFriendlyUnits()[0]->GetDef()->GetName();
+				//std::string unitDefName = ai->callback->GetFriendlyUnits()[0]->GetDef()->GetName();
 
-				ai->utility->ChatMsg("Hello Engine (from brAIn), first friendly untis def name is: " + unitDefName);
+				//ai->utility->ChatMsg("Hello Engine (from brAIn), first friendly untis def name is: " + unitDefName);
 
 				break;
 			}

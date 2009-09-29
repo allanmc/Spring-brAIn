@@ -18,10 +18,19 @@ Decision::~Decision(void)
 {
 }
 
+void Decision::UnitCreated(int unitID, int builderID)
+{
+	ai->utility->ChatMsg("Unit created");
+	Unit * u = Unit::GetInstance(ai->callback,unitID);
+	Unit * builder = ( builder ? Unit::GetInstance(ai->callback,builderID) : NULL);
+	if(u->GetDef()->GetSpeed() < 0){//building
+		float ETA = u->GetDef()->GetBuildTime() / builder->GetDef()->GetBuildSpeed();
+		ai->knowledge->selfInfo->resourceInfo->AddChangeToCome(u,ETA);
+	}
+}
+
 void Decision::UnitFinished(int unit)
 {
-
-	char msg[200];
 	Unit * u = Unit::GetInstance(ai->callback,unit);
 	
 	ai->utility->ChatMsg("Unit finised, \"%s\", pos:%f,%f", u->GetDef()->GetName(), u->GetPos().x, u->GetPos().z);
@@ -38,6 +47,7 @@ void Decision::UnitFinished(int unit)
 		//add to BuildingController
 		bc->AddBuilding(u);
 		BuildAttackUnit();
+		ai->knowledge->selfInfo->resourceInfo->RemoveChangeToCome(u);
 	}
 
 	if (ud->GetWeaponMounts().size()>0) 
@@ -225,7 +235,7 @@ void Decision::Update(int frame)
 		UpdateFrindlyPositions();
 	}
 
-
+	ai->knowledge->selfInfo->resourceInfo->Update(frame);
 }
 
 void Decision::UnitIdle( int id )
