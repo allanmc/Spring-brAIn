@@ -23,7 +23,7 @@ void Decision::UnitCreated(int unitID, int builderID)
 	ai->utility->ChatMsg("Unit created");
 	Unit * u = Unit::GetInstance(ai->callback,unitID);
 	Unit * builder = ( builder ? Unit::GetInstance(ai->callback,builderID) : NULL);
-	if(u->GetDef()->GetSpeed() < 0){//building
+	if(u->GetDef()->GetSpeed() == 0){//building
 		float ETA = u->GetDef()->GetBuildTime() / builder->GetDef()->GetBuildSpeed();
 		ai->knowledge->selfInfo->resourceInfo->AddChangeToCome(u,ETA);
 	}
@@ -83,6 +83,10 @@ void Decision::UnitDestroyed(int unit, int attacker)
 	}else{
 		//remove from BuildingController
 		bc->RemoveBuilding(destroyee);
+		if(destroyee->IsBeingBuilt())
+		{
+			ai->knowledge->selfInfo->resourceInfo->RemoveChangeToCome(destroyee);
+		}
 	}
 
 	//build a repacement?

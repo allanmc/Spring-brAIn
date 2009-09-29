@@ -10,7 +10,8 @@ enum LogTypes {
 	QUADTREE	= 1<<1,
 	DECISION	= 1<<2,
 	KNOWLEDGE	= 1<<3,
-	UTILITY		= 1<<4
+	UTILITY		= 1<<4,
+	EVENTS		= 1<<5
 };
 
 
