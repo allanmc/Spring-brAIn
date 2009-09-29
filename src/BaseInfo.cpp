@@ -21,7 +21,7 @@ BaseInfo::~BaseInfo()
 void BaseInfo::AddBuilding(Unit* building)
 {
 	//ai->utility->ChatMsg("Adding base unit...");
-	//quadTree->InsertUnit(building->GetUnitId(), building->GetPos());
+	quadTree->InsertUnit(building->GetUnitId(), building->GetPos());
 
 	buildingCount++;
 }
@@ -32,7 +32,7 @@ void BaseInfo::RemoveBuilding(Unit* building)
 	{
 		return;
 	}
-	//quadTree->RemoveUnit( building->GetUnitId() );
+	quadTree->RemoveUnit( building->GetUnitId() );
 	//remove unit from quadtree, using pos
 
 	buildingCount--;

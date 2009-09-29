@@ -62,19 +62,27 @@ void Decision::UnitFinished(int unit)
 
 void Decision::UnitDestroyed(int unit, int attacker)
 {
-	Unit* destroyed = Unit::GetInstance( ai->callback, unit );
-	Unit* destroyee = Unit::GetInstance( ai->callback, attacker );
+	Unit* destroyee = Unit::GetInstance( ai->callback, unit );
+	Unit* destroyer = Unit::GetInstance( ai->callback, attacker );
+	BattleInfoInstance->UnitDestroyed( destroyee, destroyer );
 
-	BattleInfoInstance->UnitDestroyed( destroyed, destroyee );
+	if (destroyee->GetDef()->GetWeaponMounts().size()>0) 
+	{
+		ai->knowledge->selfInfo->armyInfo->RemoveUnit(destroyee);
+	}
+	else 
+	{
+		ai->knowledge->selfInfo->baseInfo->RemoveBuilding(destroyee);
+	}
 
-	ai->knowledge->selfInfo->armyInfo->RemoveUnit(destroyed);
-	if(destroyed->GetDef()->GetSpeed() > 0)
+
+	if(destroyee->GetDef()->GetSpeed() > 0)
 	{
 		//remove from groupController
-		gc->RemoveUnit(destroyed);
+		gc->RemoveUnit(destroyee);
 	}else{
 		//remove from BuildingController
-		bc->RemoveBuilding(destroyed);
+		bc->RemoveBuilding(destroyee);
 	}
 
 	//build a repacement?
@@ -89,7 +97,10 @@ void Decision::EnemyEnterLOS(int enemy)
 	if (unit->GetDef()->GetWeaponMounts().size()>0) 
 	{
 		ai->knowledge->enemyInfo->armyInfo->UpdateUnit(unit);
-		
+	} 
+	else
+	{
+		ai->knowledge->enemyInfo->baseInfo->AddBuilding(unit);
 	}
 }
 
@@ -153,7 +164,6 @@ void Decision::Update(int frame)
 			}
 		}
 		
-
 		solarOrder.timeOut = 10000000;
 		solarOrder.facing = 0;
 		solarOrder.options = 0;
@@ -186,52 +196,11 @@ void Decision::Update(int frame)
 		while (num--) {
 			gc->ErectBuilding(lltDefOrder);
 		}
-		
-		/*
-		gc->ErectBuilding(solarOrder);
-		gc->ErectBuilding(metalExOrder);
-		gc->ErectBuilding(metalExOrder);
-		gc->ErectBuilding(solarOrder);
-		gc->ErectBuilding(metalExOrder);
-		gc->ErectBuilding(metalExOrder);
-
-		gc->ErectBuilding(kbotLabOrder);
-
-		//gc->ErectBuilding(metalExOrder);
-		//gc->ErectBuilding(solarOrder);
-		//gc->ErectBuilding(metalExOrder);
-		//gc->ErectBuilding(solarOrder);
-		//gc->ErectBuilding(metalExOrder);
-		//gc->ErectBuilding(metalExOrder);
-
-		//gc->ErectBuilding(kbotLabOrder);
-
-		//gc->ErectBuilding(metalExOrder);
-		//gc->ErectBuilding(solarOrder);
-		//gc->ErectBuilding(metalExOrder);
-		//gc->ErectBuilding(solarOrder);
-		//gc->ErectBuilding(metalExOrder);
-		//gc->ErectBuilding(solarOrder);
-		*/
-
-		//ai->utility->ChatMsg( "Building erections planned" );
-		//build some crap
-		//find 2 nearest mex-spots
-		//build mex at spot 1 (armmex)
-		//build mex at spot 2 (armmex)
-		//build solar (armsolar)
-		//build K-bot lab (armlab)
-
-		//spam mex and solar ()
-		//spam kbots when lab is done (armflea)
 	}
 
 	if(frame % 60 == 0)
 	{
-		//u->ChatMsg("Scout command begin");
 		gc->ScoutWithIdleGroup();
-		//u->ChatMsg("Scout command sent");
-
 	}
 
 	if ( frame % 120 ==0 )
@@ -252,26 +221,19 @@ void Decision::BuildAttackUnit() {
 	static UnitDef* unitToBuild = 0;
 	SBuildUnitCommand o;
 
-	//ai->utility->ChatMsg("Trying to build attack unit...");
 	if (!unitToBuild)
 	{
-		//ai->utility->ChatMsg("Searching for Rocko...");
-		
 		unitToBuild = ai->utility->GetUnitDef("armrock");
 	}
 
 	if (unitToBuild)
 	{
-		//ai->utility->ChatMsg("Found Rocko, so building him...");
 		o.timeOut = 10000000;
 		o.facing = 0;
 		o.options = 0;
 		o.toBuildUnitDefId = unitToBuild->GetUnitDefId();
 		bc->ConstructUnit(o);
 	}
-
-
-
 }
 
 void Decision::UnitDamaged( int unitID, int attacker )

@@ -42,7 +42,10 @@ void QuadTree::RemoveUnit( int unitID )
 
 void QuadTree::UpdateUnit( int unitID, SAIFloat3 pos )
 {
-	RemoveUnit( unitID );
+	if (units.find(unitID) == units.end())
+	{
+		RemoveUnit(unitID);
+	}
 	InsertUnit( unitID, pos );
 }
 
@@ -54,6 +57,11 @@ SAIFloat3 QuadTree::GetLastUnitPos( int unitID )
 void QuadTree::InsertUnit( int unitID, SAIFloat3 pos )
 {
 	QuadTreeNode *iter = RootNode;
+
+	if (units.find(unitID) == units.end())
+	{
+		RemoveUnit(unitID);
+	}
 
 	if (!QuadTreeNode::IsInsideBoundingBox(pos, RootNode->GetBoundingBox()) )
 	{
