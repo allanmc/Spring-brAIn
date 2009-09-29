@@ -28,20 +28,12 @@ void QuadTree::RemoveUnit( int unitID )
 		{
 			iter->RemoveUnit(unitID);
 			units.erase(unitID);
-			QuadTreeNode* parent = iter->GetParentNode();
-			if (!parent)
-				break;
-			int count = 0;
-			for (int i = 0; i < 4 ; i++)
+			do 
 			{
-				count+=iter->GetChildAtIndex(i)->GetNumberOfUnits();
-			}
-			if (count<=BUCKET_SIZE)
-			{
-				//Merge
-				
-			}
-
+				iter = iter->GetParentNode();
+				if (!iter)
+					break;
+			} while (iter->TryToMergeToLeaf());
 			break;
 		}
 
@@ -63,7 +55,7 @@ void QuadTree::InsertUnit( int unitID, SAIFloat3 pos )
 {
 	QuadTreeNode *iter = RootNode;
 
-	if (QuadTreeNode::IsInsideBoundingBox(pos, iter->GetBoundingBox()) )
+	if (!QuadTreeNode::IsInsideBoundingBox(pos, RootNode->GetBoundingBox()) )
 	{
 		ai->utility->ChatMsg("QuadTree error: The position is not inside the RootNode... Idiot.");
 		return;
@@ -112,15 +104,75 @@ void QuadTree::InsertUnit( int unitID, SAIFloat3 pos )
 	}
 }
 
+vector<Unit*> QuadTree::RangeQuery(CBoundingBox bbox)
+{
+	vector<Unit*> units;
+
+	QuadTreeNode* currentNode;
+	queue<QuadTreeNode*> nodeQueue;
+	nodeQueue.push(RootNode);
+	while ( !nodeQueue.empty() )
+	{
+		currentNode = nodeQueue.front();
+		nodeQueue.pop();
+		if ( !currentNode->IsLeafNode() )
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				if (currentNode->Intersects(bbox))
+				{
+					nodeQueue.push(currentNode->GetChildAtIndex(i));
+				}
+			}
+			continue;
+		}
+		else
+		{
+			map<int, SAIFloat3>::iterator iter;
+
+			for ( iter = currentNode->UnitsContained.begin() ; iter != currentNode->UnitsContained.end() ; iter++ )
+			{
+				int unitID = (*iter).first;
+				SAIFloat3 pos = (*iter).second;
+				if (QuadTreeNode::IsInsideBoundingBox(pos, bbox))
+				{
+					units.push_back(Unit::GetInstance(ai->callback, unitID));
+				}
+			}
+		}
+	}
+	return units;
+}
+
+vector<Unit*> QuadTree::RangeQuery(SAIFloat3 topLeft, SAIFloat3 bottomRight)
+{
+	CBoundingBox bbox;
+	bbox.topLeft = topLeft;
+	bbox.bottomRight = bottomRight;
+	return RangeQuery(bbox);
+}
+
+vector<Unit*> QuadTree::RangeQuery(float topLeftX, float topLeftZ, float bottomRightX, float bottomRightZ)
+{
+	SAIFloat3 topLeft = (SAIFloat3){topLeftX,0,topLeftZ};
+	SAIFloat3 bottomRight = (SAIFloat3){bottomRightX,0,bottomRightZ};
+	return RangeQuery(topLeft, bottomRight);
+}
+
+void QuadTree::Print()
+{
+	Print(RootNode);
+}
+
 void QuadTree::Print( QuadTreeNode* iter)
 {
 	CBoundingBox box = iter->GetBoundingBox();
-	cout << "Level: " << iter->GetLevel() << endl;
-	cout << "BBox topleft: ( " << box.topLeft.x << ", " << box.topLeft.z << ")" << endl;
-	cout << "BBox bottomright: ( " << box.bottomRight.x << ", " << box.bottomRight.z << ")" << endl;
-	cout << "Units contained: " << iter->GetNumberOfUnits() << endl;
+	ai->utility->ChatMsg("Level: %d", iter->GetLevel());
+	ai->utility->ChatMsg("BBox topleft: ( %f, %f )", box.topLeft.x, box.topLeft.z);
+	ai->utility->ChatMsg("BBox bottomright: ( %f, %f )", box.bottomRight.x, box.bottomRight.z);
+	ai->utility->ChatMsg("Units contained: %d", iter->GetNumberOfUnits());
 	if ( iter->IsLeafNode() )
-		cout << "Current node is leaf" << endl;
+		ai->utility->ChatMsg("Current node is leaf");
 	else
 	{
 		for ( int i = 0 ; i < 4 ; i++ )

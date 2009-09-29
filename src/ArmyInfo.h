@@ -21,6 +21,11 @@ namespace brainSpace
 		void RemoveUnit(Unit* unit);
 		void UpdateUnit(Unit* unit);
 		SAIFloat3 GetUnitPos(int unitId);
+		void Print();
+		vector<Unit*> RangeQuery(float topLeftX, float topLeftZ, float bottomRightX, float bottomRightZ);
+		vector<Unit*> RangeQuery(SAIFloat3 topLeft, SAIFloat3 bottomRight);
+		vector<Unit*> RangeQuery(CBoundingBox bbox);
+
 		unsigned int unitCount;
 
 	private:
