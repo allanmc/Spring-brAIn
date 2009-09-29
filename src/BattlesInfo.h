@@ -18,7 +18,7 @@ namespace brainSpace
 
 		void UnitDamaged( int unitID, int attackerID );
 		
-		void UnitDestroyed( int unitID );
+		void UnitDestroyed( int unitID, int attackerID );
 		
 		void EnemyDestroyed( int unitID );
 
@@ -29,6 +29,10 @@ namespace brainSpace
 	protected:
 
 	private:
+
+		Battle* FindBattleContaining( int unitID );
+
+
 		AIClasses* ai;
 
 		list<Battle*> CurrentBattles;
