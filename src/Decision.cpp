@@ -116,7 +116,7 @@ void Decision::Update(int frame)
 
 	if(frame == 1)
 	{
-		ai->utility->ChatMsg("Frame 1");
+		//ai->utility->ChatMsg("Frame 1");
 		UnitDef *solar, *kbotLab, *metalEx, *lltDef;
 		SBuildUnitCommand metalExOrder, kbotLabOrder, solarOrder, lltDefOrder;
 		for ( int i = 0 ; i < ai->callback->GetUnitDefs().size() ; i++ )
@@ -200,7 +200,7 @@ void Decision::Update(int frame)
 		//gc->ErectBuilding(solarOrder);
 		*/
 
-		ai->utility->ChatMsg( "Building erections planned" );
+		//ai->utility->ChatMsg( "Building erections planned" );
 		//build some crap
 		//find 2 nearest mex-spots
 		//build mex at spot 1 (armmex)
@@ -238,17 +238,17 @@ void Decision::BuildAttackUnit() {
 	static UnitDef* unitToBuild = 0;
 	SBuildUnitCommand o;
 
-	ai->utility->ChatMsg("Trying to build attack unit...");
+	//ai->utility->ChatMsg("Trying to build attack unit...");
 	if (!unitToBuild)
 	{
-		ai->utility->ChatMsg("Searching for Rocko...");
+		//ai->utility->ChatMsg("Searching for Rocko...");
 		
 		unitToBuild = ai->utility->GetUnitDef("armrock");
 	}
 
 	if (unitToBuild)
 	{
-		ai->utility->ChatMsg("Found Rocko, so building him...");
+		//ai->utility->ChatMsg("Found Rocko, so building him...");
 		o.timeOut = 10000000;
 		o.facing = 0;
 		o.options = 0;

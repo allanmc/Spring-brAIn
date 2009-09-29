@@ -20,7 +20,7 @@ BaseInfo::~BaseInfo()
 
 void BaseInfo::AddBuilding(Unit* building)
 {
-	ai->utility->ChatMsg("Adding base unit...");
+	//ai->utility->ChatMsg("Adding base unit...");
 	//quadTree->InsertUnit(building->GetUnitId(), building->GetPos());
 
 	buildingCount++;

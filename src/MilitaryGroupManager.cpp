@@ -79,15 +79,15 @@ void MilitaryGroupManager::GiveScoutOrder(brainSpace::MilitaryUnitGroup* group)
 	group->SetStatus(MilitaryUnitGroup::Scouting);
 	int h = ai->callback->GetMap()->GetHeight();
 	int w = ai->callback->GetMap()->GetWidth();
-	ai->utility->ChatMsg("Height:%d", h);
-	ai->utility->ChatMsg("Width:%d", w);
+	//ai->utility->ChatMsg("Height:%d", h);
+	//ai->utility->ChatMsg("Width:%d", w);
 	SAIFloat3 pos;
 	pos.x = (rand() % w)*8;
 	pos.z = (rand() % h)*8;
 	pos.y = 0;
-	ai->utility->ChatMsg("newHeight:%f", pos.x);
-	ai->utility->ChatMsg("newWidth:%f", pos.z);
-	ai->utility->ChatMsg("random generation scout position done");
+	//ai->utility->ChatMsg("newHeight:%f", pos.x);
+	//ai->utility->ChatMsg("newWidth:%f", pos.z);
+	//ai->utility->ChatMsg("random generation scout position done");
 	ai->utility->DrawCircle(group->GetPos(), 100);
 	group->Scout(pos);
 

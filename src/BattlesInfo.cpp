@@ -35,7 +35,7 @@ void BattlesInfo::UnitDamaged( int unitID, int attackerID )
 	b->UnitEnteredBattle( unitID, false );
 	b->UnitEnteredBattle( attackerID, true );
 	CurrentBattles.push_back( b );
-	ai->utility->ChatMsg( "Units entered a new battle: Id %d and %d ", unitID, attackerID );
+	//ai->utility->ChatMsg( "Units entered a new battle: Id %d and %d ", unitID, attackerID );
 }
 
 
