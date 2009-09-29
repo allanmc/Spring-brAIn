@@ -39,8 +39,39 @@ void Battle::UpdateUnitPosition( int unitID, bool enemy )
 
 void Battle::UnitDied( int unitID, bool enemy )
 {
-}
+	UnitDef* def = Unit::GetInstance( ai->callback, unitID )->GetDef();
+	map<UnitDef*, int>::iterator iter;
 
+	if ( enemy )
+	{
+		iter = DeadEnemyUnits.find(def);
+		if ( iter != DeadEnemyUnits.end() )
+		{
+			(*iter).second = (*iter).second++;
+		}
+		else
+		{
+			DeadEnemyUnits[def] = 1;
+			ai->utility->ChatMsg( "Made a pair" );
+		}
+		ActiveEnemyUnits.erase( unitID );
+	}
+	else
+	{
+		iter = DeadFriendlyUnits.find(def);
+		if ( iter != DeadFriendlyUnits.end() )
+		{
+			(*iter).second = (*iter).second++;
+		}
+		else
+		{
+			DeadFriendlyUnits[def] = 1;
+			ai->utility->ChatMsg( "Made a pair (friendly units)" );
+		}
+		ActiveFriendlyUnits.erase( unitID );
+		ai->utility->ChatMsg( "Now %d %s units have died!!", DeadFriendlyUnits[def], def->GetHumanName() );
+	}
+}
 
 void Battle::UnitEnteredBattle( int unitID, bool enemy )
 {
@@ -54,7 +85,7 @@ void Battle::UnitEnteredBattle( int unitID, bool enemy )
 bool Battle::Contains( int unitID )
 {
 	map<int, SAIFloat3>::iterator unit;
-	
+
 	unit = ActiveEnemyUnits.find( unitID );
 	if ( unit != ActiveEnemyUnits.end() )
 		return true;

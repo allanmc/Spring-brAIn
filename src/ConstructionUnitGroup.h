@@ -27,6 +27,8 @@ namespace brainSpace
 		int BaseDefenseCounter;
 		int BaseDefenseCounterStart;
 		bool BaseDefenseHitBorder;
+		UnitDef* metalExtractorUnit;
+
 	};
 }
 
