@@ -1,4 +1,5 @@
 #include "Utility.h"
+#include "global.h"
 
 Utility::Utility( AIClasses* aiClasses )
 {
@@ -22,7 +23,6 @@ void Utility::ChatMsg(const char* msg, ...)
 	cmd.text = c;
 	cmd.zone = 0;
 	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_SEND_TEXT_MESSAGE, &cmd);
-	
 }
 
 
