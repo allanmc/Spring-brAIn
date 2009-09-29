@@ -11,6 +11,7 @@ Decision::Decision(AIClasses* aiClasses)
 	ai = aiClasses;
 	gc = new GroupController( ai );
 	bc = new BuildingController( ai );
+	BattleInfoInstance = new BattlesInfo( ai );
 }
 
 Decision::~Decision(void)
@@ -257,4 +258,9 @@ void Decision::BuildAttackUnit() {
 
 
 
+}
+
+void Decision::UnitDamaged( int unitID, int attacker )
+{
+	BattleInfoInstance->UnitDamaged( unitID, attacker );
 }

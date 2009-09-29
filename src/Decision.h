@@ -4,6 +4,7 @@
 #include "GroupController.h"
 #include "BuildingController.h"
 #include "global.h"
+#include "BattlesInfo.h"
 
 
 using namespace springai;
@@ -18,6 +19,10 @@ public:
 
 	void UnitFinished(int unit); 
 	void UnitDestroyed(int unit, int attacker);
+
+	void UnitDamaged(int unit, int attacker);
+
+
 	void EnemyEnterLOS(int enemy);
 	void EnemyDestroyed(int enemy, int attacker);
 	void Update(int frame);
@@ -28,6 +33,8 @@ public:
 	Decision(AIClasses* aiClasses);
 	~Decision(void);
 private:
+
+	BattlesInfo* BattleInfoInstance;
 	AIClasses* ai;
 };
 

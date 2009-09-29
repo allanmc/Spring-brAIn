@@ -75,15 +75,19 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 				ai->utility->ChatMsg("UNIT IDLE");
 				struct SUnitIdleEvent* evt = (struct SUnitIdleEvent*)data;
 				decision->UnitIdle( evt->unit );
-					//get back to work ya lazy git!
-					break;
+				//get back to work ya lazy git!
+				break;
 			}
 		case EVENT_UNIT_MOVE_FAILED:
 			//UtilityInstance->ChatMsg("move failed");
 			break;
 		case EVENT_UNIT_DAMAGED:
-			//UtilityInstance->ChatMsg("unit damaged");
-			break;
+			{
+				struct SUnitDamagedEvent* evt = (struct SUnitDamagedEvent*)data;
+				decision->UnitDamaged( evt->unit, evt->attacker );
+				//UtilityInstance->ChatMsg("unit damaged");
+				break;
+			}
 		case EVENT_UNIT_DESTROYED:
 			{
 				//UtilityInstance->ChatMsg("unit destroyed");

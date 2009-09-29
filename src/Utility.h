@@ -9,10 +9,10 @@ namespace brainSpace
 	{
 	private:
 		AIClasses* ai;
-		~Utility();
 
 	public:
 		Utility( AIClasses* aiClasses );
+		~Utility();
 
 		void ChatMsg(const char* msg, ...);
 		void ChatMsg(string msg);
