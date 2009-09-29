@@ -142,3 +142,8 @@ void Utility::DrawLine(SAIFloat3 start, SAIFloat3 end, bool arrow)
 	ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_DRAWER_FIGURE_SET_COLOR, &color);
 }
 
+double Utility::EuclideanDistance(SAIFloat3 pos1, SAIFloat3 pos2)
+{
+	return sqrt( pow( fabs( pos1.x - pos2.x ), 2 ) + pow( fabs( pos1.z - pos2.z ), 2  ) );
+}
+

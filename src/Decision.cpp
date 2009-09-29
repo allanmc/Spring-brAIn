@@ -52,16 +52,19 @@ void Decision::UnitFinished(int unit)
 
 void Decision::UnitDestroyed(int unit, int attacker)
 {
-	BattleInfoInstance->UnitDestroyed( unit, attacker );
-	Unit * u = Unit::GetInstance(ai->callback,unit);
-	ai->knowledge->selfInfo->armyInfo->RemoveUnit(u);
-	if(u->GetDef()->GetSpeed() > 0)
+	Unit* destroyed = Unit::GetInstance( ai->callback, unit );
+	Unit* destroyee = Unit::GetInstance( ai->callback, attacker );
+
+	BattleInfoInstance->UnitDestroyed( destroyed, destroyee );
+
+	ai->knowledge->selfInfo->armyInfo->RemoveUnit(destroyed);
+	if(destroyed->GetDef()->GetSpeed() > 0)
 	{
 		//remove from groupController
-		gc->RemoveUnit(u);
+		gc->RemoveUnit(destroyed);
 	}else{
 		//remove from BuildingController
-		bc->RemoveBuilding(u);
+		bc->RemoveBuilding(destroyed);
 	}
 
 	//build a repacement?
@@ -263,5 +266,7 @@ void Decision::BuildAttackUnit() {
 
 void Decision::UnitDamaged( int unitID, int attacker )
 {
-	BattleInfoInstance->UnitDamaged( unitID, attacker );
+	Unit* u1 = Unit::GetInstance( ai->callback, unitID );
+	Unit* u2 = Unit::GetInstance( ai->callback, unitID );
+	BattleInfoInstance->UnitDamaged( u1, u2 );
 }

@@ -51,6 +51,7 @@ class QuadTree;
 #include <list>
 #include <stdlib.h>
 #include <map>
+#include <math.h>
 
 #include "Utility.h"
 #include "Knowledge.h"

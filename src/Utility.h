@@ -14,6 +14,7 @@ namespace brainSpace
 		Utility( AIClasses* aiClasses );
 		~Utility();
 
+		double EuclideanDistance( SAIFloat3 pos1, SAIFloat3 pos2 );
 		void ChatMsg(const char* msg, ...);
 		void ChatMsg(string msg);
 		UnitDef* GetUnitDef(const char* unitDefName);
