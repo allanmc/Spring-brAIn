@@ -52,6 +52,7 @@ void Decision::UnitFinished(int unit)
 
 void Decision::UnitDestroyed(int unit, int attacker)
 {
+	BattleInfoInstance->UnitDestroyed( unit, attacker );
 	Unit * u = Unit::GetInstance(ai->callback,unit);
 	ai->knowledge->selfInfo->armyInfo->RemoveUnit(u);
 	if(u->GetDef()->GetSpeed() > 0)

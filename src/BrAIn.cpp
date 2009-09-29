@@ -84,8 +84,9 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 		case EVENT_UNIT_DAMAGED:
 			{
 				struct SUnitDamagedEvent* evt = (struct SUnitDamagedEvent*)data;
+				ai->utility->ChatMsg( "Unit damaged" );
 				decision->UnitDamaged( evt->unit, evt->attacker );
-				//ai->utility->ChatMsg("unit damaged");
+
 				break;
 			}
 		case EVENT_UNIT_DESTROYED:
