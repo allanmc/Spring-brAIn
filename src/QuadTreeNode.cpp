@@ -20,6 +20,19 @@ bool QuadTreeNode::IsLeafNode()
 	return IsLeaf;
 }
 
+bool QuadTreeNode::Intersects(CBoundingBox bbox)
+{
+	SAIFloat3 min = this->BoundingBox.topLeft;
+	SAIFloat3 max = this->BoundingBox.bottomRight;
+	SAIFloat3 other_min = bbox.topLeft;
+	SAIFloat3 other_max = bbox.bottomRight;
+	
+	return 
+		(min.x < other_max.x) && (max.x > other_min.x) &&
+		/*(min.y < other_max.y) && (max.y > other_min.y) &&*/
+		(min.z < other_max.z) && (max.z > other_min.z);
+}
+
 CBoundingBox QuadTreeNode::GetBoundingBox()
 {
 	return BoundingBox;
@@ -140,6 +153,53 @@ void QuadTreeNode::InsertUnit( int unitID, SAIFloat3 pos )
 	UnitsContained.insert( make_pair( unitID, pos ) );
 }
 
+bool QuadTreeNode::TryToMergeToLeaf()
+{
+	map<int, SAIFloat3> innerNodes;
+
+	if (IsLeaf) //Already a leaf?
+	{
+		ai->utility->ChatMsg("QuadTree error: Can't merge a node which already is a leaf.");
+		return false;
+	}
+
+	//Find every child node and store in innerNodes
+	for (int i = 0; i < 4 ; i++)
+	{
+		if (!Children[i]->IsLeaf) //If this isn't a leafnode, we shouldn't be here.
+		{
+			//ai->utility->ChatMsg("QuadTree error: Only merge from bottom up!");
+			return false;
+		}
+		map<int, SAIFloat3>::iterator iter;
+
+		for ( iter = Children[i]->UnitsContained.begin() ; iter != Children[i]->UnitsContained.end() ; iter++ )
+		{
+			int unitID = (*iter).first;
+			SAIFloat3 pos = (*iter).second;
+			innerNodes[unitID] = pos;
+		}
+	}
+
+	//If the number of collected child nodes is less than or equal to the bucket size,
+	//then we need to merge
+	int childCount = innerNodes.size();
+	if (childCount<=BUCKET_SIZE/2)
+	{
+		UnitsContained = innerNodes;
+		delete(Children[0]);
+		delete(Children[1]);
+		delete(Children[2]);
+		delete(Children[3]);
+		IsLeaf = true;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+
+}
 
 void QuadTreeNode::MoveUnitsToChildren()
 {

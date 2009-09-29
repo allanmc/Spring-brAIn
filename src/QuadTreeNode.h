@@ -2,9 +2,6 @@
 #define _BRAINSPACE_QUADTREENODE_H
 
 #include "global.h"
-
-#include "SAIFloat3.h"
-#include "Unit.h"
 #include <vector>
 #include <map>
 #include <iostream>
@@ -50,12 +47,14 @@ public:
 	void RemoveUnit( int unitID );
 
 	void MoveUnitsToChildren();
+	bool TryToMergeToLeaf();
 
 	int GetLevel();
 
 	map<int, SAIFloat3> UnitsContained;
 
 	static bool IsInsideBoundingBox( SAIFloat3 pos, CBoundingBox box );
+	bool Intersects(CBoundingBox bbox);
 
 	QuadTreeNode* GetParentNode();
 

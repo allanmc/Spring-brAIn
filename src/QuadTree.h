@@ -16,7 +16,10 @@ public:
 	void UpdateUnit( int unitID, SAIFloat3 pos );
 	SAIFloat3 GetLastUnitPos( int unitID );
 	QuadTreeNode* GetRootNode();
-
+	void Print();
+	vector<Unit*> RangeQuery(float topLeftX, float topLeftZ, float bottomRightX, float bottomRightZ);
+	vector<Unit*> RangeQuery(SAIFloat3 topLeft, SAIFloat3 bottomRight);
+	vector<Unit*> RangeQuery(CBoundingBox bbox);
 	void Print( QuadTreeNode* node );
 
 private:
