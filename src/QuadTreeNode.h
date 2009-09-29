@@ -2,9 +2,6 @@
 #define _BRAINSPACE_QUADTREENODE_H
 
 #include "global.h"
-
-#include "SAIFloat3.h"
-#include "Unit.h"
 #include <vector>
 #include <map>
 #include <iostream>

@@ -70,7 +70,7 @@ Resource* Utility::GetResource(const char* resourceName)
 void Utility::DrawCircle(SAIFloat3 pos, float radius)
 {
 	SCreateSplineFigureDrawerCommand circle;
-	circle.lifeTime = -1;
+	circle.lifeTime = 0;
 	circle.figureGroupId = 0;
 	circle.width = 20;
 	circle.arrow = false;
@@ -121,3 +121,24 @@ void Utility::DrawCircle(SAIFloat3 pos, float radius)
 	color.alpha = 255;
 	ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_DRAWER_FIGURE_SET_COLOR, &color);
 }
+
+void Utility::DrawLine(SAIFloat3 start, SAIFloat3 end, bool arrow)
+{
+	SCreateLineFigureDrawerCommand line;
+	line.arrow = arrow;
+	line.lifeTime = 0;
+	line.width = 20;
+	line.pos1 = start;
+	line.pos2 = end;
+	
+	ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_DRAWER_FIGURE_CREATE_LINE, &line);
+
+	SSetColorFigureDrawerCommand color;
+	color.figureGroupId = line.ret_newFigureGroupId;
+	color.color.x = 255;
+	color.color.z = 0;
+	color.color.y = 0;
+	color.alpha = 255;
+	ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_DRAWER_FIGURE_SET_COLOR, &color);
+}
+

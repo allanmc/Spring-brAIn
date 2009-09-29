@@ -1,8 +1,6 @@
 #ifndef _BRAINSPACE_MILITARY_GROUP_MANAGER_H
 #define _BRAINSPACE_MILITARY_GROUP_MANAGER_H
 
-#include "Unit.h"
-#include "UnitDef.h"
 #include <set>
 #include "BrainGroup.h"
 #include "global.h"

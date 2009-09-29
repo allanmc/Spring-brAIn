@@ -3,9 +3,7 @@
 
 #include "BrainGroup.h"
 #include "global.h"
-#include "Resource.h"
 #include <math.h>
-#include "SSkirmishAICallback.h"
 
 namespace brainSpace
 {

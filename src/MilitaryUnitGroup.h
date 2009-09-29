@@ -3,7 +3,6 @@
 
 #include "BrainGroup.h"
 #include "global.h"
-#include "Resource.h"
 #include <math.h>
 
 namespace brainSpace
