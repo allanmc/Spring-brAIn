@@ -11,7 +11,7 @@ enum LogTypes {
 	DECISION	= 1<<2,
 	KNOWLEDGE	= 1<<3,
 	UTILITY		= 1<<4,
-	EVENTS		= 1<<5
+	EVENT		= 1<<5
 };
 
 
