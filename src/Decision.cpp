@@ -240,6 +240,8 @@ void Decision::BuildAttackUnit() {
 		o.facing = 0;
 		o.options = 0;
 		o.toBuildUnitDefId = unitToBuild->GetUnitDefId();
+		SAIFloat3 pos = {0,0,0};
+		o.buildPos = pos;
 		bc->ConstructUnit(o);
 	}
 }
