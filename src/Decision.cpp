@@ -20,7 +20,6 @@ Decision::~Decision(void)
 
 void Decision::UnitCreated(int unitID, int builderID)
 {
-	//ai->utility->ChatMsg("Unit created");
 	Unit * u = Unit::GetInstance(ai->callback,unitID);
 	Unit * builder = ( builderID ? Unit::GetInstance(ai->callback,builderID) : NULL);
 	
@@ -34,7 +33,7 @@ void Decision::UnitFinished(int unit)
 {
 	Unit * u = Unit::GetInstance(ai->callback,unit);
 	
-	ai->utility->ChatMsg("Unit finised, \"%s\", pos:%f,%f", u->GetDef()->GetName(), u->GetPos().x, u->GetPos().z);
+	ai->utility->Log(DEBUG, EVENT, "Unit finished, \"%s\", pos:%f,%f", u->GetDef()->GetName(), u->GetPos().x, u->GetPos().z);
 	UnitDef * ud = u->GetDef();
 	if(ud->GetSpeed() > 0)
 	{
@@ -146,7 +145,6 @@ void Decision::Update(int frame)
 
 	if(frame == 1)
 	{
-		//ai->utility->ChatMsg("Frame 1");
 		UnitDef *solar, *kbotLab, *metalEx, *lltDef;
 		SBuildUnitCommand metalExOrder, kbotLabOrder, solarOrder, lltDefOrder;
 		for ( int i = 0 ; i < ai->callback->GetUnitDefs().size() ; i++ )
