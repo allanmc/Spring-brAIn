@@ -2,6 +2,7 @@
 #define _BRAINSPACE_BATTLE_H
 
 #define INITIAL_BATTLE_RADIUS 500
+#define BATTLE_TIMEOUT 400
 
 #include "global.h"
 
@@ -11,6 +12,7 @@ namespace brainSpace
 	{
 	public:
 		Battle( AIClasses* aiClasses, SAIFloat3 pos );
+
 		virtual ~Battle();
 
 
@@ -26,6 +28,8 @@ namespace brainSpace
 
 		float GetRadius();
 
+		int GetLastFrameOfActivity();
+
 		/**DEBUG**/
 		int GetNumberOfActiveUnits();
 		/**DEBUG**/
@@ -33,6 +37,7 @@ namespace brainSpace
 
 	private:
 
+		int LastFrameOfActivity;
 		int RadiusCircleID;
 
 		void CalculateCenter( SAIFloat3 pos[], int size );

@@ -111,7 +111,11 @@ void Decision::EnemyEnterLOS(int enemy)
 void Decision::EnemyDestroyed(int enemy, int attacker)
 {
 	//good job!
-	Unit * unit = Unit::GetInstance(ai->callback,enemy);
+	Unit* unit = Unit::GetInstance(ai->callback, enemy);
+	Unit* attackerUnit = Unit::GetInstance( ai->callback, attacker );
+
+	BattleInfoInstance->EnemyDestroyed( unit, attackerUnit );
+
 	if (unit->GetDef()->GetWeaponMounts().size()>0) 
 	{
 		ai->knowledge->enemyInfo->armyInfo->RemoveUnit(unit);
@@ -204,6 +208,7 @@ void Decision::Update(int frame)
 	if(frame % 60 == 0)
 	{
 		gc->ScoutWithIdleGroup();
+		BattleInfoInstance->Update( frame );
 	}
 
 	if ( frame % 120 ==0 )

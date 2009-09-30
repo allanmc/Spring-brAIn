@@ -4,9 +4,12 @@
 using namespace brainSpace;
 using namespace springai;
 
+int LAST_NUMBER_OF_BATTLES = 0;
+
 BattlesInfo::BattlesInfo( AIClasses* aiClasses )
 {
 	ai = aiClasses;
+	LastUpdateFrame = ai->frame;
 }
 
 BattlesInfo::~BattlesInfo()
@@ -60,17 +63,22 @@ void BattlesInfo::UnitDamaged( Unit* friendlyUnit, Unit* attackingUnit )
 }
 
 
-void BattlesInfo::UnitDestroyed( Unit* friendlyUnit, Unit* attackingUnit  )
+void BattlesInfo::UnitDestroyed( Unit* deadFriendlyUnit, Unit* attackingUnit  )
 {
-	Battle* b = FindBattleContaining( friendlyUnit );
+	Battle* b = FindBattleContaining( deadFriendlyUnit );
 	if ( b != NULL )
 	{
-		b->UnitDied( friendlyUnit, false );
+		b->UnitDied( deadFriendlyUnit, false );
 	}
 }
 
-void BattlesInfo::EnemyDestroyed(int unitID)
+void BattlesInfo::EnemyDestroyed( Unit* deadEnemyUnit, Unit* attackingUnit )
 {
+	Battle* b = FindBattleContaining( deadEnemyUnit );
+	if ( b != NULL )
+	{
+		b->UnitDied( deadEnemyUnit, true );
+	}
 }
 
 void BattlesInfo::EnemyDamaged( int unitID )
@@ -79,6 +87,26 @@ void BattlesInfo::EnemyDamaged( int unitID )
 
 void BattlesInfo::Update ( int frame )
 {
+	if ( LAST_NUMBER_OF_BATTLES != CurrentBattles.size() )
+		ai->utility->Log( ALL, KNOWLEDGE, "BattleInfo: Number of battles %d", CurrentBattles.size() );
+	
+	LAST_NUMBER_OF_BATTLES = CurrentBattles.size();
+		
+	LastUpdateFrame = frame;
+	/** Delete any inactive battles **/
+	for ( list<Battle*>::iterator iter = CurrentBattles.begin() ; iter != CurrentBattles.end() ; iter++ )
+	{
+		if ((*iter)->GetLastFrameOfActivity() + BATTLE_TIMEOUT < LastUpdateFrame )
+		{
+			list<Battle*>::iterator it2 = iter;
+			if ( iter == CurrentBattles.begin() )
+				iter++;
+			else 
+				iter--;
+			CurrentBattles.erase( it2 );
+			ai->utility->Log( ALL, KNOWLEDGE, "Inactive battle erased" );
+		}
+	}
 }
 
 Battle* BattlesInfo::FindBattleContaining( Unit* u )

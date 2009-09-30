@@ -5,14 +5,15 @@ Battle::Battle( AIClasses* aiClasses, SAIFloat3 position )
 	Center = position;
 	Radius = INITIAL_BATTLE_RADIUS;
 	ai = aiClasses;
-	DeadEnemyUnits.clear();
-	DeadFriendlyUnits.clear();
-	RadiusCircleID = -345543;
+	LastFrameOfActivity = ai->frame;
+	RadiusCircleID = -666;
 }
 
 
 Battle::~Battle()
 {
+	ai->utility->Log( ALL, KNOWLEDGE, "Battle destructor Radius Circle ID: %d", RadiusCircleID );
+	ai->utility->RemoveGraphics( RadiusCircleID );
 }
 
 void Battle::UpdateUnitPosition( Unit* u, bool enemy )
@@ -44,6 +45,7 @@ void Battle::UpdateUnitPosition( Unit* u, bool enemy )
 
 void Battle::UnitDied( Unit* u, bool enemy )
 {
+	LastFrameOfActivity = ai->frame;
 	UnitDef* def = u->GetDef();
 	map<int, int>::iterator iter;
 	int unitID = u->GetUnitId();
@@ -66,6 +68,8 @@ void Battle::UnitDied( Unit* u, bool enemy )
 
 void Battle::UnitEnteredBattle( Unit* u, bool enemy )
 {
+	LastFrameOfActivity = ai->frame;
+
 	int unitID = u->GetUnitId();
 	map<int, SAIFloat3>::iterator iter;
 	if ( double distance = (ai->utility->EuclideanDistance( u->GetPos(), Center )) > Radius )
@@ -76,7 +80,7 @@ void Battle::UnitEnteredBattle( Unit* u, bool enemy )
 	if ( !enemy )
 	{
 		ActiveFriendlyUnits[unitID] = springai::Unit::GetInstance( ai->callback, unitID )->GetPos();
-		
+
 		SAIFloat3 pos[ActiveFriendlyUnits.size()];
 
 		int i = 0;
@@ -136,10 +140,9 @@ void Battle::CalculateCenter( SAIFloat3 pos[], int size )
 	center.z /= size;
 	center.y = 200;
 
-	if ( RadiusCircleID != -345543 )
-	{
+
+	if ( RadiusCircleID != -666 )
 		ai->utility->RemoveGraphics( RadiusCircleID );
-	}
 	RadiusCircleID = ai->utility->DrawCircle( center, Radius );
 	Center = center;
 }
@@ -166,4 +169,10 @@ int Battle::GetNumberOfDeadUnits()
 	for ( iter = DeadFriendlyUnits.begin() ; iter != DeadFriendlyUnits.end() ; iter++ )
 		count += (*iter).second;
 	return count;
+}
+
+
+int Battle::GetLastFrameOfActivity()
+{
+	return LastFrameOfActivity;
 }

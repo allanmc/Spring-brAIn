@@ -1,7 +1,6 @@
 #include "Utility.h"
 #include "global.h"
 #include <stdio.h>
-
 Utility::Utility( AIClasses* aiClasses )
 {
 	ai = aiClasses;
