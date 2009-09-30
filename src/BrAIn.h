@@ -27,8 +27,7 @@
 #include "Unit.h"
 #include "UnitDef.h"
 #include "Engine.h"
-#include "global.h"
-
+#include "huginTest.h"
 
 #include "Decision.h"
 

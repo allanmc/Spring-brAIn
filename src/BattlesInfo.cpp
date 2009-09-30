@@ -98,12 +98,8 @@ void BattlesInfo::Update ( int frame )
 	{
 		if ((*iter)->GetLastFrameOfActivity() + BATTLE_TIMEOUT < LastUpdateFrame )
 		{
-			list<Battle*>::iterator it2 = iter;
-			if ( iter == CurrentBattles.begin() )
-				iter++;
-			else 
-				iter--;
-			CurrentBattles.erase( it2 );
+			delete *iter;
+			iter = CurrentBattles.erase( iter );
 			ai->utility->Log( ALL, KNOWLEDGE, "Inactive battle erased" );
 		}
 	}
