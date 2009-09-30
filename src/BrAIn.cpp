@@ -15,6 +15,8 @@ brainSpace::BrAIn::BrAIn(springai::AICallback* cb)
 	decision = new Decision(ai);
 	//ai->utility->ChatMsg("Hello world i am team: %d",teamId);
 	srand(0);
+
+	HuginTest *huginTest = new HuginTest( ai );
 }
 brainSpace::BrAIn::~BrAIn() {}
 

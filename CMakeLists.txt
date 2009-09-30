@@ -1,10 +1,14 @@
 ### Generic native Skirmish AI config
 #
+message ("WEW ARE HERE!!!: ${CMAKE_CURRENT_SOURCE_DIR}")
+#FIND_LIBRARY(HUGIN_LIBRARY hugin-7.1-vc6 PATHS "${CMAKE_CURRENT_SOURCE_DIR}/lib")
+SET(HUGIN_LIBRARY "${CMAKE_CURRENT_SOURCE_DIR}/lib/hugin-7.1-vc6.lib")
+#LINK_LIBRARIES (brAIn )
 
 set(mySourceDirRel         "src") # Common values are "" or "src"
 set(additionalSources      ${CUtils_SRC})
 set(additionalCompileFlags "")
-set(additionalLibraries    ${Cpp_AIWRAPPER_TARGET})
+set(additionalLibraries    ${Cpp_AIWRAPPER_TARGET} ${HUGIN_LIBRARY})
 
 include_directories(BEFORE ${Cpp_AIWRAPPER_GENERATED_SRC_DIR})
 ConfigureNativeSkirmishAI(mySourceDirRel additionalSources additionalCompileFlags additionalLibraries)

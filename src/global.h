@@ -38,6 +38,10 @@ enum LogLevels {
 #include "OptionValues.h"
 #include "Info.h"
 
+//typedef int(*pfunc)(void);
+
+#include "hugin.h"
+
 namespace brainSpace {
 	class Knowledge;
 	class Utility;
@@ -65,6 +69,7 @@ struct CBoundingBox;
 class QuadTreeNode;
 class QuadTree;
 
+#include <windows.h>
 #include <stdarg.h>
 #include <string>
 #include <string.h>
