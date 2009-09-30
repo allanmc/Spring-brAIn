@@ -1,10 +1,18 @@
 #include "Utility.h"
 #include "global.h"
+#include <stdio.h>
 
 Utility::Utility( AIClasses* aiClasses )
 {
 	ai = aiClasses;
-	fp = FOPEN("brAIn-log.txt", "w");
+	char filename[200];
+	SNPRINTF( filename, 200, "Brain-log-team%d.txt", aiClasses->callback->GetTeamId() );
+	fp = FOPEN(filename, "w");
+}
+
+Utility::~Utility()
+{
+	fclose(fp);
 }
 
 void Utility::Log(int logLevel, int logType, const char* msg, ...)
