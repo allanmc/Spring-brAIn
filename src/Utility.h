@@ -21,8 +21,9 @@ namespace brainSpace
 		void ChatMsg(string msg);
 		UnitDef* GetUnitDef(const char* unitDefName);
 		Resource* GetResource(const char* resourceName);
-		void DrawCircle(SAIFloat3 pos, float radius);
-		void DrawLine(SAIFloat3 start, SAIFloat3 end, bool arrow);
+		int DrawCircle(SAIFloat3 pos, float radius);
+		int DrawLine(SAIFloat3 start, SAIFloat3 end, bool arrow);
+		void RemoveGraphics(int figureId);
 	};
 }
 #endif

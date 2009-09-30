@@ -90,7 +90,7 @@ Resource* Utility::GetResource(const char* resourceName)
 	return NULL;
 }
 
-void Utility::DrawCircle(SAIFloat3 pos, float radius)
+int Utility::DrawCircle(SAIFloat3 pos, float radius)
 {
 	SCreateSplineFigureDrawerCommand circle;
 	circle.lifeTime = 0;
@@ -143,9 +143,10 @@ void Utility::DrawCircle(SAIFloat3 pos, float radius)
 	color.color.y = 0;
 	color.alpha = 255;
 	ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_DRAWER_FIGURE_SET_COLOR, &color);
+	return color.figureGroupId;
 }
 
-void Utility::DrawLine(SAIFloat3 start, SAIFloat3 end, bool arrow)
+int Utility::DrawLine(SAIFloat3 start, SAIFloat3 end, bool arrow)
 {
 	SCreateLineFigureDrawerCommand line;
 	line.arrow = arrow;
@@ -163,6 +164,14 @@ void Utility::DrawLine(SAIFloat3 start, SAIFloat3 end, bool arrow)
 	color.color.y = 0;
 	color.alpha = 255;
 	ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_DRAWER_FIGURE_SET_COLOR, &color);
+	return color.figureGroupId;
+}
+
+void Utility::RemoveGraphics(int figureId)
+{
+	SDeleteFigureDrawerCommand removeCmd;
+	removeCmd.figureGroupId = figureId;
+	ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_DRAWER_FIGURE_DELETE, &removeCmd);
 }
 
 double Utility::EuclideanDistance(SAIFloat3 pos1, SAIFloat3 pos2)
