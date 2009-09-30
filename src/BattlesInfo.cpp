@@ -13,36 +13,49 @@ BattlesInfo::~BattlesInfo()
 {
 }
 
+
+//1a: Find the battle which the friendly unit is a part of
+//1b: Add the attacker to the battle
+//2a: The friendly unit was not a part of any ongoing battle, so try and add it to the nearest battle
+//2b: If that battle did not already contain the attacker, add it to the battle
+//3a: No battles were taking place, so add both units to a new Battle object
 void BattlesInfo::UnitDamaged( Unit* friendlyUnit, Unit* attackingUnit )
 {
 	Battle* b = FindBattleContaining( friendlyUnit );
 
 	if ( b != NULL )
 	{
-		ai->utility->ChatMsg( "UnitID: %d, AttackerID: %d", friendlyUnit->GetUnitId(), attackingUnit->GetUnitId() );
 		if ( !b->Contains( attackingUnit ) )
 			b->UnitEnteredBattle( attackingUnit, true );
 		return;
 	}
 	else
 	{
-		ai->utility->ChatMsg( "UnitID: %d was not a part of any battle", friendlyUnit->GetUnitId() );
 		b = FindNearestBattle( friendlyUnit->GetPos() );
 		if ( b != NULL )
 		{
-			ai->utility->ChatMsg( "Nearby battle found" );
 			b->UnitEnteredBattle( friendlyUnit, false );
 			if ( !b->Contains( attackingUnit ) )
 				b->UnitEnteredBattle( attackingUnit, true );
 			return;
 		}
-
 		//The unit is not a part of any battles, and there are no battles nearby so make a new Battle object.
+
 		b = new Battle( ai, friendlyUnit->GetPos() );
 		b->UnitEnteredBattle( friendlyUnit, false );
 		b->UnitEnteredBattle( attackingUnit, true );
 		CurrentBattles.push_back( b );
-		ai->utility->ChatMsg( "Units entered a new battle: Id %d and %d ", friendlyUnit->GetUnitId(), attackingUnit->GetUnitId() );
+		ai->utility->Log( ALL, KNOWLEDGE, "Units entered a new battle: Id %d and %d ", friendlyUnit->GetUnitId(), attackingUnit->GetUnitId() );
+	}
+
+	ai->utility->Log( ALL, KNOWLEDGE, "Num battles: %d", CurrentBattles.size() );
+	list<Battle*>::iterator iter;
+	int i = 0;
+	for ( iter = CurrentBattles.begin() ; iter != CurrentBattles.end() ; iter++, i++ )
+	{
+		int a = (*iter)->GetNumberOfActiveUnits();
+		int d = (*iter)->GetNumberOfDeadUnits();
+		ai->utility->Log( ALL, KNOWLEDGE, "Number of units in battle %d: Dead %d Alive: %d", i, d, a );
 	}
 }
 
@@ -83,7 +96,9 @@ Battle* BattlesInfo::FindNearestBattle( SAIFloat3 pos )
 	list<Battle*>::iterator iter;
 
 	for ( iter = CurrentBattles.begin() ; iter != CurrentBattles.end() ; iter++ )
-		if ( ai->utility->EuclideanDistance( (*iter)->GetCenter(), pos ) < BATTLE_RADIUS )
+		if ( ai->utility->EuclideanDistance( (*iter)->GetCenter(), pos ) < (*iter)->GetRadius() )
+		{
 			return *iter;
-	return NULL;
+		}
+		return NULL;
 }

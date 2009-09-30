@@ -1,7 +1,7 @@
 #ifndef _BRAINSPACE_BATTLE_H
 #define _BRAINSPACE_BATTLE_H
 
-#define BATTLE_RADIUS 150
+#define INITIAL_BATTLE_RADIUS 500
 
 #include "global.h"
 
@@ -24,14 +24,25 @@ namespace brainSpace
 
 		SAIFloat3 GetCenter();
 
+		float GetRadius();
+
+		/**DEBUG**/
+		int GetNumberOfActiveUnits();
+		/**DEBUG**/
+		int GetNumberOfDeadUnits();
+
 	private:
+
+		int RadiusCircleID;
+
+		void CalculateCenter( SAIFloat3 pos[], int size );
+
 		map<UnitDef*, int> DeadFriendlyUnits;
 		map<UnitDef*, int> DeadEnemyUnits;
 
 		//UnitID, Position
 		map<int, SAIFloat3> ActiveFriendlyUnits;
 		map<int, SAIFloat3> ActiveEnemyUnits;
-
 
 		SAIFloat3 Center;
 		float Radius;
