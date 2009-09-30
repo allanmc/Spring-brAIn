@@ -13,7 +13,7 @@ void Utility::Log(int logLevel, int logType, const char* msg, ...)
 	{
 		return;
 	}
-	else if ((LOG_TYPE & logType) == 0)
+	else if (((LOG_TYPE) & logType) == 0)
 	{
 		return;
 	}
