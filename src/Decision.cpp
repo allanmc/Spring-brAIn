@@ -20,9 +20,10 @@ Decision::~Decision(void)
 
 void Decision::UnitCreated(int unitID, int builderID)
 {
-	ai->utility->ChatMsg("Unit created");
+	//ai->utility->ChatMsg("Unit created");
 	Unit * u = Unit::GetInstance(ai->callback,unitID);
-	Unit * builder = ( builder ? Unit::GetInstance(ai->callback,builderID) : NULL);
+	Unit * builder = ( builderID ? Unit::GetInstance(ai->callback,builderID) : NULL);
+	
 	if(u->GetDef()->GetSpeed() == 0){//building
 		float ETA = u->GetDef()->GetBuildTime() / builder->GetDef()->GetBuildSpeed();
 		ai->knowledge->selfInfo->resourceInfo->AddChangeToCome(u,ETA);
