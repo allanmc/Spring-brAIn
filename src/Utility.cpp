@@ -10,6 +10,11 @@ Utility::Utility( AIClasses* aiClasses )
 	fp = FOPEN(filename, "w");
 }
 
+Utility::~Utility()
+{
+	fclose(fp);
+}
+
 void Utility::Log(int logLevel, int logType, const char* msg, ...)
 {		
 	if (LOG_LEVEL < logLevel)

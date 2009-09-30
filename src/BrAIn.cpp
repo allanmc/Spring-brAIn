@@ -26,12 +26,11 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 	switch (topic) {
 		case EVENT_INIT:
 			ai->utility->ChatMsg("THE BEGINNING! LOG_LEVEL: %i, LOG_TYPE: %i, EVENT: %i", LOG_LEVEL, LOG_TYPE);
-			ai->utility->Log(ALL, CHAT|DECISION, "Trying something...");
-			ai->utility->Log(ALL, CHAT|DECISION, "Congrats...");
+			ai->utility->Log(ALL, CHAT|DECISION, "Logging started...");
 			//do i really need to do anything here? (i allready have a teamId and a callback)
 			break;
 		case EVENT_RELEASE:
-			ai->utility->Log(DEBUG,EVENT,"THE END!");
+			ai->utility->Log(DEBUG,CHAT,"THE END!");
 			//i am no longer needed
 			//delete(decision);
 			break;
