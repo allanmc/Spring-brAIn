@@ -139,14 +139,9 @@ int Utility::DrawCircle(SAIFloat3 pos, float radius)
 	circle.pos3.x -= MAGIC_CIRCLE_NUMBER*radius;
 	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_DRAWER_FIGURE_CREATE_SPLINE, &circle);
 
-	SSetColorFigureDrawerCommand color;
-	color.figureGroupId = circle.figureGroupId;
-	color.color.x = 255;
-	color.color.z = 0;
-	color.color.y = 0;
-	color.alpha = 255;
-	ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_DRAWER_FIGURE_SET_COLOR, &color);
-	return color.figureGroupId;
+	AssignColorToGraphics( circle.figureGroupId );
+
+	return circle.figureGroupId;
 }
 
 int Utility::DrawLine(SAIFloat3 start, SAIFloat3 end, bool arrow)
@@ -160,14 +155,8 @@ int Utility::DrawLine(SAIFloat3 start, SAIFloat3 end, bool arrow)
 	
 	ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_DRAWER_FIGURE_CREATE_LINE, &line);
 
-	SSetColorFigureDrawerCommand color;
-	color.figureGroupId = line.ret_newFigureGroupId;
-	color.color.x = 255;
-	color.color.z = 0;
-	color.color.y = 0;
-	color.alpha = 255;
-	ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_DRAWER_FIGURE_SET_COLOR, &color);
-	return color.figureGroupId;
+	AssignColorToGraphics( line.ret_newFigureGroupId );
+	return line.ret_newFigureGroupId;
 }
 
 void Utility::RemoveGraphics(int figureId)
@@ -182,3 +171,53 @@ double Utility::EuclideanDistance(SAIFloat3 pos1, SAIFloat3 pos2)
 	return sqrt( pow( fabs( pos1.x - pos2.x ), 2 ) + pow( fabs( pos1.z - pos2.z ), 2  ) );
 }
 
+void Utility::AssignColorToGraphics( int figureGroupID )
+{
+	SSetColorFigureDrawerCommand color;
+	color.figureGroupId = figureGroupID;
+	color.alpha = 255;
+	switch ( ai->callback->GetTeamId() )
+	{
+	case 0:
+		color.color.x = TEAM_0_COLOR.x;
+		color.color.y = TEAM_0_COLOR.y;
+		color.color.z = TEAM_0_COLOR.z;
+		break;
+	case 1:
+		color.color.x = TEAM_1_COLOR.x;
+		color.color.y = TEAM_1_COLOR.y;
+		color.color.z = TEAM_1_COLOR.z;
+		break;
+	case 2:
+		color.color.x = TEAM_2_COLOR.x;
+		color.color.y = TEAM_2_COLOR.y;
+		color.color.z = TEAM_2_COLOR.z;
+		break;
+	case 3:
+		color.color.x = TEAM_3_COLOR.x;
+		color.color.y = TEAM_3_COLOR.y;
+		color.color.z = TEAM_3_COLOR.z;
+		break;
+	case 4:
+		color.color.x = TEAM_4_COLOR.x;
+		color.color.y = TEAM_4_COLOR.y;
+		color.color.z = TEAM_4_COLOR.z;
+		break;
+	case 5:
+		color.color.x = TEAM_5_COLOR.x;
+		color.color.y = TEAM_5_COLOR.y;
+		color.color.z = TEAM_5_COLOR.z;
+		break;
+	case 6:
+		color.color.x = TEAM_6_COLOR.x;
+		color.color.y = TEAM_6_COLOR.y;
+		color.color.z = TEAM_6_COLOR.z;
+		break;
+	case 7:
+		color.color.x = TEAM_7_COLOR.x;
+		color.color.y = TEAM_7_COLOR.y;
+		color.color.z = TEAM_7_COLOR.z;
+		break;
+	}
+	ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_DRAWER_FIGURE_SET_COLOR, &color);
+}

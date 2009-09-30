@@ -37,8 +37,9 @@ namespace brainSpace
 
 		void CalculateCenter( SAIFloat3 pos[], int size );
 
-		map<UnitDef*, int> DeadFriendlyUnits;
-		map<UnitDef*, int> DeadEnemyUnits;
+		//UnitDefID, numberOfUnits
+		map<int, int> DeadFriendlyUnits;
+		map<int, int> DeadEnemyUnits;
 
 		//UnitID, Position
 		map<int, SAIFloat3> ActiveFriendlyUnits;
