@@ -5,8 +5,12 @@ Utility::Utility( AIClasses* aiClasses )
 {
 	ai = aiClasses;
 	char filename[200];
-	SNPRINTF( filename, 200, "Brain-log-team%d.txt", aiClasses->callback->GetTeamId() );
-	fp = FOPEN(filename, "w");
+	char path[200];
+	const char *dir = DataDirs::GetInstance(ai->callback)->GetConfigDir();
+	strcpy(path, dir);
+	SNPRINTF( filename, 200, "\\Brain-log-team%d.txt", aiClasses->callback->GetTeamId() );
+	strcat(path, filename);
+	fp = FOPEN(path, "w");
 }
 
 Utility::~Utility()
