@@ -25,12 +25,14 @@ namespace brainSpace
 		vector<Unit*> RangeQuery(float topLeftX, float topLeftZ, float bottomRightX, float bottomRightZ);
 		vector<Unit*> RangeQuery(SAIFloat3 topLeft, SAIFloat3 bottomRight);
 		vector<Unit*> RangeQuery(CBoundingBox bbox);
+		UnitDef* GetUnitDef(int unitID);
 
 		unsigned int unitCount;
 
 	private:
 		AIClasses* ai;
 		QuadTree* quadTree;
+		map<int,UnitDef*> knownUnitDefs;
 		
 	};
 }
