@@ -13,4 +13,8 @@ class HuginTest {
 		int domain_has_utilities (h_domain_t domain);
 		void print_error (void);
 
+	private:
+		AIClasses *ai;
+
+
 };

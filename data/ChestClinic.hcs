@@ -1,0 +1,6 @@
+% This patient has recently visited Asia (A), is a smoker (S), and has
+% shortness-of-breath (D[yspnoea]).
+
+A: "yes"
+S: "yes"
+D: "yes"

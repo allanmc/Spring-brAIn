@@ -1,7 +1,7 @@
 #ifndef _BRAIN_GLOBAL_H
 #define _BRAIN_GLOBAL_H
 
-#define LOG_TYPE (CHAT|QUADTREE|DECISION|KNOWLEDGE|UTILITY)
+#define LOG_TYPE (CHAT|QUADTREE|DECISION|KNOWLEDGE|UTILITY|EVENT)
 #define LOG_LEVEL ALL
 
 //namespace brainSpace {
@@ -29,6 +29,7 @@ enum LogLevels {
 
 #include "Unit.h"
 #include "UnitDef.h"
+#include "DataDirs.h"
 #include "Engine.h"
 #include "Map.h"
 #include "Resource.h"
