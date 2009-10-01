@@ -44,18 +44,20 @@ void Battle::UpdateUnitPosition( Unit* u, bool enemy )
 void Battle::UnitDied( Unit* u, bool enemy )
 {
 	LastFrameOfActivity = ai->frame;
-	ai->utility->Log( DEBUG, KNOWLEDGE, "UNIT DIED: %d unitdefID: %d", u->GetUnitId(), u->GetDef()->GetUnitDefId() );
+	//ai->utility->Log( DEBUG, KNOWLEDGE, "UNIT DIED: %d unitdefID: %d", u->GetUnitId(), u->GetDef()->GetUnitDefId() );
 	UnitDef* def = u->GetDef();
 	map<int, int>::iterator iter;
 	int unitID = u->GetUnitId();
 
 	if ( enemy )
 	{
+		//ai->utility->Log( DEBUG, KNOWLEDGE, "dead unit is enemy unit" );
 		DeadEnemyUnits[def->GetUnitDefId()] += 1;
 		ActiveEnemyUnits.erase( unitID );
 	}
 	else
 	{
+		//ai->utility->Log( DEBUG, KNOWLEDGE, "dead unit is friendly unit" );
 		DeadFriendlyUnits[def->GetUnitDefId()] += 1;
 		ActiveFriendlyUnits.erase( unitID );
 	}
@@ -174,12 +176,12 @@ int Battle::GetLastFrameOfActivity()
 
 void Battle::RemoveUnit( Unit* unit )
 {
-	ai->utility->Log( DEBUG, KNOWLEDGE, "UNIT REMOVED: %d", unit->GetUnitId() );
+	//ai->utility->Log( DEBUG, KNOWLEDGE, "UNIT REMOVED: %d", unit->GetUnitId() );
 	map<int, SAIFloat3>::iterator it = ActiveFriendlyUnits.find( unit->GetUnitId() );
 	if ( it != ActiveFriendlyUnits.end() )
 	{
 		ActiveFriendlyUnits.erase( it );
-		ai->utility->Log( DEBUG, CHAT, "Removed a unit from a battle" );
+		//ai->utility->Log( DEBUG, CHAT, "Removed a unit from a battle" );
 	}
 	else
 	{
@@ -187,7 +189,7 @@ void Battle::RemoveUnit( Unit* unit )
 		if ( it != ActiveEnemyUnits.end() )
 		{
 			ActiveEnemyUnits.erase( it );
-			ai->utility->Log( DEBUG, CHAT, "Removed a unit from a battle" );
+			//ai->utility->Log( DEBUG, CHAT, "Removed a unit from a battle" );
 		}
 	}
 }
@@ -205,39 +207,31 @@ void Battle::ToString()
 	for ( map<int, SAIFloat3>::iterator iter = ActiveFriendlyUnits.begin() ; iter != ActiveFriendlyUnits.end() ; iter++ )
 	{
 		int i = (*iter).first;
-		ai->utility->Log( DEBUG, KNOWLEDGE, "PIKKEMAND %d", i );
 		Unit* u = Unit::GetInstance( ai->callback , (*iter).first );
 	
-		ai->utility->Log( DEBUG, KNOWLEDGE, "RØVSVED" );
 		UnitDef* d = u->GetDef();
-		if ( d == NULL )
-			ai->utility->Log( DEBUG, KNOWLEDGE, "ANAL KLØE" );
-		ai->utility->Log( DEBUG, KNOWLEDGE, "HOMOSEX %d", d->GetUnitDefId() );
+		ai->utility->Log( DEBUG, KNOWLEDGE, "Active friendly unitID %d and unitdefID %d", u->GetUnitId(), d->GetUnitDefId() );
 
-		const char* s = d->GetHumanName();
-		ai->utility->Log( DEBUG, KNOWLEDGE, "DILLERBUMMELUM" );
-
-
-		ai->utility->Log( DEBUG, KNOWLEDGE, "Unit ID %d: %s", (*iter).first, springai::Unit::GetInstance(ai->callback, (*iter).first )->GetDef()->GetHumanName() );
+		
+		if ( d->GetUnitDefId() == -1 )
+			ai->utility->Log( DEBUG, KNOWLEDGE, "Unit ID %d: UnitDef unknown", (*iter).first );
+		else 
+			ai->utility->Log( DEBUG, KNOWLEDGE, "Unit ID %d: %s", (*iter).first, d->GetHumanName() );
 	}
 
 	ai->utility->Log( DEBUG, KNOWLEDGE, "Active Enemy Units: %d\n--------------", ActiveEnemyUnits.size() );
 	for ( map<int, SAIFloat3>::iterator iter = ActiveEnemyUnits.begin() ; iter != ActiveEnemyUnits.end() ; iter++ )
 	{
 		int i = (*iter).first;
-		ai->utility->Log( DEBUG, KNOWLEDGE, "PIKKEMAND %d", i );
 		Unit* u = Unit::GetInstance( ai->callback , (*iter).first );
-		ai->utility->Log( DEBUG, KNOWLEDGE, "RØVSVED" );
 		UnitDef* d = u->GetDef();
-		ai->utility->Log( DEBUG, KNOWLEDGE, "HOMOSEX %d", d->GetUnitDefId() );
 
+		ai->utility->Log( DEBUG, KNOWLEDGE, "Active enemy unitID %d and unitdefID %d", u->GetUnitId(), d->GetUnitDefId() );
 
-		if ( d == NULL )
-			ai->utility->Log( DEBUG, KNOWLEDGE, "ANAL KLØE" );
-		const char* s = d->GetHumanName();
-		ai->utility->Log( DEBUG, KNOWLEDGE, "DILLERBUMMELUM" );
-
-		ai->utility->Log( DEBUG, KNOWLEDGE, "Unit ID %d: %s", (*iter).first, springai::Unit::GetInstance(ai->callback, (*iter).first )->GetDef()->GetHumanName() );
+		if ( d->GetUnitDefId() == -1 )
+			ai->utility->Log( DEBUG, KNOWLEDGE, "Unit ID %d: UnitDef unknown", (*iter).first );
+		else 
+			ai->utility->Log( DEBUG, KNOWLEDGE, "Unit ID %d: %s", (*iter).first, d->GetHumanName() );
 	}
 
 	vector<UnitDef*> unitDefs = ai->callback->GetUnitDefs();

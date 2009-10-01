@@ -38,18 +38,12 @@ void BattlesInfo::UnitDestroyed( Unit* deadFriendlyUnit, Unit* attackingUnit  )
 
 void BattlesInfo::EnemyDestroyed( Unit* deadEnemyUnit, Unit* attackingUnit )
 {
-	ai->utility->Log( DEBUG, KNOWLEDGE, "røv!!!!!!" );
 	Battle* b = FindBattleContaining( deadEnemyUnit );
-	ai->utility->Log( DEBUG, KNOWLEDGE, "røv2!!!!!!" );
 	if ( b != NULL )
-	{ai->utility->Log( DEBUG, KNOWLEDGE, "initram" );
-	
+	{	
 		b->UnitDied( deadEnemyUnit, true );
-		ai->utility->Log( DEBUG, KNOWLEDGE, "nosser" );
-	
 	}
 	CleanupAfterSomeoneDied( deadEnemyUnit );
-	ai->utility->Log( DEBUG, KNOWLEDGE, "så skal der noget debug ud" );
 	
 }
 
@@ -73,12 +67,14 @@ void BattlesInfo::Update ( int frame )
 		}
 	}
 
+	if ( frame % 600 == 0 )
+	{
 		ai->utility->Log( DEBUG, KNOWLEDGE, "\nPRINTING UPDATED BATTLE INFO: frame %d\n", frame );
 		ai->utility->Log( DEBUG, KNOWLEDGE, "\n\nNum active battles %d\n==============", CurrentBattles.size() );
 		int i = 0;
 		for ( list<Battle*>::iterator iter = CurrentBattles.begin() ; iter != CurrentBattles.end() ; iter++, i++ )
 		{
-			ai->utility->Log( DEBUG, KNOWLEDGE, "Battle number %d", i );
+			ai->utility->Log( DEBUG, KNOWLEDGE, "\n\nBattle number %d\n--------", i );
 			(*iter)->ToString();
 		}
 
@@ -90,6 +86,7 @@ void BattlesInfo::Update ( int frame )
 			(*iter)->ToString();
 		}
 		ai->utility->Log( DEBUG, KNOWLEDGE, "\nDONE PRINTING UPDATED BATTLE INFO\n" );
+	}
 
 }
 
