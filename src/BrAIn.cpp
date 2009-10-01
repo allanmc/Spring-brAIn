@@ -41,6 +41,7 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 				ai->utility->Log(DEBUG,EVENT,"update");
 				struct SUpdateEvent* evt = (struct SUpdateEvent*) data;
 				int frame = evt->frame;
+				ai->frame = frame;
 				decision->Update(frame);
 				break;
 			}

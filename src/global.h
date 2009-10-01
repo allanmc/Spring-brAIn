@@ -62,6 +62,7 @@ namespace brainSpace {
 		AICallback *callback;
 		Knowledge *knowledge;
 		Utility *utility;
+		int frame;
 	} AIClasses;
 }
 
