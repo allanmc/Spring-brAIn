@@ -252,3 +252,10 @@ void Decision::UnitDamaged( int unitID, int attacker )
 	Unit* u2 = Unit::GetInstance( ai->callback, unitID );
 	BattleInfoInstance->UnitDamaged( u1, u2 );
 }
+
+void Decision::EnemyDamaged( int attacker, int enemy )
+{
+	Unit* attackerUnit = Unit::GetInstance( ai->callback, attacker );
+	Unit* enemyUnit = Unit::GetInstance( ai->callback, enemy );
+	BattleInfoInstance->EnemyDamaged( attackerUnit, enemyUnit );
+}

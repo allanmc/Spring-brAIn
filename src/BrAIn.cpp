@@ -132,8 +132,12 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 			ai->utility->Log(DEBUG,EVENT,"enemy leave radar");
 			break;
 		case EVENT_ENEMY_DAMAGED:
+			{
 			ai->utility->Log(DEBUG,EVENT,"enemy damaged");
+			struct SEnemyDamagedEvent* evt = (struct SEnemyDamagedEvent*)data;
+			decision->EnemyDamaged( evt->attacker, evt->enemy );
 			break;
+			}
 		case EVENT_ENEMY_DESTROYED:
 			{
 				//gotcha bitch!

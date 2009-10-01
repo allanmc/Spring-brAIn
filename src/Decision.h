@@ -22,7 +22,7 @@ public:
 	void UnitDestroyed(int unit, int attacker);
 
 	void UnitDamaged(int unit, int attacker);
-
+	void EnemyDamaged( int attacker, int enemy );
 
 	void EnemyEnterLOS(int enemy);
 	void EnemyDestroyed(int enemy, int attacker);

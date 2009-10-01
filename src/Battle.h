@@ -2,6 +2,7 @@
 #define _BRAINSPACE_BATTLE_H
 
 #define INITIAL_BATTLE_RADIUS 500
+#define RADIUS_BUFFER 200
 #define BATTLE_TIMEOUT 400
 
 #include "global.h"
@@ -29,6 +30,16 @@ namespace brainSpace
 		float GetRadius();
 
 		int GetLastFrameOfActivity();
+
+		void RemoveUnit( Unit* unit );
+
+		/** This method performs stuff that is necessary when the battle goes from being 
+		  * active to being inactive, i.e. when no units in it have been in battle for a while
+		 **/
+		void Oldify();
+
+		void ToString();
+
 
 		/**DEBUG**/
 		int GetNumberOfActiveUnits();

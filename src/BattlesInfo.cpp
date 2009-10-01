@@ -4,8 +4,6 @@
 using namespace brainSpace;
 using namespace springai;
 
-int LAST_NUMBER_OF_BATTLES = 0;
-
 BattlesInfo::BattlesInfo( AIClasses* aiClasses )
 {
 	ai = aiClasses;
@@ -24,42 +22,7 @@ BattlesInfo::~BattlesInfo()
 //3a: No battles were taking place, so add both units to a new Battle object
 void BattlesInfo::UnitDamaged( Unit* friendlyUnit, Unit* attackingUnit )
 {
-	Battle* b = FindBattleContaining( friendlyUnit );
-
-	if ( b != NULL )
-	{
-		if ( !b->Contains( attackingUnit ) )
-			b->UnitEnteredBattle( attackingUnit, true );
-		return;
-	}
-	else
-	{
-		b = FindNearestBattle( friendlyUnit->GetPos() );
-		if ( b != NULL )
-		{
-			b->UnitEnteredBattle( friendlyUnit, false );
-			if ( !b->Contains( attackingUnit ) )
-				b->UnitEnteredBattle( attackingUnit, true );
-			return;
-		}
-		//The unit is not a part of any battles, and there are no battles nearby so make a new Battle object.
-
-		b = new Battle( ai, friendlyUnit->GetPos() );
-		b->UnitEnteredBattle( friendlyUnit, false );
-		b->UnitEnteredBattle( attackingUnit, true );
-		CurrentBattles.push_back( b );
-		ai->utility->Log( ALL, KNOWLEDGE, "Units entered a new battle: Id %d and %d ", friendlyUnit->GetUnitId(), attackingUnit->GetUnitId() );
-	}
-
-	ai->utility->Log( ALL, KNOWLEDGE, "Num battles: %d", CurrentBattles.size() );
-	list<Battle*>::iterator iter;
-	int i = 0;
-	for ( iter = CurrentBattles.begin() ; iter != CurrentBattles.end() ; iter++, i++ )
-	{
-		int a = (*iter)->GetNumberOfActiveUnits();
-		int d = (*iter)->GetNumberOfDeadUnits();
-		ai->utility->Log( ALL, KNOWLEDGE, "Number of units in battle %d: Dead %d Alive: %d", i, d, a );
-	}
+	SomeoneDamaged( friendlyUnit, attackingUnit );
 }
 
 
@@ -70,46 +33,69 @@ void BattlesInfo::UnitDestroyed( Unit* deadFriendlyUnit, Unit* attackingUnit  )
 	{
 		b->UnitDied( deadFriendlyUnit, false );
 	}
+	CleanupAfterSomeoneDied( deadFriendlyUnit );
 }
 
 void BattlesInfo::EnemyDestroyed( Unit* deadEnemyUnit, Unit* attackingUnit )
 {
+	ai->utility->Log( DEBUG, KNOWLEDGE, "røv!!!!!!" );
 	Battle* b = FindBattleContaining( deadEnemyUnit );
+	ai->utility->Log( DEBUG, KNOWLEDGE, "røv2!!!!!!" );
 	if ( b != NULL )
-	{
+	{ai->utility->Log( DEBUG, KNOWLEDGE, "initram" );
+	
 		b->UnitDied( deadEnemyUnit, true );
+		ai->utility->Log( DEBUG, KNOWLEDGE, "nosser" );
+	
 	}
+	CleanupAfterSomeoneDied( deadEnemyUnit );
+	ai->utility->Log( DEBUG, KNOWLEDGE, "så skal der noget debug ud" );
+	
 }
 
-void BattlesInfo::EnemyDamaged( int unitID )
+void BattlesInfo::EnemyDamaged( Unit* attacker, Unit* enemy )
 {
+	SomeoneDamaged( attacker, enemy );
 }
 
 void BattlesInfo::Update ( int frame )
 {
-	if ( LAST_NUMBER_OF_BATTLES != CurrentBattles.size() )
-		ai->utility->Log( ALL, KNOWLEDGE, "BattleInfo: Number of battles %d", CurrentBattles.size() );
-	
-	LAST_NUMBER_OF_BATTLES = CurrentBattles.size();
-		
 	LastUpdateFrame = frame;
-	/** Delete any inactive battles **/
+	/** Erase any inactive battles and copy them to the OldBattles list **/
 	for ( list<Battle*>::iterator iter = CurrentBattles.begin() ; iter != CurrentBattles.end() ; iter++ )
 	{
 		if ((*iter)->GetLastFrameOfActivity() + BATTLE_TIMEOUT < LastUpdateFrame )
 		{
-			delete *iter;
+			(*iter)->Oldify();
+			OldBattles.push_back( *iter );
 			iter = CurrentBattles.erase( iter );
-			ai->utility->Log( ALL, KNOWLEDGE, "Inactive battle erased" );
+			ai->utility->Log( DEBUG, KNOWLEDGE, "Inactive battle erased" );
 		}
 	}
+
+		ai->utility->Log( DEBUG, KNOWLEDGE, "\nPRINTING UPDATED BATTLE INFO: frame %d\n", frame );
+		ai->utility->Log( DEBUG, KNOWLEDGE, "\n\nNum active battles %d\n==============", CurrentBattles.size() );
+		int i = 0;
+		for ( list<Battle*>::iterator iter = CurrentBattles.begin() ; iter != CurrentBattles.end() ; iter++, i++ )
+		{
+			ai->utility->Log( DEBUG, KNOWLEDGE, "Battle number %d", i );
+			(*iter)->ToString();
+		}
+
+		i = 0;
+		ai->utility->Log( DEBUG, KNOWLEDGE, "\n\nNum old battles %d\n==============", OldBattles.size() );
+		for ( list<Battle*>::iterator iter = OldBattles.begin() ; iter != OldBattles.end() ; iter++, i++ )
+		{
+			ai->utility->Log( DEBUG, KNOWLEDGE, "Battle number %d", i );
+			(*iter)->ToString();
+		}
+		ai->utility->Log( DEBUG, KNOWLEDGE, "\nDONE PRINTING UPDATED BATTLE INFO\n" );
+
 }
 
 Battle* BattlesInfo::FindBattleContaining( Unit* u )
 {
-	list<Battle*>::iterator iter;
-
-	for ( iter = CurrentBattles.begin() ; iter != CurrentBattles.end() ; iter++ )
+	for ( list<Battle*>::iterator iter = CurrentBattles.begin() ; iter != CurrentBattles.end() ; iter++ )
 		if ( (*iter)->Contains( u ) )
 			return *iter;
 	return NULL;
@@ -117,12 +103,58 @@ Battle* BattlesInfo::FindBattleContaining( Unit* u )
 
 Battle* BattlesInfo::FindNearestBattle( SAIFloat3 pos )
 {
-	list<Battle*>::iterator iter;
-
-	for ( iter = CurrentBattles.begin() ; iter != CurrentBattles.end() ; iter++ )
-		if ( ai->utility->EuclideanDistance( (*iter)->GetCenter(), pos ) < (*iter)->GetRadius() )
+	for ( list<Battle*>::iterator iter = CurrentBattles.begin() ; iter != CurrentBattles.end() ; iter++ )
+		if ( ai->utility->EuclideanDistance( (*iter)->GetCenter(), pos ) < (*iter)->GetRadius()+RADIUS_BUFFER )
 		{
 			return *iter;
 		}
 		return NULL;
+}
+
+
+void BattlesInfo::SomeoneDamaged( Unit* our, Unit* their )
+{
+	Battle* b = FindBattleContaining( our );
+
+	if ( b != NULL )
+	{
+		if ( !b->Contains( their ) )
+			b->UnitEnteredBattle( their, true );
+		return;
+	}
+	else
+	{
+		b = FindNearestBattle( our->GetPos() );
+		if ( b != NULL )
+		{
+			b->UnitEnteredBattle( our, false );
+			if ( !b->Contains( their ) )
+				b->UnitEnteredBattle( their, true );
+			return;
+		}
+		//The unit is not a part of any battles, and there are no battles nearby so make a new Battle object.
+
+		b = new Battle( ai, our->GetPos() );
+		b->UnitEnteredBattle( our, false );
+		b->UnitEnteredBattle( their, true );
+		CurrentBattles.push_back( b );
+	}
+
+	int i = 0;
+	for ( list<Battle*>::iterator iter = CurrentBattles.begin() ; iter != CurrentBattles.end() ; iter++, i++ )
+	{
+		int a = (*iter)->GetNumberOfActiveUnits();
+		int d = (*iter)->GetNumberOfDeadUnits();
+	}
+}
+
+void BattlesInfo::CleanupAfterSomeoneDied( Unit* unitToCleanup )
+{
+	for ( list<Battle*>::iterator iter = CurrentBattles.begin() ; iter != CurrentBattles.end() ; iter++ )
+	{
+		if ( (*iter)->Contains( unitToCleanup ) )
+		{
+			(*iter)->RemoveUnit( unitToCleanup );
+		}
+	}
 }

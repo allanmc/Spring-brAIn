@@ -22,7 +22,7 @@ namespace brainSpace
 		
 		void EnemyDestroyed( Unit* deadEnemyUnit , Unit* attackingUnit );
 
-		void EnemyDamaged( int unitID );
+		void EnemyDamaged( Unit* attacker, Unit* enemy );
 
 		void Update ( int frame );
 
@@ -30,11 +30,15 @@ namespace brainSpace
 
 	private:
 
-		int LastUpdateFrame;
+		void SomeoneDamaged( Unit* our, Unit* their );
+		void CleanupAfterSomeoneDied( Unit* unitToCleanup );
 		Battle* FindBattleContaining( Unit* unit );
 		Battle* FindNearestBattle( SAIFloat3 pos );
 		
+		
 		AIClasses* ai;
+		
+		int LastUpdateFrame;
 
 		list<Battle*> CurrentBattles;
 		list<Battle*> OldBattles;
