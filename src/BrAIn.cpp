@@ -13,10 +13,11 @@ brainSpace::BrAIn::BrAIn(springai::AICallback* cb)
 	teamId = (ai->callback != NULL ? ai->callback->GetTeamId() : -1);
 
 	decision = new Decision(ai);
+
 	//ai->utility->ChatMsg("Hello world i am team: %d",teamId);
 	srand(0);
 
-	//HuginTest *huginTest = new HuginTest( ai );
+	HuginTest *huginTest = new HuginTest( ai );
 }
 brainSpace::BrAIn::~BrAIn() {}
 

@@ -12,7 +12,13 @@ void error_handler (h_location_t line_no, h_string_t message, void *data)
 
 HuginTest::HuginTest( AIClasses* aiClasses )
 {
-	load_and_propagate( "ChestClinic.net", "ChestClinic.hcs" );
+	ai = aiClasses;
+	char file1[100];
+	char file2[100];
+	const char *dir = DataDirs::GetInstance(ai->callback)->GetConfigDir();
+	strcpy(file1, dir);
+	strcpy(file2, dir);
+	load_and_propagate( strcat(file1,"\\ChestClinic.net"), strcat(file2,"\\ChestClinic.hcs") );
 }
 
 void HuginTest::load_and_propagate (h_string_t net_file_name, h_string_t case_file_name)
