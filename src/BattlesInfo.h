@@ -26,6 +26,8 @@ namespace brainSpace
 
 		void Update ( int frame );
 
+		int NumberOfBattlesInArea( int timePeriod, CBoundingBox box );
+
 	protected:
 
 	private:

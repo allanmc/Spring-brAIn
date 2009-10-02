@@ -22,15 +22,7 @@ bool QuadTreeNode::IsLeafNode()
 
 bool QuadTreeNode::Intersects(CBoundingBox bbox)
 {
-	SAIFloat3 min = this->BoundingBox.topLeft;
-	SAIFloat3 max = this->BoundingBox.bottomRight;
-	SAIFloat3 other_min = bbox.topLeft;
-	SAIFloat3 other_max = bbox.bottomRight;
-	
-	return 
-		(min.x < other_max.x) && (max.x > other_min.x) &&
-		/*(min.y < other_max.y) && (max.y > other_min.y) &&*/
-		(min.z < other_max.z) && (max.z > other_min.z);
+	return BoundingBox.Intersects(bbox);
 }
 
 CBoundingBox QuadTreeNode::GetBoundingBox()

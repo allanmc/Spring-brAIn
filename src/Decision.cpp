@@ -254,6 +254,12 @@ void Decision::Update(int frame)
 	if ( frame % 120 ==0 )
 	{
 		UpdateFrindlyPositions();
+		CBoundingBox box;
+		box.topLeft.x = ai->callback->GetMap()->GetStartPos().x - 1000;
+		box.topLeft.z = ai->callback->GetMap()->GetStartPos().z - 1000;
+		box.bottomRight.x = ai->callback->GetMap()->GetStartPos().x + 1000;
+		box.bottomRight.z = ai->callback->GetMap()->GetStartPos().z + 1000;
+		ai->utility->Log( DEBUG, KNOWLEDGE, "Number of battles close to our base within the last 4000 frames: %d", BattleInfoInstance->NumberOfBattlesInArea( 4000, box ));
 	}
 
 	ai->knowledge->selfInfo->resourceInfo->Update(frame);

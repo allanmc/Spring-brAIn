@@ -160,3 +160,51 @@ void BattlesInfo::CleanupAfterSomeoneDied( Unit* unitToCleanup )
 		}
 	}
 }
+
+
+int BattlesInfo::NumberOfBattlesInArea( int timePeriod, CBoundingBox box )
+{
+	int count = 0;
+	for ( list<Battle*>::iterator iter = CurrentBattles.begin() ; iter != CurrentBattles.end() ; iter++ )
+	{
+		if ( (*iter)->GetLastFrameOfActivity() > ai->frame-timePeriod )
+		{
+			CBoundingBox circleBoundingbox;
+			SAIFloat3 circleCenter = (*iter)->GetCenter();
+			float circleRadius = (*iter)->GetRadius();
+
+			circleBoundingbox.topLeft.x = circleCenter.x - circleRadius;
+			circleBoundingbox.topLeft.z = circleCenter.z - circleRadius;
+			circleBoundingbox.bottomRight.x = circleCenter.x + circleRadius;
+			circleBoundingbox.bottomRight.z = circleCenter.z + circleRadius;
+
+			if ( !circleBoundingbox.Intersects( box ) )
+				continue;
+
+			SAIFloat3 temp;
+			if ( box.bottomRight.x < circleCenter.x )//To the right
+				temp.x = box.bottomRight.x;
+			else if ( box.topLeft.x > circleCenter.x )
+				temp.x = box.topLeft.x;
+			else
+			{
+				count++;
+				continue;
+			}
+
+			if ( box.bottomRight.z < circleCenter.z )
+				temp.z = box.bottomRight.z;
+			else if ( box.topLeft.z > circleCenter.z )
+				temp.z = box.topLeft.z;
+			else
+			{
+				count++;
+				continue;
+			}
+
+			if ( ai->utility->EuclideanDistance( circleCenter, temp ) < circleRadius )
+				count++;
+		}
+	}
+	return count;
+}

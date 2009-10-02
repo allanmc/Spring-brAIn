@@ -10,11 +10,26 @@ using namespace std;
 
 #define BUCKET_SIZE 1
 
+struct CBoundingBox;
+
 
 struct CBoundingBox
 {
 	SAIFloat3 topLeft;
 	SAIFloat3 bottomRight;
+
+	bool Intersects( CBoundingBox box )
+	{
+		SAIFloat3 min = this->topLeft;
+		SAIFloat3 max = this->bottomRight;
+		SAIFloat3 other_min = box.topLeft;
+		SAIFloat3 other_max = box.bottomRight;
+	
+		return 
+			(min.x < other_max.x) && (max.x > other_min.x) &&
+			/*(min.y < other_max.y) && (max.y > other_min.y) &&*/
+			(min.z < other_max.z) && (max.z > other_min.z);
+	}
 
 };
 
