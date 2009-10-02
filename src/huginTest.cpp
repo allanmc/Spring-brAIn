@@ -79,17 +79,17 @@ void HuginTest::load_and_propagate (h_string_t net_file_name)
 	}
 
 	//evidence shit
-	h_node_t n = h_domain_get_node_by_name (domain, "myStrategy");
-	h_count_t state_count = h_node_get_number_of_states (n);
-    size_t i;
-	for (i = 0; i < state_count; i++)
-	{
-	    if (strcmp(h_node_get_state_label (n, i), "Aggressive") == 0)
-		{
-			h_node_select_state (n, i);
-		}
-	}
+	h_node_t n;
+	n = h_domain_get_node_by_name (domain, "myStrategy");
+	h_node_select_state (n, h_node_get_state_index_from_label(n, "Aggressive"));
+	n = h_domain_get_node_by_name (domain, "seenUnits");
+	h_node_select_state (n, h_node_get_state_index_from_label(n, "51-300"));
+	n = h_domain_get_node_by_name (domain, "seenDef");
+	h_node_select_state (n, h_node_get_state_index_from_label(n, "0"));
+
 	h_domain_propagate(domain, h_equilibrium_sum, h_mode_normal);
+	
+	
 
 	h_domain_set_log_file (domain, NULL);
 
@@ -99,7 +99,7 @@ void HuginTest::load_and_propagate (h_string_t net_file_name)
 
 	if (!domain_has_utilities (domain))
 	{
-		ai->utility->Log(ALL, BN, "\n\nPrior beliefs:\n");
+		ai->utility->Log(ALL, BN, "\n\nBeliefs:\n");
 	}
 	else
 	{
