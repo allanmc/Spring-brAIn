@@ -25,11 +25,55 @@ HuginTest::HuginTest( AIClasses* aiClasses )
 
 }
 
+HuginTest::~HuginTest()
+{
+	h_domain_delete (domain);
+}
+
+float HuginTest::getBelief(const char* nodeName, const char* stateName)
+{
+	h_node_t n;
+	n = h_domain_get_node_by_name (domain, nodeName);
+	if (n==NULL)
+	{
+		ai->utility->Log(ALL, BN, "Error: nodeName '%s'", nodeName);
+		return -1;
+	}
+	h_index_t i = h_node_get_state_index_from_label(n, stateName);
+	if (i<0)
+	{
+		ai->utility->Log(ALL, BN, "Error: unkown stateName '%s'", stateName);
+		return -1;
+	}
+
+	return h_node_get_belief(n, i);
+}
+
+void HuginTest::setEvidence(const char* nodeName, const char* stateName)
+{
+
+	h_node_t n;
+	n = h_domain_get_node_by_name (domain, nodeName);
+	if (n==NULL)
+	{
+		ai->utility->Log(ALL, BN, "Error: nodeName '%s'", nodeName);
+		return;
+	}
+	h_index_t i = h_node_get_state_index_from_label(n, stateName);
+	if (i<0)
+	{
+		ai->utility->Log(ALL, BN, "Error: unkown stateName '%s'", stateName);
+		return;
+	}
+	h_node_select_state (n, i);
+
+	h_domain_propagate(domain, h_equilibrium_sum, h_mode_normal);
+}
+
 void HuginTest::load_and_propagate (h_string_t net_file_name)
 {
 	size_t l = strlen (net_file_name);
 	char *file_name_buffer;
-	h_domain_t domain;
 	FILE *log_file;
 
 	if (l >= 4 && strcmp (net_file_name + (l - 4), ".net") == 0)
@@ -77,18 +121,6 @@ void HuginTest::load_and_propagate (h_string_t net_file_name)
 		print_error ();
 		return;
 	}
-
-	//evidence shit
-	h_node_t n;
-	n = h_domain_get_node_by_name (domain, "myStrategy");
-	h_node_select_state (n, h_node_get_state_index_from_label(n, "Aggressive"));
-	n = h_domain_get_node_by_name (domain, "seenUnits");
-	h_node_select_state (n, h_node_get_state_index_from_label(n, "51-300"));
-	n = h_domain_get_node_by_name (domain, "seenDef");
-	h_node_select_state (n, h_node_get_state_index_from_label(n, "0"));
-
-	h_domain_propagate(domain, h_equilibrium_sum, h_mode_normal);
-	
 	
 
 	h_domain_set_log_file (domain, NULL);
@@ -115,8 +147,6 @@ void HuginTest::load_and_propagate (h_string_t net_file_name)
 	}
 
 	print_beliefs_and_utilities (domain);
-
-	h_domain_delete (domain);
 }
 
 /* This function is used when a Hugin API error is detected: It prints
