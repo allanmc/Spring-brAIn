@@ -9,15 +9,19 @@
 
 namespace brainSpace
 {
+
+	struct UnitInformationContainer
+	{
+		SAIFloat3 pos;
+		UnitDef* def;
+	};
+
 	class Battle
 	{
 	public:
 		Battle( AIClasses* aiClasses, SAIFloat3 pos );
 
 		virtual ~Battle();
-
-
-		void UpdateUnitPosition( Unit* u, bool enemy );
 
 		void UnitDied( Unit* u, bool enemy );
 
@@ -32,6 +36,10 @@ namespace brainSpace
 		int GetLastFrameOfActivity();
 
 		void RemoveUnit( Unit* unit );
+
+		void Update();
+
+		int GetDuration();
 
 		/** This method performs stuff that is necessary when the battle goes from being 
 		  * active to being inactive, i.e. when no units in it have been in battle for a while
@@ -48,6 +56,7 @@ namespace brainSpace
 
 	private:
 
+		int StartFrame;
 		int LastFrameOfActivity;
 		int RadiusCircleID;
 
@@ -58,8 +67,8 @@ namespace brainSpace
 		map<int, int> DeadEnemyUnits;
 
 		//UnitID, Position
-		map<int, SAIFloat3> ActiveFriendlyUnits;
-		map<int, SAIFloat3> ActiveEnemyUnits;
+		map<int, UnitInformationContainer> ActiveFriendlyUnits;
+		map<int, UnitInformationContainer> ActiveEnemyUnits;
 
 		SAIFloat3 Center;
 		float Radius;

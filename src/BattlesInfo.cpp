@@ -58,12 +58,17 @@ void BattlesInfo::Update ( int frame )
 	/** Erase any inactive battles and copy them to the OldBattles list **/
 	for ( list<Battle*>::iterator iter = CurrentBattles.begin() ; iter != CurrentBattles.end() ; iter++ )
 	{
+		/** If no activity in current battle, oldify it **/
 		if ((*iter)->GetLastFrameOfActivity() + BATTLE_TIMEOUT < LastUpdateFrame )
 		{
 			(*iter)->Oldify();
 			OldBattles.push_back( *iter );
 			iter = CurrentBattles.erase( iter );
 			ai->utility->Log( DEBUG, KNOWLEDGE, "Inactive battle erased" );
+		}
+		else //Else update the battle object
+		{
+			(*iter)->Update();
 		}
 	}
 
