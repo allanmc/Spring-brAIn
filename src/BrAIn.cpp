@@ -22,7 +22,9 @@ brainSpace::BrAIn::BrAIn(springai::AICallback* cb)
 	huginTest->setEvidence("seenUnits", "51-300");
 	huginTest->setEvidence("seenDef", "0");
 
-	ai->utility->Log(ALL, BN, "My belief that that the enemy is aggressive: %f", huginTest->getBelief("enemyStrategy", "Agressive"));
+	ai->utility->Log(ALL, BN, "My belief that that the enemy is aggressive: %f", huginTest->getBelief("enemyStrategy", "Aggressive"));
+
+	delete(huginTest);
 }
 brainSpace::BrAIn::~BrAIn() {}
 
