@@ -21,7 +21,7 @@ HuginTest::HuginTest( AIClasses* aiClasses )
 	const char *dir = DataDirs::GetInstance(ai->callback)->GetConfigDir();
 	strcpy(file1, dir);
 	strcpy(file2, dir);
-	load_and_propagate( strcat(file1,"\\ChestClinic-.net") );
+	load_and_propagate( strcat(file1,"\\uber.net") );
 }
 
 void HuginTest::load_and_propagate (h_string_t net_file_name)
