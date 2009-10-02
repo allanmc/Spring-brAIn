@@ -203,17 +203,6 @@ void Battle::ToString()
 		if ( (*iter).second.def->GetUnitDefId() != -1 )
 			ai->utility->Log( DEBUG, KNOWLEDGE, "UnitID: %d - %s", (*iter).first, (*iter).second.def->GetHumanName() );
 		else ai->utility->Log( DEBUG, KNOWLEDGE, "UnitID: %d - unitdef unknown", (*iter).first );
-
-		/* SUPER DEBUG
-		Unit* u = Unit::GetInstance( ai->callback , (*iter).first );
-		UnitDef* d = u->GetDef();
-		ai->utility->Log( DEBUG, KNOWLEDGE, "Active friendly unitID %d and unitdefID %d", u->GetUnitId(), (*iter).second.def->GetUnitDefId() );
-		if ( (*iter).second.def->GetUnitDefId() == -1 )
-			ai->utility->Log( DEBUG, KNOWLEDGE, "Unit ID %d: UnitDef unknown", (*iter).first );
-		else 
-			ai->utility->Log( DEBUG, KNOWLEDGE, "Unit ID %d: %s", (*iter).first, (*iter).second.def->GetHumanName() );
-			*/
-
 	}
 
 	ai->utility->Log( DEBUG, KNOWLEDGE, "Active Enemy Units: %d\n--------------", ActiveEnemyUnits.size() );
@@ -222,16 +211,6 @@ void Battle::ToString()
 		if ( (*iter).second.def->GetUnitDefId() != -1 )
 			ai->utility->Log( DEBUG, KNOWLEDGE, "UnitID: %d - %s", (*iter).first, (*iter).second.def->GetHumanName() );
 		else ai->utility->Log( DEBUG, KNOWLEDGE, "UnitID: %d - unitdef unknown", (*iter).first );
-
-		/* SUPER DEBUG
-		Unit* u = Unit::GetInstance( ai->callback , (*iter).first );
-		ai->utility->Log( DEBUG, KNOWLEDGE, "Active enemy unitID %d and unitdefID %d", u->GetUnitId(), (*iter).second.def->GetUnitDefId() );
-
-		if ( (*iter).second.def->GetUnitDefId() == -1 )
-			ai->utility->Log( DEBUG, KNOWLEDGE, "Unit ID %d: UnitDef unknown", (*iter).first );
-		else 
-			ai->utility->Log( DEBUG, KNOWLEDGE, "Unit ID %d: %s", (*iter).first, (*iter).second.def->GetHumanName() );
-		*/
 	}
 
 	vector<UnitDef*> unitDefs = ai->callback->GetUnitDefs();

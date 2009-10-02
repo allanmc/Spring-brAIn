@@ -80,7 +80,7 @@ void BattlesInfo::Update ( int frame )
 		for ( list<Battle*>::iterator iter = CurrentBattles.begin() ; iter != CurrentBattles.end() ; iter++, i++ )
 		{
 			ai->utility->Log( DEBUG, KNOWLEDGE, "\n\nBattle number %d\n--------", i );
-			(*iter)->ToString();
+			//(*iter)->ToString();
 		}
 
 		i = 0;
@@ -88,7 +88,7 @@ void BattlesInfo::Update ( int frame )
 		for ( list<Battle*>::iterator iter = OldBattles.begin() ; iter != OldBattles.end() ; iter++, i++ )
 		{
 			ai->utility->Log( DEBUG, KNOWLEDGE, "Battle number %d", i );
-			(*iter)->ToString();
+			//(*iter)->ToString();
 		}
 		ai->utility->Log( DEBUG, KNOWLEDGE, "\nDONE PRINTING UPDATED BATTLE INFO\n" );
 	}
