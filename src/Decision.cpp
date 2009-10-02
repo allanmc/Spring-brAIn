@@ -66,6 +66,15 @@ void Decision::UnitDestroyed(int unit, int attacker)
 	Unit* destroyer = Unit::GetInstance( ai->callback, attacker );
 	BattleInfoInstance->UnitDestroyed( destroyee, destroyer );
 
+
+	UnitDef* d = destroyee->GetDef();
+
+	if ( d == NULL )
+		ai->utility->Log( DEBUG, DECISION, "UnitDestroyed: UnitDef was null" );
+	if ( d->GetUnitDefId() == -1 )
+		ai->utility->Log( DEBUG, DECISION, "UnitDestroyed: Unitdef was -1" );
+
+
 	if (destroyee->GetDef()->GetWeaponMounts().size()>0) 
 	{
 		ai->knowledge->selfInfo->armyInfo->RemoveUnit(destroyee);
@@ -97,8 +106,14 @@ void Decision::EnemyEnterLOS(int enemy)
 	gc->AttackWithGroup(enemy);
 
 	Unit * unit = Unit::GetInstance(ai->callback,enemy);
+	UnitDef* d = unit->GetDef();
 
-	if (unit->GetDef()->GetWeaponMounts().size()>0) 
+	if ( d == NULL )
+		ai->utility->Log( DEBUG, DECISION, "EnemyEnterLOS: UnitDef was null" );
+	if ( d->GetUnitDefId() == -1 )
+		ai->utility->Log( DEBUG, DECISION, "EnemyEnterLOS: Unitdef was -1" );
+
+	if (d->GetWeaponMounts().size()>0) 
 	{
 		ai->knowledge->enemyInfo->armyInfo->UpdateUnit(unit);
 	} 
@@ -113,10 +128,35 @@ void Decision::EnemyDestroyed(int enemy, int attacker)
 	//good job!
 	Unit* unit = Unit::GetInstance(ai->callback, enemy);
 	Unit* attackerUnit = Unit::GetInstance( ai->callback, attacker );
+	UnitDef* d = unit->GetDef();
+
+	if ( d == NULL )
+		ai->utility->Log( DEBUG, DECISION, "EnemyDestroyed: UnitDef was null" );
+	if ( d->GetUnitDefId() == -1 )
+		ai->utility->Log( DEBUG, DECISION, "EnemyDestroyed: Unitdef was -1" );
+
+
+	UnitDef* defPointer = NULL;
 
 	BattleInfoInstance->EnemyDestroyed( unit, attackerUnit );
 
-	if (unit->GetDef()->GetWeaponMounts().size()>0) 
+	if ( unit->GetDef()->GetUnitDefId() == -1 )
+	{
+		defPointer = ai->knowledge->enemyInfo->armyInfo->GetUnitDef( unit->GetUnitId() );
+	}
+	else defPointer = unit->GetDef();
+
+	if ( defPointer == NULL ) //Unknown unit type: we never saw it, just killed it :D
+	{
+		return;
+		/*
+		ai->knowledge->enemyInfo->armyInfo->RemoveUnit( unit );
+		ai->knowledge->enemyInfo->baseInfo->RemoveBuilding( unit );
+		return;
+		*/
+	}
+
+	if (defPointer->GetWeaponMounts().size()>0) 
 	{
 		ai->knowledge->enemyInfo->armyInfo->RemoveUnit(unit);
 	}

@@ -51,12 +51,13 @@ void Battle::UnitEnteredBattle( Unit* u, bool enemy )
 	{
 		ai->utility->Log( DEBUG, KNOWLEDGE, "defID was -1" );
 		UnitDef* def = ai->knowledge->enemyInfo->armyInfo->GetUnitDef( unitID );
-		if ( def->GetUnitDefId() != -1 )
+		if ( def != NULL && def->GetUnitDefId() != -1 )
 		{
 			container.def = def;
 			ai->utility->Log( DEBUG, KNOWLEDGE, "Def updated!" );
 		}
-		ai->utility->Log( DEBUG, KNOWLEDGE, "Def not updated" );
+		else
+			ai->utility->Log( DEBUG, KNOWLEDGE, "Def not updated" );
 	}
 	LastFrameOfActivity = ai->frame;
 
@@ -252,7 +253,11 @@ void Battle::Update()
 		if ( ai->utility->EuclideanDistance(iter->second.pos, Center ) > Radius  )
 			enemyUnitsToErase.push_back( (iter)->first );
 		else if ( iter->second.def->GetUnitDefId() == -1 )
-			iter->second.def = ai->knowledge->enemyInfo->armyInfo->GetUnitDef( iter->first );
+		{
+			UnitDef* d = ai->knowledge->enemyInfo->armyInfo->GetUnitDef( iter->first );
+			if ( d != NULL )
+				iter->second.def = d;
+		}
 	}
 
 	for ( map<int, UnitInformationContainer>::iterator iter = ActiveFriendlyUnits.begin() ; iter != ActiveFriendlyUnits.end() ; iter++ )
@@ -261,7 +266,11 @@ void Battle::Update()
 		if ( ai->utility->EuclideanDistance(iter->second.pos, Center ) > Radius  )
 			friendlyUnitsToErase.push_back( (iter)->first );
 		else if ( iter->second.def->GetUnitDefId() == -1 )
-			iter->second.def = ai->knowledge->enemyInfo->armyInfo->GetUnitDef( iter->first );
+		{
+			UnitDef* d = ai->knowledge->enemyInfo->armyInfo->GetUnitDef( iter->first );
+			if ( d != NULL )
+				iter->second.def = d;
+		}
 	}
 
 	for ( list<int>::iterator iter = friendlyUnitsToErase.begin() ; iter != friendlyUnitsToErase.end() ; iter++ )

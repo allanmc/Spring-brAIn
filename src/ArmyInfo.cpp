@@ -72,12 +72,17 @@ void ArmyInfo::UpdateUnit(Unit* unit)
 
 UnitDef* ArmyInfo::GetUnitDef(int unitID)
 {
+	ai->utility->Log( DEBUG, KNOWLEDGE, "SVEND!!!!" );
 	UnitDef* foundDef = NULL;
 	map<int,UnitDef*>::iterator iter = knownUnitDefs.find(unitID);
+	ai->utility->Log( DEBUG, KNOWLEDGE, "SVEND2!!!!" );
 	if (iter!=knownUnitDefs.end())
 	{
+		ai->utility->Log( DEBUG, KNOWLEDGE, "SVEND3!!!!" );
 		foundDef = iter->second;
+		ai->utility->Log( DEBUG, KNOWLEDGE, "SVEND4!!!!" );
 	}
+	ai->utility->Log( DEBUG, KNOWLEDGE, "SVEND5!!!!" );
 	return foundDef;
 }
 
