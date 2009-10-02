@@ -63,7 +63,22 @@ void ArmyInfo::UpdateUnit(Unit* unit)
 {
 	SAIFloat3 new_pos = unit->GetPos();
 	quadTree->UpdateUnit( unit->GetUnitId(), unit->GetPos() );
+	UnitDef* unitDef = unit->GetDef();
+	if (unitDef->GetUnitDefId() != -1) {
+		knownUnitDefs[unit->GetUnitId()] = unitDef;
+	}
 	//Update quadtree, using old_pos and new_pos
+}
+
+UnitDef* ArmyInfo::GetUnitDef(int unitID)
+{
+	UnitDef* foundDef = NULL;
+	map<int,UnitDef*>::iterator iter = knownUnitDefs.find(unitID);
+	if (iter!=knownUnitDefs.end())
+	{
+		foundDef = iter->second;
+	}
+	return foundDef;
 }
 
 SAIFloat3 ArmyInfo::GetUnitPos( int unitID )
