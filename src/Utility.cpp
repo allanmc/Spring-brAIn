@@ -11,6 +11,7 @@ Utility::Utility( AIClasses* aiClasses )
 	SNPRINTF( filename, 200, "\\Brain-log-team%d.txt", aiClasses->callback->GetTeamId() );
 	strcat(path, filename);
 	fp = FOPEN(path, "w");
+
 }
 
 Utility::~Utility()

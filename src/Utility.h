@@ -4,7 +4,6 @@
 #include "global.h"
 #include "SAIFloat3.h"
 
-
 const SAIFloat3 TEAM_0_COLOR = { 255, 0, 0 };
 const SAIFloat3 TEAM_1_COLOR = { 255, 255, 0 };
 const SAIFloat3 TEAM_2_COLOR = { 255, 0, 255 };
