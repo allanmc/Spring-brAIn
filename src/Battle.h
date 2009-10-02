@@ -2,7 +2,7 @@
 #define _BRAINSPACE_BATTLE_H
 
 #define INITIAL_BATTLE_RADIUS 500
-#define RADIUS_BUFFER 200
+#define RADIUS_BUFFER 300
 #define BATTLE_TIMEOUT 400
 
 #include "global.h"
