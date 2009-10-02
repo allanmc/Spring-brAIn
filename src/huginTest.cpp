@@ -22,6 +22,7 @@ HuginTest::HuginTest( AIClasses* aiClasses )
 	strcpy(file1, dir);
 	strcpy(file2, dir);
 	load_and_propagate( strcat(file1,"\\uber.net") );
+
 }
 
 void HuginTest::load_and_propagate (h_string_t net_file_name)
@@ -76,6 +77,19 @@ void HuginTest::load_and_propagate (h_string_t net_file_name)
 		print_error ();
 		return;
 	}
+
+	//evidence shit
+	h_node_t n = h_domain_get_node_by_name (domain, "myStrategy");
+	h_count_t state_count = h_node_get_number_of_states (n);
+    size_t i;
+	for (i = 0; i < state_count; i++)
+	{
+	    if (strcmp(h_node_get_state_label (n, i), "Aggressive") == 0)
+		{
+			h_node_select_state (n, i);
+		}
+	}
+	h_domain_propagate(domain, h_equilibrium_sum, h_mode_normal);
 
 	h_domain_set_log_file (domain, NULL);
 
