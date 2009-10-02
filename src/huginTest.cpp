@@ -25,6 +25,27 @@ HuginTest::HuginTest( AIClasses* aiClasses )
 
 }
 
+float HuginTest::getBelief(const char* nodeName, const char* stateName)
+{
+	h_node_t n;
+	n = h_domain_get_node_by_name (domain, nodeName);
+	
+	h_number_t belief = h_node_get_belief(n, h_node_get_state_index_from_label(n, stateName));
+
+
+
+}
+
+void HuginTest::setEvidence(const char* nodeName, const char* stateName)
+{
+
+	h_node_t n;
+	n = h_domain_get_node_by_name (domain, nodeName);
+	h_node_select_state (n, h_node_get_state_index_from_label(n, stateName));
+
+	h_domain_propagate(domain, h_equilibrium_sum, h_mode_normal);
+}
+
 void HuginTest::load_and_propagate (h_string_t net_file_name)
 {
 	size_t l = strlen (net_file_name);
@@ -77,18 +98,6 @@ void HuginTest::load_and_propagate (h_string_t net_file_name)
 		print_error ();
 		return;
 	}
-
-	//evidence shit
-	h_node_t n;
-	n = h_domain_get_node_by_name (domain, "myStrategy");
-	h_node_select_state (n, h_node_get_state_index_from_label(n, "Aggressive"));
-	n = h_domain_get_node_by_name (domain, "seenUnits");
-	h_node_select_state (n, h_node_get_state_index_from_label(n, "51-300"));
-	n = h_domain_get_node_by_name (domain, "seenDef");
-	h_node_select_state (n, h_node_get_state_index_from_label(n, "0"));
-
-	h_domain_propagate(domain, h_equilibrium_sum, h_mode_normal);
-	
 	
 
 	h_domain_set_log_file (domain, NULL);
