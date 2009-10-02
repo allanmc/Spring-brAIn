@@ -1,0 +1,325 @@
+net
+{
+    node_size = (80 40);
+    HR_Desc = "";
+    HR_OOBN_CheckConsistency = "1";
+    HR_OOBN_FitExpand = "1";
+    HR_Zoom_ZoomFactor = "100";
+    HR_Groups_GroupColors = "";
+    HR_Groups_GroupNames = "";
+    HR_Groups_UserGroupsNo = "0";
+    HR_Color_Interface = "21";
+    HR_Color_Instance = "0";
+    HR_Color_Utility = "36";
+    HR_Color_Decision = "17";
+    HR_Color_ContinuousChance = "48";
+    HR_Color_DiscreteChance = "16";
+    HR_Monitor_InitSD = "2";
+    HR_Monitor_Utility_Arrange = "0";
+    HR_Monitor_Chance_Utility = "1";
+    HR_Monitor_InitStates = "5";
+    HR_Monitor_OpenGraph = "0";
+    HR_Monitor_GraphPrecision = "100";
+    HR_Monitor_AutoUpdGraph = "0";
+    HR_Compile_MaxMinimalSeparators = "100000";
+    HR_Compile_ApproxEpsilon = "1.0E-5";
+    HR_Compile_Approximate = "0";
+    HR_Compile_SaveToMemory = "0";
+    HR_Compile_Compress = "0";
+    HR_Compile_TriangMethod = "0";
+    HR_Propagate_AutoNormal = "1";
+    HR_Propagate_AutoSum = "1";
+    HR_Propagate_Auto = "1";
+    HR_Font_Italic = "0";
+    HR_Font_Weight = "400";
+    HR_Font_Size = "-12";
+    HR_Font_Name = "javax.swing.plaf.FontUIResource[family=Tahoma,name=Tahoma,style=plain,size=11]";
+    HR_Grid_GridShow = "0";
+    HR_Grid_GridSnap = "0";
+    HR_Grid_Y = "40";
+    HR_Grid_X = "40";
+}
+
+node seenUnits
+{
+    label = "";
+    position = (407 72);
+    states = ("0" "1-10" "11-50" "51-300");
+    HR_State_0 = "";
+    HR_State_1 = "";
+    HR_Desc = "";
+    HR_LinkMode = "[C1:0][C2:0][attacks:0]";
+    HR_State_2 = "";
+    HR_State_3 = "";
+    HR_Group = "0";
+}
+
+decision myStrategy
+{
+    label = "";
+    position = (703 430);
+    states = ("Aggressive" "Defensive");
+    HR_Group = "0";
+    HR_Desc = "";
+    HR_State_1 = "";
+    HR_State_0 = "";
+    HR_LinkMode = "[enemyStrategy:0]";
+}
+
+node seenRes
+{
+    label = "";
+    position = (776 110);
+    states = ("0" "1-10" "11-20" "21-40");
+    HR_State_3 = "";
+    HR_State_2 = "";
+    HR_Group = "0";
+    HR_Desc = "";
+    HR_State_1 = "";
+    HR_State_0 = "";
+}
+
+node seenProd
+{
+    label = "";
+    position = (592 66);
+    states = ("0" "1-2" "3-6" "7-10");
+    HR_State_3 = "";
+    HR_State_2 = "";
+    HR_Group = "0";
+    HR_Desc = "";
+    HR_State_1 = "";
+    HR_State_0 = "";
+}
+
+node attacks
+{
+    label = "";
+    position = (373 210);
+    states = ("0" "1-3" "4-8" "9-");
+    HR_State_3 = "";
+    HR_State_2 = "";
+    HR_Group = "0";
+    HR_Desc = "";
+    HR_State_1 = "";
+    HR_State_0 = "";
+}
+
+node seenDef
+{
+    label = "";
+    position = (964 131);
+    states = ("0" "1-5" "6-10" "11-20");
+    HR_State_3 = "";
+    HR_State_2 = "";
+    HR_Group = "0";
+    HR_Desc = "";
+    HR_State_1 = "";
+    HR_State_0 = "";
+}
+
+node enemyResource
+{
+    label = "";
+    position = (719 222);
+    states = ("0" "1-10" "11-20" "21-40");
+    HR_LinkControlPoints = "";
+    HR_State_3 = "";
+    HR_State_2 = "";
+    HR_LinkMode = "[seenRes:0][notSeenRes:0][enemyProduction:0][enemyDefence:0][enemyUnits:0][enemyUnits_2:0]";
+    HR_NodeSize = "(119, 39)";
+    HR_Group = "0";
+    HR_Desc = "";
+    HR_State_1 = "";
+    HR_State_0 = "";
+}
+
+node enemyProduction
+{
+    label = "";
+    position = (605 143);
+    states = ("0" "1-2" "3-6" "7-10");
+    HR_LinkControlPoints = "";
+    HR_State_3 = "";
+    HR_State_2 = "";
+    HR_LinkMode = "[seenProd:0][notSeenProd:0][enemyUnits:0][enemyUnits_2:0]";
+    HR_NodeSize = "(127, 36)";
+    HR_Group = "0";
+    HR_Desc = "";
+    HR_State_1 = "";
+    HR_State_0 = "";
+}
+
+node enemyDefence
+{
+    label = "";
+    position = (946 216);
+    states = ("0" "1-5" "6-10" "11-20");
+    HR_State_3 = "";
+    HR_State_2 = "";
+    HR_LinkMode = "[seenDef:0][notSeenDef:0]";
+    HR_NodeSize = "(110, 38)";
+    HR_Group = "0";
+    HR_Desc = "";
+    HR_State_1 = "";
+    HR_State_0 = "";
+}
+
+node enemyUnits
+{
+    label = "";
+    position = (445 147);
+    states = ("0" "1-10" "11-50" "51-300");
+    HR_State_3 = "";
+    HR_State_2 = "";
+    HR_LinkMode = "[C1:0][C2:0][attacks:0][seenUnits:0][notSeenUnits:0]";
+    HR_Group = "0";
+    HR_Desc = "";
+    HR_State_1 = "";
+    HR_State_0 = "";
+}
+
+node enemyStrategy
+{
+    label = "";
+    position = (621 309);
+    states = ("Aggressive" "Defensive");
+    HR_LinkControlPoints = "";
+    HR_NodeSize = "(104, 43)";
+    HR_Group = "0";
+    HR_Desc = "";
+    HR_State_1 = "";
+    HR_State_0 = "";
+    HR_LinkMode = "[C3:0][C4:0][C5:0][C6:0][attacks:0][enemyUnits_2:0][enemyUnits:0][enemyDefence:0][enemyProduction:0][enemyResource:0]";
+}
+
+potential (seenUnits | enemyUnits)
+{
+    data
+     = (( 1 0 0 0 )	%  enemyUnits=0
+	( 0.5 0.5 0 0 )	%  enemyUnits=1-10
+	( 0.2 0.5 0.3 0 )	%  enemyUnits=11-50
+	( 0.1 0.2 0.4 0.3 ));	%  enemyUnits=51-300
+}
+
+potential (myStrategy)
+{
+    data = ( 1 1 );
+}
+
+potential (seenRes | enemyResource)
+{
+    data
+     = (( 1 0 0 0 )	%  enemyResource=0
+	( 0.5 0.5 0 0 )	%  enemyResource=1-10
+	( 0.2 0.4 0.6 0 )	%  enemyResource=11-20
+	( 0.1 0.2 0.4 0.3 ));	%  enemyResource=21-40
+}
+
+potential (seenProd | enemyProduction)
+{
+    data
+     = (( 1 0 0 0 )	%  enemyProduction=0
+	( 0.7 0.3 0 0 )	%  enemyProduction=1-2
+	( 0.2 0.4 0.4 0 )	%  enemyProduction=3-6
+	( 0.1 0.2 0.4 0.3 ));	%  enemyProduction=7-10
+}
+
+potential (attacks | enemyUnits enemyStrategy)
+{
+    data
+     = ((( 1 0 0 0 )	%  enemyUnits=0  enemyStrategy=Aggressive
+	 ( 1 0 0 0 ))	%  enemyUnits=0  enemyStrategy=Defensive
+	(( 0.3 0.6 0.1 0 )	%  enemyUnits=1-10  enemyStrategy=Aggressive
+	 ( 0.4 0.5 0.1 0 ))	%  enemyUnits=1-10  enemyStrategy=Defensive
+	(( 0.2 0.3 0.4 0.1 )	%  enemyUnits=11-50  enemyStrategy=Aggressive
+	 ( 0.3 0.6 0.1 0 ))	%  enemyUnits=11-50  enemyStrategy=Defensive
+	(( 0.1 0.25 0.5 0.15 )	%  enemyUnits=51-300  enemyStrategy=Aggressive
+	 ( 0.2 0.7 0.1 0 )));	%  enemyUnits=51-300  enemyStrategy=Defensive
+}
+
+potential (seenDef | enemyDefence)
+{
+    data
+     = (( 1 0 0 0 )	%  enemyDefence=0
+	( 0.6 0.4 0 0 )	%  enemyDefence=1-5
+	( 0.4 0.5 0.1 0 )	%  enemyDefence=6-10
+	( 0.2 0.2 0.4 1 ));	%  enemyDefence=11-20
+}
+
+potential (enemyResource | enemyStrategy)
+{
+    data
+     = (( 0 0.2 0.4 0.4 )	%  enemyStrategy=Aggressive
+	( 0 0.3 0.4 0.3 ));	%  enemyStrategy=Defensive
+}
+
+potential (enemyProduction | enemyResource enemyStrategy)
+{
+    data
+     = ((( 0.7 0.2 0.1 0 )	%  enemyResource=0  enemyStrategy=Aggressive
+	 ( 0.8 0.15 0.05 0 ))	%  enemyResource=0  enemyStrategy=Defensive
+	(( 0.3 0.5 0.15 0.05 )	%  enemyResource=1-10  enemyStrategy=Aggressive
+	 ( 0.4 0.4 0.05 0.05 ))	%  enemyResource=1-10  enemyStrategy=Defensive
+	(( 0.1 0.5 0.3 0.1 )	%  enemyResource=11-20  enemyStrategy=Aggressive
+	 ( 0.2 0.6 0.15 0.05 ))	%  enemyResource=11-20  enemyStrategy=Defensive
+	(( 0.05 0.25 0.5 0.2 )	%  enemyResource=21-40  enemyStrategy=Aggressive
+	 ( 0.1 0.4 0.45 0.05 )));	%  enemyResource=21-40  enemyStrategy=Defensive
+}
+
+potential (enemyDefence | enemyResource enemyStrategy)
+{
+    data
+     = ((( 0.95 0.04 0.01 0 )	%  enemyResource=0  enemyStrategy=Aggressive
+	 ( 0.6 0.3 0.1 0 ))	%  enemyResource=0  enemyStrategy=Defensive
+	(( 0.8 0.15 0.05 0 )	%  enemyResource=1-10  enemyStrategy=Aggressive
+	 ( 0.1 0.4 0.3 0.2 ))	%  enemyResource=1-10  enemyStrategy=Defensive
+	(( 0.7 0.2 0.1 0 )	%  enemyResource=11-20  enemyStrategy=Aggressive
+	 ( 0.1 0.2 0.3 0.4 ))	%  enemyResource=11-20  enemyStrategy=Defensive
+	(( 0.5 0.3 0.15 0.05 )	%  enemyResource=21-40  enemyStrategy=Aggressive
+	 ( 0.05 0.15 0.3 0.5 )));	%  enemyResource=21-40  enemyStrategy=Defensive
+}
+
+potential (enemyUnits | enemyResource enemyProduction enemyStrategy)
+{
+    data
+     = (((( 0.9 0.05 0.05 0 )	%  enemyResource=0  enemyProduction=0  enemyStrategy=Aggressive
+	  ( 0.9 0.1 0 0 ))	%  enemyResource=0  enemyProduction=0  enemyStrategy=Defensive
+	 (( 1 1 1 1 )	%  enemyResource=0  enemyProduction=1-2  enemyStrategy=Aggressive
+	  ( 1 1 1 1 ))	%  enemyResource=0  enemyProduction=1-2  enemyStrategy=Defensive
+	 (( 1 1 1 1 )	%  enemyResource=0  enemyProduction=3-6  enemyStrategy=Aggressive
+	  ( 1 1 1 1 ))	%  enemyResource=0  enemyProduction=3-6  enemyStrategy=Defensive
+	 (( 1 1 1 1 )	%  enemyResource=0  enemyProduction=7-10  enemyStrategy=Aggressive
+	  ( 1 1 1 1 )))	%  enemyResource=0  enemyProduction=7-10  enemyStrategy=Defensive
+	((( 1 1 1 1 )	%  enemyResource=1-10  enemyProduction=0  enemyStrategy=Aggressive
+	  ( 1 1 1 1 ))	%  enemyResource=1-10  enemyProduction=0  enemyStrategy=Defensive
+	 (( 1 1 1 1 )	%  enemyResource=1-10  enemyProduction=1-2  enemyStrategy=Aggressive
+	  ( 1 1 1 1 ))	%  enemyResource=1-10  enemyProduction=1-2  enemyStrategy=Defensive
+	 (( 1 1 1 1 )	%  enemyResource=1-10  enemyProduction=3-6  enemyStrategy=Aggressive
+	  ( 1 1 1 1 ))	%  enemyResource=1-10  enemyProduction=3-6  enemyStrategy=Defensive
+	 (( 1 1 1 1 )	%  enemyResource=1-10  enemyProduction=7-10  enemyStrategy=Aggressive
+	  ( 1 1 1 1 )))	%  enemyResource=1-10  enemyProduction=7-10  enemyStrategy=Defensive
+	((( 1 1 1 1 )	%  enemyResource=11-20  enemyProduction=0  enemyStrategy=Aggressive
+	  ( 1 1 1 1 ))	%  enemyResource=11-20  enemyProduction=0  enemyStrategy=Defensive
+	 (( 1 1 1 1 )	%  enemyResource=11-20  enemyProduction=1-2  enemyStrategy=Aggressive
+	  ( 1 1 1 1 ))	%  enemyResource=11-20  enemyProduction=1-2  enemyStrategy=Defensive
+	 (( 1 1 1 1 )	%  enemyResource=11-20  enemyProduction=3-6  enemyStrategy=Aggressive
+	  ( 1 1 1 1 ))	%  enemyResource=11-20  enemyProduction=3-6  enemyStrategy=Defensive
+	 (( 1 1 1 1 )	%  enemyResource=11-20  enemyProduction=7-10  enemyStrategy=Aggressive
+	  ( 1 1 1 1 )))	%  enemyResource=11-20  enemyProduction=7-10  enemyStrategy=Defensive
+	((( 0.2 0.4 0.3 0.1 )	%  enemyResource=21-40  enemyProduction=0  enemyStrategy=Aggressive
+	  ( 0.3 0.4 0.25 0.05 ))	%  enemyResource=21-40  enemyProduction=0  enemyStrategy=Defensive
+	 (( 0.1 0.2 0.6 0.1 )	%  enemyResource=21-40  enemyProduction=1-2  enemyStrategy=Aggressive
+	  ( 0.2 0.3 0.4 0.1 ))	%  enemyResource=21-40  enemyProduction=1-2  enemyStrategy=Defensive
+	 (( 0.05 0.15 0.5 0.4 )	%  enemyResource=21-40  enemyProduction=3-6  enemyStrategy=Aggressive
+	  ( 0.1 0.2 0.3 0.4 ))	%  enemyResource=21-40  enemyProduction=3-6  enemyStrategy=Defensive
+	 (( 0 0.1 0.5 0.4 )	%  enemyResource=21-40  enemyProduction=7-10  enemyStrategy=Aggressive
+	  ( 0.05 0.15 0.3 0.5 ))));	%  enemyResource=21-40  enemyProduction=7-10  enemyStrategy=Defensive
+}
+
+potential (enemyStrategy | myStrategy)
+{
+    data
+     = (( 0.2 0.8 )	%  myStrategy=Aggressive
+	( 0.8 0.2 ));	%  myStrategy=Defensive
+}

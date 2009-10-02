@@ -1,7 +1,7 @@
 #ifndef _BRAIN_GLOBAL_H
 #define _BRAIN_GLOBAL_H
 
-#define LOG_TYPE (CHAT|QUADTREE|DECISION|KNOWLEDGE|UTILITY)
+#define LOG_TYPE (CHAT|QUADTREE|DECISION|KNOWLEDGE|UTILITY|BN)
 #define LOG_LEVEL ALL
 
 //namespace brainSpace {
@@ -11,7 +11,8 @@ enum LogTypes {
 	DECISION	= 1<<2,
 	KNOWLEDGE	= 1<<3,
 	UTILITY		= 1<<4,
-	EVENT		= 1<<5
+	EVENT		= 1<<5,
+	BN			= 1<<6
 };
 
 

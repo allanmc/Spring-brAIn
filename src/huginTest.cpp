@@ -6,7 +6,10 @@
 
 void error_handler (h_location_t line_no, h_string_t message, void *data)
 {
-    fprintf (stderr, "Error at line %d: %s\n", (int) line_no, message);
+    if (ai!=NULL) 
+	{
+		ai->utility->Log(ALL, BN, "Error: Error at line %d: %s\n", (int) line_no, message);
+	}
 }
 
 
@@ -18,10 +21,11 @@ HuginTest::HuginTest( AIClasses* aiClasses )
 	const char *dir = DataDirs::GetInstance(ai->callback)->GetConfigDir();
 	strcpy(file1, dir);
 	strcpy(file2, dir);
-	load_and_propagate( strcat(file1,"\\ChestClinic.net"), strcat(file2,"\\ChestClinic.hcs") );
+	load_and_propagate( strcat(file1,"\\uber.net") );
+
 }
 
-void HuginTest::load_and_propagate (h_string_t net_file_name, h_string_t case_file_name)
+void HuginTest::load_and_propagate (h_string_t net_file_name)
 {
 	size_t l = strlen (net_file_name);
 	char *file_name_buffer;
@@ -29,26 +33,32 @@ void HuginTest::load_and_propagate (h_string_t net_file_name, h_string_t case_fi
 	FILE *log_file;
 
 	if (l >= 4 && strcmp (net_file_name + (l - 4), ".net") == 0)
+	{
 		l -= 4;
+	}
 
+	ai->utility->Log(ALL, BN, "Error: Loading!?!?!\n");
+	ai->utility->Log(ALL, BN, "Output: Hello World\n");
 	if ((file_name_buffer = (char*)malloc (l + 5)) == NULL)
 	{
-		fprintf (stderr, "Out of memory\n");
-		exit (EXIT_FAILURE);
+		ai->utility->Log(ALL, BN, "Error: Out of memory\n");
+		return;
 	}
 
 	strcpy (file_name_buffer, net_file_name);
 	strcpy (file_name_buffer + l, ".net");
 
-	if ((domain = h_net_parse_domain (file_name_buffer, error_handler, NULL))
-		== NULL)
+	if ((domain = h_net_parse_domain (file_name_buffer, error_handler, NULL)) == NULL)
+	{
 		print_error ();
+		return;
+	}
 
 	strcpy (file_name_buffer + l, ".log");
 
 	if ((log_file = fopen (file_name_buffer, "w")) == NULL)
 	{
-		fprintf (stderr, "Could not open \"%s\"\n", file_name_buffer);
+		ai->utility->Log(ALL, BN, "Error: Could not open \"%s\"\n", file_name_buffer);
 		exit (EXIT_FAILURE);
 	}
 
@@ -57,10 +67,29 @@ void HuginTest::load_and_propagate (h_string_t net_file_name, h_string_t case_fi
 	h_domain_set_log_file (domain, log_file);
 
 	if (h_domain_triangulate (domain, h_tm_fill_in_weight) != 0)
+	{
 		print_error ();
+		return;
+	}
 
 	if (h_domain_compile (domain) != 0)
+	{
 		print_error ();
+		return;
+	}
+
+	//evidence shit
+	h_node_t n;
+	n = h_domain_get_node_by_name (domain, "myStrategy");
+	h_node_select_state (n, h_node_get_state_index_from_label(n, "Aggressive"));
+	n = h_domain_get_node_by_name (domain, "seenUnits");
+	h_node_select_state (n, h_node_get_state_index_from_label(n, "51-300"));
+	n = h_domain_get_node_by_name (domain, "seenDef");
+	h_node_select_state (n, h_node_get_state_index_from_label(n, "0"));
+
+	h_domain_propagate(domain, h_equilibrium_sum, h_mode_normal);
+	
+	
 
 	h_domain_set_log_file (domain, NULL);
 
@@ -69,50 +98,23 @@ void HuginTest::load_and_propagate (h_string_t net_file_name, h_string_t case_fi
 	print_junction_trees (domain);
 
 	if (!domain_has_utilities (domain))
-		printf ("\n\nPrior beliefs:\n");
+	{
+		ai->utility->Log(ALL, BN, "\n\nBeliefs:\n");
+	}
 	else
 	{
 		if (h_domain_update_policies (domain) != 0)
+		{
 			print_error ();
+			return;
+		}
 
-		printf ("\n\nOverall expected utility: %g\n",
-			h_domain_get_expected_utility (domain));
+		ai->utility->Log(ALL, BN, "\n\nOverall expected utility: %g\n", h_domain_get_expected_utility (domain));
 
-		printf ("\nPrior beliefs (and expected utilities):\n");
+		ai->utility->Log(ALL, BN, "\nPrior beliefs (and expected utilities):\n");
 	}
 
 	print_beliefs_and_utilities (domain);
-
-	if (case_file_name != NULL)
-	{
-		if (h_domain_parse_case (domain, case_file_name, error_handler, NULL)
-			!= 0)
-			print_error ();
-
-		printf ("\n\nPropagating the evidence specified in \"%s\"\n",
-			case_file_name);
-
-		if (h_domain_propagate (domain, h_equilibrium_sum, h_mode_normal) != 0)
-			print_error ();
-
-		printf ("\nP(evidence) = %g\n",
-			h_domain_get_normalization_constant (domain));
-
-		if (!domain_has_utilities (domain))
-			printf ("\nUpdated beliefs:\n");
-		else
-		{
-			if (h_domain_update_policies (domain) != 0)
-				print_error ();
-
-			printf ("\nOverall expected utility: %g\n",
-				h_domain_get_expected_utility (domain));
-
-			printf ("\nUpdated beliefs (and expected utilities):\n");
-		}
-
-		print_beliefs_and_utilities (domain);
-	}
 
 	h_domain_delete (domain);
 }
@@ -123,7 +125,7 @@ void HuginTest::load_and_propagate (h_string_t net_file_name, h_string_t case_fi
 
 void HuginTest::print_error (void)
 {
-    fprintf (stderr, "Error: %s\n", h_error_description (h_error_code ()));
+    ai->utility->Log(ALL, BN, "Error: Error: %s\n", h_error_description (h_error_code ()));
     exit (EXIT_FAILURE);
 }
 
@@ -132,25 +134,34 @@ void HuginTest::print_junction_trees (h_domain_t domain)
 	h_junction_tree_t jt = h_domain_get_first_junction_tree (domain);
 
 	if (jt == NULL)
+	{
 		print_error ();
+		return;
+	}
 
 	for (; jt != NULL; jt = h_jt_get_next (jt))
 	{
 		h_clique_t *list = h_jt_get_cliques (jt);
 
 		if (list == NULL)
+		{
 			print_error ();
+			return;
+		}
 
-		printf ("Junction tree:\n");
+		ai->utility->Log(ALL, BN, "Junction tree:\n");
 
 		for (; *list != NULL; list++)
 		{
 			h_node_t *members = h_clique_get_members (*list);
 
 			if (members == NULL)
+			{
 				print_error ();
+				return;
+			}
 
-			printf ("  Clique:");
+			ai->utility->Log(ALL, BN, "  Clique:");
 			print_nodes (members);
 		} 
 	}
@@ -167,36 +178,43 @@ void HuginTest::print_beliefs_and_utilities (h_domain_t domain)
 	for (; node != NULL; node = h_node_get_next (node))
 	{
 		h_node_category_t category = h_node_get_category (node);
-		char type = (category == h_category_chance ? 'C'
-			: category == h_category_decision ? 'D' : 'U');
+		char type = (category == h_category_chance ? 'C' : category == h_category_decision ? 'D' : 'U');
 
-		printf ("\n[%c] %s (%s)\n", type, h_node_get_label (node),
-			h_node_get_name (node));
+		ai->utility->Log(ALL, BN, "\n[%c] %s (%s)\n", type, h_node_get_label (node), h_node_get_name (node));
 
 		if (category == h_category_utility)
-			printf ("  - Expected utility: %g\n",
-			h_node_get_expected_utility (node, 0));
+		{
+			ai->utility->Log(ALL, BN, "  - Expected utility: %g\n", h_node_get_expected_utility (node, 0));
+		}
 		else if (h_node_get_kind (node) == h_kind_discrete)
 		{
 			h_count_t state_count = h_node_get_number_of_states (node);
 			size_t i;
 
 			if (has_utilities)
+			{
 				for (i = 0; i < state_count; i++)
-					printf ("  - %s %g (%g)\n",
+				{
+					ai->utility->Log(ALL, BN, "  - %s %g (%g)\n",
 					h_node_get_state_label (node, i),
 					h_node_get_belief (node, i),
 					h_node_get_expected_utility (node, i));
+				}
+			}
 			else
+			{
 				for (i = 0; i < state_count; i++)
-					printf ("  - %s %g\n",
+				{
+					ai->utility->Log(ALL, BN, "  - %s %g\n",
 					h_node_get_state_label (node, i),
 					h_node_get_belief (node, i));
+				}
+			}
 		}
 		else  /* "node" is a continuous chance node */
 		{
-			printf ("  - Mean : %g\n", h_node_get_mean (node));
-			printf ("  - SD   : %g\n", sqrt (h_node_get_variance (node)));
+			ai->utility->Log(ALL, BN, "  - Mean : %g\n", h_node_get_mean (node));
+			ai->utility->Log(ALL, BN, "  - SD   : %g\n", sqrt (h_node_get_variance (node)));
 		}
 	}
 }
@@ -211,12 +229,15 @@ void HuginTest::print_nodes (h_node_t *list)
 		h_string_t name = h_node_get_name (*list);
 
 		if (name == NULL)
+		{
 			print_error ();
+			return;
+		}
 
-		printf (" %s", name);
+		ai->utility->Log(ALL, BN, " %s", name);
 	}
 
-	printf ("\n");
+	ai->utility->Log(ALL, BN, "\n");
 }
 
 
@@ -227,8 +248,11 @@ int HuginTest::domain_has_utilities (h_domain_t domain)
 	h_node_t node = h_domain_get_first_node (domain);
 
 	for (; node != NULL; node = h_node_get_next (node))
+	{
 		if (h_node_get_category (node) == h_category_utility)
+		{
 			return 1;
-
+		}
+	}
 	return 0;
 }
