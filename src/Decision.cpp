@@ -173,7 +173,7 @@ void Decision::UpdateFrindlyPositions()
 	ArmyInfo* armyUnits = ai->knowledge->selfInfo->armyInfo;
 	int unitCount = units.size();
 	//Run though all frindly units
-	for (int i; i < unitCount; i++)
+	for (int i = 0; i < unitCount; i++)
 	{
 		//If position has changed compred to the one stored in the QuadTree, update the QuadTree.
 		if (units[i]->GetPos().x != armyUnits->GetUnitPos(units[i]->GetUnitId()).x ||
