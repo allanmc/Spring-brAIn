@@ -5,6 +5,7 @@
 #include "BuildingController.h"
 #include "global.h"
 #include "BattlesInfo.h"
+#include "huginTest.h"
 
 
 using namespace springai;
@@ -37,6 +38,7 @@ private:
 
 	BattlesInfo* BattleInfoInstance;
 	AIClasses* ai;
+	HuginTest *huginTest;
 };
 
 }

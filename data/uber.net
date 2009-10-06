@@ -204,7 +204,7 @@ potential (seenUnits | enemyUnits)
 
 potential (myStrategy)
 {
-    data = ( 1 1 );
+    data = ( 0.5 0.5 );
 }
 
 potential (seenRes | enemyResource)
@@ -212,7 +212,7 @@ potential (seenRes | enemyResource)
     data
      = (( 1 0 0 0 )	%  enemyResource=0
 	( 0.5 0.5 0 0 )	%  enemyResource=1-10
-	( 0.2 0.4 0.6 0 )	%  enemyResource=11-20
+	( 0.166667 0.333333 0.5 0 )	%  enemyResource=11-20
 	( 0.1 0.2 0.4 0.3 ));	%  enemyResource=21-40
 }
 
@@ -244,7 +244,7 @@ potential (seenDef | enemyDefence)
      = (( 1 0 0 0 )	%  enemyDefence=0
 	( 0.6 0.4 0 0 )	%  enemyDefence=1-5
 	( 0.4 0.5 0.1 0 )	%  enemyDefence=6-10
-	( 0.2 0.2 0.4 1 ));	%  enemyDefence=11-20
+	( 0.111111 0.111111 0.222222 0.555556 ));	%  enemyDefence=11-20
 }
 
 potential (enemyResource | enemyStrategy)
@@ -260,7 +260,7 @@ potential (enemyProduction | enemyResource enemyStrategy)
      = ((( 0.7 0.2 0.1 0 )	%  enemyResource=0  enemyStrategy=Aggressive
 	 ( 0.8 0.15 0.05 0 ))	%  enemyResource=0  enemyStrategy=Defensive
 	(( 0.3 0.5 0.15 0.05 )	%  enemyResource=1-10  enemyStrategy=Aggressive
-	 ( 0.4 0.4 0.05 0.05 ))	%  enemyResource=1-10  enemyStrategy=Defensive
+	 ( 0.444444 0.444444 0.0555556 0.0555556 ))	%  enemyResource=1-10  enemyStrategy=Defensive
 	(( 0.1 0.5 0.3 0.1 )	%  enemyResource=11-20  enemyStrategy=Aggressive
 	 ( 0.2 0.6 0.15 0.05 ))	%  enemyResource=11-20  enemyStrategy=Defensive
 	(( 0.05 0.25 0.5 0.2 )	%  enemyResource=21-40  enemyStrategy=Aggressive
@@ -285,41 +285,41 @@ potential (enemyUnits | enemyResource enemyProduction enemyStrategy)
     data
      = (((( 0.9 0.05 0.05 0 )	%  enemyResource=0  enemyProduction=0  enemyStrategy=Aggressive
 	  ( 0.9 0.1 0 0 ))	%  enemyResource=0  enemyProduction=0  enemyStrategy=Defensive
-	 (( 1 1 1 1 )	%  enemyResource=0  enemyProduction=1-2  enemyStrategy=Aggressive
-	  ( 1 1 1 1 ))	%  enemyResource=0  enemyProduction=1-2  enemyStrategy=Defensive
-	 (( 1 1 1 1 )	%  enemyResource=0  enemyProduction=3-6  enemyStrategy=Aggressive
-	  ( 1 1 1 1 ))	%  enemyResource=0  enemyProduction=3-6  enemyStrategy=Defensive
-	 (( 1 1 1 1 )	%  enemyResource=0  enemyProduction=7-10  enemyStrategy=Aggressive
-	  ( 1 1 1 1 )))	%  enemyResource=0  enemyProduction=7-10  enemyStrategy=Defensive
-	((( 1 1 1 1 )	%  enemyResource=1-10  enemyProduction=0  enemyStrategy=Aggressive
-	  ( 1 1 1 1 ))	%  enemyResource=1-10  enemyProduction=0  enemyStrategy=Defensive
-	 (( 1 1 1 1 )	%  enemyResource=1-10  enemyProduction=1-2  enemyStrategy=Aggressive
-	  ( 1 1 1 1 ))	%  enemyResource=1-10  enemyProduction=1-2  enemyStrategy=Defensive
-	 (( 1 1 1 1 )	%  enemyResource=1-10  enemyProduction=3-6  enemyStrategy=Aggressive
-	  ( 1 1 1 1 ))	%  enemyResource=1-10  enemyProduction=3-6  enemyStrategy=Defensive
-	 (( 1 1 1 1 )	%  enemyResource=1-10  enemyProduction=7-10  enemyStrategy=Aggressive
-	  ( 1 1 1 1 )))	%  enemyResource=1-10  enemyProduction=7-10  enemyStrategy=Defensive
-	((( 1 1 1 1 )	%  enemyResource=11-20  enemyProduction=0  enemyStrategy=Aggressive
-	  ( 1 1 1 1 ))	%  enemyResource=11-20  enemyProduction=0  enemyStrategy=Defensive
-	 (( 1 1 1 1 )	%  enemyResource=11-20  enemyProduction=1-2  enemyStrategy=Aggressive
-	  ( 1 1 1 1 ))	%  enemyResource=11-20  enemyProduction=1-2  enemyStrategy=Defensive
-	 (( 1 1 1 1 )	%  enemyResource=11-20  enemyProduction=3-6  enemyStrategy=Aggressive
-	  ( 1 1 1 1 ))	%  enemyResource=11-20  enemyProduction=3-6  enemyStrategy=Defensive
-	 (( 1 1 1 1 )	%  enemyResource=11-20  enemyProduction=7-10  enemyStrategy=Aggressive
-	  ( 1 1 1 1 )))	%  enemyResource=11-20  enemyProduction=7-10  enemyStrategy=Defensive
+	 (( 0.8 0.15 0.05 0 )	%  enemyResource=0  enemyProduction=1-2  enemyStrategy=Aggressive
+	  ( 0.8 0.2 0 0 ))	%  enemyResource=0  enemyProduction=1-2  enemyStrategy=Defensive
+	 (( 0.7 0.2 0.1 0 )	%  enemyResource=0  enemyProduction=3-6  enemyStrategy=Aggressive
+	  ( 0.7 0.3 0 0 ))	%  enemyResource=0  enemyProduction=3-6  enemyStrategy=Defensive
+	 (( 0.6 0.3 0.1 0 )	%  enemyResource=0  enemyProduction=7-10  enemyStrategy=Aggressive
+	  ( 0.6 0.35 0.05 0 )))	%  enemyResource=0  enemyProduction=7-10  enemyStrategy=Defensive
+	((( 0.9 0.05 0.05 0 )	%  enemyResource=1-10  enemyProduction=0  enemyStrategy=Aggressive
+	  ( 0.8 0.1 0.1 0 ))	%  enemyResource=1-10  enemyProduction=0  enemyStrategy=Defensive
+	 (( 0.5 0.2 0.2 0.1 )	%  enemyResource=1-10  enemyProduction=1-2  enemyStrategy=Aggressive
+	  ( 0.3 0.2 0.3 0.2 ))	%  enemyResource=1-10  enemyProduction=1-2  enemyStrategy=Defensive
+	 (( 0.3 0.2 0.3 0.2 )	%  enemyResource=1-10  enemyProduction=3-6  enemyStrategy=Aggressive
+	  ( 0.2 0.2 0.3 0.3 ))	%  enemyResource=1-10  enemyProduction=3-6  enemyStrategy=Defensive
+	 (( 0.15 0.25 0.3 0.3 )	%  enemyResource=1-10  enemyProduction=7-10  enemyStrategy=Aggressive
+	  ( 0.1 0.2 0.3 0.4 )))	%  enemyResource=1-10  enemyProduction=7-10  enemyStrategy=Defensive
+	((( 0.4 0.4 0.1 0.1 )	%  enemyResource=11-20  enemyProduction=0  enemyStrategy=Aggressive
+	  ( 0.5 0.4 0.1 0 ))	%  enemyResource=11-20  enemyProduction=0  enemyStrategy=Defensive
+	 (( 0.1 0.35 0.4 0.15 )	%  enemyResource=11-20  enemyProduction=1-2  enemyStrategy=Aggressive
+	  ( 0.2 0.3 0.4 0.1 ))	%  enemyResource=11-20  enemyProduction=1-2  enemyStrategy=Defensive
+	 (( 0.05 0.15 0.4 0.4 )	%  enemyResource=11-20  enemyProduction=3-6  enemyStrategy=Aggressive
+	  ( 0.1 0.2 0.3 0.4 ))	%  enemyResource=11-20  enemyProduction=3-6  enemyStrategy=Defensive
+	 (( 0.01 0.1 0.5 0.39 )	%  enemyResource=11-20  enemyProduction=7-10  enemyStrategy=Aggressive
+	  ( 0.0729927 0.218978 0.0510949 0.656934 )))	%  enemyResource=11-20  enemyProduction=7-10  enemyStrategy=Defensive
 	((( 0.2 0.4 0.3 0.1 )	%  enemyResource=21-40  enemyProduction=0  enemyStrategy=Aggressive
 	  ( 0.3 0.4 0.25 0.05 ))	%  enemyResource=21-40  enemyProduction=0  enemyStrategy=Defensive
 	 (( 0.1 0.2 0.6 0.1 )	%  enemyResource=21-40  enemyProduction=1-2  enemyStrategy=Aggressive
 	  ( 0.2 0.3 0.4 0.1 ))	%  enemyResource=21-40  enemyProduction=1-2  enemyStrategy=Defensive
-	 (( 0.05 0.15 0.5 0.4 )	%  enemyResource=21-40  enemyProduction=3-6  enemyStrategy=Aggressive
+	 (( 0.0454545 0.136364 0.454545 0.363636 )	%  enemyResource=21-40  enemyProduction=3-6  enemyStrategy=Aggressive
 	  ( 0.1 0.2 0.3 0.4 ))	%  enemyResource=21-40  enemyProduction=3-6  enemyStrategy=Defensive
-	 (( 0 0.1 0.5 0.4 )	%  enemyResource=21-40  enemyProduction=7-10  enemyStrategy=Aggressive
+	 (( 0.01 0.1 0.5 0.39 )	%  enemyResource=21-40  enemyProduction=7-10  enemyStrategy=Aggressive
 	  ( 0.05 0.15 0.3 0.5 ))));	%  enemyResource=21-40  enemyProduction=7-10  enemyStrategy=Defensive
 }
 
 potential (enemyStrategy | myStrategy)
 {
     data
-     = (( 0.2 0.8 )	%  myStrategy=Aggressive
-	( 0.8 0.2 ));	%  myStrategy=Defensive
+     = (( 0.5 0.5 )	%  myStrategy=Aggressive
+	( 0.5 0.5 ));	%  myStrategy=Defensive
 }

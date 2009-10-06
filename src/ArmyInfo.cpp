@@ -13,6 +13,7 @@ ArmyInfo::ArmyInfo( AIClasses* aiClasses )
 									0,
 									ai->callback->GetMap()->GetHeight()*8};
 	quadTree = new QuadTree( ai, bbox );
+	unitCount = 0;
 }
 
 ArmyInfo::~ArmyInfo()
@@ -53,20 +54,23 @@ void ArmyInfo::RemoveUnit(Unit* unit)
 	{
 		return;
 	}
-	quadTree->RemoveUnit( unit->GetUnitId() );
-	//remove unit from quadtree, using pos
 
-	unitCount--;
+	if (quadTree->RemoveUnit( unit->GetUnitId()))
+	{
+		unitCount--;
+	}	
 }
 
 void ArmyInfo::UpdateUnit(Unit* unit)
 {
 	SAIFloat3 new_pos = unit->GetPos();
-	quadTree->UpdateUnit( unit->GetUnitId(), unit->GetPos() );
+	int i = quadTree->UpdateUnit( unit->GetUnitId(), unit->GetPos() );
 	UnitDef* unitDef = unit->GetDef();
 	if (unitDef->GetUnitDefId() != -1) {
 		knownUnitDefs[unit->GetUnitId()] = unitDef;
 	}
+	unitCount += i;
+
 	//Update quadtree, using old_pos and new_pos
 }
 
