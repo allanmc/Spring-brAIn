@@ -13,6 +13,9 @@ ArmyInfo::ArmyInfo( AIClasses* aiClasses )
 									0,
 									ai->callback->GetMap()->GetHeight()*8};
 	quadTree = new QuadTree( ai, bbox );
+	unitCount = 0;
+	aggressive = 0;
+	defensive = 0;
 }
 
 ArmyInfo::~ArmyInfo()
@@ -89,4 +92,14 @@ UnitDef* ArmyInfo::GetUnitDef(int unitID)
 SAIFloat3 ArmyInfo::GetUnitPos( int unitID )
 {
 	return quadTree->GetLastUnitPos(unitID);
+}
+
+vector<int> ArmyInfo::CountDefensive()
+{
+	return defensive;
+}
+
+vector<int> ArmyInfo::CountAggressive()
+{
+	return aggressive;
 }

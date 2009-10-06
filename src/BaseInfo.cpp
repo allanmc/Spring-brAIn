@@ -12,6 +12,9 @@ BaseInfo::BaseInfo( AIClasses* aiClasses )
 									0,
 									ai->callback->GetMap()->GetHeight()*8};
 	quadTree = new QuadTree( ai, bbox );
+	buildingCount = 0;
+	resourceBuildings = 0;
+	productionBuildings = 0;
 }
 
 BaseInfo::~BaseInfo()
@@ -38,3 +41,13 @@ void BaseInfo::RemoveBuilding(Unit* building)
 	buildingCount--;
 }
 
+int BaseInfo::CountResourceBuildings()
+{
+	return resourceBuildings;
+}
+
+
+vector<int> BaseInfo::CountProductionBuildings()
+{
+	return productionBuildings;
+}

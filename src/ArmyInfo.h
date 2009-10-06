@@ -29,11 +29,15 @@ namespace brainSpace
 
 		unsigned int unitCount;
 
+		int CountDefensive();
+		int GetAggressive();
+
 	private:
 		AIClasses* ai;
 		QuadTree* quadTree;
 		map<int,UnitDef*> knownUnitDefs;
 		
+		int aggressive, defensive;
 	};
 }
 
