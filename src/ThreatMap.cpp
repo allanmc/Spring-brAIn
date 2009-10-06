@@ -20,8 +20,10 @@ ThreatMap::~ThreatMap()
 void ThreatMap::Update()
 {
 	map<int, SAIFloat3> enemyUnits = ai->knowledge->enemyInfo->armyInfo->GetEnemyUnits();
+	ai->utility->Log( DEBUG, KNOWLEDGE, "Piksved" );
 	for ( map<int, SAIFloat3>::iterator it = enemyUnits.begin() ; it != enemyUnits.end() ; it++ )
 	{
+		ai->utility->Log( DEBUG, KNOWLEDGE, "Allan lugter" );
 		InsertUnit( Unit::GetInstance( ai->callback, it->first ) );
 	}
 
@@ -44,6 +46,9 @@ void ThreatMap::InsertUnit(Unit *u)
 		float dynDamageMin = def->GetDynDamageMin();
 		float dynDamageRange = def->GetDynDamageRange();
 
+		UnitDef* uDef = u->GetDef();
+		if ( uDef->GetUnitDefId() != -1 )
+			ai->utility->Log( DEBUG, KNOWLEDGE, "Unit %s", uDef->GetHumanName() ); 
 		ai->utility->Log( DEBUG, KNOWLEDGE, "crater boost: %f craterMult: %f impulseBoost %f impulseFactor %f dynDamageExp %f dynDamageMin %f dynDamageRange %f", craterBoost, craterMult, impulseBoost, impulseFactor, dynDamageExp, dynDamageMin, dynDamageRange );
 		
 		for ( int x = 0 ; x < ThreatMapWidth ; x++ )

@@ -258,13 +258,14 @@ void Decision::Update(int frame)
 
 	if(frame % 60 == 0)
 	{
+				TM->Update();
 		gc->ScoutWithIdleGroup();
 		BattleInfoInstance->Update( frame );
 	}
 
 	if ( frame % 120 ==0 )
 	{
-		TM->Update();
+
 		UpdateFrindlyPositions();
 		CBoundingBox box;
 		box.topLeft.x = ai->callback->GetMap()->GetStartPos().x - 1000;
