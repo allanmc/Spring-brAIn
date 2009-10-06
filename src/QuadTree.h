@@ -12,8 +12,8 @@ public:
 	virtual ~QuadTree();
 
 	void InsertUnit( int unitID, SAIFloat3 pos );
-	void RemoveUnit( int unitID );
-	void UpdateUnit( int unitID, SAIFloat3 pos );
+	bool RemoveUnit( int unitID );
+	int UpdateUnit( int unitID, SAIFloat3 pos );
 	SAIFloat3 GetLastUnitPos( int unitID );
 	QuadTreeNode* GetRootNode();
 	void Print();

@@ -30,7 +30,7 @@ namespace brainSpace
 		unsigned int unitCount;
 
 		int CountDefensive();
-		int GetAggressive();
+		int CountAggressive();
 
 	private:
 		AIClasses* ai;

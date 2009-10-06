@@ -12,6 +12,16 @@ Decision::Decision(AIClasses* aiClasses)
 	gc = new GroupController( ai );
 	bc = new BuildingController( ai );
 	BattleInfoInstance = new BattlesInfo( ai );
+
+	huginTest = new HuginTest( ai );
+	huginTest->setEvidence("myStrategy", "Aggressive");
+	huginTest->setEvidence("seenUnits", "0");
+	huginTest->setEvidence("seenDef", "0");
+	huginTest->setEvidence("seenProd", "0");
+	huginTest->setEvidence("seenRes", "0");
+	huginTest->setEvidence("attacks", "0");
+	ai->utility->Log(ALL, BN, "My belief that that the enemy is aggressive: %f", huginTest->getBelief("enemyStrategy", "Aggressive"));
+	ai->utility->Log(ALL, BN, "My belief that that the enemy is defensive: %f", huginTest->getBelief("enemyStrategy", "Defensive"));
 }
 
 Decision::~Decision(void)
@@ -107,7 +117,7 @@ void Decision::EnemyEnterLOS(int enemy)
 
 	Unit * unit = Unit::GetInstance(ai->callback,enemy);
 	UnitDef* d = unit->GetDef();
-
+	
 	if ( d == NULL )
 		ai->utility->Log( DEBUG, DECISION, "EnemyEnterLOS: UnitDef was null" );
 	if ( d->GetUnitDefId() == -1 )
@@ -179,7 +189,7 @@ void Decision::UpdateFrindlyPositions()
 		if (units[i]->GetPos().x != armyUnits->GetUnitPos(units[i]->GetUnitId()).x ||
 			units[i]->GetPos().z != armyUnits->GetUnitPos(units[i]->GetUnitId()).z)
 		{
-			armyUnits->UpdateUnit( units[i] );
+			//armyUnits->UpdateUnit( units[i] );
 		}
 	}
 }
@@ -259,7 +269,57 @@ void Decision::Update(int frame)
 		box.topLeft.z = ai->callback->GetMap()->GetStartPos().z - 1000;
 		box.bottomRight.x = ai->callback->GetMap()->GetStartPos().x + 1000;
 		box.bottomRight.z = ai->callback->GetMap()->GetStartPos().z + 1000;
-		ai->utility->Log( DEBUG, KNOWLEDGE, "Number of battles close to our base within the last 4000 frames: %d", BattleInfoInstance->NumberOfBattlesInArea( 4000, box ));
+		int battles = BattleInfoInstance->NumberOfBattlesInArea( 9000, box );
+		ai->utility->Log( DEBUG, KNOWLEDGE, "Number of battles close to our base within the last 9000 frames: %d", battles);
+		const char* b_range;
+		if(battles == 0)
+		{
+			b_range = "0";
+		}
+		else if(battles < 4)
+		{
+			b_range = "1-3";
+		}
+		else if(battles < 9)
+		{
+			b_range = "4-9";
+		}
+		else if(battles > 9)
+		{
+			b_range = "9-";
+		}
+
+		huginTest->setEvidence("attacks", b_range);
+	}
+
+	if ( frame % 120 == 60 )
+	{
+		//huginTest->setEvidence("myStrategy", "Aggressive");
+		int enemyUnits = ai->knowledge->enemyInfo->armyInfo->unitCount;
+		const char* u_range;
+		if(enemyUnits == 0)
+		{
+			u_range = "0";
+		}
+		else if(enemyUnits < 11)
+		{
+			u_range = "1-10";
+		}
+		else if(enemyUnits < 51)
+		{
+			u_range = "11-50";
+		}
+		else if(enemyUnits > 50)
+		{
+			u_range = "51-300";
+		}
+		huginTest->setEvidence("seenUnits", u_range);
+		//huginTest->setEvidence("seenDef", "0");
+		//huginTest->setEvidence("seenProd", "0");
+		//huginTest->setEvidence("seenRes", "0");
+		ai->utility->Log(ALL, BN, "My belief that that the enemy is aggressive: %f", huginTest->getBelief("enemyStrategy", "Aggressive"));
+		ai->utility->Log(ALL, BN, "My belief that that the enemy is defensive: %f", huginTest->getBelief("enemyStrategy", "Defensive"));
+		ai->utility->Log(ALL, BN, "Enemy units seen: %s", u_range);		
 	}
 
 	ai->knowledge->selfInfo->resourceInfo->Update(frame);

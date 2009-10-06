@@ -11,8 +11,13 @@ QuadTree::~QuadTree()
 {
 }
 
-void QuadTree::RemoveUnit( int unitID )
+bool QuadTree::RemoveUnit( int unitID )
 {
+	if (units.find(unitID) == units.end())
+	{
+		return false;
+	}
+
 	QuadTreeNode *iter = RootNode;
 	SAIFloat3 pos = units[unitID];
 	while ( true )
@@ -36,17 +41,20 @@ void QuadTree::RemoveUnit( int unitID )
 			} while (iter->TryToMergeToLeaf());
 			break;
 		}
-
 	}
+	return true;
 }
 
-void QuadTree::UpdateUnit( int unitID, SAIFloat3 pos )
+// Returns the amount of units added to the Qtree
+int QuadTree::UpdateUnit( int unitID, SAIFloat3 pos )
 {
-	if (units.find(unitID) == units.end())
+	int i = 0;
+	if(!RemoveUnit(unitID))
 	{
-		RemoveUnit(unitID);
+		i++;
 	}
 	InsertUnit( unitID, pos );
+	return i;
 }
 
 SAIFloat3 QuadTree::GetLastUnitPos( int unitID ) 
@@ -65,7 +73,7 @@ void QuadTree::InsertUnit( int unitID, SAIFloat3 pos )
 
 	if (!QuadTreeNode::IsInsideBoundingBox(pos, RootNode->GetBoundingBox()) )
 	{
-		ai->utility->ChatMsg("QuadTree error: The position is not inside the RootNode... Idiot.");
+		ai->utility->Log(DEBUG, QUADTREE, "QuadTree error: The position is not inside the RootNode... Idiot.");
 		return;
 	}
 
