@@ -12,6 +12,7 @@ Decision::Decision(AIClasses* aiClasses)
 	gc = new GroupController( ai );
 	bc = new BuildingController( ai );
 	BattleInfoInstance = new BattlesInfo( ai );
+	TM = new ThreatMap( ai );
 }
 
 Decision::~Decision(void)
@@ -253,13 +254,15 @@ void Decision::Update(int frame)
 
 	if ( frame % 120 ==0 )
 	{
+		TM->Update();
 		UpdateFrindlyPositions();
 		CBoundingBox box;
 		box.topLeft.x = ai->callback->GetMap()->GetStartPos().x - 1000;
 		box.topLeft.z = ai->callback->GetMap()->GetStartPos().z - 1000;
 		box.bottomRight.x = ai->callback->GetMap()->GetStartPos().x + 1000;
 		box.bottomRight.z = ai->callback->GetMap()->GetStartPos().z + 1000;
-		ai->utility->Log( DEBUG, KNOWLEDGE, "Number of battles close to our base within the last 4000 frames: %d", BattleInfoInstance->NumberOfBattlesInArea( 4000, box ));
+		//ai->utility->Log( DEBUG, KNOWLEDGE, "Start position (%f, %f)", ai->callback->GetMap()->GetStartPos().x, ai->callback->GetMap()->GetStartPos().z );
+		//ai->utility->Log( DEBUG, KNOWLEDGE, "Number of battles close to our base within the last 6000 frames: %d. Current frame %d", BattleInfoInstance->NumberOfBattlesInArea( 6000, box ), ai->frame);
 	}
 
 	ai->knowledge->selfInfo->resourceInfo->Update(frame);

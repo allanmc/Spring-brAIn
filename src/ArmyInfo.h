@@ -29,6 +29,8 @@ namespace brainSpace
 
 		unsigned int unitCount;
 
+		const map<int, SAIFloat3> GetEnemyUnits();
+
 	private:
 		AIClasses* ai;
 		QuadTree* quadTree;

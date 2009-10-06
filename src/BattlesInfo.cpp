@@ -136,6 +136,7 @@ void BattlesInfo::SomeoneDamaged( Unit* our, Unit* their )
 		}
 		//The unit is not a part of any battles, and there are no battles nearby so make a new Battle object.
 
+		ai->utility->Log( DEBUG, KNOWLEDGE, "New battle. Frame %d. Pos (%f, %f)", ai->frame, our->GetPos().x, our->GetPos().z );
 		b = new Battle( ai, our->GetPos() );
 		b->UnitEnteredBattle( our, false );
 		b->UnitEnteredBattle( their, true );
