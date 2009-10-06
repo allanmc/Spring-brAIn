@@ -120,7 +120,6 @@ const map<int, SAIFloat3> ArmyInfo::GetEnemyUnits()
 {
 	return quadTree->GetEnemyUnits();
 }
-}
 
 int ArmyInfo::CountDefensive()
 {
