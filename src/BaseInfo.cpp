@@ -12,6 +12,9 @@ BaseInfo::BaseInfo( AIClasses* aiClasses )
 									0,
 									ai->callback->GetMap()->GetHeight()*8};
 	quadTree = new QuadTree( ai, bbox );
+	buildingCount = 0;
+	resourceBuildings = 0;
+	productionBuildings = 0;
 }
 
 BaseInfo::~BaseInfo()
@@ -24,6 +27,14 @@ void BaseInfo::AddBuilding(Unit* building)
 	quadTree->InsertUnit(building->GetUnitId(), building->GetPos());
 
 	buildingCount++;
+	if(building->GetDef()->IsBuilder())
+	{
+		productionBuildings++;
+	}
+	else
+	{
+		resourceBuildings++;
+	}
 }
 
 void BaseInfo::RemoveBuilding(Unit* building)
@@ -36,5 +47,23 @@ void BaseInfo::RemoveBuilding(Unit* building)
 	//remove unit from quadtree, using pos
 
 	buildingCount--;
+	if(building->GetDef()->IsBuilder())
+	{
+		productionBuildings--;
+	}
+	else
+	{
+		resourceBuildings--;
+	}
 }
 
+int BaseInfo::CountResourceBuildings()
+{
+	return resourceBuildings;
+}
+
+
+int BaseInfo::CountProductionBuildings()
+{
+	return productionBuildings;
+}

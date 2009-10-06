@@ -31,11 +31,15 @@ namespace brainSpace
 
 		const map<int, SAIFloat3> GetEnemyUnits();
 
+		int CountDefensive();
+		int CountAggressive();
+
 	private:
 		AIClasses* ai;
 		QuadTree* quadTree;
 		map<int,UnitDef*> knownUnitDefs;
 		
+		int aggressive, defensive;
 	};
 }
 

@@ -6,6 +6,7 @@
 #include "global.h"
 #include "BattlesInfo.h"
 #include "ThreatMap.h"
+#include "huginTest.h"
 
 using namespace springai;
 
@@ -38,6 +39,7 @@ private:
 	BattlesInfo* BattleInfoInstance;
 	AIClasses* ai;
 	ThreatMap* TM;
+	HuginTest *huginTest;
 };
 
 }

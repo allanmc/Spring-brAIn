@@ -18,10 +18,14 @@ namespace brainSpace
 		void RemoveBuilding(Unit* building);
 
 		unsigned int buildingCount;
+		
+		int CountResourceBuildings();
+		int CountProductionBuildings();
 
 	private:
 		AIClasses* ai;
 		QuadTree* quadTree;
+		int resourceBuildings, productionBuildings;
 	};
 }
 
