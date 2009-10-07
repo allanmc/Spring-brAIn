@@ -19,6 +19,7 @@ public:
 
 private:
 
+	int ArmorType;
 	int ThreatMapResolution;
 	int ThreatMapWidth;
 	int ThreatMapHeight;
@@ -26,7 +27,13 @@ private:
 	float CellHeight;
 
 	float* ThreatArray;
-	void InsertUnit( Unit* u );
+	int* FigureIDs;
+	int* GridFigureIDs;
+	
+	void DrawGrid();
+	void Reset();
+	void InsertUnit( Unit* u, SAIFloat3 pos );
+	int CalculateDPS( WeaponDef* w );
 
 	AIClasses* ai;
 };
