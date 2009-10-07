@@ -78,9 +78,9 @@ foreach ($matches as $match) {
 }
 
 echo '<pre>';
-echo "directed_graph<bayes_node>::kernel_1a_c bn;\n\n";
-echo $nodes;
-echo <<<END
+echo htmlentities("directed_graph<bayes_node>::kernel_1a_c bn;\n\n");
+echo htmlentities($nodes);
+$return = <<<END
 typedef graph<set<unsigned long>::compare_1b_c, set<unsigned long>::compare_1b_c>::kernel_1a_c join_tree_type;
 join_tree_type join_tree;
 
@@ -89,6 +89,7 @@ create_join_tree(join_tree, join_tree);
 
 bayesian_network_join_tree solution(bn, join_tree);
 END;
+echo htmlentities($return);
 
 echo '</pre>';
 //print_r($nodes);
@@ -164,7 +165,7 @@ class Nodes {
 			if ($i!=count($this->nodes)-1) $return .= ",";
 			$return .= "\n";
 		}
-		$return .= "}\n\n";
+		$return .= "};\n\n";
 		
 		$return .= $bn.".set_number_of_nodes(".count($this->nodes).");\n";
         foreach ($this->nodes as $node) {
@@ -180,15 +181,15 @@ class Nodes {
 		
         foreach ($this->nodes as $node) {
 			foreach ($node->potentials as $potential) {
+				$return .= $parent.".clear();\n";
 				if (count($potential->dependencies)>0) {
-					$return .= $parent.".clear();\n";
 					foreach ($potential->dependencies as $dependency=>$state) {
 						$return .= $parent.".add(".$prefix.$node->getInfluenceById($dependency).", ".$state.");\n";
 					}
 				}
 				for ($i = 0; $i < $node->numStates(); $i++) {
 					
-					$return .= "set_node_probability(".$bn.", ".$prefix.$node->name.", ".$i.", ".$parent.", ".$potential->values[$i].")//state = ".$node->states[$i].";\n";
+					$return .= "set_node_probability(".$bn.", ".$prefix.$node->name.", ".$i.", ".$parent.", ".$potential->values[$i].");//state = ".$node->states[$i]."\n";
 				}
 				$return .= "\n";
 			}
