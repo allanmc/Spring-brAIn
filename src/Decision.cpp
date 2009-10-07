@@ -12,7 +12,7 @@ Decision::Decision(AIClasses* aiClasses)
 	gc = new GroupController( ai );
 	bc = new BuildingController( ai );
 	BattleInfoInstance = new BattlesInfo( ai );
-	//TM = new ThreatMap( ai );
+	TM = new ThreatMap( ai );
 
 	huginTest = new HuginTest( ai );
 	huginTest->setEvidence("myStrategy", "Aggressive");
