@@ -1,7 +1,8 @@
 #ifndef _BRAINSPACE_ARMYINFO_H
 #define _BRAINSPACE_ARMYINFO_H
 
-class QuadTree;
+
+//class QuadTree;
 
 #include "global.h"
 #include "QuadTree.h"

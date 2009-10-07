@@ -34,7 +34,7 @@ namespace brainSpace
 		UnitDef* GetUnitDef(const char* unitDefName);
 		Resource* GetResource(const char* resourceName);
 		int DrawCircle(SAIFloat3 pos, float radius );
-		int DrawLine(SAIFloat3 start, SAIFloat3 end, bool arrow);
+		int DrawLine(SAIFloat3 start, SAIFloat3 end, bool arrow = false, float width = 20.0f );
 		void RemoveGraphics(int figureId);
 	};
 }
