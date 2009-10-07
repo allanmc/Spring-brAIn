@@ -146,7 +146,7 @@ void HuginTest::load_and_propagate (h_string_t net_file_name)
 		ai->utility->Log(ALL, BN, "\nPrior beliefs (and expected utilities):\n");
 	}
 
-	print_beliefs_and_utilities (domain);
+	print_beliefs_and_utilities ();
 }
 
 /* This function is used when a Hugin API error is detected: It prints
@@ -200,7 +200,7 @@ void HuginTest::print_junction_trees (h_domain_t domain)
 
 /* Print the beliefs and expected utilities of all nodes in the domain. */
 
-void HuginTest::print_beliefs_and_utilities (h_domain_t domain)
+void HuginTest::print_beliefs_and_utilities ()
 {
 	int has_utilities = domain_has_utilities (domain);
 	h_node_t node = h_domain_get_first_node (domain);

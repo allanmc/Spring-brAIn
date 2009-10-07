@@ -15,7 +15,7 @@ class HuginTest {
 	private:
 		void load_and_propagate (h_string_t net_file_name);
 		void print_junction_trees (h_domain_t domain);
-		void print_beliefs_and_utilities (h_domain_t domain);
+		void print_beliefs_and_utilities ();
 		void print_nodes (h_node_t *list);
 		int domain_has_utilities (h_domain_t domain);
 		void print_error (void);
