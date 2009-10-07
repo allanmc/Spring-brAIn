@@ -80,6 +80,16 @@ foreach ($matches as $match) {
 echo '<pre>';
 echo "directed_graph<bayes_node>::kernel_1a_c bn;\n\n";
 echo $nodes;
+echo <<<END
+typedef graph<set<unsigned long>::compare_1b_c, set<unsigned long>::compare_1b_c>::kernel_1a_c join_tree_type;
+join_tree_type join_tree;
+
+create_moral_graph(bn, join_tree);
+create_join_tree(join_tree, join_tree);
+
+bayesian_network_join_tree solution(bn, join_tree);
+END;
+
 echo '</pre>';
 //print_r($nodes);
 
