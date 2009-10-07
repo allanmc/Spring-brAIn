@@ -203,3 +203,8 @@ QuadTreeNode* QuadTree::GetRootNode()
 {
 	return RootNode;
 }
+
+const map<int, SAIFloat3> QuadTree::GetEnemyUnits()
+{
+	return units;
+}

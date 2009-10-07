@@ -12,6 +12,7 @@ Decision::Decision(AIClasses* aiClasses)
 	gc = new GroupController( ai );
 	bc = new BuildingController( ai );
 	BattleInfoInstance = new BattlesInfo( ai );
+	TM = new ThreatMap( ai );
 
 	huginTest = new HuginTest( ai );
 	huginTest->setEvidence("myStrategy", "Aggressive");
@@ -257,18 +258,22 @@ void Decision::Update(int frame)
 
 	if(frame % 60 == 0)
 	{
+				TM->Update();
 		gc->ScoutWithIdleGroup();
 		BattleInfoInstance->Update( frame );
 	}
 
 	if ( frame % 120 ==0 )
 	{
+
 		UpdateFrindlyPositions();
 		CBoundingBox box;
 		box.topLeft.x = ai->callback->GetMap()->GetStartPos().x - 1000;
 		box.topLeft.z = ai->callback->GetMap()->GetStartPos().z - 1000;
 		box.bottomRight.x = ai->callback->GetMap()->GetStartPos().x + 1000;
 		box.bottomRight.z = ai->callback->GetMap()->GetStartPos().z + 1000;
+		//ai->utility->Log( DEBUG, KNOWLEDGE, "Start position (%f, %f)", ai->callback->GetMap()->GetStartPos().x, ai->callback->GetMap()->GetStartPos().z );
+		//ai->utility->Log( DEBUG, KNOWLEDGE, "Number of battles close to our base within the last 6000 frames: %d. Current frame %d", BattleInfoInstance->NumberOfBattlesInArea( 6000, box ), ai->frame);
 		int battles = BattleInfoInstance->NumberOfBattlesInArea( 9000, box );
 		ai->utility->Log( DEBUG, KNOWLEDGE, "Number of battles close to our base within the last 9000 frames: %d", battles);
 		const char* b_range;

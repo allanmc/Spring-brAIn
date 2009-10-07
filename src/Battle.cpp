@@ -46,18 +46,18 @@ void Battle::UnitEnteredBattle( Unit* u, bool enemy )
 	
 	int unitID = u->GetUnitId();
 
-	ai->utility->Log( DEBUG, KNOWLEDGE, "UnitID %d entered battle: defID %d", unitID, container.def->GetUnitDefId() );
+	//ai->utility->Log( DEBUG, KNOWLEDGE, "UnitID %d entered battle: defID %d", unitID, container.def->GetUnitDefId() );
 	if ( container.def->GetUnitDefId() == -1 )
 	{
-		ai->utility->Log( DEBUG, KNOWLEDGE, "defID was -1" );
+		//ai->utility->Log( DEBUG, KNOWLEDGE, "defID was -1" );
 		UnitDef* def = ai->knowledge->enemyInfo->armyInfo->GetUnitDef( unitID );
 		if ( def != NULL && def->GetUnitDefId() != -1 )
 		{
 			container.def = def;
-			ai->utility->Log( DEBUG, KNOWLEDGE, "Def updated!" );
+			//ai->utility->Log( DEBUG, KNOWLEDGE, "Def updated!" );
 		}
-		else
-			ai->utility->Log( DEBUG, KNOWLEDGE, "Def not updated" );
+		//else
+			//ai->utility->Log( DEBUG, KNOWLEDGE, "Def not updated" );
 	}
 	LastFrameOfActivity = ai->frame;
 
@@ -92,7 +92,7 @@ void Battle::UnitEnteredBattle( Unit* u, bool enemy )
 			pos[i] = (*iter).second.pos;
 		CalculateCenter( pos, ActiveEnemyUnits.size() );
 	}
-	ai->utility->Log( DEBUG, KNOWLEDGE, "Done! :-) " );
+	//ai->utility->Log( DEBUG, KNOWLEDGE, "Done! :-) " );
 }
 
 bool Battle::Contains( Unit* u )

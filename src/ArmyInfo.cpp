@@ -116,6 +116,11 @@ SAIFloat3 ArmyInfo::GetUnitPos( int unitID )
 	return quadTree->GetLastUnitPos(unitID);
 }
 
+const map<int, SAIFloat3> ArmyInfo::GetEnemyUnits()
+{
+	return quadTree->GetEnemyUnits();
+}
+
 int ArmyInfo::CountDefensive()
 {
 	return defensive;

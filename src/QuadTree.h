@@ -21,7 +21,7 @@ public:
 	vector<Unit*> RangeQuery(SAIFloat3 topLeft, SAIFloat3 bottomRight);
 	vector<Unit*> RangeQuery(CBoundingBox bbox);
 	void Print( QuadTreeNode* node );
-
+	const map<int, SAIFloat3> GetEnemyUnits();
 private:
 	QuadTreeNode* RootNode;
 	map<int, SAIFloat3> units;
