@@ -9,6 +9,21 @@ Battle::Battle( AIClasses* aiClasses, SAIFloat3 position )
 	LastFrameOfActivity = ai->frame;
 	RadiusCircleID = -666;
 	//check if any building is inside our radius, if it is, make type an attack (his or ours).
+	bool myattack = ai->knowledge->enemyInfo->baseInfo->IsBuildingInRange(Center, Radius);
+	bool hisattack = ai->knowledge->selfInfo->baseInfo->IsBuildingInRange(Center, Radius);
+	if(hisattack)
+	{
+		BattleLabel = HISATTACK;
+	}
+	else if(myattack)
+	{
+		BattleLabel = MYATTACK;
+	}
+	else
+	{
+		BattleLabel = RANDOM;
+	}
+
 
 }
 

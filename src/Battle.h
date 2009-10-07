@@ -9,7 +9,6 @@
 
 namespace brainSpace
 {
-
 	struct UnitInformationContainer
 	{
 		SAIFloat3 pos;

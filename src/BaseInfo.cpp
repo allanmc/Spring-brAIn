@@ -84,7 +84,7 @@ vector<Unit*> BaseInfo::GetUnitsInRange(SAIFloat3 pos, float radius)
 
 bool BaseInfo::IsBuildingInRange(SAIFloat3 pos, float radius)
 {
-	vector<Unit*> units = GetUnitsInRange(SAIFloat3 pos, float radius);
+	vector<Unit*> units = GetUnitsInRange(pos, radius);
 	if(units.size() > 0)
 	{
 		return true;
