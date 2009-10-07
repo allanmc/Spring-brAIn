@@ -290,7 +290,7 @@ void Decision::Update(int frame)
 		}
 		else if(battles < 9)
 		{
-			b_range = "4-9";
+			b_range = "4-8";
 		}
 		else
 		{
@@ -382,6 +382,7 @@ void Decision::Update(int frame)
 		huginTest->setEvidence("seenRes", u_range);
 		ai->utility->ChatMsg("Seen resource: %s", u_range);
 		ai->utility->Log(ALL, BN, "My belief that that the enemy is aggressive: %f", huginTest->getBelief("enemyStrategy", "Aggressive"));
+		ai->utility->ChatMsg("My belief that that the enemy is aggressive: %f", huginTest->getBelief("enemyStrategy", "Aggressive"));
 		ai->utility->Log(ALL, BN, "My belief that that the enemy is defensive: %f", huginTest->getBelief("enemyStrategy", "Defensive"));
 		huginTest->print_beliefs_and_utilities();
 	}

@@ -1,6 +1,7 @@
 
 #include "QuadTree.h"
 
+using namespace brainSpace;
 QuadTree::QuadTree( AIClasses* aiClasses, CBoundingBox box )
 {
 	ai = aiClasses,

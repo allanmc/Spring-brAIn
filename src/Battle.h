@@ -9,11 +9,18 @@
 
 namespace brainSpace
 {
-
 	struct UnitInformationContainer
 	{
 		SAIFloat3 pos;
 		UnitDef* def;
+	};
+
+	enum BattleLabels {
+		HISATTACK	= 0,
+		MYATTACK	= 1,
+		RANDOM		= 2,
+		HISSCOUT	= 3,
+		MYSCOUT		= 4,
 	};
 
 	class Battle
@@ -59,6 +66,7 @@ namespace brainSpace
 		int StartFrame;
 		int LastFrameOfActivity;
 		int RadiusCircleID;
+		int BattleLabel;
 
 		void CalculateCenter( SAIFloat3 pos[], int size );
 

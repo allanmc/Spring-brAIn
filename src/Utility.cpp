@@ -153,12 +153,12 @@ int Utility::DrawCircle(SAIFloat3 pos, float radius)
 	return circle.figureGroupId;
 }
 
-int Utility::DrawLine(SAIFloat3 start, SAIFloat3 end, bool arrow)
+int Utility::DrawLine(SAIFloat3 start, SAIFloat3 end, bool arrow, float width )
 {
 	SCreateLineFigureDrawerCommand line;
 	line.arrow = arrow;
 	line.lifeTime = 0;
-	line.width = 20;
+	line.width = width;
 	line.pos1 = start;
 	line.pos2 = end;
 	

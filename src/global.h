@@ -54,6 +54,8 @@ namespace brainSpace {
 	class ResourceInfo;
 	class ArmyInfo;
 	class BaseInfo;
+	class BrainMath;
+	struct CBoundingBox;
 }
 using namespace std;
 using namespace springai;
@@ -64,13 +66,16 @@ namespace brainSpace {
 		AICallback *callback;
 		Knowledge *knowledge;
 		Utility *utility;
+		BrainMath* math;
 		int frame;
 	} AIClasses;
-}
+
 
 struct CBoundingBox;
 class QuadTreeNode;
 class QuadTree;
+}
+
 
 #include <windows.h>
 #include <stdarg.h>
@@ -85,6 +90,7 @@ class QuadTree;
 #include <math.h>
 
 #include "Utility.h"
+#include "BrainMath.h"
 #include "Knowledge.h"
 #include "ResourceInfo.h"
 #include "SelfInfo.h"
