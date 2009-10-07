@@ -258,7 +258,9 @@ void Decision::Update(int frame)
 
 	if(frame % 60 == 0)
 	{
-				TM->Update();
+		ai->utility->Log( DEBUG, KNOWLEDGE, "update" );
+		TM->Update();
+		ai->utility->Log( DEBUG, KNOWLEDGE, "update2" );
 		gc->ScoutWithIdleGroup();
 		BattleInfoInstance->Update( frame );
 	}

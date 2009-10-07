@@ -25,7 +25,7 @@ private:
 	float CellWidth;
 	float CellHeight;
 
-	float ThreatArray[];
+	float* ThreatArray;
 	void InsertUnit( Unit* u );
 
 	AIClasses* ai;
