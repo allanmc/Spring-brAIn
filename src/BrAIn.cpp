@@ -9,6 +9,7 @@ brainSpace::BrAIn::BrAIn(springai::AICallback* cb)
 	ai->callback = cb;
 	ai->utility = new Utility(ai);
 	ai->knowledge = new Knowledge(ai);
+	ai->math = new BrainMath( ai );
 
 	teamId = (ai->callback != NULL ? ai->callback->GetTeamId() : -1);
 
