@@ -8,6 +8,8 @@ Battle::Battle( AIClasses* aiClasses, SAIFloat3 position )
 	StartFrame = ai->frame;
 	LastFrameOfActivity = ai->frame;
 	RadiusCircleID = -666;
+	//check if any building is inside our radius, if it is, make type an attack (his or ours).
+
 }
 
 

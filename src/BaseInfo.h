@@ -21,6 +21,8 @@ namespace brainSpace
 		
 		int CountResourceBuildings();
 		int CountProductionBuildings();
+		vector<Unit*> GetUnitsInRange(SAIFloat3 pos, float radius);
+		bool IsBuildingInRange(SAIFloat3 pos, float radius);
 
 	private:
 		AIClasses* ai;

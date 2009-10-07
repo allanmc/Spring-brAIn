@@ -15,6 +15,7 @@ BaseInfo::BaseInfo( AIClasses* aiClasses )
 	buildingCount = 0;
 	resourceBuildings = 0;
 	productionBuildings = 0;
+	
 }
 
 BaseInfo::~BaseInfo()
@@ -66,4 +67,27 @@ int BaseInfo::CountResourceBuildings()
 int BaseInfo::CountProductionBuildings()
 {
 	return productionBuildings;
+}
+
+vector<Unit*> BaseInfo::GetUnitsInRange(SAIFloat3 pos, float radius)
+{
+	SAIFloat3 topLeft = pos;
+	SAIFloat3 bottomRight = pos;
+	topLeft.x -= radius;
+	topLeft.z -= radius;
+	bottomRight.x += radius;
+	bottomRight.z += radius;
+
+	vector<Unit*> units = quadTree->RangeQuery(topLeft, bottomRight);
+	return units;
+}
+
+bool BaseInfo::IsBuildingInRange(SAIFloat3 pos, float radius)
+{
+	vector<Unit*> units = GetUnitsInRange(SAIFloat3 pos, float radius);
+	if(units.size() > 0)
+	{
+		return true;
+	}
+	return false;
 }
