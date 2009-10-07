@@ -15,6 +15,7 @@ namespace brainSpace
 			ai = aiClasses;
 		}
 		bool CircleIntersectBoundingBox( CBoundingBox box, SAIFloat3 center, float radius );
+		bool CircleIntersetCircle(SAIFloat3 center1, float radius1, SAIFloat3 center2, float radius2);  
 	};
 }
 

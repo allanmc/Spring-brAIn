@@ -35,3 +35,8 @@ bool BrainMath::CircleIntersectBoundingBox( CBoundingBox box, SAIFloat3 center, 
 
 	return ( ai->utility->EuclideanDistance( center, temp ) < radius );
 }
+
+bool BrainMath::CircleIntersetCircle(SAIFloat3 center1, float radius1, SAIFloat3 center2, float radius2)
+{
+	return ( ai->utility->EuclideanDistance( center1, center2 ) < radius1+radius2 );
+}

@@ -105,8 +105,17 @@ Battle* BattlesInfo::FindBattleContaining( Unit* u )
 
 Battle* BattlesInfo::FindNearestBattle( SAIFloat3 pos )
 {
+	//Old lars idea
+	//for ( list<Battle*>::iterator iter = CurrentBattles.begin() ; iter != CurrentBattles.end() ; iter++ )
+	//	if ( ai->utility->EuclideanDistance( (*iter)->GetCenter(), pos ) < (*iter)->GetRadius()+RADIUS_BUFFER )
+	//	{
+	//		return *iter;
+	//	}
+	//	return NULL;
+	
+	//jeppes idea, new battle would intersect with current battle, then use current battle
 	for ( list<Battle*>::iterator iter = CurrentBattles.begin() ; iter != CurrentBattles.end() ; iter++ )
-		if ( ai->utility->EuclideanDistance( (*iter)->GetCenter(), pos ) < (*iter)->GetRadius()+RADIUS_BUFFER )
+		if ( ai->math->CircleIntersetCircle((*iter)->GetCenter(), (*iter)->GetRadius(), pos, INITIAL_BATTLE_RADIUS )
 		{
 			return *iter;
 		}
@@ -141,14 +150,15 @@ void BattlesInfo::SomeoneDamaged( Unit* our, Unit* their )
 		b->UnitEnteredBattle( our, false );
 		b->UnitEnteredBattle( their, true );
 		CurrentBattles.push_back( b );
+		//ai->utility->
 	}
-
-	int i = 0;
-	for ( list<Battle*>::iterator iter = CurrentBattles.begin() ; iter != CurrentBattles.end() ; iter++, i++ )
-	{
-		int a = (*iter)->GetNumberOfActiveUnits();
-		int d = (*iter)->GetNumberOfDeadUnits();
-	}
+	// hvad er det her lars? :D det gør jo intet
+	//int i = 0;
+	//for ( list<Battle*>::iterator iter = CurrentBattles.begin() ; iter != CurrentBattles.end() ; iter++, i++ )
+	//{
+	//	int a = (*iter)->GetNumberOfActiveUnits();
+	//	int d = (*iter)->GetNumberOfDeadUnits();
+	//}
 }
 
 void BattlesInfo::CleanupAfterSomeoneDied( Unit* unitToCleanup )
