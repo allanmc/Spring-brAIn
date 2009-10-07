@@ -12,7 +12,7 @@ Decision::Decision(AIClasses* aiClasses)
 	gc = new GroupController( ai );
 	bc = new BuildingController( ai );
 	BattleInfoInstance = new BattlesInfo( ai );
-	TM = new ThreatMap( ai );
+	//TM = new ThreatMap( ai );
 
 	huginTest = new HuginTest( ai );
 	huginTest->setEvidence("myStrategy", "Aggressive");
@@ -259,7 +259,7 @@ void Decision::Update(int frame)
 	if(frame % 60 == 0)
 	{
 		ai->utility->Log( DEBUG, KNOWLEDGE, "update" );
-		TM->Update();
+		//TM->Update();
 		ai->utility->Log( DEBUG, KNOWLEDGE, "update2" );
 		gc->ScoutWithIdleGroup();
 		BattleInfoInstance->Update( frame );
@@ -278,6 +278,7 @@ void Decision::Update(int frame)
 		//ai->utility->Log( DEBUG, KNOWLEDGE, "Number of battles close to our base within the last 6000 frames: %d. Current frame %d", BattleInfoInstance->NumberOfBattlesInArea( 6000, box ), ai->frame);
 		int battles = BattleInfoInstance->NumberOfBattlesInArea( 9000, box );
 		ai->utility->Log( DEBUG, KNOWLEDGE, "Number of battles close to our base within the last 9000 frames: %d", battles);
+		ai->utility->ChatMsg("Number of battles close to our base within the last 9000 frames: %d", battles);
 		const char* b_range;
 		if(battles == 0)
 		{
@@ -289,7 +290,7 @@ void Decision::Update(int frame)
 		}
 		else if(battles < 9)
 		{
-			b_range = "4-9";
+			b_range = "4-8";
 		}
 		else
 		{
@@ -381,7 +382,9 @@ void Decision::Update(int frame)
 		huginTest->setEvidence("seenRes", u_range);
 		ai->utility->ChatMsg("Seen resource: %s", u_range);
 		ai->utility->Log(ALL, BN, "My belief that that the enemy is aggressive: %f", huginTest->getBelief("enemyStrategy", "Aggressive"));
+		ai->utility->ChatMsg("My belief that that the enemy is aggressive: %f", huginTest->getBelief("enemyStrategy", "Aggressive"));
 		ai->utility->Log(ALL, BN, "My belief that that the enemy is defensive: %f", huginTest->getBelief("enemyStrategy", "Defensive"));
+		huginTest->print_beliefs_and_utilities();
 	}
 
 	ai->knowledge->selfInfo->resourceInfo->Update(frame);
