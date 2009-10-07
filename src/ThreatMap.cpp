@@ -8,8 +8,8 @@ ThreatMap::ThreatMap( AIClasses* aiClasses )
 	CellHeight = ai->callback->GetMap()->GetHeight()/ThreatMapResolution;
 	CellWidth = ai->callback->GetMap()->GetWidth()/ThreatMapResolution;
 	ThreatMapWidth = (ai->callback->GetMap()->GetWidth())/CellWidth;
-	ThreatMapHeight = (ai->callback->GetMap()->GetWidth())CellHeight;
-	ThreatArray = new float[ThreatMapWidth][ThreatMapHeight];
+	ThreatMapHeight = (ai->callback->GetMap()->GetWidth())/CellHeight;
+	ThreatArray = new float[ThreatMapWidth*ThreatMapHeight];
 }
 
 
@@ -19,8 +19,8 @@ ThreatMap::~ThreatMap()
 
 void ThreatMap::Update()
 {
-	map<int, SAIFloat3> enemyUnits = ai->knowledge->enemyInfo->armyInfo->GetEnemyUnits();
 	ai->utility->Log( DEBUG, KNOWLEDGE, "Piksved" );
+	map<int, SAIFloat3> enemyUnits = ai->knowledge->enemyInfo->armyInfo->GetEnemyUnits();
 	for ( map<int, SAIFloat3>::iterator it = enemyUnits.begin() ; it != enemyUnits.end() ; it++ )
 	{
 		ai->utility->Log( DEBUG, KNOWLEDGE, "Allan lugter" );
@@ -38,6 +38,7 @@ void ThreatMap::InsertUnit(Unit *u)
 		float range = def->GetRange();
 		float reload = def->GetReload();
 		Damage* damage = def->GetDamage();
+		vector<float> types = damage->GetTypes();
 		float craterBoost = damage->GetCraterBoost();
 		float craterMult = damage->GetCraterMult();
 		float impulseBoost = damage->GetImpulseBoost();
@@ -49,8 +50,10 @@ void ThreatMap::InsertUnit(Unit *u)
 		UnitDef* uDef = u->GetDef();
 		if ( uDef->GetUnitDefId() != -1 )
 			ai->utility->Log( DEBUG, KNOWLEDGE, "Unit %s", uDef->GetHumanName() ); 
-		ai->utility->Log( DEBUG, KNOWLEDGE, "crater boost: %f craterMult: %f impulseBoost %f impulseFactor %f dynDamageExp %f dynDamageMin %f dynDamageRange %f", craterBoost, craterMult, impulseBoost, impulseFactor, dynDamageExp, dynDamageMin, dynDamageRange );
+		ai->utility->Log( DEBUG, KNOWLEDGE, "range: %f reload %f crater boost: %f craterMult: %f impulseBoost %f impulseFactor %f dynDamageExp %f dynDamageMin %f dynDamageRange %f", range, reload, craterBoost, craterMult, impulseBoost, impulseFactor, dynDamageExp, dynDamageMin, dynDamageRange );
 		
+		for ( int i = 0 ; i < types.size() ; i++ )
+			ai->utility->Log( DEBUG, KNOWLEDGE, "types index %d %f", i, types.at(i) );
 		for ( int x = 0 ; x < ThreatMapWidth ; x++ )
 		{
 			for ( int z = 0 ; z < ThreatMapHeight ; z++ )
