@@ -1,7 +1,7 @@
 #ifndef _BRAINSPACE_QUADTREE_H
 #define _BRAINSPACE_QUADTREE_H
 
-
+#include "Battle.h"
 #include "QuadTreeNode.h"
 
 
@@ -23,10 +23,10 @@ namespace brainSpace{
 		vector<Unit*> RangeQuery(SAIFloat3 topLeft, SAIFloat3 bottomRight);
 		vector<Unit*> RangeQuery(CBoundingBox bbox);
 		void Print( QuadTreeNode* node );
-		const map<int, SAIFloat3> GetEnemyUnits();
+		const map<int, struct UnitInformationContainer> GetEnemyUnits();
 	private:
 		QuadTreeNode* RootNode;
-		map<int, SAIFloat3> units;
+		map<int, struct UnitInformationContainer> units;
 		AIClasses *ai;
 	};
 }

@@ -131,23 +131,25 @@ void QuadTreeNode::RemoveUnit( int unitID )
 {
 	UnitsContained.erase( unitID );
 }
-void QuadTreeNode::InsertUnit( int unitID, SAIFloat3 pos )
+void QuadTreeNode::InsertUnit( int unitID, SAIFloat3 pos, UnitDef* def )
 {
-	map<int, SAIFloat3>::iterator iter;
+	map<int, struct UnitInformationContainer>::iterator iter;
 	for ( iter = UnitsContained.begin() ; iter != UnitsContained.end() ; iter ++ )
 	{
-		if (( *iter).second.x == pos.x && (*iter).second.z == pos.z )
+		if (( *iter).second.pos.x == pos.x && (*iter).second.pos.z == pos.z )
 		{
 			pos.z += 5.0f;
 		}
 	}
-	
-	UnitsContained.insert( make_pair( unitID, pos ) );
+	struct UnitInformationContainer c;
+	c.def = def;
+	c.pos = pos;
+	UnitsContained[unitID] = c;
 }
 
 bool QuadTreeNode::TryToMergeToLeaf()
 {
-	map<int, SAIFloat3> innerNodes;
+	map<int, struct UnitInformationContainer> innerNodes;
 
 	if (IsLeaf) //Already a leaf?
 	{
@@ -163,13 +165,15 @@ bool QuadTreeNode::TryToMergeToLeaf()
 			//ai->utility->ChatMsg("QuadTree error: Only merge from bottom up!");
 			return false;
 		}
-		map<int, SAIFloat3>::iterator iter;
+		map<int, struct UnitInformationContainer>::iterator iter;
 
 		for ( iter = Children[i]->UnitsContained.begin() ; iter != Children[i]->UnitsContained.end() ; iter++ )
 		{
 			int unitID = (*iter).first;
-			SAIFloat3 pos = (*iter).second;
-			innerNodes[unitID] = pos;
+			SAIFloat3 pos = (*iter).second.pos;
+			UnitDef* def = iter->second.def;
+			innerNodes[unitID].pos = pos;
+			innerNodes[unitID].def = def;
 		}
 	}
 
@@ -195,16 +199,17 @@ bool QuadTreeNode::TryToMergeToLeaf()
 
 void QuadTreeNode::MoveUnitsToChildren()
 {
-	map<int, SAIFloat3>::iterator iter;
+	map<int, struct UnitInformationContainer>::iterator iter;
 
 	for ( iter = UnitsContained.begin() ; iter != UnitsContained.end() ; iter++ )
 	{
-		int unitID = (*iter).first;
-		SAIFloat3 pos = (*iter).second;
+		int unitID = iter->first;
+		SAIFloat3 pos = iter->second.pos;
+		UnitDef* def = iter->second.def;
 		if ( !IsLeaf )
 		{
 			QuadTreeNode* node = GetContainingNode( pos );
-			node->InsertUnit( unitID, pos );
+			node->InsertUnit( unitID, pos, def );
 		}
 	}
 

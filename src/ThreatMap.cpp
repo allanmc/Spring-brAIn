@@ -6,8 +6,14 @@ ThreatMap::ThreatMap( AIClasses* aiClasses )
 	ai = aiClasses;
 	ThreatMapResolution = 64;
 
+	int width = ai->callback->GetMap()->GetWidth();
+	int height = ai->callback->GetMap()->GetHeight();
+	ai->utility->Log( DEBUG, KNOWLEDGE, "Map width: %d, Map height: %d", width, height );
+
 	ThreatMapWidth = (ai->callback->GetMap()->GetWidth())/ThreatMapResolution;
 	ThreatMapHeight = (ai->callback->GetMap()->GetHeight())/ThreatMapResolution;
+	ai->utility->Log( DEBUG, KNOWLEDGE, "ThreatMapWidth %d, ThreatMapHeight %d", ThreatMapWidth, ThreatMapHeight );
+
 	ThreatArray = new float[ThreatMapWidth*ThreatMapHeight];
 	FigureIDs = new int[ThreatMapWidth*ThreatMapHeight];
 	GridFigureIDs = new int[ThreatMapWidth + ThreatMapHeight];
@@ -26,10 +32,10 @@ ThreatMap::~ThreatMap()
 void ThreatMap::Update()
 {
 	bool printArray = false;
-	map<int, SAIFloat3> enemyUnits = ai->knowledge->enemyInfo->armyInfo->GetEnemyUnits();
+	map<int, struct UnitInformationContainer> enemyUnits = ai->knowledge->enemyInfo->armyInfo->GetEnemyUnits();
 	Reset();
 
-	for ( map<int, SAIFloat3>::iterator it = enemyUnits.begin() ; it != enemyUnits.end() ; it++ )
+	for ( map<int, struct UnitInformationContainer>::iterator it = enemyUnits.begin() ; it != enemyUnits.end() ; it++ )
 	{
 		InsertUnit( Unit::GetInstance( ai->callback, it->first ), it->second );
 	}
@@ -49,11 +55,11 @@ void ThreatMap::Update()
 			{
 				SAIFloat3 start, end;
 				start.x = i*8*ThreatMapResolution;
-				start.y = 200;
+				start.y = 100;
 				start.z = j*8*ThreatMapResolution + 0.5*8*ThreatMapResolution;
 
 				end.x = (i+1)*8*ThreatMapResolution;
-				end.y = 200;
+				end.y = 100;
 				end.z = j*8*ThreatMapResolution + 0.5*8*ThreatMapResolution;
 
 				FigureIDs[ j*ThreatMapWidth + i ] = ai->utility->DrawLine( start, end, false, 8*ThreatMapResolution*2 );
@@ -68,23 +74,20 @@ void ThreatMap::Update()
 			}
 }
 
-void ThreatMap::InsertUnit(Unit *u, SAIFloat3 pos )
+void ThreatMap::InsertUnit(Unit *u, struct UnitInformationContainer c )
 {
 	if ( ArmorType == -1 )
-		ArmorType = u->GetDef()->GetArmorType();
+		ArmorType = c.def->GetArmorType();
 
-	//HUSK AT GEMME UNITDEF SAMMEN MED UNITID I QUADTREE. EVT INKLUDER DET SAMMEN MED POSITION I EN STRUCT
-	if ( u->GetDef()->GetUnitDefId() == -1 )
-		return;
 
-	vector<WeaponMount*> weaponMounts = u->GetDef()->GetWeaponMounts();
+	vector<WeaponMount*> weaponMounts = c.def->GetWeaponMounts();
 	//ai->utility->Log( DEBUG, KNOWLEDGE, "Weapon mounts size: %d", weaponMounts.size() );
 	for ( int i = 0 ; i < weaponMounts.size() ; i++ )
 	{
 		WeaponDef* def = weaponMounts.at(i)->GetWeaponDef();
 
-		int currentIndexX = (int)(pos.x/8)/ThreatMapResolution;
-		int currentIndexZ = (int)(pos.z/8)/ThreatMapResolution;
+		int currentIndexX = (int)(c.pos.x/8)/ThreatMapResolution;
+		int currentIndexZ = (int)(c.pos.z/8)/ThreatMapResolution;
 		int range = ceilf(def->GetRange()/8/ThreatMapResolution );
 		float realRange = def->GetRange();
 
@@ -98,7 +101,7 @@ void ThreatMap::InsertUnit(Unit *u, SAIFloat3 pos )
 				b.topLeft.z = j*8*ThreatMapResolution;
 				b.bottomRight.x = (i+1)*8*ThreatMapResolution;
 				b.bottomRight.z = (j+1)*8*ThreatMapResolution;
-				if ( ai->math->CircleIntersectBoundingBox( b, pos, realRange ) )
+				if ( ai->math->CircleIntersectBoundingBox( b, c.pos, realRange ) )
 				{
 
 					//ai->utility->Log( DEBUG, KNOWLEDGE, "About to write to array i: %d, j: %d, index: %d, ThreatMapWidth %d, ThreatMapHeight %d", i, j, (j*ThreatMapWidth + i), ThreatMapWidth, ThreatMapHeight );
