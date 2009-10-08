@@ -11,16 +11,23 @@ Battle::Battle( AIClasses* aiClasses, SAIFloat3 position )
 	//check if any building is inside our radius, if it is, make type an attack (his or ours).
 	bool myattack = ai->knowledge->enemyInfo->baseInfo->IsBuildingInRange(Center, Radius);
 	bool hisattack = ai->knowledge->selfInfo->baseInfo->IsBuildingInRange(Center, Radius);
+	if(myattack && hisattack)
+	{
+		ai->utility->Log( DEBUG, KNOWLEDGE, "bot hisattack and myattack are true.. FUCK!");
+	}
 	if(hisattack)
 	{
+		ai->utility->Log( DEBUG, KNOWLEDGE, "new battle: hisattack");
 		BattleLabel = HISATTACK;
 	}
 	else if(myattack)
 	{
+		ai->utility->Log( DEBUG, KNOWLEDGE, "new battle: myattack");
 		BattleLabel = MYATTACK;
 	}
 	else
 	{
+		ai->utility->Log( DEBUG, KNOWLEDGE, "new battle: random");
 		BattleLabel = RANDOM;
 	}
 
@@ -80,7 +87,7 @@ void Battle::UnitEnteredBattle( Unit* u, bool enemy )
 
 
 	map<int, UnitInformationContainer>::iterator iter;
-	if ( double distance = (ai->utility->EuclideanDistance( u->GetPos(), Center )) > Radius )
+	if ( float distance = (ai->utility->EuclideanDistance( u->GetPos(), Center )) > Radius )
 	{
 		Radius = distance;
 		ai->utility->Log(ALL, KNOWLEDGE, "New radius: %f", Radius );
@@ -106,7 +113,9 @@ void Battle::UnitEnteredBattle( Unit* u, bool enemy )
 
 		int i = 0;
 		for ( iter = ActiveEnemyUnits.begin() ; iter != ActiveEnemyUnits.end() ; iter++, i++ )
+		{
 			pos[i] = (*iter).second.pos;
+		}
 		CalculateCenter( pos, ActiveEnemyUnits.size() );
 	}
 	//ai->utility->Log( DEBUG, KNOWLEDGE, "Done! :-) " );
@@ -208,9 +217,44 @@ void Battle::RemoveUnit( Unit* unit )
 
 void Battle::Oldify()
 {
+	//labelling
+	if(BattleLabel == RANDOM)//battlelabel was random, check if it might have been attack (range could have changed?	 
+	{
+		ai->utility->Log( DEBUG, KNOWLEDGE, "Random battle at end..");
+		bool myattack = ai->knowledge->enemyInfo->baseInfo->IsBuildingInRange(Center, Radius);
+		bool hisattack = ai->knowledge->selfInfo->baseInfo->IsBuildingInRange(Center, Radius);
+		if(myattack)
+		{
+			ai->utility->Log( DEBUG, KNOWLEDGE, "Battle wasnt random, it was us attacking him!");
+			BattleLabel = MYATTACK;
+		}
+		else if(hisattack)
+		{
+			ai->utility->Log( DEBUG, KNOWLEDGE, "Battle wasnt random, it was HIM attacking US! damn..");
+			BattleLabel = HISATTACK;
+		}
+	}
+	//was this just a scout thing?
+	if(BattleLabel == MYATTACK)
+	{
+		if((ActiveFriendlyUnits.size() + DeadFriendlyUnits.size()) < 3)
+		{
+			ai->utility->Log( DEBUG, KNOWLEDGE, "Attack was just us scouting him");
+			BattleLabel = MYSCOUT;
+		}
+	}
+	else if(BattleLabel == HISATTACK)
+	{
+		if((ActiveEnemyUnits.size() + DeadEnemyUnits.size()) < 3)
+		{
+			ai->utility->Log( DEBUG, KNOWLEDGE, "Attack was just him scouting us");
+			BattleLabel = HISSCOUT;
+		}
+	}
 	ai->utility->RemoveGraphics( RadiusCircleID );
 	ActiveEnemyUnits.clear();
 	ActiveFriendlyUnits.clear();
+	ai->utility->Log( DEBUG, KNOWLEDGE, "Final Battlelabel was: %d", BattleLabel);
 }
 
 void Battle::ToString()

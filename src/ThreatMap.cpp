@@ -37,7 +37,7 @@ void ThreatMap::Update()
 	for ( int i = 0 ; i < ThreatMapHeight*ThreatMapWidth ; i++ )
 	{
 		ai->utility->RemoveGraphics( FigureIDs[i] );
-		ai->utility->Log( DEBUG, KNOWLEDGE, "ThreatArray %d, %f", i, ThreatArray[i]);
+		ai->utility->Log( ALL, KNOWLEDGE, "ThreatArray %d, %f", i, ThreatArray[i]);
 	}
 
 
@@ -64,7 +64,7 @@ void ThreatMap::Update()
 		if ( printArray )
 			for ( int i = 0 ; i < ThreatMapHeight*ThreatMapWidth ; i++ )
 			{
-				ai->utility->Log( DEBUG, KNOWLEDGE, "ThreatArray %d, %f", i, ThreatArray[i]);
+				ai->utility->Log( ALL, KNOWLEDGE, "ThreatArray %d, %f", i, ThreatArray[i]);
 			}
 }
 
