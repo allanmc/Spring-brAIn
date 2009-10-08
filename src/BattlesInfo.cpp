@@ -115,11 +115,13 @@ Battle* BattlesInfo::FindNearestBattle( SAIFloat3 pos )
 	
 	//jeppes idea, new battle would intersect with current battle, then use current battle
 	for ( list<Battle*>::iterator iter = CurrentBattles.begin() ; iter != CurrentBattles.end() ; iter++ )
-		if ( ai->math->CircleIntersetCircle((*iter)->GetCenter(), (*iter)->GetRadius(), pos, INITIAL_BATTLE_RADIUS )
+	{
+		if ( ai->math->CircleIntersetCircle((*iter)->GetCenter(), (*iter)->GetRadius(), pos, INITIAL_BATTLE_RADIUS ))
 		{
 			return *iter;
 		}
-		return NULL;
+	}
+	return NULL;
 }
 
 
