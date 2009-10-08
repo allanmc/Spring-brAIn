@@ -7,6 +7,7 @@
 #include "BattlesInfo.h"
 #include "ThreatMap.h"
 #include "huginTest.h"
+#include "bayesianNetwork.h"
 
 using namespace springai;
 
