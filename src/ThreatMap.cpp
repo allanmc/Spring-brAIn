@@ -86,9 +86,9 @@ void ThreatMap::InsertUnit(Unit *u, struct UnitInformationContainer c )
 	{
 		WeaponDef* def = weaponMounts.at(i)->GetWeaponDef();
 
-		int currentIndexX = (int)(c.pos.x/8)/ThreatMapResolution;
-		int currentIndexZ = (int)(c.pos.z/8)/ThreatMapResolution;
-		int range = ceilf(def->GetRange()/8/ThreatMapResolution );
+		int currentIndexX = floorf((c.pos.x/8.0)/ThreatMapResolution );
+		int currentIndexZ = floorf((c.pos.z/8.0)/ThreatMapResolution);
+		int range = ceilf(def->GetRange()/8.0/ThreatMapResolution );
 		float realRange = def->GetRange();
 
 		for ( int i = currentIndexX-range ; i < currentIndexX+range ; i++ )
@@ -104,6 +104,7 @@ void ThreatMap::InsertUnit(Unit *u, struct UnitInformationContainer c )
 				if ( ai->math->CircleIntersectBoundingBox( b, c.pos, realRange ) )
 				{
 
+					ai->utility->Log( DEBUG, KNOWLEDGE, "unitid %d: %s, generating threat", u->GetUnitId(), c.def->GetHumanName() );
 					//ai->utility->Log( DEBUG, KNOWLEDGE, "About to write to array i: %d, j: %d, index: %d, ThreatMapWidth %d, ThreatMapHeight %d", i, j, (j*ThreatMapWidth + i), ThreatMapWidth, ThreatMapHeight );
 					ThreatArray[ j*ThreatMapWidth + i ] += CalculateDPS( def );
 					//ai->utility->Log( DEBUG, KNOWLEDGE, "Wrote to array" );
