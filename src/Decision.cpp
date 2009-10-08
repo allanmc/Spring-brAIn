@@ -14,6 +14,8 @@ Decision::Decision(AIClasses* aiClasses)
 	BattleInfoInstance = new BattlesInfo( ai );
 	TM = new ThreatMap( ai );
 
+	BayesianNetwork *bayesianNetwork = new BayesianNetwork();
+
 	huginTest = new HuginTest( ai );
 	huginTest->setEvidence("myStrategy", "Aggressive");
 	huginTest->setEvidence("seenUnits", "0");
