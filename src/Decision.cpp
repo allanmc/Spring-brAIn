@@ -322,7 +322,7 @@ void Decision::Update(int frame)
 			u_range = "51-300";
 		}
 		huginTest->setEvidence("seenUnits", u_range);
-		ai->utility->Log(ALL, Decision,"Seen units: %s", u_range);
+		ai->utility->Log(ALL, DECISION,"Seen units: %s", u_range);
 
 		enemyUnits = ai->knowledge->enemyInfo->armyInfo->CountDefensive();
 		if(enemyUnits == 0)
@@ -342,7 +342,7 @@ void Decision::Update(int frame)
 			u_range = "11-20";
 		}
 		huginTest->setEvidence("seenDef", u_range);
-		ai->utility->Log(ALL, Decision,"Seen llt: %s", u_range);
+		ai->utility->Log(ALL, DECISION,"Seen llt: %s", u_range);
 		enemyUnits = ai->knowledge->enemyInfo->baseInfo->CountProductionBuildings();
 		if(enemyUnits == 0)
 		{
@@ -361,7 +361,7 @@ void Decision::Update(int frame)
 			u_range = "7-10";
 		}
 		huginTest->setEvidence("seenProd", u_range);
-		ai->utility->Log(ALL, Decision,"Seen production: %s", u_range);
+		ai->utility->Log(ALL, DECISION,"Seen production: %s", u_range);
 		enemyUnits = ai->knowledge->enemyInfo->baseInfo->CountResourceBuildings();
 		if(enemyUnits == 0)
 		{
@@ -380,7 +380,7 @@ void Decision::Update(int frame)
 			u_range = "21-40";
 		}
 		huginTest->setEvidence("seenRes", u_range);
-		ai->utility->Log(ALL, Decision,"Seen resource: %s", u_range);
+		ai->utility->Log(ALL, DECISION,"Seen resource: %s", u_range);
 		ai->utility->Log(ALL, BN, "My belief that that the enemy is aggressive: %f", huginTest->getBelief("enemyStrategy", "Aggressive"));
 		ai->utility->Log(ALL, BN, "My belief that that the enemy is defensive: %f", huginTest->getBelief("enemyStrategy", "Defensive"));
 		huginTest->print_beliefs_and_utilities();
