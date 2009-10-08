@@ -90,8 +90,8 @@ void ThreatMap::InsertUnit(Unit *u, struct UnitInformationContainer c )
 		int range = ceilf(def->GetRange()/8.0/ThreatMapResolution );
 		float realRange = def->GetRange();
 
-		for ( int i = currentIndexX-range ; i < currentIndexX+range ; i++ )
-			for ( int j = currentIndexZ-range ; j < currentIndexZ+range ; j++ )
+		for ( int i = currentIndexX-range ; i <= currentIndexX+range ; i++ )
+			for ( int j = currentIndexZ-range ; j <= currentIndexZ+range ; j++ )
 			{
 				if ( i < 0 || j < 0 || i >= ThreatMapWidth || j >= ThreatMapHeight )
 					continue;
@@ -100,13 +100,11 @@ void ThreatMap::InsertUnit(Unit *u, struct UnitInformationContainer c )
 				b.topLeft.z = j*8*ThreatMapResolution;
 				b.bottomRight.x = (i+1)*8*ThreatMapResolution;
 				b.bottomRight.z = (j+1)*8*ThreatMapResolution;
+				//ai->utility->Log( DEBUG, KNOWLEDGE, "Circle center (%f, %f), radius: %f. BBOX of index %d %d: (%f, %f) - (%f, %f)", c.pos.x, c.pos.z, realRange, i, j, b.topLeft.x, b.topLeft.z, b.bottomRight.x, b.bottomRight.z ); 
 				if ( ai->math->CircleIntersectBoundingBox( b, c.pos, realRange ) )
 				{
-
-					ai->utility->Log( DEBUG, KNOWLEDGE, "unitid %d: %s, generating threat with %d weapons", u->GetUnitId(), c.def->GetHumanName(), weaponMounts.size() );
-					//ai->utility->Log( DEBUG, KNOWLEDGE, "About to write to array i: %d, j: %d, index: %d, ThreatMapWidth %d, ThreatMapHeight %d", i, j, (j*ThreatMapWidth + i), ThreatMapWidth, ThreatMapHeight );
+					//ai->utility->Log( DEBUG, KNOWLEDGE, "unitid %d: %s, generating threat with %d weapons", u->GetUnitId(), c.def->GetHumanName(), weaponMounts.size() );
 					ThreatArray[ j*ThreatMapWidth + i ] += CalculateDPS( def );
-					//ai->utility->Log( DEBUG, KNOWLEDGE, "Wrote to array" );
 				}
 			}
 	}
