@@ -33,6 +33,7 @@ bool QuadTree::RemoveUnit( int unitID )
 		//The node has no children. Attempt to insert the unit here.
 		else
 		{
+			ai->utility->Log( DEBUG, KNOWLEDGE, "Removing unit %d", unitID );
 			iter->RemoveUnit(unitID);
 			units.erase(unitID);
 			do 
