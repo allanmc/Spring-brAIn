@@ -48,6 +48,8 @@ namespace brainSpace
 
 		int GetDuration();
 
+		void SomeoneDamaged();
+
 		/** This method performs stuff that is necessary when the battle goes from being 
 		  * active to being inactive, i.e. when no units in it have been in battle for a while
 		 **/

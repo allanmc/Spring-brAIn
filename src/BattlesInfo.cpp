@@ -92,7 +92,6 @@ void BattlesInfo::Update ( int frame )
 		}
 		ai->utility->Log( DEBUG, KNOWLEDGE, "\nDONE PRINTING UPDATED BATTLE INFO\n" );
 	}
-
 }
 
 Battle* BattlesInfo::FindBattleContaining( Unit* u )
@@ -131,6 +130,7 @@ void BattlesInfo::SomeoneDamaged( Unit* our, Unit* their )
 
 	if ( b != NULL )
 	{
+		b->SomeoneDamaged();
 		if ( !b->Contains( their ) )
 			b->UnitEnteredBattle( their, true );
 		return;

@@ -349,3 +349,8 @@ int Battle::GetDuration()
 {
 	return LastFrameOfActivity - StartFrame;
 }
+
+void Battle::SomeoneDamaged()
+{
+	LastFrameOfActivity = ai->frame;
+}
