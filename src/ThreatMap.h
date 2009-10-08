@@ -32,7 +32,7 @@ private:
 	
 	void DrawGrid();
 	void Reset();
-	void InsertUnit( Unit* u, SAIFloat3 pos );
+	void InsertUnit( Unit* u, struct UnitInformationContainer c );
 	int CalculateDPS( WeaponDef* w );
 
 	AIClasses* ai;

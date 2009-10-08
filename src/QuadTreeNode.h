@@ -60,7 +60,7 @@ namespace brainSpace
 
 		bool CheckBucketSize();
 
-		void InsertUnit( int unitID, SAIFloat3 pos );
+		void InsertUnit( int unitID, SAIFloat3 pos, UnitDef* def = NULL );
 		void RemoveUnit( int unitID );
 
 		void MoveUnitsToChildren();
@@ -68,7 +68,7 @@ namespace brainSpace
 
 		int GetLevel();
 
-		map<int, SAIFloat3> UnitsContained;
+		map<int, struct UnitInformationContainer> UnitsContained;
 
 		static bool IsInsideBoundingBox( SAIFloat3 pos, CBoundingBox box );
 		bool Intersects(CBoundingBox bbox);

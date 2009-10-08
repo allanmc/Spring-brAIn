@@ -30,7 +30,7 @@ namespace brainSpace
 
 		unsigned int unitCount;
 
-		const map<int, SAIFloat3> GetEnemyUnits();
+		const map<int, struct UnitInformationContainer> GetEnemyUnits();
 
 		int CountDefensive();
 		int CountAggressive();
