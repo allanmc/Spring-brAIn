@@ -11,6 +11,7 @@ class HuginTest {
 		~HuginTest();
 		float getBelief(const char* nodeName, const char* stateName);
 		void setEvidence(const char* nodeName, const char* stateName);
+		void Propagate();
 		void print_beliefs_and_utilities ();
 	
 	private:

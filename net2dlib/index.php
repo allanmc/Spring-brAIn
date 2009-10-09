@@ -155,27 +155,47 @@ class Nodes {
     {
 		$return = "";
 		
-		$bn = 'bn';
-		$prefix = 'node_';
-		$parent = 'parent_state';
+		$bn = "bn";
+		$node_namespace = "node";
+		$prefix = "$node_namespace::_";
+		$id_name = "id";
+		$suffix = "";
+		$parent = "parent_state";
 		
-		$return .= "enum nodes\n{\n";
+		$return .= "namespace $node_namespace\n{\n";
+		$return .= "\tenum node_ids\n\t{\n";
         for ($i = 0; $i < count($this->nodes); $i++) {
-			$return .= "\t".$prefix.$this->nodes[$i]->name.' = '.$i;
+			$return .= "\t\t_".$this->nodes[$i]->name.' = '.$i;
 			if ($i!=count($this->nodes)-1) $return .= ",";
 			$return .= "\n";
 		}
-		$return .= "};\n\n";
+		$return .= "\t};\n";
+		
+        for ($i = 0; $i < count($this->nodes); $i++) {
+			$return .= "\tnamespace ".$this->nodes[$i]->name."\n\t{\n";
+			//$return .= "\t\tint $id_name = $i;\n";
+			$return .= "\t\tenum State\n\t\t{\n";
+			for ($j = 0; $j < count($this->nodes[$i]->states); $j++) {
+				$return .= "\t\t\t_".str_replace("-", "_", $this->nodes[$i]->states[$j]).' = '.$j;
+				if ($j!=count($this->nodes[$i]->states)-1) $return .= ",";
+				$return .= "\n";
+			}
+			$return .= "\t\t};\n\t}\n";
+		}
+		$return .= "}\n\n";
+		
+		
+
 		
 		$return .= $bn.".set_number_of_nodes(".count($this->nodes).");\n";
         foreach ($this->nodes as $node) {
 			foreach ($node->influences as $influence) {
-				$return .= $bn.".add_edge(".$prefix.$influence.", ".$prefix.$node->name.");\n";
+				$return .= $bn.".add_edge(".$prefix.$influence.$suffix.", ".$prefix.$node->name.$suffix.");\n";
 			}
 		}
 		$return .= "\n\n";
         foreach ($this->nodes as $node) {
-			$return .= "set_node_num_values(".$bn.", ".$prefix.$node->name.", ".$node->numStates().");\n";
+			$return .= "set_node_num_values(".$bn.", ".$prefix.$node->name.$suffix.", ".$node->numStates().");\n";
 		}
 		$return .= "\n\nassignment ".$parent.";\n\n";
 		
@@ -184,12 +204,12 @@ class Nodes {
 				$return .= $parent.".clear();\n";
 				if (count($potential->dependencies)>0) {
 					foreach ($potential->dependencies as $dependency=>$state) {
-						$return .= $parent.".add(".$prefix.$node->getInfluenceById($dependency).", ".$state.");\n";
+						$return .= $parent.".add(".$prefix.$node->getInfluenceById($dependency).$suffix.", ".$state.");\n";
 					}
 				}
 				for ($i = 0; $i < $node->numStates(); $i++) {
 					
-					$return .= "set_node_probability(".$bn.", ".$prefix.$node->name.", ".$i.", ".$parent.", ".$potential->values[$i].");//state = ".$node->states[$i]."\n";
+					$return .= "set_node_probability(".$bn.", ".$prefix.$node->name.$suffix.", ".$i.", ".$parent.", ".$potential->values[$i].");//state = ".$node->states[$i]."\n";
 				}
 				$return .= "\n";
 			}
