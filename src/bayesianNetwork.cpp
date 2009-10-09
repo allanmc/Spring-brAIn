@@ -9,7 +9,7 @@ BayesianNetwork::BayesianNetwork( AIClasses *aiClasses )
 {
 	ai = aiClasses;
 
-	#include "../data/uber.c"
+	#include "../data/uber.h"
 
 	create_moral_graph(bn, join_tree);
 	create_join_tree(join_tree, join_tree);

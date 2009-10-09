@@ -17,7 +17,7 @@ namespace brainSpace {
 	//using namespace brainSpace;
 	//using namespace bayes_node_utils;
 	
-	#include "../data/uber_enums.c"
+	#include "../data/uber_enums.h"
 	
 	typedef dlib::graph<dlib::set<unsigned long>::compare_1b_c,dlib::set<unsigned long>::compare_1b_c>::kernel_1a_c join_tree_type;
 

@@ -17,7 +17,12 @@ Decision::Decision(AIClasses* aiClasses)
 	BayesianNetwork *bn = new BayesianNetwork( ai );
 	bn->setEvidence(node::myStrategy::id, node::myStrategy::_Aggressive);
 	bn->setEvidence(node::seenUnits::id, node::seenUnits::_0);
-
+	bn->setEvidence(node::seenDef::id, node::seenDef::_0);
+	bn->setEvidence(node::seenProd::id, node::seenProd::_0);
+	bn->setEvidence(node::seenRes::id, node::seenRes::_0);
+	bn->setEvidence(node::attacks::id, node::attacks::_0);
+	ai->utility->Log(ALL, BN, "My dlib belief that that the enemy is aggressive: %f", bn->getBelief(node::enemyStrategy::id, node::enemyStrategy::_Aggressive));
+	ai->utility->Log(ALL, BN, "My dlib belief that that the enemy is defensive: %f", bn->getBelief(node::enemyStrategy::id, node::enemyStrategy::_Defensive));
 	huginTest = new HuginTest( ai );
 	huginTest->setEvidence("myStrategy", "Aggressive");
 	huginTest->setEvidence("seenUnits", "0");
@@ -25,8 +30,8 @@ Decision::Decision(AIClasses* aiClasses)
 	huginTest->setEvidence("seenProd", "0");
 	huginTest->setEvidence("seenRes", "0");
 	huginTest->setEvidence("attacks", "0");
-	ai->utility->Log(ALL, BN, "My belief that that the enemy is aggressive: %f", huginTest->getBelief("enemyStrategy", "Aggressive"));
-	ai->utility->Log(ALL, BN, "My belief that that the enemy is defensive: %f", huginTest->getBelief("enemyStrategy", "Defensive"));
+	ai->utility->Log(ALL, BN, "My hugin belief that that the enemy is aggressive: %f", huginTest->getBelief("enemyStrategy", "Aggressive"));
+	ai->utility->Log(ALL, BN, "My hugin belief that that the enemy is defensive: %f", huginTest->getBelief("enemyStrategy", "Defensive"));
 }
 
 Decision::~Decision(void)
