@@ -158,7 +158,7 @@ int Utility::DrawCircle(SAIFloat3 pos, float radius)
 	return circle.figureGroupId;
 }
 
-int Utility::DrawLine(SAIFloat3 start, SAIFloat3 end, bool arrow, float width )
+int Utility::DrawLine(SAIFloat3 start, SAIFloat3 end, bool arrow, float width, int figureId )
 {
 	SCreateLineFigureDrawerCommand line;
 	line.arrow = arrow;
@@ -166,6 +166,7 @@ int Utility::DrawLine(SAIFloat3 start, SAIFloat3 end, bool arrow, float width )
 	line.width = width;
 	line.pos1 = start;
 	line.pos2 = end;
+	line.figureGroupId = figureId;
 	
 	ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_DRAWER_FIGURE_CREATE_LINE, &line);
 

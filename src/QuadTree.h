@@ -23,7 +23,7 @@ namespace brainSpace{
 		std::vector<springai::Unit*> RangeQuery(SAIFloat3 topLeft, SAIFloat3 bottomRight);
 		std::vector<springai::Unit*> RangeQuery(CBoundingBox bbox);
 		void Print( QuadTreeNode* node );
-		const std::map<int, struct UnitInformationContainer> GetEnemyUnits();
+		const std::map<int, struct UnitInformationContainer> GetUnits();
 	private:
 		QuadTreeNode* RootNode;
 		std::map<int, struct UnitInformationContainer> units;

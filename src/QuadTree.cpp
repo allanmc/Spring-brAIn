@@ -218,7 +218,7 @@ QuadTreeNode* QuadTree::GetRootNode()
 	return RootNode;
 }
 
-const map<int, struct UnitInformationContainer> QuadTree::GetEnemyUnits()
+const map<int, struct UnitInformationContainer> QuadTree::GetUnits()
 {
 	return units;
 }

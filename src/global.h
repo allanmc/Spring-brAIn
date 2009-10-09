@@ -56,6 +56,7 @@ namespace brainSpace {
 	class BaseInfo;
 	class BrainMath;
 	struct CBoundingBox;
+	class BrainMap;
 }
 /*
 using namespace std;
@@ -97,5 +98,6 @@ namespace brainSpace {
 #include "ArmyInfo.h"
 #include "BaseInfo.h"
 #include "EnemyInfo.h"
+#include "BrainMap.h"
 
 #endif
