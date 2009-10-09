@@ -9,34 +9,31 @@ BayesianNetwork::BayesianNetwork( AIClasses *aiClasses )
 {
 	ai = aiClasses;
 
-	directed_graph<bayes_node>::kernel_1a_c bn;
-
 	#include "../data/uber.c"
-
-
-	join_tree_type join_tree;
 
 	create_moral_graph(bn, join_tree);
 	create_join_tree(join_tree, join_tree);
-
-	bayesian_network_join_tree solution(bn, join_tree);
-
+	
+	solution = new bayesian_network_join_tree(bn, join_tree);
 }
 
 BayesianNetwork::~BayesianNetwork()
 {
-
+	delete(solution);
 }
 
-float BayesianNetwork::getBelief(const char* nodeName, const char* stateName)
+float BayesianNetwork::getBelief(int node, int state)
 {
-
+	return solution->probability(node)(state);
 }
-void BayesianNetwork::setEvidence(const char* nodeName, const char* stateName)
+void BayesianNetwork::setEvidence(int node, int state)
 {
-
+	set_node_value(bn, node, state);
+    set_node_as_evidence(bn, node);
+	delete(solution);
+	solution = new bayesian_network_join_tree(bn, join_tree);
 }
 void BayesianNetwork::print_beliefs_and_utilities ()
 {
-
+	
 }
