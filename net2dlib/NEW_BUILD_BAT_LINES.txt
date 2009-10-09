@@ -1,0 +1,3 @@
+cd ..\AI\Skirmish\brAIn\net2dlib
+index.exe ..\data\uber.net ..\src\uber.h ..\src\uber_enums.h
+cd ..\..\..\..\bin
