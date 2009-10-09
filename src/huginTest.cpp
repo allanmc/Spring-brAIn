@@ -2,6 +2,10 @@
 
 #include "HuginTest.h"
 
+using namespace std;
+using namespace springai;
+using namespace brainSpace;
+
 /* A simple parse error handler: It prints the error message on stderr. */
 
 void error_handler (h_location_t line_no, h_string_t message, void *data)

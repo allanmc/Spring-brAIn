@@ -1,8 +1,9 @@
 #include "EnemyInfo.h"
 
 
-using namespace brainSpace;
+using namespace std;
 using namespace springai;
+using namespace brainSpace;
 
 EnemyInfo::EnemyInfo( AIClasses* aiClasses )
 {

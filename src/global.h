@@ -57,23 +57,23 @@ namespace brainSpace {
 	class BrainMath;
 	struct CBoundingBox;
 }
+/*
 using namespace std;
 using namespace springai;
 using namespace brainSpace;
-
+*/
 namespace brainSpace {
 	typedef struct AIClasses {
-		AICallback *callback;
+		springai::AICallback *callback;
 		Knowledge *knowledge;
 		Utility *utility;
 		BrainMath* math;
 		int frame;
 	} AIClasses;
 
-
-struct CBoundingBox;
-class QuadTreeNode;
-class QuadTree;
+	struct CBoundingBox;
+	class QuadTreeNode;
+	class QuadTree;
 }
 
 

@@ -1,8 +1,8 @@
 #include "SelfInfo.h"
 
-
-using namespace brainSpace;
+using namespace std;
 using namespace springai;
+using namespace brainSpace;
 
 SelfInfo::SelfInfo(AIClasses *ai)
 {

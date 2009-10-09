@@ -2,9 +2,9 @@
 #include "Unit.h"
 #include "UnitDef.h"
 
-
-using namespace brainSpace;
+using namespace std;
 using namespace springai;
+using namespace brainSpace;
 
 Decision::Decision(AIClasses* aiClasses)
 {
@@ -14,7 +14,7 @@ Decision::Decision(AIClasses* aiClasses)
 	BattleInfoInstance = new BattlesInfo( ai );
 	TM = new ThreatMap( ai );
 
-	BayesianNetwork *bayesianNetwork = new BayesianNetwork();
+	BayesianNetwork *bayesianNetwork = new BayesianNetwork( ai );
 
 	huginTest = new HuginTest( ai );
 	huginTest->setEvidence("myStrategy", "Aggressive");

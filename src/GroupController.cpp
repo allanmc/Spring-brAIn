@@ -1,7 +1,8 @@
 #include "GroupController.h"
 
-
-
+using namespace std;
+using namespace springai;
+using namespace brainSpace;
 
 GroupController::GroupController( AIClasses* aiClasses )
 {

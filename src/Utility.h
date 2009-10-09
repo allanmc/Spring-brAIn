@@ -30,9 +30,9 @@ namespace brainSpace
 		double EuclideanDistance( SAIFloat3 pos1, SAIFloat3 pos2 );
 		void Log(int logLevel, int logType, const char* msg, ...);
 		void ChatMsg(const char* msg, ...);
-		void ChatMsg(string msg);
-		UnitDef* GetUnitDef(const char* unitDefName);
-		Resource* GetResource(const char* resourceName);
+		void ChatMsg(std::string msg);
+		springai::UnitDef* GetUnitDef(const char* unitDefName);
+		springai::Resource* GetResource(const char* resourceName);
 		int DrawCircle(SAIFloat3 pos, float radius );
 		int DrawLine(SAIFloat3 start, SAIFloat3 end, bool arrow = false, float width = 20.0f );
 		void RemoveGraphics(int figureId);

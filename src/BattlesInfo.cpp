@@ -1,8 +1,9 @@
 #include "BattlesInfo.h"
 
 
-using namespace brainSpace;
+using namespace std;
 using namespace springai;
+using namespace brainSpace;
 
 BattlesInfo::BattlesInfo( AIClasses* aiClasses )
 {

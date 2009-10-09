@@ -3,7 +3,10 @@
 //#include "UnitDef.h"
 //#include "Utility.h"
 
+using namespace std;
+using namespace springai;
 using namespace brainSpace;
+
 brainSpace::BuildingController::BuildingController( AIClasses* aiClasses )
 {
 	ai = aiClasses;

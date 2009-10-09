@@ -7,6 +7,7 @@
 #include "WeaponDef.h"
 #include "Damage.h"
 
+namespace brainSpace {
 class ThreatMap
 {
 public:
@@ -32,9 +33,10 @@ private:
 	
 	void DrawGrid();
 	void Reset();
-	void InsertUnit( Unit* u, struct UnitInformationContainer c );
-	int CalculateDPS( WeaponDef* w );
+	void InsertUnit( springai::Unit* u, struct UnitInformationContainer c );
+	int CalculateDPS( springai::WeaponDef* w );
 
 	AIClasses* ai;
 };
+}
 #endif

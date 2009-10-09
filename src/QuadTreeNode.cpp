@@ -1,5 +1,8 @@
-
 #include "QuadTreeNode.h"
+
+using namespace std;
+using namespace springai;
+using namespace brainSpace;
 
 QuadTreeNode::QuadTreeNode( AIClasses* aiClasses, CBoundingBox box, int level, QuadTreeNode* parentNode )
 {

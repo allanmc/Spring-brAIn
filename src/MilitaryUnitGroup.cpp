@@ -1,5 +1,9 @@
 #include "MilitaryUnitGroup.h"
 
+using namespace std;
+using namespace springai;
+using namespace brainSpace;
+
 MilitaryUnitGroup::MilitaryUnitGroup( AIClasses* aiClasses ):BrainGroup(aiClasses)
 {
 	status = Regrouping;

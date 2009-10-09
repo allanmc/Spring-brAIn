@@ -1,5 +1,9 @@
 #include "Knowledge.h"
 
+using namespace std;
+using namespace springai;
+using namespace brainSpace;
+
 Knowledge::Knowledge( AIClasses* aiClasses )
 {
 	ai = aiClasses;

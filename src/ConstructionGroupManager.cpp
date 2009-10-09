@@ -1,5 +1,8 @@
 #include "ConstructionGroupManager.h"
 
+using namespace std;
+using namespace springai;
+using namespace brainSpace;
 
 ConstructionGroupManager::ConstructionGroupManager( AIClasses* aiClasses )
 {

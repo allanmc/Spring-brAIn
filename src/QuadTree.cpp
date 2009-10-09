@@ -1,7 +1,10 @@
 
 #include "QuadTree.h"
 
+using namespace std;
+using namespace springai;
 using namespace brainSpace;
+
 QuadTree::QuadTree( AIClasses* aiClasses, CBoundingBox box )
 {
 	ai = aiClasses,

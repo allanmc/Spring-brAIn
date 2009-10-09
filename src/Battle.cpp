@@ -1,5 +1,9 @@
 #include "Battle.h"
 
+using namespace std;
+using namespace springai;
+using namespace brainSpace;
+
 Battle::Battle( AIClasses* aiClasses, SAIFloat3 position )
 {
 	Center = position;

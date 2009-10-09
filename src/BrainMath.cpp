@@ -1,5 +1,10 @@
 #include "BrainMath.h"
 
+using namespace std;
+using namespace springai;
+using namespace brainSpace;
+
+
 
 bool BrainMath::CircleIntersectBoundingBox( CBoundingBox box, SAIFloat3 center, float radius )
 {

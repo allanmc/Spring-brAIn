@@ -1,9 +1,10 @@
 
 #include "BrainGroup.h"
 
-
-using namespace brainSpace;
+using namespace std;
 using namespace springai;
+using namespace brainSpace;
+
 BrainGroup::BrainGroup( AIClasses* aiClasses )
 {
 	Idle = true;

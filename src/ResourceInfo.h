@@ -16,11 +16,11 @@ namespace brainSpace
 
 		void Update(int frame);
 
-		float GetCurrentConsumption(Resource *res);
-		float GetCurrentProduction(Resource *res);
+		float GetCurrentConsumption(springai::Resource *res);
+		float GetCurrentProduction(springai::Resource *res);
 
-		float GetCurrentAvailable(Resource *res);
-		float GetCurrentStorage(Resource *res);
+		float GetCurrentAvailable(springai::Resource *res);
+		float GetCurrentStorage(springai::Resource *res);
 
 		float GetTimeToMetalDepletion();
 		float GetTimeToEnergyDepletion();
@@ -30,15 +30,15 @@ namespace brainSpace
 		ETA, the build time in frames
 		returns an id, to be used for removal
 		*/
-		int AddChangeToCome(Unit* unit, int ETA);
-		void RemoveChangeToCome(Unit* unit);
+		int AddChangeToCome(springai::Unit* unit, int ETA);
+		void RemoveChangeToCome(springai::Unit* unit);
 
 	private:
 		AIClasses* ai;
-		Economy* economy;
+		springai::Economy* economy;
 
-		Resource *metal;
-		Resource *energy;
+		springai::Resource *metal;
+		springai::Resource *energy;
 
 		struct Change{
 			Change(){}//dummy contructor
@@ -47,7 +47,7 @@ namespace brainSpace
 			float energyProduction;
 			unsigned int ETA; //the frame where it is expected to be finished
 		};
-		list<Change> changes;
+		std::list<Change> changes;
 		unsigned int currentFrame;
 	};
 }

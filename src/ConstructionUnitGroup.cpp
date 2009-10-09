@@ -1,5 +1,9 @@
 #include "ConstructionUnitGroup.h"
 
+using namespace std;
+using namespace springai;
+using namespace brainSpace;
+
 ConstructionUnitGroup::ConstructionUnitGroup( AIClasses* aiClasses ) : BrainGroup( aiClasses )
 {
 	BaseDefenseCounter = 0;

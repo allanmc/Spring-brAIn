@@ -19,14 +19,14 @@ namespace brainSpace{
 		SAIFloat3 GetLastUnitPos( int unitID );
 		QuadTreeNode* GetRootNode();
 		void Print();
-		vector<Unit*> RangeQuery(float topLeftX, float topLeftZ, float bottomRightX, float bottomRightZ);
-		vector<Unit*> RangeQuery(SAIFloat3 topLeft, SAIFloat3 bottomRight);
-		vector<Unit*> RangeQuery(CBoundingBox bbox);
+		std::vector<springai::Unit*> RangeQuery(float topLeftX, float topLeftZ, float bottomRightX, float bottomRightZ);
+		std::vector<springai::Unit*> RangeQuery(SAIFloat3 topLeft, SAIFloat3 bottomRight);
+		std::vector<springai::Unit*> RangeQuery(CBoundingBox bbox);
 		void Print( QuadTreeNode* node );
-		const map<int, struct UnitInformationContainer> GetEnemyUnits();
+		const std::map<int, struct UnitInformationContainer> GetEnemyUnits();
 	private:
 		QuadTreeNode* RootNode;
-		map<int, struct UnitInformationContainer> units;
+		std::map<int, struct UnitInformationContainer> units;
 		AIClasses *ai;
 	};
 }

@@ -3,11 +3,11 @@
 
 void error_handler (h_location_t line_no, h_string_t message, void *data);
 
-static AIClasses *ai;;
+static brainSpace::AIClasses *ai;;
 
 class HuginTest {
 	public:
-		HuginTest( AIClasses* aiClasses );
+		HuginTest( brainSpace::AIClasses* aiClasses );
 		~HuginTest();
 		float getBelief(const char* nodeName, const char* stateName);
 		void setEvidence(const char* nodeName, const char* stateName);

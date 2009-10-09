@@ -12,7 +12,7 @@ namespace brainSpace
 	struct UnitInformationContainer
 	{
 		SAIFloat3 pos;
-		UnitDef* def;
+		springai::UnitDef* def;
 	};
 
 	enum BattleLabels {
@@ -30,11 +30,11 @@ namespace brainSpace
 
 		virtual ~Battle();
 
-		void UnitDied( Unit* u, bool enemy );
+		void UnitDied( springai::Unit* u, bool enemy );
 
-		void UnitEnteredBattle( Unit* u, bool enemy );
+		void UnitEnteredBattle( springai::Unit* u, bool enemy );
 
-		bool Contains( Unit* u );
+		bool Contains( springai::Unit* u );
 
 		SAIFloat3 GetCenter();
 
@@ -42,7 +42,7 @@ namespace brainSpace
 
 		int GetLastFrameOfActivity();
 
-		void RemoveUnit( Unit* unit );
+		void RemoveUnit( springai::Unit* unit );
 
 		void Update();
 
@@ -73,12 +73,12 @@ namespace brainSpace
 		void CalculateCenter( SAIFloat3 pos[], int size );
 
 		//UnitDefID, numberOfUnits
-		map<int, int> DeadFriendlyUnits;
-		map<int, int> DeadEnemyUnits;
+		std::map<int, int> DeadFriendlyUnits;
+		std::map<int, int> DeadEnemyUnits;
 
 		//UnitID, Position
-		map<int, UnitInformationContainer> ActiveFriendlyUnits;
-		map<int, UnitInformationContainer> ActiveEnemyUnits;
+		std::map<int, UnitInformationContainer> ActiveFriendlyUnits;
+		std::map<int, UnitInformationContainer> ActiveEnemyUnits;
 
 		SAIFloat3 Center;
 		float Radius;

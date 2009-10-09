@@ -1,8 +1,9 @@
 #include "ArmyInfo.h"
 
 
-using namespace brainSpace;
+using namespace std;
 using namespace springai;
+using namespace brainSpace;
 
 ArmyInfo::ArmyInfo( AIClasses* aiClasses )
 {

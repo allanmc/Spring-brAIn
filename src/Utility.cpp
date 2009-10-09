@@ -1,6 +1,11 @@
 #include "Utility.h"
 #include "global.h"
 #include <stdio.h>
+
+using namespace std;
+using namespace springai;
+using namespace brainSpace;
+
 Utility::Utility( AIClasses* aiClasses )
 {
 	ai = aiClasses;

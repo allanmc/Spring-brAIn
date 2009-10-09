@@ -1,5 +1,9 @@
 #include "ThreatMap.h"
 
+using namespace std;
+using namespace springai;
+using namespace brainSpace;
+
 
 ThreatMap::ThreatMap( AIClasses* aiClasses )
 {

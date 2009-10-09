@@ -650,9 +650,9 @@ namespace dlib
                 sat.g = 0;
                 sat.b = (360 - c1.h) / 60.0;
             }
-            sat.r = min(sat.r,1.0);
-            sat.g = min(sat.g,1.0);
-            sat.b = min(sat.b,1.0);
+            //sat.r = min(sat.r,1.0);
+            //sat.g = min(sat.g,1.0);
+            //sat.b = min(sat.b,1.0);
 
             ctmp.r = 2 * c1.s * sat.r + (1 - c1.s);
             ctmp.g = 2 * c1.s * sat.g + (1 - c1.s);

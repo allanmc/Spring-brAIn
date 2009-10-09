@@ -1,5 +1,8 @@
 #include "MilitaryGroupManager.h"
 
+using namespace std;
+using namespace springai;
+using namespace brainSpace;
 
 brainSpace::MilitaryGroupManager::MilitaryGroupManager( AIClasses* aiClasses )
 {

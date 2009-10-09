@@ -60,7 +60,7 @@ namespace brainSpace
 
 		bool CheckBucketSize();
 
-		void InsertUnit( int unitID, SAIFloat3 pos, UnitDef* def = NULL );
+		void InsertUnit( int unitID, SAIFloat3 pos, springai::UnitDef* def = NULL );
 		void RemoveUnit( int unitID );
 
 		void MoveUnitsToChildren();

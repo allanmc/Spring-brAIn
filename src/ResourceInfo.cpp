@@ -1,5 +1,9 @@
 #include "ResourceInfo.h"
 
+using namespace std;
+using namespace springai;
+using namespace brainSpace;
+
 ResourceInfo::ResourceInfo(AIClasses* ai)
 {
 	this->ai = ai;

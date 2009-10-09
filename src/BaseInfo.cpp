@@ -1,7 +1,8 @@
 #include "BaseInfo.h"
 
-using namespace brainSpace;
+using namespace std;
 using namespace springai;
+using namespace brainSpace;
 
 BaseInfo::BaseInfo( AIClasses* aiClasses )
 {

@@ -1,7 +1,8 @@
 #include "BrAIn.h"
 
+using namespace std;
+using namespace springai;
 using namespace brainSpace;
-
 
 brainSpace::BrAIn::BrAIn(springai::AICallback* cb)
 {
