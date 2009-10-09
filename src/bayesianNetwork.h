@@ -17,7 +17,7 @@ namespace brainSpace {
 	//using namespace brainSpace;
 	//using namespace bayes_node_utils;
 	
-	#include "../data/uber_enums.h"
+	#include "uber_enums.h"
 	
 	typedef dlib::graph<dlib::set<unsigned long>::compare_1b_c,dlib::set<unsigned long>::compare_1b_c>::kernel_1a_c join_tree_type;
 
@@ -27,6 +27,7 @@ namespace brainSpace {
 			~BayesianNetwork();
 			float getBelief(int node, int state);
 			void setEvidence(int node, int state);
+			void Propagate();
 			void print_beliefs_and_utilities ();
 		
 		private:

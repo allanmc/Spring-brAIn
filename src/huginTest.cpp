@@ -70,7 +70,10 @@ void HuginTest::setEvidence(const char* nodeName, const char* stateName)
 		return;
 	}
 	h_node_select_state (n, i);
+}
 
+void HuginTest::Propagate()
+{
 	h_domain_propagate(domain, h_equilibrium_sum, h_mode_normal);
 }
 
@@ -85,8 +88,8 @@ void HuginTest::load_and_propagate (h_string_t net_file_name)
 		l -= 4;
 	}
 
-	ai->utility->Log(ALL, BN, "Error: Loading!?!?!\n");
-	ai->utility->Log(ALL, BN, "Output: Hello World\n");
+	//ai->utility->Log(ALL, BN, "Error: Loading!?!?!\n");
+	//ai->utility->Log(ALL, BN, "Output: Hello World\n");
 	if ((file_name_buffer = (char*)malloc (l + 5)) == NULL)
 	{
 		ai->utility->Log(ALL, BN, "Error: Out of memory\n");
@@ -131,11 +134,11 @@ void HuginTest::load_and_propagate (h_string_t net_file_name)
 
 	fclose (log_file);
 
-	print_junction_trees (domain);
+	//print_junction_trees (domain);
 
 	if (!domain_has_utilities (domain))
 	{
-		ai->utility->Log(ALL, BN, "\n\nBeliefs:\n");
+		//ai->utility->Log(ALL, BN, "\n\nBeliefs:\n");
 	}
 	else
 	{
@@ -150,7 +153,7 @@ void HuginTest::load_and_propagate (h_string_t net_file_name)
 		ai->utility->Log(ALL, BN, "\nPrior beliefs (and expected utilities):\n");
 	}
 
-	print_beliefs_and_utilities ();
+	//print_beliefs_and_utilities ();
 }
 
 /* This function is used when a Hugin API error is detected: It prints

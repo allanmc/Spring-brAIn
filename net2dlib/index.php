@@ -157,23 +157,23 @@ class Nodes {
 		
 		$bn = "bn";
 		$node_namespace = "node";
-		$prefix = "$node_namespace::";
+		$prefix = "$node_namespace::_";
 		$id_name = "id";
-		$suffix = "::$id_name";
+		$suffix = "";
 		$parent = "parent_state";
 		
 		$return .= "namespace $node_namespace\n{\n";
-		/*$return .= "\tenum Node\n\t{\n";
+		$return .= "\tenum node_ids\n\t{\n";
         for ($i = 0; $i < count($this->nodes); $i++) {
-			$return .= "\t\t".$this->nodes[$i]->name.' = '.$i;
+			$return .= "\t\t_".$this->nodes[$i]->name.' = '.$i;
 			if ($i!=count($this->nodes)-1) $return .= ",";
 			$return .= "\n";
 		}
-		$return .= "\t};\n";*/
+		$return .= "\t};\n";
 		
         for ($i = 0; $i < count($this->nodes); $i++) {
 			$return .= "\tnamespace ".$this->nodes[$i]->name."\n\t{\n";
-			$return .= "\t\tint $id_name = $i;\n";
+			//$return .= "\t\tint $id_name = $i;\n";
 			$return .= "\t\tenum State\n\t\t{\n";
 			for ($j = 0; $j < count($this->nodes[$i]->states); $j++) {
 				$return .= "\t\t\t_".str_replace("-", "_", $this->nodes[$i]->states[$j]).' = '.$j;
