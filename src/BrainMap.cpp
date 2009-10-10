@@ -10,9 +10,6 @@ BrainMap::BrainMap( AIClasses* aiClasses )
 	ai = aiClasses;
 	Resolution = 64*8; //real world size of a map tile
 
-	int width = ai->callback->GetMap()->GetWidth();
-	int height = ai->callback->GetMap()->GetHeight();
-
 	MapWidth = (ai->callback->GetMap()->GetWidth()*8)/Resolution;
 	MapHeight = (ai->callback->GetMap()->GetHeight()*8)/Resolution;
 
@@ -44,7 +41,7 @@ void BrainMap::EffectCircle( SAIFloat3 center, float radius, float value, bool a
 {
 	int currentIndexX = floorf(center.x/Resolution );
 	int currentIndexZ = floorf(center.z/Resolution);
-	int range = radius/Resolution;
+	int range = ceil(radius/Resolution);//Ceil to make sure that it checks border cells even though the range is not a whole cell
 
 	for ( int i = currentIndexX-range ; i <= currentIndexX+range ; i++ )
 	{
@@ -102,6 +99,6 @@ void BrainMap::DrawGrid()
 		end.y = 200;
 		end.z = MapHeight*Resolution;
 
-		int id = ai->utility->DrawLine( start, end, false, 20 , GridFigureID );
+		ai->utility->DrawLine( start, end, false, 20 , GridFigureID );
 	}
 }
