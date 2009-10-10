@@ -17,7 +17,7 @@ public:
 private:
 
 	int ArmorType;
-	
+	void EffectCell(int index, float value);
 	void InsertUnit( springai::Unit* u, struct UnitInformationContainer c );
 	int CalculateDPS( springai::WeaponDef* w );
 

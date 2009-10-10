@@ -40,8 +40,8 @@ protected:
 	
 	void DrawGrid();
 	void Reset();
-	void EffectCircle( SAIFloat3 center, float radius, float value, bool additive );
-	void SetValue(int index, float value);
+	void EffectCircle( SAIFloat3 center, float radius, float value );
+	virtual void EffectCell(int index, float value)=0;
 	AIClasses* ai;
 };
 }

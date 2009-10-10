@@ -37,30 +37,73 @@ const MapInfo* BrainMap::GetMapInfo()
 	return mapInfo;
 }
 
-void BrainMap::EffectCircle( SAIFloat3 center, float radius, float value, bool additive )
+void BrainMap::EffectCircle( SAIFloat3 center, float radius, float value )
 {
 	int currentIndexX = floorf(center.x/Resolution );
 	int currentIndexZ = floorf(center.z/Resolution);
 	int range = ceil(radius/Resolution);//Ceil to make sure that it checks border cells even though the range is not a whole cell
-
-	for ( int i = currentIndexX-range ; i <= currentIndexX+range ; i++ )
+	
+	EffectCell(currentIndexZ * MapWidth + currentIndexX, value);//center cell
+	for(int x = max(currentIndexX - range,0); x<currentIndexX; x++)//left cells
 	{
-		for ( int j = currentIndexZ-range ; j <= currentIndexZ+range ; j++ )
+		if((x+1)*Resolution > center.x - radius)//right edge check
+			EffectCell(currentIndexZ*MapWidth + x, value);
+	}
+	for(int x = min(currentIndexX + range,MapWidth-1); x>currentIndexX; x--)//right cells
+	{
+		if(x*Resolution < center.x + radius)//left edge check
+			EffectCell(currentIndexZ*MapWidth + x, value);
+	}
+	for(int z = max(currentIndexZ - range,0); z<currentIndexZ; z++)//bottom cells
+	{
+		if((z+1)*Resolution > center.z - radius)//top edge check
+			EffectCell(z*MapWidth + currentIndexX, value);
+	}
+	for(int z = min(currentIndexZ + range,MapHeight-1); z>currentIndexZ; z--)//top cells
+	{
+		if(z*Resolution < center.z + radius)
+			EffectCell(z*MapWidth + currentIndexX, value);
+	}
+	
+	SAIFloat3 cornor;
+	for ( int x = currentIndexX-range ; x < currentIndexX ; x++ )//top left cells
+	{
+		cornor.x = (x+1)*Resolution;//right
+		for ( int z = currentIndexZ-range ; z < currentIndexZ ; z++ )
 		{
-			if ( i < 0 || j < 0 || i >= MapWidth || j >= MapHeight )
-				continue;
-			CBoundingBox b;
-			b.topLeft.x = i*Resolution;
-			b.topLeft.z = j*Resolution;
-			b.bottomRight.x = (i+1)*Resolution;
-			b.bottomRight.z = (j+1)*Resolution;
-			if ( ai->math->CircleIntersectBoundingBox( b, center, radius ) )
-			{
-				if(additive)
-					MapArray[ j*MapWidth + i ] += value;
-				else
-					MapArray[ j*MapWidth + i ] = value;
-			}
+			cornor.z = (z+1)*Resolution;//bottom
+			if(ai->utility->EuclideanDistance(center,cornor) < radius)//bottom right conor check
+				EffectCell(z*MapWidth + x, value);
+		}
+	}
+	for ( int x = currentIndexX+range ; x > currentIndexX ; x-- )//top right cells
+	{
+		cornor.x = x*Resolution;//left
+		for ( int z = currentIndexZ-range ; z < currentIndexZ ; z++ )
+		{
+			cornor.z = (z+1)*Resolution;//bottom
+			if(ai->utility->EuclideanDistance(center,cornor) < radius)//bottom left conor check
+				EffectCell(z*MapWidth + x, value);
+		}
+	}
+	for ( int x = currentIndexX-range ; x < currentIndexX ; x++ )//bottom left cells
+	{
+		cornor.x = (x+1)*Resolution;//right
+		for ( int z = currentIndexZ+range ; z > currentIndexZ ; z-- )
+		{
+			cornor.z = z*Resolution;//top
+			if(ai->utility->EuclideanDistance(center,cornor) < radius)//top right conor check
+				EffectCell(z*MapWidth + x, value);
+		}
+	}
+	for ( int x = currentIndexX+range ; x > currentIndexX ; x-- )//top left cells
+	{
+		cornor.x = x*Resolution;//left
+		for ( int z = currentIndexZ+range ; z > currentIndexZ ; z-- )
+		{
+			cornor.z = z*Resolution;//top
+			if(ai->utility->EuclideanDistance(center,cornor) < radius)//top left conor check
+				EffectCell(z*MapWidth + x, value);
 		}
 	}
 }
