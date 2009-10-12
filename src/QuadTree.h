@@ -7,6 +7,7 @@
 
 namespace brainSpace{
 
+	///A Quad-Tree used to store units and to do range queries.
 	class QuadTree
 	{
 	public:

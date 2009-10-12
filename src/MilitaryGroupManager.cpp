@@ -75,6 +75,7 @@ vector<MilitaryUnitGroup*> MilitaryGroupManager::GetIdleGroups()
 	return result;
 }
 
+///Tells the group to attack the given enemy.
 void MilitaryGroupManager::GiveAttackOrder(brainSpace::MilitaryUnitGroup* group, int enemy)
 {
 	group->SetStatus(MilitaryUnitGroup::Attacking);
@@ -82,6 +83,7 @@ void MilitaryGroupManager::GiveAttackOrder(brainSpace::MilitaryUnitGroup* group,
 	
 }
 
+///Tells the group to scout the cell with the best scouting value
 void MilitaryGroupManager::GiveScoutOrder(brainSpace::MilitaryUnitGroup* group)
 {
 	group->SetStatus(MilitaryUnitGroup::Scouting);
@@ -153,6 +155,7 @@ void MilitaryGroupManager::GiveScoutOrder(brainSpace::MilitaryUnitGroup* group)
 	group->Scout(bestScoutingPos);
 }
 
+///informs the groups that a unit have gone idle
 void MilitaryGroupManager::UnitIdle(Unit* unit)
 {
 	for(int i = 0; i < UnitGroups.size(); i++)
@@ -162,6 +165,7 @@ void MilitaryGroupManager::UnitIdle(Unit* unit)
 
 }
 
+///@return the groups that are not currently attacking enemies.
 vector<MilitaryUnitGroup*> MilitaryGroupManager::GetNonAttackingGroups()
 {
 	vector<MilitaryUnitGroup*> result;

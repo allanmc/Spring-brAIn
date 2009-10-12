@@ -39,6 +39,9 @@ void ConstructionGroupManager::RemoveUnit( Unit* unit )
 
 }
 
+///finds an idle group to construct the building specified
+///@param order contains all information needed except the contructor
+///@return 1 if an idle group was found, or 0 if the order was queued
 int ConstructionGroupManager::DelegateBuildOrder(SBuildUnitCommand order)
 {
 	//u->ChatMsg( "Unitgroups size: %d", UnitGroups.size() );
@@ -58,6 +61,7 @@ int ConstructionGroupManager::DelegateBuildOrder(SBuildUnitCommand order)
 	return 0;
 }
 
+///tells the group that a given unit have gone idle
 void ConstructionGroupManager::UnitIdle( Unit* unit )
 {
 	UnitGroups[0]->SetAvailable();

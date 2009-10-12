@@ -41,6 +41,8 @@ void GroupController::RemoveUnit(Unit *unit)
 	}
 }
 
+///finds a group capeble of constructing the building
+///@return 1 if an idle group was found, or 0 if the order was queued
 int GroupController::ErectBuilding(SBuildUnitCommand order)
 {
 	return ConstructionGroupMgr->DelegateBuildOrder( order );
@@ -58,6 +60,7 @@ void GroupController::UnitIdle( Unit* unit )
 	}
 }
 
+///finds an idle group to attack the target.
 void GroupController::AttackWithGroup(int enemy)
 {
 	if(MilitaryGroupMgr->GetNonAttackingGroups().size() > 0)
@@ -66,6 +69,7 @@ void GroupController::AttackWithGroup(int enemy)
 	}
 }
 
+///finds an idle group to scout with
 void GroupController::ScoutWithIdleGroup()
 {
 	if(!MilitaryGroupMgr->GetIdleGroups().empty())

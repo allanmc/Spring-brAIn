@@ -14,7 +14,7 @@ const SAIFloat3 TEAM_7_COLOR = { 0, 0, 0 };
 
 namespace brainSpace
 {
-
+	///A collection of functions that provide shortcuts to commonly used functionallity
 	class Utility
 	{
 	private:

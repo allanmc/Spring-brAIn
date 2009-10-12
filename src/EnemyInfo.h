@@ -5,6 +5,7 @@
 
 namespace brainSpace
 {
+	///A collection of classes with information on the enemy.
 	class EnemyInfo
 	{
 	public:

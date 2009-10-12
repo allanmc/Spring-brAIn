@@ -8,6 +8,7 @@
 
 namespace brainSpace
 {
+	///A collection of all the classes that provide information about the map.
 	class MapInfo
 	{
 	public:

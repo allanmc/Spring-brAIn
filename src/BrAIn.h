@@ -13,10 +13,11 @@
 
 namespace brainSpace {
 
+///The brAIn!
 /**
  * This is the main C++ entry point of this AI.
  * 
- * @author	Robin Vobruba <hoijui.quaero@gmail.com>
+ * @author	Group d513a, at Aalborg University (d513a@cs.aau.dk)
  */
 class BrAIn {
 

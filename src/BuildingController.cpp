@@ -55,7 +55,8 @@ void BuildingController::RemoveBuilding(springai::Unit *unit)
 
 }
 
-
+///orders every construction building to contruct the unit
+///@param order is the build order containing all information except the contructor
 void BuildingController::ConstructUnit(SBuildUnitCommand order)
 {
 	for(int i=0; i<ConstructionBuildings.size(); ++i)

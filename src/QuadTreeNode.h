@@ -14,7 +14,10 @@ namespace brainSpace
 {
 	struct CBoundingBox;
 
-
+	///A Box which sides are paralell with the axes of the coodinate system
+	/**
+	 * The Bounding box consists of two SAIFloat3, but is only used for 2D. (Using the X and Z axes, the Y axis is ignored)
+	 */
 	struct CBoundingBox
 	{
 		SAIFloat3 topLeft;
@@ -35,8 +38,10 @@ namespace brainSpace
 
 	};
 
-
-
+	///A node in the QuadTree, either a branch or a leaf node.
+	/**
+	 * @see QuadTree
+	 */
 	class QuadTreeNode
 	{
 	public:

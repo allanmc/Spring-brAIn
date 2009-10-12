@@ -65,12 +65,13 @@ void BaseInfo::RemoveBuilding(Unit* building)
 	}
 }
 
+///@return the number of resource producing buildings
 int BaseInfo::CountResourceBuildings()
 {
 	return resourceBuildings;
 }
 
-
+///@return the number of buildings that are able to contruct other units
 int BaseInfo::CountProductionBuildings()
 {
 	return productionBuildings;
