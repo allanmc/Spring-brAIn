@@ -9,12 +9,17 @@
 
 namespace brainSpace
 {
+	///A class used to store information about a unit.
+	/**
+	 * Used to make sure we keep the information when the unit moves out of LOS.
+	 */
 	struct UnitInformationContainer
 	{
 		SAIFloat3 pos;
 		springai::UnitDef* def;
 	};
 
+	///The ways we can label a battle
 	enum BattleLabels {
 		HISATTACK	= 0,
 		MYATTACK	= 1,
@@ -22,7 +27,8 @@ namespace brainSpace
 		HISSCOUT	= 3,
 		MYSCOUT		= 4,
 	};
-
+	
+	///A class that keeps all nessasary information on a battle
 	class Battle
 	{
 	public:

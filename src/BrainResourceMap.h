@@ -5,7 +5,8 @@
 #include "BrainMap.h"
 
 namespace brainSpace {
-
+	
+	///A map telling how many metal spots there are in each cell, used for scouting
 	class BrainResourceMap : public BrainMap
 	{
 	public:

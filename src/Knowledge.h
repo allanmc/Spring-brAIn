@@ -6,7 +6,7 @@
 
 namespace brainSpace
 {
-	//A collection of classes containing information needed to make decisions.
+	///A collection of classes containing information needed to make decisions.
 	class Knowledge
 	{
 	public:
