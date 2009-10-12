@@ -12,6 +12,7 @@ using namespace std;
 
 namespace brainSpace
 {
+	///A manager of all contruction groups
 	class ConstructionGroupManager
 	{
 	public:

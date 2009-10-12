@@ -77,6 +77,9 @@ Decision::~Decision(void)
 {
 }
 
+///called when a unit enters the world
+///@warning the unit may not be fully constructed yet
+///@warning the builderID may not corrospond to a unit
 void Decision::UnitCreated(int unitID, int builderID)
 {
 	Unit * u = Unit::GetInstance(ai->callback,unitID);
@@ -88,6 +91,8 @@ void Decision::UnitCreated(int unitID, int builderID)
 	}
 }
 
+///Called when a unit is fully constructed
+///@param unit the ID of the unit
 void Decision::UnitFinished(int unit)
 {
 	Unit * u = Unit::GetInstance(ai->callback,unit);
@@ -119,6 +124,7 @@ void Decision::UnitFinished(int unit)
 	}
 }
 
+///called when one of our units are destoyed
 void Decision::UnitDestroyed(int unit, int attacker)
 {
 	Unit* destroyee = Unit::GetInstance( ai->callback, unit );
@@ -160,6 +166,7 @@ void Decision::UnitDestroyed(int unit, int attacker)
 	//build a repacement?
 }
 
+///called when we can see an enemy unit that we could not see before.
 void Decision::EnemyEnterLOS(int enemy)
 {
 	gc->AttackWithGroup(enemy);
@@ -182,6 +189,7 @@ void Decision::EnemyEnterLOS(int enemy)
 	}
 }
 
+///called when an enemy have been destroyed
 void Decision::EnemyDestroyed(int enemy, int attacker)
 {
 	//good job!
@@ -225,6 +233,7 @@ void Decision::EnemyDestroyed(int enemy, int attacker)
 	}
 }
 
+///used to update the positions of all friendly units in the ArmyInfo
 void Decision::UpdateFrindlyPositions()
 {
 	
@@ -437,8 +446,6 @@ void Decision::Update(int frame)
 		ai->utility->Log(ALL, BN, "My belief that that the enemy is defensive: %f", huginTest->getBelief("enemyStrategy", "Defensive"));
 		//huginTest->print_beliefs_and_utilities();
 	}
-
-	ai->knowledge->selfInfo->resourceInfo->Update(frame);
 }
 
 void Decision::UnitIdle( int id )

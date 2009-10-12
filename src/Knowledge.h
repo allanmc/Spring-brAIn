@@ -6,6 +6,7 @@
 
 namespace brainSpace
 {
+	//A collection of classes containing information needed to make decisions.
 	class Knowledge
 	{
 	public:
@@ -20,7 +21,6 @@ namespace brainSpace
 	private:
 		AIClasses* ai;
 		
-
 	};
 }
 #endif

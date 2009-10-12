@@ -51,7 +51,7 @@ bool QuadTree::RemoveUnit( int unitID )
 	return true;
 }
 
-// Returns the amount of units added to the Qtree
+///@return the amount of units added to the Qtree
 int QuadTree::UpdateUnit( int unitID, SAIFloat3 pos )
 {
 	int i = 0;

@@ -10,6 +10,10 @@
 #include "Damage.h"
 
 namespace brainSpace {
+///A map keeping information the estimated threat at a given cell.
+/**
+ * The threat is calculated from enemies last know position, and the the value is in total DPS.
+ */
 class ThreatMap : public BrainMap
 {
 public:

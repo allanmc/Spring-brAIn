@@ -19,6 +19,7 @@ using namespace brainSpace;
 
 namespace brainSpace
 {
+	///Controls all groups that are able to attack
 	class MilitaryGroupManager
 	{
 	public:

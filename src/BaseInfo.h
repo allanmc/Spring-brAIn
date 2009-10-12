@@ -9,6 +9,7 @@ using namespace springai;
 
 namespace brainSpace
 {
+	///Keeps information on a base, both enemy and own.
 	class BaseInfo
 	{
 	public:

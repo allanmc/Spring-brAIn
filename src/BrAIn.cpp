@@ -21,6 +21,9 @@ brainSpace::BrAIn::BrAIn(springai::AICallback* cb)
 }
 brainSpace::BrAIn::~BrAIn() {}
 
+///Passes the events received on to the Decision class
+///@see Decision
+///return 0 on success, and something else if an error happend.
 int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 
 	ai->utility->Log(ALL,EVENT,"Recived an event with topic: %i", topic);

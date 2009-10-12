@@ -24,6 +24,10 @@ Utility::~Utility()
 	fclose(fp);
 }
 
+///Prints a line in the log file
+///@param logLevel the minimum LOGLEVEL that this should be logged at
+///@param logType the type of information being logged, used to filter logging
+///@param msg the text to be printed in printf-syntax
 void Utility::Log(int logLevel, int logType, const char* msg, ...)
 {		
 	if (LOG_LEVEL < logLevel)
@@ -45,6 +49,7 @@ void Utility::Log(int logLevel, int logType, const char* msg, ...)
 	fputc('\n', fp);
 }
 
+///prints a line to the chat
 void Utility::ChatMsg(const char* msg, ...)
 {
 	static char c[200];
@@ -64,7 +69,7 @@ void Utility::ChatMsg(const char* msg, ...)
 	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_SEND_TEXT_MESSAGE, &cmd);
 }
 
-
+///prints a line to the chat
 void Utility::ChatMsg(std::string msg)
 {
 	if (strcmp(Info::GetInstance(ai->callback)->GetValueByKey("debug"),"true")!=0)
@@ -78,6 +83,7 @@ void Utility::ChatMsg(std::string msg)
 	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_SEND_TEXT_MESSAGE, &cmd);
 }
 
+///@return the UnitDef of with a given name, or NULL if the UnitDef does not exists
 UnitDef* Utility::GetUnitDef(const char* unitDefName)
 {
 	vector<UnitDef*> defs = ai->callback->GetUnitDefs();
@@ -92,6 +98,7 @@ UnitDef* Utility::GetUnitDef(const char* unitDefName)
 	return NULL;
 }
 
+///@return the Resource with the given name, or NULL if the Resource does not exists
 Resource* Utility::GetResource(const char* resourceName)
 {
 	vector<Resource*> resources = ai->callback->GetResources();
@@ -106,6 +113,7 @@ Resource* Utility::GetResource(const char* resourceName)
 	return NULL;
 }
 
+///draws a circle on the map
 int Utility::DrawCircle(SAIFloat3 pos, float radius)
 {
 	SCreateSplineFigureDrawerCommand circle;
@@ -157,6 +165,7 @@ int Utility::DrawCircle(SAIFloat3 pos, float radius)
 	return circle.figureGroupId;
 }
 
+///draws a line on the map
 int Utility::DrawLine(SAIFloat3 start, SAIFloat3 end, bool arrow, float width, int figureId )
 {
 	SCreateLineFigureDrawerCommand line;
@@ -173,6 +182,7 @@ int Utility::DrawLine(SAIFloat3 start, SAIFloat3 end, bool arrow, float width, i
 	return line.ret_newFigureGroupId;
 }
 
+///removes all grephic elements with a given figureId
 void Utility::RemoveGraphics(int figureId)
 {
 	SDeleteFigureDrawerCommand removeCmd;
@@ -180,11 +190,13 @@ void Utility::RemoveGraphics(int figureId)
 	ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_DRAWER_FIGURE_DELETE, &removeCmd);
 }
 
+///@return the direct distance bestween two points(2D)
 double Utility::EuclideanDistance(SAIFloat3 pos1, SAIFloat3 pos2)
 {
 	return sqrt( pow( fabs( pos1.x - pos2.x ), 2 ) + pow( fabs( pos1.z - pos2.z ), 2  ) );
 }
 
+///colors all graphic objects with a given figureID
 void Utility::AssignColorToGraphics( int figureGroupID )
 {
 	SSetColorFigureDrawerCommand color;
