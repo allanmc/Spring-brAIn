@@ -4,6 +4,9 @@ using namespace std;
 using namespace springai;
 using namespace brainSpace;
 
+#include "BrainMap.h"
+#include "ScoutMap.h"
+#include "ThreatMap.h"
 brainSpace::MilitaryGroupManager::MilitaryGroupManager( AIClasses* aiClasses )
 {
 	ai = aiClasses;
@@ -84,10 +87,12 @@ void MilitaryGroupManager::GiveScoutOrder(brainSpace::MilitaryUnitGroup* group)
 	int w = ai->callback->GetMap()->GetWidth();
 	//ai->utility->ChatMsg("Height:%d", h);
 	//ai->utility->ChatMsg("Width:%d", w);
-	SAIFloat3 pos;
-	pos.x = (rand() % w)*8;
-	pos.z = (rand() % h)*8;
-	pos.y = 0;
+	
+
+	SAIFloat3 scoutingPos;
+	scoutingPos.x = (rand() % w)*8;
+	scoutingPos = (rand() % h)*8;
+	scoutingPos.y = 0;
 	//ai->utility->ChatMsg("newHeight:%f", pos.x);
 	//ai->utility->ChatMsg("newWidth:%f", pos.z);
 	//ai->utility->ChatMsg("random generation scout position done");

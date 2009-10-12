@@ -14,6 +14,8 @@ public:
 	ThreatMap( AIClasses* aiClasses);
 	virtual ~ThreatMap();
 	void Update();
+
+	float GetThreatAtPos( SAIFloat3 pos, int armorType = 11 );
 private:
 
 	int ArmorType;
