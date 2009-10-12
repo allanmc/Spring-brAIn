@@ -67,7 +67,7 @@ void ThreatMap::InsertUnit(Unit *u, struct UnitInformationContainer c )
 	for ( int i = 0 ; i < weaponMounts.size() ; i++ )
 	{
 		WeaponDef* def = weaponMounts.at(i)->GetWeaponDef();
-		EffectCircle(c.pos, def->GetRange(), CalculateDPS( def ), true);
+		EffectCircle(c.pos, def->GetRange(), CalculateDPS( def ));
 	}
 }
 
@@ -76,3 +76,7 @@ int ThreatMap::CalculateDPS( WeaponDef* w )
 	return ( w->GetDamage()->GetTypes().at(ArmorType) / w->GetReload() );
 }
 
+void ThreatMap::EffectCell(int index, float value)
+{
+	MapArray[index] += value;
+}

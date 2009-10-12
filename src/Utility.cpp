@@ -34,7 +34,6 @@ void Utility::Log(int logLevel, int logType, const char* msg, ...)
 	{
 		return;
 	}
-	static char c[200];
 	
 	if (fp)
 	{

@@ -14,7 +14,7 @@ namespace brainSpace {
 		void Update();
 
 	private:
-
+		void EffectCell(int index, float value);
 	};
 }
 #endif

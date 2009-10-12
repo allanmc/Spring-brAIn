@@ -24,7 +24,16 @@ void ScoutMap::Update()
 		{
 			radius = def->GetLosRadius();
 		}
+		else
+		{
+			continue;//can not use this unit for any thing!
+		}
 		SAIFloat3 pos = it->second.pos;
-		EffectCircle(pos, radius, ai->frame, false);
+		EffectCircle(pos, radius, ai->frame);
 	}
+}
+
+void ScoutMap::EffectCell(int index, float value)
+{
+	MapArray[index] = value;
 }
