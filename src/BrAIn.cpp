@@ -16,6 +16,29 @@ brainSpace::BrAIn::BrAIn(springai::AICallback* cb)
 
 	decision = new Decision(ai);
 
+	KMedoids *km = new KMedoids( ai );
+	vector<SAIFloat3> points;
+	points.push_back((SAIFloat3){2,0,6});
+	points.push_back((SAIFloat3){3,0,4});
+	points.push_back((SAIFloat3){3,0,8});
+	points.push_back((SAIFloat3){4,0,7});
+	points.push_back((SAIFloat3){6,0,2});
+	points.push_back((SAIFloat3){6,0,4});
+	points.push_back((SAIFloat3){7,0,3});
+	points.push_back((SAIFloat3){7,0,4});
+	points.push_back((SAIFloat3){8,0,5});
+	points.push_back((SAIFloat3){7,0,6});
+	km->AddPoints(points);
+	vector< vector<SAIFloat3> > clusters = km->GetClusters(2);
+	for (int c = 0; c < clusters.size(); c++ )
+	{	
+		ai->utility->Log(ALL, KNOWLEDGE, "Printing cluster %i:", c);
+		
+		for (int i = 0; i < clusters[c].size(); i++ )
+		{
+			ai->utility->Log(ALL, KNOWLEDGE, "Position %i: %f, %f, %f", i, clusters[c][i].x, clusters[c][i].y, clusters[c][i].z);
+		}
+	}
 	//ai->utility->ChatMsg("Hello world i am team: %d",teamId);
 	srand(0);
 }
