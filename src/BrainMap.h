@@ -1,16 +1,16 @@
 #ifndef _BRAINSPACE_BRAINMAP_H
 #define _BRAINSPACE_BRAINMAP_H
 
-#include "global.h"
+#include "types.h"
 
 namespace brainSpace {
-struct MapInfo
+struct MapData
 {
 	float *MapArray;
 	int MapWidth;
 	int MapHeight;
 
-	MapInfo(float *map, int width, int height)
+	MapData(float *map, int width, int height)
 	{
 		MapArray = map;
 		MapWidth = width;
@@ -25,7 +25,7 @@ public:
 	virtual ~BrainMap();
 
 	virtual void Update();
-	const MapInfo *GetMapInfo();
+	const MapData *GetMapData();
 
 protected:
 
@@ -34,7 +34,7 @@ protected:
 	int MapHeight;
 
 	float* MapArray;
-	const MapInfo *mapInfo;
+	const MapData *mapData;
 	int FigureID;
 	int GridFigureID;
 	

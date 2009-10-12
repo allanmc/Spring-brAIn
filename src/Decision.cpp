@@ -12,7 +12,6 @@ Decision::Decision(AIClasses* aiClasses)
 	gc = new GroupController( ai );
 	bc = new BuildingController( ai );
 	BattleInfoInstance = new BattlesInfo( ai );
-	TM = new ThreatMap( ai );
 
 	//time_t t1, t2, t3, t4, t5;
 	//int i;
@@ -307,8 +306,10 @@ void Decision::Update(int frame)
 
 	if(frame % 60 == 0)
 	{
+		ai->utility->Log( DEBUG, KNOWLEDGE, "pre-update" );
+		ai->knowledge->mapInfo->scoutMap->Update();
 		ai->utility->Log( DEBUG, KNOWLEDGE, "update" );
-		TM->Update();
+		ai->knowledge->mapInfo->threatMap->Update();
 		ai->utility->Log( DEBUG, KNOWLEDGE, "update2" );
 		gc->ScoutWithIdleGroup();
 		ai->utility->Log( DEBUG, KNOWLEDGE, "update3" );

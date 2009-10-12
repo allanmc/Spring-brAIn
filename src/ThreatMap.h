@@ -2,7 +2,9 @@
 #define _BRAINSPACE_THREATMAP_H
 
 
-#include "global.h"
+#include "types.h"
+#include "BrainMap.h"
+
 #include "WeaponMount.h"
 #include "WeaponDef.h"
 #include "Damage.h"
