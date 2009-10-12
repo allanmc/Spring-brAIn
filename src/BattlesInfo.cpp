@@ -153,15 +153,7 @@ void BattlesInfo::SomeoneDamaged( Unit* our, Unit* their )
 		b->UnitEnteredBattle( our, false );
 		b->UnitEnteredBattle( their, true );
 		CurrentBattles.push_back( b );
-		//ai->utility->
 	}
-	// hvad er det her lars? :D det gør jo intet
-	//int i = 0;
-	//for ( list<Battle*>::iterator iter = CurrentBattles.begin() ; iter != CurrentBattles.end() ; iter++, i++ )
-	//{
-	//	int a = (*iter)->GetNumberOfActiveUnits();
-	//	int d = (*iter)->GetNumberOfDeadUnits();
-	//}
 }
 
 void BattlesInfo::CleanupAfterSomeoneDied( Unit* unitToCleanup )
