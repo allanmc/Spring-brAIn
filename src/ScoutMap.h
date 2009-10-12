@@ -1,7 +1,8 @@
-#ifndef _BRAINSPACE_THREATMAP_H
-#define _BRAINSPACE_THREATMAP_H
+#ifndef _BRAINSPACE_SCOUTMAP_H
+#define _BRAINSPACE_SCOUTMAP_H
 
-#include "global.h"
+#include "types.h"
+#include "BrainMap.h"
 
 namespace brainSpace {
 

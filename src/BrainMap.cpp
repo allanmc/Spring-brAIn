@@ -14,7 +14,7 @@ BrainMap::BrainMap( AIClasses* aiClasses )
 	MapHeight = (ai->callback->GetMap()->GetHeight()*8)/Resolution;
 
 	MapArray = new float[MapWidth*MapHeight];
-	mapInfo = new MapInfo(MapArray, MapWidth, MapHeight);
+	mapData = new MapData(MapArray, MapWidth, MapHeight);
 	FigureID = 0;
 	GridFigureID = 0;
 
@@ -32,9 +32,9 @@ void BrainMap::Update()
 {
 }
 
-const MapInfo* BrainMap::GetMapInfo()
+const MapData* BrainMap::GetMapData()
 {
-	return mapInfo;
+	return mapData;
 }
 
 void BrainMap::EffectCircle( SAIFloat3 center, float radius, float value )

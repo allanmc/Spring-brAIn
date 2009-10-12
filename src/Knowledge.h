@@ -2,6 +2,7 @@
 #define _BRAINSPACE_KNOWLEDGE_H
 
 #include "global.h"
+#include "MapInfo.h"
 
 namespace brainSpace
 {
@@ -12,6 +13,7 @@ namespace brainSpace
 		virtual ~Knowledge();
 		SelfInfo* selfInfo;
 		EnemyInfo* enemyInfo;
+		MapInfo* mapInfo;
 
 	protected:
 

@@ -1,8 +1,7 @@
 #ifndef _BRAINSPACE_UTILITY_H
 #define _BRAINSPACE_UTILITY_H
 #define MAGIC_CIRCLE_NUMBER 0.55228475
-#include "global.h"
-#include "SAIFloat3.h"
+#include "types.h"
 
 const SAIFloat3 TEAM_0_COLOR = { 255, 0, 0 };
 const SAIFloat3 TEAM_1_COLOR = { 255, 255, 0 };

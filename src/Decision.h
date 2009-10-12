@@ -39,7 +39,6 @@ private:
 
 	BattlesInfo* BattleInfoInstance;
 	AIClasses* ai;
-	ThreatMap* TM;
 	HuginTest *huginTest;
 };
 
