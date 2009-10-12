@@ -9,12 +9,14 @@ struct MapData
 	float *MapArray;
 	int MapWidth;
 	int MapHeight;
+	int MapResolution;
 
-	MapData(float *map, int width, int height)
+	MapData(float *map, int width, int height, int resolution)
 	{
 		MapArray = map;
 		MapWidth = width;
 		MapHeight = height;
+		MapResolution = resolution;
 	}
 };
 

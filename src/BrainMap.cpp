@@ -14,7 +14,7 @@ BrainMap::BrainMap( AIClasses* aiClasses )
 	MapHeight = (ai->callback->GetMap()->GetHeight()*8)/Resolution;
 
 	MapArray = new float[MapWidth*MapHeight];
-	mapData = new MapData(MapArray, MapWidth, MapHeight);
+	mapData = new MapData(MapArray, MapWidth, MapHeight, Resolution);
 	FigureID = 0;
 	GridFigureID = 0;
 

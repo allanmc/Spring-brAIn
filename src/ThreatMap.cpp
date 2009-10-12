@@ -85,6 +85,6 @@ void ThreatMap::EffectCell(int index, float value)
 float ThreatMap::GetThreatAtPos( SAIFloat3 pos, int armorType )
 {
 	if ( armorType == ArmorType )
-		return MapArray[ ((pos.z)/Resolution)*MapWidth + pos.x/Resolution ];
+		return MapArray[ (int)(floorf(pos.z/Resolution)*MapWidth + floorf(pos.x/Resolution)) ];
 	return 0;
 }

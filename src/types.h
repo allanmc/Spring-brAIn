@@ -24,7 +24,7 @@
 #include "OptionValues.h"
 #include "Info.h"
 #include "ExternalAI/Interface/AISCommands.h"
-
+#include "Point.h"
 //namespace brainSpace {
 enum LogTypes {
 	CHAT		= 1<<0,

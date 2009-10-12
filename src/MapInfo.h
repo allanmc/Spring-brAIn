@@ -4,6 +4,7 @@
 #include "types.h"
 #include "ThreatMap.h"
 #include "ScoutMap.h"
+#include "BrainResourceMap.h"
 
 namespace brainSpace
 {
@@ -14,6 +15,7 @@ namespace brainSpace
 		virtual ~MapInfo();
 		ThreatMap *threatMap;
 		ScoutMap *scoutMap;
+		BrainResourceMap* resourceMap;
 
 	protected:
 

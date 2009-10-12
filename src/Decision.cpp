@@ -238,7 +238,7 @@ void Decision::UpdateFrindlyPositions()
 		if (units[i]->GetPos().x != armyUnits->GetUnitPos(units[i]->GetUnitId()).x ||
 			units[i]->GetPos().z != armyUnits->GetUnitPos(units[i]->GetUnitId()).z)
 		{
-			//armyUnits->UpdateUnit( units[i] );
+			armyUnits->UpdateUnit( units[i] );
 		}
 	}
 }
@@ -248,6 +248,7 @@ void Decision::Update(int frame)
 
 	if(frame == 1)
 	{
+		ai->knowledge->mapInfo->resourceMap->Update();
 		UnitDef *solar, *kbotLab, *metalEx, *lltDef;
 		SBuildUnitCommand metalExOrder, kbotLabOrder, solarOrder, lltDefOrder;
 		for ( int i = 0 ; i < ai->callback->GetUnitDefs().size() ; i++ )
@@ -319,7 +320,6 @@ void Decision::Update(int frame)
 
 	if ( frame % 120 ==0 )
 	{
-
 		UpdateFrindlyPositions();
 		CBoundingBox box;
 		box.topLeft.x = ai->callback->GetMap()->GetStartPos().x - 1000;
