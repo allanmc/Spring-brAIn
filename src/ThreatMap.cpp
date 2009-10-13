@@ -52,11 +52,13 @@ void ThreatMap::Update()
 			}
 		}
 
+		/*
 		if ( printArray )
 			for ( int i = 0 ; i < MapHeight*MapWidth ; i++ )
 			{
 				ai->utility->Log( ALL, KNOWLEDGE, "ThreatArray %d, %f", i, MapArray[i]);
 			}
+			*/
 }
 
 ///udates the map with the information from a single enemy uit

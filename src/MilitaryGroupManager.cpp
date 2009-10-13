@@ -26,21 +26,23 @@ void brainSpace::MilitaryGroupManager::AddUnit( Unit* unit )
 	MilitaryUnitGroup* tmpGroup = NULL;
 	for(int i = 0; i < UnitGroups.size(); i++)
 	{
-		if(UnitGroups[i]->GetSize() < 10)
+		if(UnitGroups[i]->GetSize() < 10 && UnitGroups[i]->GetStatus() == MilitaryUnitGroup::MILI_UNIT_GRP_REGROUPING )
 		{
+			ai->utility->ChatMsg( "Unit added to unitgroup" );
 			tmpGroup = UnitGroups[i];
 			break;
 		}
 	}
 	if(tmpGroup == NULL)
 	{
+		ai->utility->ChatMsg( "Unit added to NEW unitgroup" );
 		tmpGroup = new MilitaryUnitGroup( ai );
 		UnitGroups.push_back(tmpGroup);
 	}
 	tmpGroup->AddUnit(unit);
 	if(tmpGroup->GetSize() > 9)
 	{
-		tmpGroup->SetStatus(MilitaryUnitGroup::Idle);
+		tmpGroup->SetStatus(MilitaryUnitGroup::MILI_UNIT_GRP_IDLE);
 	}
 }
 
@@ -66,9 +68,9 @@ vector<MilitaryUnitGroup*> MilitaryGroupManager::GetIdleGroups()
 	
 	for(int i = 0; i < UnitGroups.size(); i++)
 	{
-		if(UnitGroups[i]->GetStatus() == MilitaryUnitGroup::Idle)
+		if(UnitGroups[i]->GetStatus() == MilitaryUnitGroup::MILI_UNIT_GRP_IDLE)
 		{
-			//u->ChatMsg("Adding an idle group to vector");
+			//ai->utility->ChatMsg("Adding an idle group to vector");
 			result.push_back(UnitGroups[i]);
 		}
 	}
@@ -78,7 +80,7 @@ vector<MilitaryUnitGroup*> MilitaryGroupManager::GetIdleGroups()
 ///Tells the group to attack the given enemy.
 void MilitaryGroupManager::GiveAttackOrder(brainSpace::MilitaryUnitGroup* group, int enemy)
 {
-	group->SetStatus(MilitaryUnitGroup::Attacking);
+	group->SetStatus(MilitaryUnitGroup::MILI_UNIT_GRP_ATTACKING);
 	group->Attack(enemy);
 	
 }
@@ -86,14 +88,8 @@ void MilitaryGroupManager::GiveAttackOrder(brainSpace::MilitaryUnitGroup* group,
 ///Tells the group to scout the cell with the best scouting value
 void MilitaryGroupManager::GiveScoutOrder(brainSpace::MilitaryUnitGroup* group)
 {
-	group->SetStatus(MilitaryUnitGroup::Scouting);
-	int h = ai->callback->GetMap()->GetHeight();
-	int w = ai->callback->GetMap()->GetWidth();
-	//ai->utility->ChatMsg("Height:%d", h);
-	//ai->utility->ChatMsg("Width:%d", w);
+	group->SetStatus(MilitaryUnitGroup::MILI_UNIT_GRP_SCOUTING);
 	
-
-
 
 	const MapData* scoutMapData = ai->knowledge->mapInfo->scoutMap->GetMapData();
 	const MapData* threatMapData = ai->knowledge->mapInfo->threatMap->GetMapData();
@@ -102,7 +98,6 @@ void MilitaryGroupManager::GiveScoutOrder(brainSpace::MilitaryUnitGroup* group)
 	vector<Point*> points = ai->callback->GetMap()->GetPoints(true);
 	SAIFloat3 enemyStartingPosition;
 	ai->utility->Log( DEBUG, KNOWLEDGE, "Points %d", points.size() );
-	ai->utility->ChatMsg( "Points %d", points.size() );
 	for( int i = 0 ; i < points.size() ; i++ )
 	{
 		if ( points[i]->GetPosition().x == ai->callback->GetMap()->GetStartPos().x &&
@@ -112,7 +107,6 @@ void MilitaryGroupManager::GiveScoutOrder(brainSpace::MilitaryUnitGroup* group)
 			continue;
 		}
 		enemyStartingPosition = points[i]->GetPosition();
-		ai->utility->ChatMsg( "Found enemy pos:" );
 		break;
 	}
 
@@ -145,8 +139,10 @@ void MilitaryGroupManager::GiveScoutOrder(brainSpace::MilitaryUnitGroup* group)
 		{
 			highestReward = reward;
 			bestScoutingPos = tilePosition;
+			ai->utility->Log( ALL, SCOUTING, "New best reward %f at tile (%d, %d)", reward, i%scoutMapData->MapWidth, i/scoutMapData->MapWidth );
+			ai->utility->Log( ALL, SCOUTING, "Age: %f - Distance: %f - Threat: %f + MetalSpotReward: %f + StartPos: %f", age*SCOUT_REWARD_AGE, distance*SCOUT_REWARD_DISTANCE , threat*SCOUT_REWARD_THREAT, resourceMapData->MapArray[i]*SCOUT_REWARD_METAL_SPOTS, SCOUT_REWARD_START_POS );
 			ai->utility->ChatMsg( "New best reward %f at tile (%d, %d)", reward, i%scoutMapData->MapWidth, i/scoutMapData->MapWidth );
-			ai->utility->Log( DEBUG, KNOWLEDGE, "New best reward %f at tile (%d, %d)", reward, i%scoutMapData->MapWidth, i/scoutMapData->MapWidth );
+			ai->utility->Log( ALL, SCOUTING, "New best reward %f at tile (%d, %d)", reward, i%scoutMapData->MapWidth, i/scoutMapData->MapWidth );
 		}
 	}
 	//ai->utility->ChatMsg("newHeight:%f", pos.x);
@@ -162,7 +158,6 @@ void MilitaryGroupManager::UnitIdle(Unit* unit)
 	{
 		UnitGroups[i]->UnitIdle(unit);
 	}
-
 }
 
 ///@return the groups that are not currently attacking enemies.
@@ -172,7 +167,7 @@ vector<MilitaryUnitGroup*> MilitaryGroupManager::GetNonAttackingGroups()
 	
 	for(int i = 0; i < UnitGroups.size(); i++)
 	{
-		if(UnitGroups[i]->GetStatus() == MilitaryUnitGroup::Idle || UnitGroups[i]->GetStatus() == MilitaryUnitGroup::Scouting)
+		if(UnitGroups[i]->GetStatus() == MilitaryUnitGroup::MILI_UNIT_GRP_IDLE || UnitGroups[i]->GetStatus() == MilitaryUnitGroup::MILI_UNIT_GRP_SCOUTING)
 		{			
 			result.push_back(UnitGroups[i]);
 		}

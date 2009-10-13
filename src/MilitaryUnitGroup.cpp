@@ -6,7 +6,7 @@ using namespace brainSpace;
 
 MilitaryUnitGroup::MilitaryUnitGroup( AIClasses* aiClasses ):BrainGroup(aiClasses)
 {
-	status = Regrouping;
+	Status = MILI_UNIT_GRP_REGROUPING;
 }
 
 MilitaryUnitGroup::~MilitaryUnitGroup()
@@ -14,15 +14,15 @@ MilitaryUnitGroup::~MilitaryUnitGroup()
 }
 
 ///@see Status
-void MilitaryUnitGroup::SetStatus(Status s)
+void MilitaryUnitGroup::SetStatus(MilitaryGroupStatus s)
 {
-	this->status = s;
+	Status = s;
 }
 
 ///@see Status
-MilitaryUnitGroup::Status MilitaryUnitGroup::GetStatus()
+MilitaryUnitGroup::MilitaryGroupStatus MilitaryUnitGroup::GetStatus()
 {
-	return status;
+	return Status;
 }
 
 void MilitaryUnitGroup::Attack(int enemy)
@@ -32,9 +32,9 @@ void MilitaryUnitGroup::Attack(int enemy)
 	com.timeOut = 100000000;
 	com.options = 0;
 
-	for(int i = 0; i < Units.size(); i++)
+	for ( map<Unit*, bool>::iterator it = Units.begin() ; it != Units.end() ; it++ )
 	{
-		com.unitId = Units[i]->GetUnitId();
+		com.unitId = it->first->GetUnitId();
 		ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_ATTACK, &com);
 	}
 }
@@ -46,21 +46,38 @@ void MilitaryUnitGroup::Scout(SAIFloat3 pos)
 	com.timeOut = 100000000;
 	com.options = 0;
 
-	for(int i = 0; i < Units.size(); i++)
+	for ( map<Unit*, bool>::iterator it = Units.begin() ; it != Units.end() ; it++ )
 	{
-		com.unitId = Units[i]->GetUnitId();
+		com.unitId = it->first->GetUnitId();
 		ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &com);
 	}
 }
 
 void MilitaryUnitGroup::UnitIdle(springai::Unit *unit)
 {
-	for(int j = 0; j < Units.size(); j++)
+	for ( map<Unit*, bool>::iterator it = Units.begin() ; it != Units.end() ; it++ )
+	{
+		if(it->first->GetUnitId() == unit->GetUnitId())
 		{
-			if(Units[j]->GetUnitId() == unit->GetUnitId() && Units.size() > 9)
+			it->second = true;
+			//Check if all units in group are now idle
+			bool allUnitsIdle = true;
+			if ( !Status == MILI_UNIT_GRP_REGROUPING )
 			{
-				SetStatus(MilitaryUnitGroup::Idle);
+				for ( map<Unit*, bool>::iterator it2 = Units.begin() ; it2 != Units.end() ; it2++ )
+				{
+					if ( it2->second == false )
+					{
+						allUnitsIdle = false;
+						break;
+					}
+				}
+				if ( allUnitsIdle )
+				{
+					SetStatus( MILI_UNIT_GRP_IDLE );
+				}
 				break;
 			}
 		}
+	}
 }

@@ -316,15 +316,15 @@ void Decision::Update(int frame)
 
 	if(frame % 60 == 0)
 	{
-		ai->utility->Log( DEBUG, KNOWLEDGE, "pre-update" );
+		//ai->utility->Log( DEBUG, KNOWLEDGE, "pre-update" );
 		ai->knowledge->mapInfo->scoutMap->Update();
-		ai->utility->Log( DEBUG, KNOWLEDGE, "update" );
+		//ai->utility->Log( DEBUG, KNOWLEDGE, "update" );
 		ai->knowledge->mapInfo->threatMap->Update();
-		ai->utility->Log( DEBUG, KNOWLEDGE, "update2" );
+		//ai->utility->Log( DEBUG, KNOWLEDGE, "update2" );
 		gc->ScoutWithIdleGroup();
-		ai->utility->Log( DEBUG, KNOWLEDGE, "update3" );
+		//ai->utility->Log( DEBUG, KNOWLEDGE, "update3" );
 		BattleInfoInstance->Update( frame );
-		ai->utility->Log( DEBUG, KNOWLEDGE, "update4" );
+		//ai->utility->Log( DEBUG, KNOWLEDGE, "update4" );
 	}
 
 	if ( frame % 120 ==0 )
