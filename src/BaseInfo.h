@@ -3,6 +3,7 @@
 
 #include "global.h"
 #include "QuadTree.h"
+#include "KMedoids.h"
 
 using namespace std;
 using namespace springai;
@@ -17,6 +18,7 @@ namespace brainSpace
 		virtual ~BaseInfo();
 		void AddBuilding(Unit* building);
 		void RemoveBuilding(Unit* building);
+		void DrawBasePerimiter();
 
 		unsigned int buildingCount;
 		
@@ -28,7 +30,7 @@ namespace brainSpace
 	private:
 		AIClasses* ai;
 		QuadTree* quadTree;
-		int resourceBuildings, productionBuildings;
+		int resourceBuildings, productionBuildings, basePerimiterDrawID;
 	};
 }
 

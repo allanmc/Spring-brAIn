@@ -16,7 +16,7 @@ BaseInfo::BaseInfo( AIClasses* aiClasses )
 	buildingCount = 0;
 	resourceBuildings = 0;
 	productionBuildings = 0;
-	
+	basePerimiterDrawID = 0;
 }
 
 BaseInfo::~BaseInfo()
@@ -75,6 +75,39 @@ int BaseInfo::CountResourceBuildings()
 int BaseInfo::CountProductionBuildings()
 {
 	return productionBuildings;
+}
+
+ void BaseInfo::DrawBasePerimiter()
+{
+	KMedoids *km = new KMedoids( ai );
+	vector<SAIFloat3> points;
+	
+	map<int, UnitInformationContainer> units = quadTree->GetUnits();
+	map<int, UnitInformationContainer>::iterator iter;
+	
+	for ( iter = units.begin() ; iter != units.end() ; iter++ )
+	{
+		SAIFloat3 pos = (*iter).second.pos;
+		points.push_back(pos);
+	}
+
+	km->AddPoints(points);
+	vector< vector<SAIFloat3> > clusters = km->GetClusters();
+
+	if (basePerimiterDrawID>0) 
+	{
+		ai->utility->RemoveGraphics(basePerimiterDrawID);
+	}
+
+	for (int c = 0; c < clusters.size(); c++ )
+	{	
+		for (int i = 1; i < clusters[c].size(); i++ )
+		{
+
+			basePerimiterDrawID = ai->utility->DrawLine(  clusters[c][i], clusters[c][0], true, 20, basePerimiterDrawID );
+		}
+	}
+
 }
 
 vector<Unit*> BaseInfo::GetUnitsInRange(SAIFloat3 pos, float radius)

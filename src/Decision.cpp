@@ -9,6 +9,7 @@ using namespace brainSpace;
 Decision::Decision(AIClasses* aiClasses)
 {
 	ai = aiClasses;
+	
 	gc = new GroupController( ai );
 	bc = new BuildingController( ai );
 	BattleInfoInstance = new BattlesInfo( ai );
@@ -69,7 +70,7 @@ Decision::Decision(AIClasses* aiClasses)
 	double diff4 = difftime(t5, t4) ;/// 1000000.0f;
 	ai->utility->Log(ALL, BN, "Dlib times: %f, %f", diff1, diff2);
 	ai->utility->Log(ALL, BN, "Hugin times: %f, %f", diff3, diff4);*/
-	
+
 
 }
 
@@ -359,6 +360,11 @@ void Decision::Update(int frame)
 		}
 
 		huginTest->setEvidence("attacks", b_range);
+	}
+
+	if (frame % 240 == 120)
+	{
+		ai->knowledge->selfInfo->baseInfo->DrawBasePerimiter();
 	}
 
 	if ( frame % 120 == 60 )
