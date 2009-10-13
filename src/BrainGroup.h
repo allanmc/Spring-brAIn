@@ -12,7 +12,7 @@ namespace brainSpace
 	class BrainGroup
 	{
 	public:
-		BrainGroup( AIClasses* aiClasses );
+		BrainGroup( AIClasses* aiClasses, int groupID );
 		virtual ~BrainGroup();
 
 		void AddUnit( Unit* unit );
@@ -20,6 +20,7 @@ namespace brainSpace
 		int GetSize();
 		bool IsIdle();
 		SAIFloat3 GetPos();
+		int GetGroupID();
 
 
 
@@ -28,6 +29,7 @@ namespace brainSpace
 		map<Unit*, bool> Units;
 		bool Idle;
 		AIClasses* ai;
+		int GroupID;
 	};
 }
 

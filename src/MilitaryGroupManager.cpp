@@ -12,7 +12,7 @@ using namespace brainSpace;
 brainSpace::MilitaryGroupManager::MilitaryGroupManager( AIClasses* aiClasses )
 {
 	ai = aiClasses;
-	MilitaryUnitGroup* group1 = new MilitaryUnitGroup( ai );
+	MilitaryUnitGroup* group1 = new MilitaryUnitGroup( ai, 0 );
 	UnitGroups.push_back(group1);
 }
 
@@ -28,18 +28,17 @@ void brainSpace::MilitaryGroupManager::AddUnit( Unit* unit )
 	{
 		if(UnitGroups[i]->GetSize() < 10 && UnitGroups[i]->GetStatus() == MilitaryUnitGroup::MILI_UNIT_GRP_REGROUPING )
 		{
-			ai->utility->ChatMsg( "Unit added to unitgroup" );
 			tmpGroup = UnitGroups[i];
 			break;
 		}
 	}
 	if(tmpGroup == NULL)
 	{
-		ai->utility->ChatMsg( "Unit added to NEW unitgroup" );
-		tmpGroup = new MilitaryUnitGroup( ai );
+		tmpGroup = new MilitaryUnitGroup( ai, UnitGroups.size() );
 		UnitGroups.push_back(tmpGroup);
 	}
 	tmpGroup->AddUnit(unit);
+	ai->utility->Log( ALL, SCOUTING, "Unit %d added to unitgroup %d", unit->GetUnitId(), tmpGroup->GetGroupID() );
 	if(tmpGroup->GetSize() > 9)
 	{
 		tmpGroup->SetStatus(MilitaryUnitGroup::MILI_UNIT_GRP_IDLE);
@@ -116,6 +115,7 @@ void MilitaryGroupManager::GiveScoutOrder(brainSpace::MilitaryUnitGroup* group)
 	float highestReward = -9999.28;
 	SAIFloat3 bestScoutingPos;
 
+	ai->utility->Log( ALL, SCOUTING, "------" );
 	for ( int i = 0 ; i < scoutMapData->MapHeight*scoutMapData->MapWidth ; i++ )
 	{
 		float reward = 0.0f;
@@ -130,28 +130,32 @@ void MilitaryGroupManager::GiveScoutOrder(brainSpace::MilitaryUnitGroup* group)
 
 		reward -= distance*SCOUT_REWARD_DISTANCE;
 		reward -= threat*SCOUT_REWARD_THREAT;
+		if ( threat != 0 )
+			ai->utility->Log( ALL, SCOUTING, "threat not zero: %d", threat );
 		reward += age*SCOUT_REWARD_AGE;
 		reward += resourceMapData->MapArray[i]*SCOUT_REWARD_METAL_SPOTS;
 		if ( i == startIndex )
 			reward += SCOUT_REWARD_START_POS;
 
+
+		ai->utility->Log( ALL, SCOUTING, "Reward %.2f at (%d, %d): distance %.2f", reward, i%scoutMapData->MapWidth, i/scoutMapData->MapWidth, distance );
+		ai->utility->Log( ALL, SCOUTING, "Age: %.2f - Distance: %.2f - Threat: %.2f + MetalSpot: %.2f + StartPos: %.2f", age*SCOUT_REWARD_AGE, distance*SCOUT_REWARD_DISTANCE , threat*SCOUT_REWARD_THREAT, resourceMapData->MapArray[i]*SCOUT_REWARD_METAL_SPOTS, SCOUT_REWARD_START_POS );
+
 		if ( reward > highestReward )
 		{
 			highestReward = reward;
 			bestScoutingPos = tilePosition;
-			ai->utility->Log( ALL, SCOUTING, "New best reward %f at tile (%d, %d)", reward, i%scoutMapData->MapWidth, i/scoutMapData->MapWidth );
-			ai->utility->Log( ALL, SCOUTING, "Age: %f - Distance: %f - Threat: %f + MetalSpotReward: %f + StartPos: %f", age*SCOUT_REWARD_AGE, distance*SCOUT_REWARD_DISTANCE , threat*SCOUT_REWARD_THREAT, resourceMapData->MapArray[i]*SCOUT_REWARD_METAL_SPOTS, SCOUT_REWARD_START_POS );
-			ai->utility->ChatMsg( "New best reward %f at tile (%d, %d)", reward, i%scoutMapData->MapWidth, i/scoutMapData->MapWidth );
-			ai->utility->Log( ALL, SCOUTING, "New best reward %f at tile (%d, %d)", reward, i%scoutMapData->MapWidth, i/scoutMapData->MapWidth );
+			ai->utility->Log( ALL, SCOUTING, "NEW BEST!!" );		
 		}
 	}
+	ai->utility->Log( ALL, SCOUTING, "------" );
 	//ai->utility->ChatMsg("newHeight:%f", pos.x);
 	//ai->utility->ChatMsg("newWidth:%f", pos.z);
 	//ai->utility->ChatMsg("random generation scout position done");
 	group->Scout(bestScoutingPos);
 }
 
-///informs the groups that a unit have gone idle
+///informs the groups that a unit has gone idle
 void MilitaryGroupManager::UnitIdle(Unit* unit)
 {
 	for(int i = 0; i < UnitGroups.size(); i++)

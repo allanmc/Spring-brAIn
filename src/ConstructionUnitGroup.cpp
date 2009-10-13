@@ -4,7 +4,7 @@ using namespace std;
 using namespace springai;
 using namespace brainSpace;
 
-ConstructionUnitGroup::ConstructionUnitGroup( AIClasses* aiClasses ) : BrainGroup( aiClasses )
+ConstructionUnitGroup::ConstructionUnitGroup( AIClasses* aiClasses, int groupID ) : BrainGroup( aiClasses, groupID )
 {
 	BaseDefenseCounter = 0;
 	BaseDefenseCounterStart = 0; 

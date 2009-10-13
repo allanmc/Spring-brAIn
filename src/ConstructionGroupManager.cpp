@@ -17,7 +17,7 @@ void ConstructionGroupManager::AddUnit( Unit* unit )
 {
 	if ( UnitGroups.size() == 0 )
 	{
-		UnitGroups.push_back( new ConstructionUnitGroup( ai ) );
+		UnitGroups.push_back( new ConstructionUnitGroup( ai, 0 ) );
 		UnitGroups[0]->AddUnit( unit );
 		return;
 	}
