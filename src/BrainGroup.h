@@ -8,6 +8,7 @@ using namespace springai;
 
 namespace brainSpace
 {
+	///A group of units, used for both combat and construction units.
 	class BrainGroup
 	{
 	public:

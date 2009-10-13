@@ -24,7 +24,7 @@
 #include "OptionValues.h"
 #include "Info.h"
 #include "ExternalAI/Interface/AISCommands.h"
-
+#include "Point.h"
 //namespace brainSpace {
 enum LogTypes {
 	CHAT		= 1<<0,
@@ -63,13 +63,14 @@ namespace brainSpace {
 }
 
 namespace brainSpace {
-	typedef struct AIClasses {
+	///A container for misc classes that all classes should know. (used due to inabillity to use Singletons)
+	struct AIClasses {
 		springai::AICallback *callback;
 		Knowledge *knowledge;
 		Utility *utility;
 		BrainMath* math;
 		int frame;
-	} AIClasses;
+	};
 
 	struct CBoundingBox;
 	class QuadTreeNode;

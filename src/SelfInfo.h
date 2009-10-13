@@ -5,6 +5,7 @@
 
 namespace brainSpace
 {
+	///A collection of classes that holds information about the AI.
 	class SelfInfo
 	{
 	public:

@@ -7,11 +7,13 @@ MapInfo::MapInfo( AIClasses* aiClasses )
 	ai = aiClasses;
 	threatMap = new ThreatMap(ai);
 	scoutMap = new ScoutMap(ai);
+	resourceMap = new BrainResourceMap(ai);
 }
 
 MapInfo::~MapInfo()
 {
 	delete(threatMap);
 	delete(scoutMap);
+	delete(resourceMap);
 }
 

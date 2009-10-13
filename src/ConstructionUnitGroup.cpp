@@ -16,7 +16,7 @@ ConstructionUnitGroup::~ConstructionUnitGroup()
 {
 }
 
-
+///@return the UnitDef's of the units that the group is able to construct
 vector<UnitDef*> ConstructionUnitGroup::IsAbleToBuild()
 {
 	set<UnitDef*> buildableUnits;
@@ -40,6 +40,7 @@ vector<UnitDef*> ConstructionUnitGroup::IsAbleToBuild()
 	return returnVals;
 }
 
+///test wheather the group is able to contruct a given unit
 bool ConstructionUnitGroup::IsAbleToBuild(UnitDef* unit) {
 	for ( int i = 0 ; i < Units.size() ; i ++ )
 	{
@@ -55,6 +56,7 @@ bool ConstructionUnitGroup::IsAbleToBuild(UnitDef* unit) {
 	return false;
 }
 
+///Tells the group to complete the order given
 void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 {
 	//SAIFloat3 buildPos = Units[0]->GetPos();
@@ -175,12 +177,14 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &order );
 }
 
+///puts an order into a queue to be done later (when the group goes idle)
 void ConstructionUnitGroup::QueueBuildOrder( SBuildUnitCommand order )
 {
 	BuildQueue.push( order );
 	//u->ChatMsg( "Size of build queue: %d", BuildQueue.size() );
 }
 
+///for telling the group that it is now idle
 void ConstructionUnitGroup::SetAvailable()
 {
 	Idle = true;
@@ -193,6 +197,8 @@ void ConstructionUnitGroup::SetAvailable()
 	}
 }
 
+///Maybe we should look into Voronoi diagrams to optimize this :P
+///@return the closest metal spot to a given position
 SAIFloat3 ConstructionUnitGroup::FindClosestMetalExtractionSite(SAIFloat3 pos/*, Resource* metal */ )
 {
 	vector<SAIFloat3> spots;

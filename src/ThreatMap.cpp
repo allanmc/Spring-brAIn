@@ -16,6 +16,7 @@ ThreatMap::~ThreatMap()
 {
 }
 
+///updates the map depending on all friendly units DPS and range, also draws the content od the cells
 void ThreatMap::Update()
 {
 	bool printArray = false;
@@ -58,6 +59,7 @@ void ThreatMap::Update()
 			}
 }
 
+///udates the map with the information from a single enemy uit
 void ThreatMap::InsertUnit(Unit *u, struct UnitInformationContainer c )
 {
 	if ( ArmorType == -1 )
@@ -72,12 +74,22 @@ void ThreatMap::InsertUnit(Unit *u, struct UnitInformationContainer c )
 	}
 }
 
+///calucales the DPS for a given weapon 
 int ThreatMap::CalculateDPS( WeaponDef* w )
 {
 	return ( w->GetDamage()->GetTypes().at(ArmorType) / w->GetReload() );
 }
 
+///Adds threat to a given cell
 void ThreatMap::EffectCell(int index, float value)
 {
 	MapArray[index] += value;
+}
+
+///@return the DPS against the armor specified at a given point
+float ThreatMap::GetThreatAtPos( SAIFloat3 pos, int armorType )
+{
+	if ( armorType == ArmorType )
+		return MapArray[ (int)(floorf(pos.z/Resolution)*MapWidth + floorf(pos.x/Resolution)) ];
+	return 0;
 }

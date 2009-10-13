@@ -4,9 +4,11 @@
 #include "types.h"
 #include "ThreatMap.h"
 #include "ScoutMap.h"
+#include "BrainResourceMap.h"
 
 namespace brainSpace
 {
+	///A collection of all the classes that provide information about the map.
 	class MapInfo
 	{
 	public:
@@ -14,6 +16,7 @@ namespace brainSpace
 		virtual ~MapInfo();
 		ThreatMap *threatMap;
 		ScoutMap *scoutMap;
+		BrainResourceMap* resourceMap;
 
 	protected:
 

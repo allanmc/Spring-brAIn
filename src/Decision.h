@@ -12,7 +12,7 @@
 using namespace springai;
 
 namespace brainSpace {
-
+///This class has the responsibillty to choose the apropriate actions, when an event occurs.
 class Decision
 {
 public:

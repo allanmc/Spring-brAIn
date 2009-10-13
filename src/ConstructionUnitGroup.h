@@ -7,6 +7,10 @@
 
 namespace brainSpace
 {
+	///A group of contruction units
+	/**
+	 * @warning only support for the commander currently implemented
+	 */
 	class ConstructionUnitGroup : public BrainGroup
 	{
 	public:

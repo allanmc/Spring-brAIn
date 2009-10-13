@@ -5,6 +5,7 @@
 #include "QuadTreeNode.h"
 namespace brainSpace 
 {
+	///A collection of Math fuctions frequently used
 	class BrainMath
 	{
 	public:

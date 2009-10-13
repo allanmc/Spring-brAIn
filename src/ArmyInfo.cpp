@@ -73,6 +73,7 @@ void ArmyInfo::RemoveUnit(Unit* unit)
 	}	
 }
 
+//updates the position of the unit in the QuadTree.
 void ArmyInfo::UpdateUnit(Unit* unit)
 {
 	SAIFloat3 new_pos = unit->GetPos();
@@ -96,6 +97,7 @@ void ArmyInfo::UpdateUnit(Unit* unit)
 	}
 }
 
+///@return the UnitDef of a unit in the army, or NULL if we have never seen the unit
 UnitDef* ArmyInfo::GetUnitDef(int unitID)
 {
 	UnitDef* foundDef = NULL;
@@ -107,6 +109,7 @@ UnitDef* ArmyInfo::GetUnitDef(int unitID)
 	return foundDef;
 }
 
+///@return the last known position of the unit
 SAIFloat3 ArmyInfo::GetUnitPos( int unitID )
 {
 	return quadTree->GetLastUnitPos(unitID);
@@ -117,11 +120,13 @@ const map<int, struct UnitInformationContainer> ArmyInfo::GetUnits()
 	return quadTree->GetUnits();
 }
 
+///@return the number of defensive units (stationary units with weapons)
 int ArmyInfo::CountDefensive()
 {
 	return defensive;
 }
 
+///@return the number of aggressive units (mobile units with weapons)
 int ArmyInfo::CountAggressive()
 {
 	return aggressive;

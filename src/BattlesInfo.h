@@ -9,6 +9,7 @@ using namespace springai;
 
 namespace brainSpace
 {
+	///Keeps track of both current and prior battles.
 	class BattlesInfo
 	{
 	public:
