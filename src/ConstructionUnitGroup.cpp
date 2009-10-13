@@ -22,10 +22,9 @@ vector<UnitDef*> ConstructionUnitGroup::IsAbleToBuild()
 	set<UnitDef*> buildableUnits;
 	vector<UnitDef*> returnVals;
 
-	for ( int i = 0 ; i < Units.size() ; i ++ )
+	for ( map<Unit*, bool>::iterator it = Units.begin() ; it != Units.end() ; it++ )
 	{
-		vector<UnitDef*> units = Units[i]->GetDef()->GetBuildOptions();
-
+		vector<UnitDef*> units = it->first->GetDef()->GetBuildOptions();
 		for ( int j = 0 ; j < units.size() ; j++ )
 		{
 			buildableUnits.insert( units[j] );
@@ -40,10 +39,11 @@ vector<UnitDef*> ConstructionUnitGroup::IsAbleToBuild()
 	return returnVals;
 }
 
-bool ConstructionUnitGroup::IsAbleToBuild(UnitDef* unit) {
-	for ( int i = 0 ; i < Units.size() ; i ++ )
+bool ConstructionUnitGroup::IsAbleToBuild(UnitDef* unit)
+{
+	for ( map<Unit*, bool>::iterator it = Units.begin() ; it != Units.end() ; it++ )
 	{
-		vector<UnitDef*> units = Units[i]->GetDef()->GetBuildOptions();
+		vector<UnitDef*> units = it->first->GetDef()->GetBuildOptions();
 
 		for ( int j = 0 ; j < units.size() ; j++ )
 		{
@@ -62,7 +62,7 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	
 	Idle = false;
 	
-	order.unitId = Units[0]->GetUnitId();
+	order.unitId = Units.begin()->first->GetUnitId();
 	order.timeOut = 40000;
 	
 	vector<UnitDef*> defs = ai->callback->GetUnitDefs();

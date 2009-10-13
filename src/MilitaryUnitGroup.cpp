@@ -30,9 +30,9 @@ void MilitaryUnitGroup::Attack(int enemy)
 	com.timeOut = 100000000;
 	com.options = 0;
 
-	for(int i = 0; i < Units.size(); i++)
+	for ( map<Unit*, bool>::iterator it = Units.begin() ; it != Units.end() ; it++ )
 	{
-		com.unitId = Units[i]->GetUnitId();
+		com.unitId = it->first->GetUnitId();
 		ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_ATTACK, &com);
 	}
 }
@@ -44,21 +44,21 @@ void MilitaryUnitGroup::Scout(SAIFloat3 pos)
 	com.timeOut = 100000000;
 	com.options = 0;
 
-	for(int i = 0; i < Units.size(); i++)
+	for ( map<Unit*, bool>::iterator it = Units.begin() ; it != Units.end() ; it++ )
 	{
-		com.unitId = Units[i]->GetUnitId();
+		com.unitId = it->first->GetUnitId();
 		ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &com);
 	}
 }
 
 void MilitaryUnitGroup::UnitIdle(springai::Unit *unit)
 {
-	for(int j = 0; j < Units.size(); j++)
+	for ( map<Unit*, bool>::iterator it = Units.begin() ; it != Units.end() ; it++ )
+	{
+		if(it->first->GetUnitId() == unit->GetUnitId())
 		{
-			if(Units[j]->GetUnitId() == unit->GetUnitId() && Units.size() > 9)
-			{
-				SetStatus(MilitaryUnitGroup::Idle);
-				break;
-			}
+			SetStatus(MilitaryUnitGroup::Idle);
+			break;
 		}
+	}
 }

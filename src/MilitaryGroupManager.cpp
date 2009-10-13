@@ -26,7 +26,7 @@ void brainSpace::MilitaryGroupManager::AddUnit( Unit* unit )
 	MilitaryUnitGroup* tmpGroup = NULL;
 	for(int i = 0; i < UnitGroups.size(); i++)
 	{
-		if(UnitGroups[i]->GetSize() < 10)
+		if(UnitGroups[i]->GetSize() < 10 && UnitGroups[i]->GetStatus() == MilitaryUnitGroup::Regrouping )
 		{
 			tmpGroup = UnitGroups[i];
 			break;
@@ -159,7 +159,6 @@ void MilitaryGroupManager::UnitIdle(Unit* unit)
 	{
 		UnitGroups[i]->UnitIdle(unit);
 	}
-
 }
 
 vector<MilitaryUnitGroup*> MilitaryGroupManager::GetNonAttackingGroups()

@@ -23,7 +23,8 @@ namespace brainSpace
 
 
 	protected:
-		vector<Unit*> Units;
+		//<Unit, boolean> to indicate if the unit is idle
+		map<Unit*, bool> Units;
 		bool Idle;
 		AIClasses* ai;
 	};
