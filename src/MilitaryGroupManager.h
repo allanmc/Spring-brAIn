@@ -8,7 +8,7 @@
 #include "Point.h"
 
 #define SCOUT_REWARD_DISTANCE 0.001
-#define SCOUT_REWARD_AGE 0.002
+#define SCOUT_REWARD_AGE 0.0001
 #define SCOUT_REWARD_THREAT 0.001
 #define SCOUT_REWARD_START_POS 4
 #define SCOUT_REWARD_METAL_SPOTS 0.6
@@ -19,10 +19,12 @@ using namespace brainSpace;
 
 namespace brainSpace
 {
+
 	///Controls all groups that are able to attack
 	class MilitaryGroupManager
 	{
 	public:
+
 		MilitaryGroupManager( AIClasses* aiClasses );
 		virtual ~MilitaryGroupManager();
 

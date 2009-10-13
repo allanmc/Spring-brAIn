@@ -10,25 +10,25 @@ namespace brainSpace
 	class MilitaryUnitGroup : public BrainGroup
 	{
 	public:
-		enum Status
-		{
-			Attacking,
-			Scouting,
-			Idle,
-			Regrouping
-		};
+	enum MilitaryGroupStatus
+	{
+		MILI_UNIT_GRP_ATTACKING,
+		MILI_UNIT_GRP_SCOUTING,
+		MILI_UNIT_GRP_IDLE,
+		MILI_UNIT_GRP_REGROUPING
+	};
 
 		MilitaryUnitGroup( AIClasses* aiClasses );
 		virtual ~MilitaryUnitGroup();
 
-		Status GetStatus();
-		void SetStatus(Status status);
+		MilitaryGroupStatus GetStatus();
+		void SetStatus(MilitaryGroupStatus status);
 		void Attack(int enemy);
 		void Scout(SAIFloat3 pos);
 		void UnitIdle(Unit* unit);
 
 	private:
-		Status status;
+		MilitaryGroupStatus Status;
 	};
 }
 

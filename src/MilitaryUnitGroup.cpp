@@ -6,7 +6,7 @@ using namespace brainSpace;
 
 MilitaryUnitGroup::MilitaryUnitGroup( AIClasses* aiClasses ):BrainGroup(aiClasses)
 {
-	status = Regrouping;
+	Status = MILI_UNIT_GRP_REGROUPING;
 }
 
 MilitaryUnitGroup::~MilitaryUnitGroup()
@@ -14,15 +14,15 @@ MilitaryUnitGroup::~MilitaryUnitGroup()
 }
 
 ///@see Status
-void MilitaryUnitGroup::SetStatus(Status s)
+void MilitaryUnitGroup::SetStatus(MilitaryGroupStatus s)
 {
-	this->status = s;
+	Status = s;
 }
 
 ///@see Status
-MilitaryUnitGroup::Status MilitaryUnitGroup::GetStatus()
+MilitaryUnitGroup::MilitaryGroupStatus MilitaryUnitGroup::GetStatus()
 {
-	return status;
+	return Status;
 }
 
 void MilitaryUnitGroup::Attack(int enemy)
@@ -59,8 +59,25 @@ void MilitaryUnitGroup::UnitIdle(springai::Unit *unit)
 	{
 		if(it->first->GetUnitId() == unit->GetUnitId())
 		{
-			SetStatus(MilitaryUnitGroup::Idle);
-			break;
+			it->second = true;
+			//Check if all units in group are now idle
+			bool allUnitsIdle = true;
+			if ( !Status == MILI_UNIT_GRP_REGROUPING )
+			{
+				for ( map<Unit*, bool>::iterator it2 = Units.begin() ; it2 != Units.end() ; it2++ )
+				{
+					if ( it2->second == false )
+					{
+						allUnitsIdle = false;
+						break;
+					}
+				}
+				if ( allUnitsIdle )
+				{
+					SetStatus( MILI_UNIT_GRP_IDLE );
+				}
+				break;
+			}
 		}
 	}
 }

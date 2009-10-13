@@ -33,7 +33,8 @@ enum LogTypes {
 	KNOWLEDGE	= 1<<3,
 	UTILITY		= 1<<4,
 	EVENT		= 1<<5,
-	BN			= 1<<6
+	BN			= 1<<6,
+	SCOUTING	= 1<<7
 };
 
 
