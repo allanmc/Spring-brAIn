@@ -18,7 +18,7 @@ namespace brainSpace
 		MILI_UNIT_GRP_REGROUPING
 	};
 
-		MilitaryUnitGroup( AIClasses* aiClasses );
+		MilitaryUnitGroup( AIClasses* aiClasses, int groupID );
 		virtual ~MilitaryUnitGroup();
 
 		MilitaryGroupStatus GetStatus();

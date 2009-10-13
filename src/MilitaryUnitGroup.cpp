@@ -4,7 +4,7 @@ using namespace std;
 using namespace springai;
 using namespace brainSpace;
 
-MilitaryUnitGroup::MilitaryUnitGroup( AIClasses* aiClasses ):BrainGroup(aiClasses)
+MilitaryUnitGroup::MilitaryUnitGroup( AIClasses* aiClasses, int groupID ):BrainGroup(aiClasses, groupID)
 {
 	Status = MILI_UNIT_GRP_REGROUPING;
 }
@@ -61,19 +61,23 @@ void MilitaryUnitGroup::UnitIdle(springai::Unit *unit)
 		{
 			it->second = true;
 			//Check if all units in group are now idle
+			ai->utility->Log( ALL, GROUPING, "Unit %d has gone idle. GroupID %d. Status %d", unit->GetUnitId(), GroupID, Status );
 			bool allUnitsIdle = true;
-			if ( !Status == MILI_UNIT_GRP_REGROUPING )
+			if ( !(Status == MILI_UNIT_GRP_REGROUPING ))
 			{
+				ai->utility->Log( ALL, GROUPING, "Group %d is not regrouping", GroupID );
 				for ( map<Unit*, bool>::iterator it2 = Units.begin() ; it2 != Units.end() ; it2++ )
 				{
 					if ( it2->second == false )
 					{
+						ai->utility->Log( ALL, GROUPING, "Unit %d is not idle", it2->first->GetUnitId() );
 						allUnitsIdle = false;
 						break;
 					}
 				}
 				if ( allUnitsIdle )
 				{
+					ai->utility->Log( ALL, GROUPING, "All units were idle in group %d!", GroupID );
 					SetStatus( MILI_UNIT_GRP_IDLE );
 				}
 				break;

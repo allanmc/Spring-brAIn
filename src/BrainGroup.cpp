@@ -5,10 +5,11 @@ using namespace std;
 using namespace springai;
 using namespace brainSpace;
 
-BrainGroup::BrainGroup( AIClasses* aiClasses )
+BrainGroup::BrainGroup( AIClasses* aiClasses, int groupID )
 {
 	Idle = true;
 	ai = aiClasses;
+	GroupID = groupID;
 }
 
 BrainGroup::~BrainGroup()
@@ -43,4 +44,9 @@ bool BrainGroup::IsIdle()
 SAIFloat3 BrainGroup::GetPos()
 {
 	return Units.begin()->first->GetPos();
+}
+
+int BrainGroup::GetGroupID()
+{
+	return GroupID;
 }
