@@ -25,6 +25,7 @@
 #include "Info.h"
 #include "ExternalAI/Interface/AISCommands.h"
 #include "Point.h"
+#include "Movedata.h"
 //namespace brainSpace {
 enum LogTypes {
 	CHAT		= 1<<0,
@@ -36,7 +37,8 @@ enum LogTypes {
 	BN			= 1<<6,
 	SCOUTING	= 1<<7,
 	KMEDOIDS	= 1<<8,
-	GROUPING	= 1<<9
+	GROUPING	= 1<<9,
+	SLOPEMAP	= 1<<10
 };
 
 

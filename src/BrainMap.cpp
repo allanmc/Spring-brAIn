@@ -134,7 +134,7 @@ void BrainMap::DrawGrid()
 		end.x = MapWidth*Resolution;
 		end.y = 200;
 		end.z = i*Resolution;
-		int id = ai->utility->DrawLine( start, end, false, 20, GridFigureID );
+		int id = ai->utility->DrawLine( start, end, false, 5, GridFigureID );
 		if(GridFigureID == 0) GridFigureID = id;
 	}
 
@@ -148,6 +148,6 @@ void BrainMap::DrawGrid()
 		end.y = 200;
 		end.z = MapHeight*Resolution;
 
-		ai->utility->DrawLine( start, end, false, 20 , GridFigureID );
+		ai->utility->DrawLine( start, end, false, 5 , GridFigureID );
 	}
 }

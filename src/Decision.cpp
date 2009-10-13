@@ -1,7 +1,6 @@
 #include "Decision.h"
 #include "Unit.h"
 #include "UnitDef.h"
-
 using namespace std;
 using namespace springai;
 using namespace brainSpace;
@@ -258,6 +257,34 @@ void Decision::Update(int frame)
 
 	if(frame == 1)
 	{
+
+		/*
+		vector<float> slopeMap = ai->callback->GetMap()->GetSlopeMap();
+		int width = ai->callback->GetMap()->GetWidth()/2;
+		int height = ai->callback->GetMap()->GetHeight()/2;
+
+		for ( int x = 0 ; x < width ; x++ )
+			for ( int z = 0 ; z < height ; z++ )
+			{
+				ai->utility->Log( ALL, SLOPEMAP, "(%d, %d): %f", x, z, slopeMap[z*width + x] );
+			}
+			
+
+		vector<UnitDef*> p = ai->callback->GetUnitDefs();
+		for ( int i = 0 ; i < p.size() ; i++ )
+		{
+			MoveData* d = p[i]->GetMoveData();
+			if ( d == NULL )
+			{
+				ai->utility->Log( ALL, SLOPEMAP, "Unit data was null: %s", p[i]->GetHumanName() );
+				continue;
+			}
+			float slope = d->GetMaxSlope();
+			float slopeMod = d->GetSlopeMod();
+			ai->utility->Log( ALL, SLOPEMAP, "test" ); 
+			ai->utility->Log( ALL, SLOPEMAP, "Unit %s: Max slope: %f, SlopeMod: %f, Max height diff: %f. Max pitch: %f", p[i]->GetHumanName(), slope, slopeMod, p[i]->GetMaxHeightDif(), p[i]->GetMaxPitch() );
+		}
+		*/
 		ai->knowledge->mapInfo->resourceMap->Update();
 		UnitDef *solar, *kbotLab, *metalEx, *lltDef;
 		SBuildUnitCommand metalExOrder, kbotLabOrder, solarOrder, lltDefOrder;
