@@ -1,14 +1,13 @@
 #ifndef _BRAINSPACE_GROUPCONTROLLER_H
 #define _BRAINSPACE_GROUPCONTROLLER_H
 
-
-
 #include "global.h"
 #include "ConstructionGroupManager.h"
 #include "MilitaryGroupManager.h"
 #include "BrainGroup.h"
 
 namespace brainSpace {
+	///A controller that controls both the contruction- and military units
 	class GroupController
 	{
 	public:

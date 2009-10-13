@@ -8,13 +8,15 @@
 
 namespace brainSpace
 {
+	///A class with information on resource production and consumption.
+	/**
+	 *	It is able to give estimates on when your resources will be depleted.
+	 */
 	class ResourceInfo
 	{
 	public:
 		ResourceInfo(AIClasses* ai);
 		virtual ~ResourceInfo();
-
-		void Update(int frame);
 
 		float GetCurrentConsumption(springai::Resource *res);
 		float GetCurrentProduction(springai::Resource *res);
@@ -48,7 +50,6 @@ namespace brainSpace
 			unsigned int ETA; //the frame where it is expected to be finished
 		};
 		std::list<Change> changes;
-		unsigned int currentFrame;
 	};
 }
 

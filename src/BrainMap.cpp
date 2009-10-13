@@ -28,15 +28,20 @@ BrainMap::~BrainMap()
 	delete(MapArray);
 }
 
+///Should be overwrited in sub-classes and be used for keeping the map up to date.
 void BrainMap::Update()
 {
 }
 
+///@return The MapData struct
+///@see MapData
 const MapData* BrainMap::GetMapData()
 {
 	return mapData;
 }
 
+///Applies EffectCell on all tiles that intersect with the cirle
+///@see EffectCell()
 void BrainMap::EffectCircle( SAIFloat3 center, float radius, float value )
 {
 	int currentIndexX = floorf(center.x/Resolution );
@@ -108,13 +113,14 @@ void BrainMap::EffectCircle( SAIFloat3 center, float radius, float value )
 	}
 }
 
-
+///Sets all cells to zero
 void BrainMap::Reset()
 {
 	for ( int i = 0 ; i < MapWidth*MapHeight ; i++ )
 		MapArray[i] = 0;
 }
 
+///draws the grid on the map
 void BrainMap::DrawGrid()
 {
 	ai->utility->RemoveGraphics( GridFigureID );

@@ -12,6 +12,7 @@ using namespace springai;
 
 namespace brainSpace
 {
+	///Keeps information on an army, both enemy and own.
 	class ArmyInfo
 	{
 	public:

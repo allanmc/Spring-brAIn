@@ -63,13 +63,14 @@ namespace brainSpace {
 }
 
 namespace brainSpace {
-	typedef struct AIClasses {
+	///A container for misc classes that all classes should know. (used due to inabillity to use Singletons)
+	struct AIClasses {
 		springai::AICallback *callback;
 		Knowledge *knowledge;
 		Utility *utility;
 		BrainMath* math;
 		int frame;
-	} AIClasses;
+	};
 
 	struct CBoundingBox;
 	class QuadTreeNode;

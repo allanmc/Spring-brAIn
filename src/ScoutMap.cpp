@@ -13,6 +13,7 @@ ScoutMap::~ScoutMap()
 {
 }
 
+///updates the map depending on all friendly units LOS
 void ScoutMap::Update()
 {
 	map<int, struct UnitInformationContainer> units = ai->knowledge->selfInfo->armyInfo->GetUnits();
@@ -34,6 +35,7 @@ void ScoutMap::Update()
 	}
 }
 
+///sets the current timestamp of a cell
 void ScoutMap::EffectCell(int index, float value)
 {
 	MapArray[index] = value;

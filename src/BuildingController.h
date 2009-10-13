@@ -3,7 +3,7 @@
 #include "global.h"
 
 namespace brainSpace {
-
+///A collection of all our buildings
 class BuildingController
 {
 public:

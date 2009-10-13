@@ -13,11 +13,13 @@ MilitaryUnitGroup::~MilitaryUnitGroup()
 {
 }
 
+///@see Status
 void MilitaryUnitGroup::SetStatus(Status s)
 {
 	this->status = s;
 }
 
+///@see Status
 MilitaryUnitGroup::Status MilitaryUnitGroup::GetStatus()
 {
 	return status;

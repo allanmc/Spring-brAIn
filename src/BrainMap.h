@@ -4,11 +4,19 @@
 #include "types.h"
 
 namespace brainSpace {
+///The MapData-struct
+/**
+A data struct used as a return value from the "Map*"-classes, it holds all information nessasary about a map.
+*/
 struct MapData
 {
+	///The raw map-data.
 	float *MapArray;
+	///The width of the map in cells.
 	int MapWidth;
+	///The height of the map in cells.
 	int MapHeight;
+	///The the height and width of a cell in position values.
 	int MapResolution;
 
 	MapData(float *map, int width, int height, int resolution)
@@ -20,6 +28,10 @@ struct MapData
 	}
 };
 
+///The general map, with all basic actions implemented.
+/**
+@warning can not be instanciated with out inheritance.
+*/
 class BrainMap
 {
 public:
