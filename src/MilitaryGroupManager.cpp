@@ -96,7 +96,6 @@ void MilitaryGroupManager::GiveScoutOrder(brainSpace::MilitaryUnitGroup* group)
 
 	vector<Point*> points = ai->callback->GetMap()->GetPoints(true);
 	SAIFloat3 enemyStartingPosition;
-	ai->utility->Log( DEBUG, KNOWLEDGE, "Points %d", points.size() );
 	for( int i = 0 ; i < points.size() ; i++ )
 	{
 		if ( points[i]->GetPosition().x == ai->callback->GetMap()->GetStartPos().x &&
@@ -112,7 +111,7 @@ void MilitaryGroupManager::GiveScoutOrder(brainSpace::MilitaryUnitGroup* group)
 
 	int startIndex = floorf(enemyStartingPosition.z/scoutMapData->MapResolution)*scoutMapData->MapWidth + floorf(enemyStartingPosition.x/scoutMapData->MapResolution);
 
-	float highestReward = -9999.28;
+	float highestReward = -9999.28f;
 	SAIFloat3 bestScoutingPos;
 
 	ai->utility->Log( ALL, SCOUTING, "------" );

@@ -39,11 +39,21 @@ bool BrainGroup::IsIdle()
 	return Idle;
 }
 
-//Skal gøres mere intelligent. Evt tage gennemsnitligt centrum for alle units. 
-//Det giver dog problemer hvis der er 1 unit der er kommet langt væk fra gruppen.
+
+
 SAIFloat3 BrainGroup::GetPos()
 {
-	return Units.begin()->first->GetPos();
+
+	KMedoids* k = new KMedoids( ai );
+	vector<SAIFloat3> points;
+	for ( map<Unit*, bool>::iterator it = Units.begin() ; it != Units.end() ; it++ )
+	{
+		points.push_back( it->first->GetPos() );
+	}
+	k->AddPoints( points );
+	vector<vector<SAIFloat3> > clusters = k->GetClusters( 1 );
+
+	return clusters[0][0];
 }
 
 int BrainGroup::GetGroupID()

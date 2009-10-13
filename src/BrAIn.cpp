@@ -31,7 +31,7 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 	//if(topic > 50) ai->utility->Log(ALL,EVENT,"wierd crap");
 	switch (topic) {
 		case EVENT_INIT:
-			ai->utility->ChatMsg("THE BEGINNING! LOG_LEVEL: %i, LOG_TYPE: %i, EVENT: %i", LOG_LEVEL, LOG_TYPE);
+			//ai->utility->ChatMsg("THE BEGINNING! LOG_LEVEL: %i, LOG_TYPE: %i, EVENT: %i", LOG_LEVEL, LOG_TYPE);
 			ai->utility->Log(ALL, CHAT|DECISION, "Logging started...");
 			//do i really need to do anything here? (i allready have a teamId and a callback)
 			break;
