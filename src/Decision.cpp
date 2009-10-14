@@ -333,6 +333,7 @@ void Decision::Update(int frame)
 	if (frame % 240 == 120)
 	{
 		ai->knowledge->selfInfo->baseInfo->DrawBasePerimiter();
+		ai->knowledge->enemyInfo->baseInfo->DrawBasePerimiter();
 	}
 
 	if ( frame % 120 == 60 )
@@ -431,6 +432,12 @@ void Decision::UnitIdle( int id )
 {
 	Unit* u = Unit::GetInstance( ai->callback, id );
 	gc->UnitIdle( u );
+
+	//Construction groups has nothing to do... So build something we need!
+	if (gc->ConstructionGroupIsIdle())
+	{
+		ai->utility->Log(ALL, GROUPING, "I have absolutely nothing to do now!");
+	}
 }
 
 void Decision::BuildAttackUnit() {

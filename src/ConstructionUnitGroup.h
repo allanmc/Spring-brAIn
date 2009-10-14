@@ -21,7 +21,7 @@ namespace brainSpace
 		vector<UnitDef*> IsAbleToBuild();
 		
 		void SetAvailable();
-
+		bool IsIdle();
 		/**
 		 *@return A boolean indicating if the group is able to build a specific unit.
 		 */

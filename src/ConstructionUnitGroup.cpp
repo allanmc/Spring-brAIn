@@ -183,6 +183,11 @@ void ConstructionUnitGroup::QueueBuildOrder( SBuildUnitCommand order )
 	//u->ChatMsg( "Size of build queue: %d", BuildQueue.size() );
 }
 
+///Is the group idle, and has nothing in its queue?
+bool ConstructionUnitGroup::IsIdle()
+{
+	return (Idle==true && BuildQueue.size()==0);
+}
 ///for telling the group that it is now idle
 void ConstructionUnitGroup::SetAvailable()
 {
@@ -194,6 +199,7 @@ void ConstructionUnitGroup::SetAvailable()
 		//u->ChatMsg( "Queue is now: %d units long", BuildQueue.size() );
 		AssignBuildOrder( next );
 	}
+	
 }
 
 ///Maybe we should look into Voronoi diagrams to optimize this :P
