@@ -57,7 +57,6 @@ vector< vector<SAIFloat3> > KMedoids::GetConvexHulls( unsigned short numClusters
 		{
 			clusters[c].push_back(resultA[i]);
 		}
-
 	}
 	return clusters;	
 }

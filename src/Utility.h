@@ -33,6 +33,7 @@ namespace brainSpace
 		springai::UnitDef* GetUnitDef(const char* unitDefName);
 		springai::Resource* GetResource(const char* resourceName);
 		int DrawCircle(SAIFloat3 pos, float radius );
+		int DrawCircle(SAIFloat3 pos, float radius, int figureId);
 		int DrawLine(SAIFloat3 start, SAIFloat3 end, bool arrow = false, float width = 20.0f, int figureId = 0 );
 		void RemoveGraphics(int figureId);
 	};

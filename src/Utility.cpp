@@ -112,15 +112,22 @@ Resource* Utility::GetResource(const char* resourceName)
 	}
 	return NULL;
 }
-
 ///draws a circle on the map
 int Utility::DrawCircle(SAIFloat3 pos, float radius)
+{
+	return DrawCircle(pos, radius, 0);
+}
+
+///draws a circle on the map given figureId
+int Utility::DrawCircle(SAIFloat3 pos, float radius, int figureId)
 {
 	SCreateSplineFigureDrawerCommand circle;
 	circle.lifeTime = 0;
 	circle.figureGroupId = 0;
 	circle.width = 20;
 	circle.arrow = false;
+	circle.figureGroupId = figureId;
+
 	circle.pos1 = pos;
 	circle.pos4 = pos;
 
