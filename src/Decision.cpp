@@ -275,10 +275,10 @@ void Decision::Update(int frame)
 		gc->ErectBuilding(solarOrder);
 		gc->ErectBuilding(kbotLabOrder);
 
-		int num = 100;
-		while (num--) {
-			gc->ErectBuilding(lltDefOrder);
-		}
+		//int num = 100;
+		//while (num--) {
+		//	gc->ErectBuilding(lltDefOrder);
+		//}
 	}
 
 	if(frame % 60 == 0)
@@ -334,6 +334,7 @@ void Decision::Update(int frame)
 	{
 		ai->knowledge->selfInfo->baseInfo->DrawBasePerimiter();
 		ai->knowledge->enemyInfo->baseInfo->DrawBasePerimiter();
+		BuildSomethingUsefull();
 	}
 
 	if ( frame % 120 == 60 )
@@ -432,11 +433,42 @@ void Decision::UnitIdle( int id )
 {
 	Unit* u = Unit::GetInstance( ai->callback, id );
 	gc->UnitIdle( u );
-
+	BuildSomethingUsefull();
 	//Construction groups has nothing to do... So build something we need!
+}
+
+void Decision::BuildSomethingUsefull()
+{
 	if (gc->ConstructionGroupIsIdle())
 	{
-		ai->utility->Log(ALL, GROUPING, "I have absolutely nothing to do now!");
+		//ai->utility->Log(ALL, GROUPING, "I have absolutely nothing to do now!");
+		UnitDef *armsolar = ai->utility->GetUnitDef("armsolar");
+		UnitDef *armmex = ai->utility->GetUnitDef("armmex");
+		UnitDef *armlab = ai->utility->GetUnitDef("armlab");
+		UnitDef *armcom = ai->utility->GetUnitDef("armcom");
+		ResourceInfo *ri = ai->knowledge->selfInfo->resourceInfo;
+		SBuildUnitCommand buildOrder;
+		buildOrder.timeOut = 10000000;
+		buildOrder.facing = 0;
+		buildOrder.options = 0;
+		
+		if (ri->IsAffordableToBuild(armcom, armlab))
+		{
+			buildOrder.toBuildUnitDefId = armlab->GetUnitDefId();
+		}
+		else if (ri->GetTimeToMetalDepletion()>=0 && ri->IsAffordableToBuild(armcom, armmex))
+		{
+			buildOrder.toBuildUnitDefId = armmex->GetUnitDefId();
+		}
+		else if (ri->GetTimeToEnergyDepletion()>=0 && ri->IsAffordableToBuild(armcom, armsolar))
+		{
+			buildOrder.toBuildUnitDefId = armsolar->GetUnitDefId();
+		}
+		else 
+		{
+			return;
+		}
+		gc->ErectBuilding(buildOrder);
 	}
 }
 

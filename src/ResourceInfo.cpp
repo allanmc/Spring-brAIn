@@ -34,25 +34,37 @@ float ResourceInfo::GetCurrentStorage(Resource *res)
 	return economy->GetStorage(*res);
 }
 
+
 ///@return -1 if storage will never get depleted else returns seconds to depletion
-float ResourceInfo::GetTimeToMetalDepletion()
+float ResourceInfo::GetTimeToDepletion(Resource *resource, float currentProduction)
 {
-	float storage = economy->GetCurrent(*metal);
-	float production = (economy->GetUsage(*metal) - economy->GetIncome(*metal));
+	float storage = economy->GetCurrent(*resource);
+	float production = currentProduction;
+	//are we already depleted? (very low production means depleted)
+	if(storage <= 10 && production < 0.1)
+		return 0;
+
 	int frame = ai->frame;
 	list<Change>::iterator it;
 	for(it = changes.begin(); it != changes.end(); it++)
 	{
 		if( ((Change)*it).ETA <= frame )
 		{
-			production += ((Change)*it).metalProduction;
+			if ( strcmp(resource->GetName(), "Metal") == 0 )
+			{
+				production += ((Change)*it).metalProduction;
+			}
+			else 
+			{
+				production += ((Change)*it).energyProduction;
+			}
 		}
 		else
 		{
 			float tmpStorage = storage + production*( ((Change)*it).ETA - frame );
-			if(tmpStorage < 0)
+			if(tmpStorage <= 0)
 			{
-				return (frame + (storage / production))/AIFRAMES_PR_SECOND;
+				return (frame - ai->frame + (-storage / production))/AIFRAMES_PR_SECOND;
 			}
 			else
 			{
@@ -61,38 +73,40 @@ float ResourceInfo::GetTimeToMetalDepletion()
 			}
 		}
 	}
-	return -1;
+
+	if(production < 0)
+		return (frame - ai->frame + (-storage / production))/AIFRAMES_PR_SECOND;
+	else
+		return -1;
+}
+///@return -1 if storage will never get depleted else returns seconds to depletion
+float ResourceInfo::GetTimeToMetalDepletion()
+{
+
+	float production = economy->GetUsage(*metal) - economy->GetIncome(*metal);
+	return GetTimeToDepletion(metal, production);
 }
 
 ///@return -1 if storage will never get depleted else seconds to depletion
 float ResourceInfo::GetTimeToEnergyDepletion()
 {
-	float storage = economy->GetCurrent(*energy);
-	float production = (economy->GetUsage(*energy) - economy->GetIncome(*energy));
-	int frame = ai->frame;
-	list<Change>::iterator it;
-	for(it = changes.begin(); it != changes.end(); it++)
-	{
-		if( ((Change)*it).ETA <= frame )
-		{
-			production += ((Change)*it).energyProduction;
-		}
-		else
-		{
-			float tmpStorage = storage + production*( ((Change)*it).ETA - frame );
-			if(tmpStorage < 0)
-			{
-				return (frame + (storage / production))/AIFRAMES_PR_SECOND;
-			}
-			else
-			{
-				storage = tmpStorage;
-				frame = ((Change)*it).ETA;
-			}
-		}
-	}
-	return -1;
+	float production = economy->GetUsage(*energy) - economy->GetIncome(*energy);
+	return GetTimeToDepletion(energy, production);
 }
+
+///@return Can we afford to build this unit
+bool ResourceInfo::IsAffordableToBuild(UnitDef *builder, UnitDef *building)
+{
+	float timeToBuild = building->GetBuildTime() / builder->GetBuildSpeed();
+	float incomeMetal = - (building->GetCost(*metal) / timeToBuild);
+	float incomeEnergy = - (building->GetCost(*energy) / timeToBuild);
+	float productionMetal = incomeMetal + economy->GetUsage(*metal) - economy->GetIncome(*metal);
+	float productionEnergy = incomeEnergy + economy->GetUsage(*energy) - economy->GetIncome(*energy);
+	//TODO: Test if we run out of resources before build time is up...
+	return	GetTimeToDepletion(metal, productionMetal)>timeToBuild && 
+			GetTimeToDepletion(energy, productionEnergy)>timeToBuild;
+}
+
 
 /**
 @param ETA the build time in frames
@@ -107,7 +121,7 @@ int ResourceInfo::AddChangeToCome(Unit *unit, int ETA)
 	temp.metalProduction = - ud->GetUpkeep(*metal) + ud->GetResourceMake(*metal) + ud->GetExtractsResource(*metal);
 	temp.energyProduction = - ud->GetUpkeep(*energy) + ud->GetResourceMake(*energy) + ud->GetExtractsResource(*energy);
 	
-	//ai->utility->ChatMsg("%s has production of (%f,%f)",ud->GetName(),temp.metalProduction,temp.energyProduction);
+	ai->utility->ChatMsg("%s has production of (%f,%f)",ud->GetName(),temp.metalProduction,temp.energyProduction);
 
 	list<Change>::iterator it;
 	for(it = changes.begin(); it != changes.end(); it++)
@@ -123,6 +137,8 @@ int ResourceInfo::AddChangeToCome(Unit *unit, int ETA)
 void ResourceInfo::RemoveChangeToCome(Unit *unit)
 {
 	list<Change>::iterator it;
+	ai->utility->ChatMsg("RemoveChangeToCome: %s",unit->GetDef()->GetName());
+
 	for(it = changes.begin(); it != changes.end(); it++)
 	{
 		if(((Change)*it).id == unit->GetUnitId())
