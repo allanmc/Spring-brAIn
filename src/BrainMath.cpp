@@ -4,13 +4,8 @@ using namespace std;
 using namespace springai;
 using namespace brainSpace;
 
-vector<SAIFloat3> BrainMath::sort(vector<SAIFloat3> points)
-{
-	sort(points.begin(), points.end(), BrainMath::cmpSAIFloat3);
-	return points;
-}
 
-bool BrainMath::cmpSAIFloat3 (SAIFloat3 P1, SAIFloat3 P2)
+static bool cmpSAIFloat3(SAIFloat3 P1, SAIFloat3 P2)
 {
 	if (P1.x<P2.x)
 	{
@@ -25,6 +20,13 @@ bool BrainMath::cmpSAIFloat3 (SAIFloat3 P1, SAIFloat3 P2)
 		return false;
 	}
 }
+
+vector<SAIFloat3> BrainMath::Sort(vector<SAIFloat3> points)
+{
+	sort(points.begin(), points.end(), cmpSAIFloat3);
+	return points;
+}
+
 
 bool BrainMath::CircleIntersectBoundingBox( CBoundingBox box, SAIFloat3 center, float radius )
 {

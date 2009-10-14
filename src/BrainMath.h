@@ -3,6 +3,10 @@
 
 #include "global.h"
 #include "QuadTreeNode.h"
+#include <algorithm>
+
+static bool cmpSAIFloat3 (SAIFloat3 P1, SAIFloat3 P2);
+
 namespace brainSpace 
 {
 	///A collection of Math fuctions frequently used
@@ -17,8 +21,7 @@ namespace brainSpace
 		}
 		bool CircleIntersectBoundingBox( CBoundingBox box, SAIFloat3 center, float radius );
 		bool CircleIntersetCircle(SAIFloat3 center1, float radius1, SAIFloat3 center2, float radius2);  
-	private:
-		bool cmpSAIFloat3 (SAIFloat3 P1, SAIFloat3 P2);
+		std::vector<SAIFloat3> Sort(std::vector<SAIFloat3> points);
 	};
 }
 

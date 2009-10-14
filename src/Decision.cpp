@@ -20,57 +20,23 @@ Decision::Decision(AIClasses* aiClasses)
 	BayesianNetwork *bn;
 	bn = new BayesianNetwork( ai );
 	huginTest = new HuginTest( ai );
-	/*t1 = time(NULL);
-	for (i = 0; i < iterations; i++) {
-		delete(bn);
-		bn = new BayesianNetwork( ai );
-	}
-	t2 = time(NULL);
-	for (i = 0; i < iterations; i++) {*/
-		ai->utility->Log(ALL, BN, "My prior dlib belief that that the enemy is aggressive: %f", bn->getBelief(node::_enemyStrategy, node::enemyStrategy::_Aggressive));
-		ai->utility->Log(ALL, BN, "My prior dlib belief that that the enemy is defensive: %f", bn->getBelief(node::_enemyStrategy, node::enemyStrategy::_Defensive));
-		bn->setEvidence(node::_myStrategy, node::myStrategy::_Aggressive);
-		bn->setEvidence(node::_seenUnits, node::seenUnits::_0);
-		bn->setEvidence(node::_seenDef, node::seenDef::_0);
-		bn->setEvidence(node::_seenProd, node::seenProd::_0);
-		bn->setEvidence(node::_seenRes, node::seenRes::_0);
-		bn->setEvidence(node::_attacks, node::attacks::_0);
-		bn->Propagate();
-		bn->setEvidence(node::_seenDef, node::seenDef::_1_5);
-		bn->Propagate();
-		ai->utility->Log(ALL, BN, "My new dlib belief that that the enemy is aggressive: %f", bn->getBelief(node::_enemyStrategy, node::enemyStrategy::_Aggressive));
-		ai->utility->Log(ALL, BN, "My new dlib belief that that the enemy is defensive: %f", bn->getBelief(node::_enemyStrategy, node::enemyStrategy::_Defensive));
-	/*}	
-	t3 = time(NULL);
-	for (i = 0; i < iterations; i++) {
-		delete(huginTest);
-		huginTest = new HuginTest( ai );
-	}
-	t4 = time(NULL);
-	for (i = 0; i < iterations; i++) {*/
-		ai->utility->Log(ALL, BN, "My prior hugin belief that that the enemy is aggressive: %f", huginTest->getBelief("enemyStrategy", "Aggressive"));
-		ai->utility->Log(ALL, BN, "My prior hugin belief that that the enemy is defensive: %f", huginTest->getBelief("enemyStrategy", "Defensive"));
-		huginTest->setEvidence("myStrategy", "Aggressive");
-		huginTest->setEvidence("seenUnits", "0");
-		huginTest->setEvidence("seenDef", "0");
-		huginTest->setEvidence("seenProd", "0");
-		huginTest->setEvidence("seenRes", "0");
-		huginTest->setEvidence("attacks", "0");
-		huginTest->Propagate();
-		huginTest->setEvidence("seenDef", "1-5");
-		huginTest->Propagate();
-		ai->utility->Log(ALL, BN, "My new hugin belief that that the enemy is aggressive: %f", huginTest->getBelief("enemyStrategy", "Aggressive"));
-		ai->utility->Log(ALL, BN, "My new hugin belief that that the enemy is defensive: %f", huginTest->getBelief("enemyStrategy", "Defensive"));
-	/*}
-	t5 = time(NULL);
 
-	double diff1 = difftime(t2, t1) ;/// 1000000.0f;
-	double diff2 = difftime(t3, t2) ;/// 1000000.0f;
-	double diff3 = difftime(t4, t3) ;/// 1000000.0f;
-	double diff4 = difftime(t5, t4) ;/// 1000000.0f;
-	ai->utility->Log(ALL, BN, "Dlib times: %f, %f", diff1, diff2);
-	ai->utility->Log(ALL, BN, "Hugin times: %f, %f", diff3, diff4);*/
-
+	bn->setEvidence(node::_myStrategy, node::myStrategy::_Aggressive);
+	bn->setEvidence(node::_seenUnits, node::seenUnits::_0);
+	bn->setEvidence(node::_seenDef, node::seenDef::_0);
+	bn->setEvidence(node::_seenProd, node::seenProd::_0);
+	bn->setEvidence(node::_seenRes, node::seenRes::_0);
+	bn->setEvidence(node::_attacks, node::attacks::_0);
+	bn->Propagate();
+	/*
+	huginTest->setEvidence("myStrategy", "Aggressive");
+	huginTest->setEvidence("seenUnits", "0");
+	huginTest->setEvidence("seenDef", "0");
+	huginTest->setEvidence("seenProd", "0");
+	huginTest->setEvidence("seenRes", "0");
+	huginTest->setEvidence("attacks", "0");
+	huginTest->Propagate();
+	*/
 
 }
 

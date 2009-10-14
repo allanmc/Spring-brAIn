@@ -1,3 +1,9 @@
+#include "ConvexHull.h"
+
+
+using namespace std;
+using namespace springai;
+using namespace brainSpace; 
 // Copyright 2001, softSurfer (www.softsurfer.com)
 // This code may be freely used and modified for any purpose
 // providing that this copyright notice is included with it.
@@ -15,10 +21,9 @@
 //            =0 for P2 on the line
 //            <0 for P2 right of the line
 //    See: the January 2001 Algorithm on Area of Triangles
-inline float
-isLeft( SAIFLoat3 P0, SAIFloat3 P1, SAIFloat3 P2 )
+inline float ConvexHull::isLeft( SAIFloat3 P0, SAIFloat3 P1, SAIFloat3 P2 )
 {
-    return (P1.x - P0.x)*(P2.z - P0.z) - (P2.x - P0.x)*(P1.z - P0.z);
+	return (P1.x - P0.x)*(P2.z - P0.z) - (P2.x - P0.x)*(P1.z - P0.z);
 }
 
 //===================================================================
@@ -30,8 +35,7 @@ isLeft( SAIFLoat3 P0, SAIFloat3 P1, SAIFloat3 P2 )
 //             n = the number of points in P[]
 //     Output: H[] = an array of the convex hull vertices (max is n)
 //     Return: the number of points in H[]
-int
-chainHull_2D( SAIFloat3* P, int n, SAIFloat3* H )
+int ConvexHull::chainHull_2D( SAIFloat3 *P, int n, SAIFloat3 *H )
 {
     // the output array H[] will be used as the stack
     int    bot=0, top=(-1);  // indices for bottom and top of the stack
