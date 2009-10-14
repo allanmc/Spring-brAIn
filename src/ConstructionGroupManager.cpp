@@ -66,3 +66,9 @@ void ConstructionGroupManager::UnitIdle( Unit* unit )
 {
 	UnitGroups[0]->SetAvailable();
 }
+
+///
+bool ConstructionGroupManager::IsIdle()
+{
+	return UnitGroups[0]->IsIdle();
+}

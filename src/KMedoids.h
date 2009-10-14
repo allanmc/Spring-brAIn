@@ -2,6 +2,7 @@
 #define _BRAINSPACE_KMEDOIDS_H
 
 #include "global.h"
+#include "ConvexHull.h"
 #include "time.h"
 #include <algorithm>
 
@@ -22,6 +23,8 @@ namespace brainSpace
 		void AddPoints( vector<SAIFloat3> points );
 		vector< vector<SAIFloat3> > GetClusters();
 		vector< vector<SAIFloat3> > GetClusters( unsigned short numClusters );
+		vector< vector<SAIFloat3> > GetConvexHulls();
+		vector< vector<SAIFloat3> > GetConvexHulls( unsigned short numClusters );
 	private:
 		AIClasses* ai;
 		float Cost(SAIFloat3 point1, SAIFloat3 point2);

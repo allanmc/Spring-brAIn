@@ -48,6 +48,11 @@ int GroupController::ErectBuilding(SBuildUnitCommand order)
 	return ConstructionGroupMgr->DelegateBuildOrder( order );
 }
 
+bool GroupController::ConstructionGroupIsIdle()
+{
+	return ConstructionGroupMgr->IsIdle();
+}
+
 void GroupController::UnitIdle( Unit* unit )
 {
 	if ( unit->GetDef()->IsBuilder() )

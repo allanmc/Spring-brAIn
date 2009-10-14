@@ -5,6 +5,28 @@ using namespace springai;
 using namespace brainSpace;
 
 
+static bool cmpSAIFloat3(SAIFloat3 P1, SAIFloat3 P2)
+{
+	if (P1.x<P2.x)
+	{
+		return true;
+	}
+	else if (P1.x==P2.x)
+	{
+		return (P1.z<P2.z);
+	}
+	else
+	{
+		return false;
+	}
+}
+
+vector<SAIFloat3> BrainMath::Sort(vector<SAIFloat3> points)
+{
+	sort(points.begin(), points.end(), cmpSAIFloat3);
+	return points;
+}
+
 
 bool BrainMath::CircleIntersectBoundingBox( CBoundingBox box, SAIFloat3 center, float radius )
 {

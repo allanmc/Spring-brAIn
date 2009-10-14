@@ -17,60 +17,26 @@ Decision::Decision(AIClasses* aiClasses)
 	//time_t t1, t2, t3, t4, t5;
 	//int i;
 	//int iterations = 100;
-	BayesianNetwork *bn;
+	
 	bn = new BayesianNetwork( ai );
-	huginTest = new HuginTest( ai );
-	/*t1 = time(NULL);
-	for (i = 0; i < iterations; i++) {
-		delete(bn);
-		bn = new BayesianNetwork( ai );
-	}
-	t2 = time(NULL);
-	for (i = 0; i < iterations; i++) {*/
-		ai->utility->Log(ALL, BN, "My prior dlib belief that that the enemy is aggressive: %f", bn->getBelief(node::_enemyStrategy, node::enemyStrategy::_Aggressive));
-		ai->utility->Log(ALL, BN, "My prior dlib belief that that the enemy is defensive: %f", bn->getBelief(node::_enemyStrategy, node::enemyStrategy::_Defensive));
-		bn->setEvidence(node::_myStrategy, node::myStrategy::_Aggressive);
-		bn->setEvidence(node::_seenUnits, node::seenUnits::_0);
-		bn->setEvidence(node::_seenDef, node::seenDef::_0);
-		bn->setEvidence(node::_seenProd, node::seenProd::_0);
-		bn->setEvidence(node::_seenRes, node::seenRes::_0);
-		bn->setEvidence(node::_attacks, node::attacks::_0);
-		bn->Propagate();
-		bn->setEvidence(node::_seenDef, node::seenDef::_1_5);
-		bn->Propagate();
-		ai->utility->Log(ALL, BN, "My new dlib belief that that the enemy is aggressive: %f", bn->getBelief(node::_enemyStrategy, node::enemyStrategy::_Aggressive));
-		ai->utility->Log(ALL, BN, "My new dlib belief that that the enemy is defensive: %f", bn->getBelief(node::_enemyStrategy, node::enemyStrategy::_Defensive));
-	/*}	
-	t3 = time(NULL);
-	for (i = 0; i < iterations; i++) {
-		delete(huginTest);
-		huginTest = new HuginTest( ai );
-	}
-	t4 = time(NULL);
-	for (i = 0; i < iterations; i++) {*/
-		ai->utility->Log(ALL, BN, "My prior hugin belief that that the enemy is aggressive: %f", huginTest->getBelief("enemyStrategy", "Aggressive"));
-		ai->utility->Log(ALL, BN, "My prior hugin belief that that the enemy is defensive: %f", huginTest->getBelief("enemyStrategy", "Defensive"));
-		huginTest->setEvidence("myStrategy", "Aggressive");
-		huginTest->setEvidence("seenUnits", "0");
-		huginTest->setEvidence("seenDef", "0");
-		huginTest->setEvidence("seenProd", "0");
-		huginTest->setEvidence("seenRes", "0");
-		huginTest->setEvidence("attacks", "0");
-		huginTest->Propagate();
-		huginTest->setEvidence("seenDef", "1-5");
-		huginTest->Propagate();
-		ai->utility->Log(ALL, BN, "My new hugin belief that that the enemy is aggressive: %f", huginTest->getBelief("enemyStrategy", "Aggressive"));
-		ai->utility->Log(ALL, BN, "My new hugin belief that that the enemy is defensive: %f", huginTest->getBelief("enemyStrategy", "Defensive"));
-	/*}
-	t5 = time(NULL);
+	//huginTest = new HuginTest( ai );
 
-	double diff1 = difftime(t2, t1) ;/// 1000000.0f;
-	double diff2 = difftime(t3, t2) ;/// 1000000.0f;
-	double diff3 = difftime(t4, t3) ;/// 1000000.0f;
-	double diff4 = difftime(t5, t4) ;/// 1000000.0f;
-	ai->utility->Log(ALL, BN, "Dlib times: %f, %f", diff1, diff2);
-	ai->utility->Log(ALL, BN, "Hugin times: %f, %f", diff3, diff4);*/
-
+	bn->setEvidence(node::_myStrategy, node::myStrategy::_Aggressive);
+	bn->setEvidence(node::_seenUnits, node::seenUnits::_0);
+	bn->setEvidence(node::_seenDef, node::seenDef::_0);
+	bn->setEvidence(node::_seenProd, node::seenProd::_0);
+	bn->setEvidence(node::_seenRes, node::seenRes::_0);
+	bn->setEvidence(node::_attacks, node::attacks::_0);
+	bn->Propagate();
+	/*
+	huginTest->setEvidence("myStrategy", "Aggressive");
+	huginTest->setEvidence("seenUnits", "0");
+	huginTest->setEvidence("seenDef", "0");
+	huginTest->setEvidence("seenProd", "0");
+	huginTest->setEvidence("seenRes", "0");
+	huginTest->setEvidence("attacks", "0");
+	huginTest->Propagate();
+	*/
 
 }
 
@@ -341,115 +307,123 @@ void Decision::Update(int frame)
 		int battles = BattleInfoInstance->NumberOfBattlesInArea( 9000, box );
 		ai->utility->Log( DEBUG, KNOWLEDGE, "Number of battles close to our base within the last 9000 frames: %d", battles);
 		//ai->utility->ChatMsg("Number of battles close to our base within the last 9000 frames: %d", battles);
-		const char* b_range;
+		int b_range;
 		if(battles == 0)
 		{
-			b_range = "0";
+			b_range = node::attacks::_0;
 		}
 		else if(battles < 4)
 		{
-			b_range = "1-3";
+			b_range = node::attacks::_1_3;
 		}
 		else if(battles < 9)
 		{
-			b_range = "4-8";
+			b_range = node::attacks::_4_8;
 		}
 		else
 		{
-			b_range = "9-";
+			b_range = node::attacks::_9_;
 		}
 
-		huginTest->setEvidence("attacks", b_range);
+		//huginTest->setEvidence("attacks", b_range);
+		bn->setEvidence(node::_attacks, b_range);
+		
 	}
 
 	if (frame % 240 == 120)
 	{
 		ai->knowledge->selfInfo->baseInfo->DrawBasePerimiter();
+		ai->knowledge->enemyInfo->baseInfo->DrawBasePerimiter();
 	}
 
 	if ( frame % 120 == 60 )
 	{
 		//huginTest->setEvidence("myStrategy", "Aggressive");
 		int enemyUnits = ai->knowledge->enemyInfo->armyInfo->CountAggressive();
-		const char* u_range;
+		int u_range;
 		if(enemyUnits == 0)
 		{
-			u_range = "0";
+			u_range = node::seenUnits::_0;
 		}
 		else if(enemyUnits < 11)
 		{
-			u_range = "1-10";
+			u_range = node::seenUnits::_1_10;
 		}
 		else if(enemyUnits < 51)
 		{
-			u_range = "11-50";
+			u_range = node::seenUnits::_11_50;
 		}
 		else
 		{
-			u_range = "51-300";
+			u_range = node::seenUnits::_51_300;
 		}
-		huginTest->setEvidence("seenUnits", u_range);
-		ai->utility->Log(ALL, DECISION,"Seen units: %s", u_range);
+		//huginTest->setEvidence("seenUnits", u_range);
+		bn->setEvidence(node::_seenUnits, u_range);
+
+		ai->utility->Log(ALL, DECISION,"Seen units: %i", u_range);
 
 		enemyUnits = ai->knowledge->enemyInfo->armyInfo->CountDefensive();
 		if(enemyUnits == 0)
 		{
-			u_range = "0";
+			u_range = node::seenDef::_0;
 		}
 		else if(enemyUnits < 6)
 		{
-			u_range = "1-5";
+			u_range = node::seenDef::_1_5;
 		}
 		else if(enemyUnits < 11)
 		{
-			u_range = "6-10";
+			u_range = node::seenDef::_6_10;
 		}
 		else
 		{
-			u_range = "11-20";
+			u_range = node::seenDef::_11_20;
 		}
-		huginTest->setEvidence("seenDef", u_range);
-		ai->utility->Log(ALL, DECISION,"Seen llt: %s", u_range);
+		//huginTest->setEvidence("seenDef", u_range);
+		bn->setEvidence(node::_seenDef, u_range);
+		ai->utility->Log(ALL, DECISION,"Seen llt: %i", u_range);
 		enemyUnits = ai->knowledge->enemyInfo->baseInfo->CountProductionBuildings();
 		if(enemyUnits == 0)
 		{
-			u_range = "0";
+			u_range = node::seenProd::_0;
 		}
 		else if(enemyUnits < 3)
 		{
-			u_range = "1-2";
+			u_range = node::seenProd::_1_2;
 		}
 		else if(enemyUnits < 7)
 		{
-			u_range = "3-6";
+			u_range = node::seenProd::_3_6;
 		}
 		else
 		{
-			u_range = "7-10";
+			u_range = node::seenProd::_7_10;
 		}
-		huginTest->setEvidence("seenProd", u_range);
-		ai->utility->Log(ALL, DECISION,"Seen production: %s", u_range);
+		//huginTest->setEvidence("seenProd", u_range);
+		bn->setEvidence(node::_seenProd, u_range);
+		ai->utility->Log(ALL, DECISION,"Seen production: %i", u_range);
 		enemyUnits = ai->knowledge->enemyInfo->baseInfo->CountResourceBuildings();
 		if(enemyUnits == 0)
 		{
-			u_range = "0";
+			u_range = node::seenRes::_0;
 		}
 		else if(enemyUnits < 11)
 		{
-			u_range = "1-10";
+			u_range = node::seenRes::_1_10;
 		}
 		else if(enemyUnits < 21)
 		{
-			u_range = "11-20";
+			u_range = node::seenRes::_11_20;
 		}
 		else
 		{
-			u_range = "21-40";
+			u_range = node::seenRes::_21_40;
 		}
-		huginTest->setEvidence("seenRes", u_range);
-		ai->utility->Log(ALL, DECISION,"Seen resource: %s", u_range);
-		ai->utility->Log(ALL, BN, "My belief that that the enemy is aggressive: %f", huginTest->getBelief("enemyStrategy", "Aggressive"));
-		ai->utility->Log(ALL, BN, "My belief that that the enemy is defensive: %f", huginTest->getBelief("enemyStrategy", "Defensive"));
+		//huginTest->setEvidence("seenRes", u_range);
+		bn->setEvidence(node::_seenRes, u_range);
+		ai->utility->Log(ALL, DECISION,"Seen resource: %i", u_range);
+		ai->utility->Log(ALL, BN, "My belief that that the enemy is aggressive: %f", bn->getBelief(node::_enemyStrategy, node::enemyStrategy::_Aggressive));
+		ai->utility->Log(ALL, BN, "My belief that that the enemy is defensive: %f", bn->getBelief(node::_enemyStrategy, node::enemyStrategy::_Defensive));
 		//huginTest->print_beliefs_and_utilities();
 	}
 }
@@ -458,6 +432,12 @@ void Decision::UnitIdle( int id )
 {
 	Unit* u = Unit::GetInstance( ai->callback, id );
 	gc->UnitIdle( u );
+
+	//Construction groups has nothing to do... So build something we need!
+	if (gc->ConstructionGroupIsIdle())
+	{
+		ai->utility->Log(ALL, GROUPING, "I have absolutely nothing to do now!");
+	}
 }
 
 void Decision::BuildAttackUnit() {
