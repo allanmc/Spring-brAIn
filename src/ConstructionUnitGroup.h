@@ -22,6 +22,9 @@ namespace brainSpace
 		
 		void SetAvailable();
 
+		/**
+		 *@return A boolean indicating if the group is able to build a specific unit.
+		 */
 		bool IsAbleToBuild(UnitDef* unit);
 		void AssignBuildOrder( SBuildUnitCommand order );
 		void QueueBuildOrder( SBuildUnitCommand order );

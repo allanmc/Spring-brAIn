@@ -1,7 +1,7 @@
 #ifndef _BRAIN_GLOBAL_H
 #define _BRAIN_GLOBAL_H
 
-#define LOG_TYPE (KNOWLEDGE|BN)
+#define LOG_TYPE (GROUPING|SCOUTING)
 #define LOG_LEVEL ALL
 
 #include "types.h"
