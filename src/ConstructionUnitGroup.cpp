@@ -25,7 +25,7 @@ vector<UnitDef*> ConstructionUnitGroup::IsAbleToBuild()
 	for ( map<Unit*, bool>::iterator it = Units.begin() ; it != Units.end() ; it++ )
 	{
 		vector<UnitDef*> units = it->first->GetDef()->GetBuildOptions();
-		for ( int j = 0 ; j < units.size() ; j++ )
+		for (unsigned int j = 0 ; j < units.size() ; j++ )
 		{
 			buildableUnits.insert( units[j] );
 		}
@@ -45,7 +45,7 @@ bool ConstructionUnitGroup::IsAbleToBuild(UnitDef* unit)
 	{
 		vector<UnitDef*> units = it->first->GetDef()->GetBuildOptions();
 
-		for ( int j = 0 ; j < units.size() ; j++ )
+		for (unsigned int j = 0 ; j < units.size() ; j++ )
 		{
 			if ( units[j] == unit ) {
 				return true;
@@ -68,27 +68,9 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	
 	vector<UnitDef*> defs = ai->callback->GetUnitDefs();
 
-
 	bool isMetalExtractor = false;
 	bool isDefense = false;
-	int index = -1;
-	//Check if the unit to build extracts metal. Set the buildpos accordingly.
-	/*
-	for ( int i = 0 ; i < defs.size() ; i++ )
-	{
-		if ( defs[i]->GetUnitDefId() == order.toBuildUnitDefId )
-		{
-			index = i;
-			if ( strcmp( defs[i]->GetName(), "armmex" ) == 0 )
-			{
-				metalExtractorUnit = defs[i];	
-				buildPos = FindClosestMetalExtractionSite( Units[0]->GetPos() );
-				isMetalExtractor = true;
-				ai->utility->ChatMsg( "MetalExtractor: %s", metalExtractorUnit->GetHumanName() );
-				break;
-			}
-		}
-	}*/
+
 	if ( order.toBuildUnitDefId == ai->utility->GetUnitDef("armmex")->GetUnitDefId() )
 	{
 		buildPos = FindClosestMetalExtractionSite( buildPos );
@@ -166,7 +148,10 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	if ( !isMetalExtractor )
 	{
 		UnitDef *unitDef = UnitDef::GetInstance(ai->callback, order.toBuildUnitDefId);
-		order.buildPos = ai->callback->GetMap()->FindClosestBuildSite( *unitDef , buildPos, 200, 0, 0 );
+		if(order.toBuildUnitDefId == ai->utility->GetUnitDef("armsolar")->GetUnitDefId())
+			order.buildPos = FindGoodBuildSite(this->GetPos(),unitDef, 1024);
+		else
+			order.buildPos = ai->callback->GetMap()->FindClosestBuildSite( *unitDef , buildPos, 200, 0, 0 );
 	}
 	else
 	{
@@ -183,6 +168,11 @@ void ConstructionUnitGroup::QueueBuildOrder( SBuildUnitCommand order )
 	//u->ChatMsg( "Size of build queue: %d", BuildQueue.size() );
 }
 
+///Is the group idle, and has nothing in its queue?
+bool ConstructionUnitGroup::IsIdle()
+{
+	return (Idle==true && BuildQueue.size()==0);
+}
 ///for telling the group that it is now idle
 void ConstructionUnitGroup::SetAvailable()
 {
@@ -194,6 +184,7 @@ void ConstructionUnitGroup::SetAvailable()
 		//u->ChatMsg( "Queue is now: %d units long", BuildQueue.size() );
 		AssignBuildOrder( next );
 	}
+	
 }
 
 ///Maybe we should look into Voronoi diagrams to optimize this :P
@@ -201,26 +192,12 @@ void ConstructionUnitGroup::SetAvailable()
 SAIFloat3 ConstructionUnitGroup::FindClosestMetalExtractionSite(SAIFloat3 pos/*, Resource* metal */ )
 {
 	vector<SAIFloat3> spots;
-	
-	//Get the metal resource.
-	for ( int i = 0 ; i < ai->callback->GetResources().size() ;i++ )
-	{
-		if ( strcmp( ai->callback->GetResources()[i]->GetName(), "Metal" ) == 0 )
-		{
-			struct SAIFloat3 dummy;
-			spots = ai->callback->GetMap()->GetResourceMapSpotsPositions( *ai->callback->GetResources()[i], &dummy );
-		}
-	}
+	spots = ai->callback->GetMap()->GetResourceMapSpotsPositions( *(ai->utility->GetResource("Metal")), &pos );
 
 	int numSpots = spots.size();
 	int lowestIdx = -1;
 	float closest = 9999999.9f;
 
-	/*
-	u->ChatMsg( "Unit name: %s - team %d", Units[0]->GetDef()->GetHumanName(), Units[0]->GetTeam() );
-	u->ChatMsg( "Unit pos: x: %f y: %f z: %f", pos.x, pos.y, pos.z );
-	u->ChatMsg( "%d metal spots", numSpots );
-	*/
 	for ( int i  = 0 ; i < numSpots ; i++ )
 	{
 		//u->ChatMsg( "Metal spot: x: %f y: %f z: %f", spots[i].x, spots[i].y, spots[i].z );
@@ -234,28 +211,42 @@ SAIFloat3 ConstructionUnitGroup::FindClosestMetalExtractionSite(SAIFloat3 pos/*,
 		}
 	}
 
-	//MetalMap* m = new MetalMap(Callback);
 	pos = spots[lowestIdx];
 
-
-	//u->ChatMsg( "Found spot: x: %f y: %f z: %f", pos.x, pos.y, pos.z );
-
-	/*
-	float searchRadius = 100.0f;
-	float bestExtraction = 0.0f;
-
-	//Find the spot that gives the most metal inside a small radius of the already found metal spot
-	for ( int i = 0 ; i < numSpots ; i++ )
-	{
-		double distance = sqrt( pow( fabs( spots[i].x - pos.x ), 2 ) + pow( fabs( pos.z - spots[i].z ), 2  ) );
-		if ( distance < searchRadius && spots[i].y > pos.y )
-		{
-			pos = Callback->GetMap()->FindClosestBuildSite( *metalExtractorUnit, spots[i], 16, 0, 0 );
-			bestExtraction = spots[i].y;
-		}
-	}
-	u->ChatMsg( "Improved spot: x: %f y: %f z: %f", pos.x, pos.y, pos.z );
-	*/
 	return pos;
 
 }
+
+SAIFloat3 ConstructionUnitGroup::FindGoodBuildSite(SAIFloat3 builderPos, UnitDef* building, float radius)
+{
+	SAIFloat3 bestBuildSpot=builderPos;
+	float bestDistance = radius*radius+1;
+
+	vector<Unit*> nearByBuildings = ai->knowledge->selfInfo->baseInfo->GetUnitsInRange(builderPos, radius);
+	vector<Unit*>::iterator it;
+	for(it = nearByBuildings.begin(); it != nearByBuildings.end(); it++)
+	{
+		UnitDef* ud = (*it)->GetDef();
+		ai->utility->ChatMsg("yay i have a %s",ud->GetName());
+		if(!ud->IsBuilder())
+		{
+			SAIFloat3 unitPos = (*it)->GetPos();
+			float muls[][2] = {{-1,0},{1,0},{0,-1},{0,1}};//left, right, up, down
+			for(int i=0; i<4;i++)
+			{
+				SAIFloat3 newPos = unitPos;
+				newPos.x += muls[i][0]*((ud->GetXSize()*8/2)+(building->GetXSize()*8/2));
+				newPos.z += muls[i][1]*((ud->GetZSize()*8/2)+(building->GetZSize()*8/2));
+				float newDist = ai->utility->EuclideanDistance(builderPos,newPos);
+				if(newDist < bestDistance &&  ai->callback->GetMap()->IsPossibleToBuildAt(*building, newPos, 0))
+				{
+					//TODO: test if it is blocking a contruction yard
+					bestBuildSpot = newPos;
+					bestDistance = newDist;
+				}
+			}
+		}
+	}
+	return bestBuildSpot;
+}
+

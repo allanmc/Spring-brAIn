@@ -6,7 +6,7 @@
 #include "global.h"
 #include "BattlesInfo.h"
 #include "ThreatMap.h"
-#include "huginTest.h"
+//#include "huginTest.h"
 #include "bayesianNetwork.h"
 
 using namespace springai;
@@ -39,7 +39,7 @@ private:
 
 	BattlesInfo* BattleInfoInstance;
 	AIClasses* ai;
-	HuginTest *huginTest;
+	BayesianNetwork *bn;
 };
 
 }

@@ -27,6 +27,41 @@ void KMedoids::AddPoints(vector<SAIFloat3> newPoints)
 	}
 }
 
+vector< vector<SAIFloat3> > KMedoids::GetConvexHulls()
+{
+	return GetConvexHulls( (unsigned short)min( (int)(sqrt(points.size())), 10) );
+}
+
+vector< vector<SAIFloat3> > KMedoids::GetConvexHulls( unsigned short numClusters )
+{
+	vector< vector<SAIFloat3> > clusters = GetClusters( numClusters );
+	vector< SAIFloat3 > points;
+	vector< SAIFloat3 > result;
+	int num;
+	ConvexHull *ch = new ConvexHull( ai );
+
+	for (int c = 0; c < clusters.size(); c++ )
+	{	
+		points.clear();//Is it necesarry?
+		points = ai->math->Sort(clusters[c]);
+		SAIFloat3 pointsA[points.size()];
+		SAIFloat3 resultA[points.size()];
+		for (int i = 0; i < points.size(); i++) //Sorry for doing vector->array->vector :)
+		{
+			pointsA[i] = points[i];
+		}
+		
+		num = ch->chainHull_2D(pointsA, points.size(), resultA);
+		clusters[c].clear();
+		for (int i = 0; i < num; i++)
+		{
+			clusters[c].push_back(resultA[i]);
+		}
+	}
+	return clusters;	
+}
+
+
 vector< vector<SAIFloat3> > KMedoids::GetClusters()
 {
 	return GetClusters( (unsigned short)min( (int)(sqrt(points.size())), 10) );

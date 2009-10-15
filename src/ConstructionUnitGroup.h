@@ -21,7 +21,7 @@ namespace brainSpace
 		vector<UnitDef*> IsAbleToBuild();
 		
 		void SetAvailable();
-
+		bool IsIdle();
 		/**
 		 *@return A boolean indicating if the group is able to build a specific unit.
 		 */
@@ -29,12 +29,14 @@ namespace brainSpace
 		void AssignBuildOrder( SBuildUnitCommand order );
 		void QueueBuildOrder( SBuildUnitCommand order );
 	private:
-		SAIFloat3 FindClosestMetalExtractionSite( SAIFloat3 pos/*, Resource* metal*/ );
+		SAIFloat3 FindClosestMetalExtractionSite( SAIFloat3 pos );
 		queue<SBuildUnitCommand> BuildQueue;
 		int BaseDefenseCounter;
 		int BaseDefenseCounterStart;
 		bool BaseDefenseHitBorder;
 		UnitDef* metalExtractorUnit;
+
+		SAIFloat3 FindGoodBuildSite(SAIFloat3 builderPos, UnitDef* building, float radius);
 
 	};
 }

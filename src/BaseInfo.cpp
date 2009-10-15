@@ -92,7 +92,8 @@ int BaseInfo::CountProductionBuildings()
 	}
 
 	km->AddPoints(points);
-	vector< vector<SAIFloat3> > clusters = km->GetClusters();
+
+	vector< vector<SAIFloat3> > clusters = km->GetConvexHulls();
 
 	if (basePerimiterDrawID>0) 
 	{
@@ -101,10 +102,16 @@ int BaseInfo::CountProductionBuildings()
 
 	for (int c = 0; c < clusters.size(); c++ )
 	{	
-		for (int i = 1; i < clusters[c].size(); i++ )
-		{
-
-			basePerimiterDrawID = ai->utility->DrawLine(  clusters[c][i], clusters[c][0], true, 20, basePerimiterDrawID );
+		if (clusters[c].size()==2) {
+			ai->utility->Log(ALL, GROUPING, "DRAWING A CIRCLE!?!?! %i", clusters[c].size());
+			basePerimiterDrawID = ai->utility->DrawCircle(clusters[c][0], 70, basePerimiterDrawID);
+		} else {
+			ai->utility->Log(ALL, GROUPING, "DRAWING A LINE... %i", clusters[c].size());
+			for (int i = 0; i < clusters[c].size() -1 ; i++ )
+			{
+				basePerimiterDrawID = ai->utility->DrawLine(  clusters[c][i], clusters[c][i+1], true, 20, basePerimiterDrawID );
+			}
+			//basePerimiterDrawID = ai->utility->DrawLine(  clusters[c][clusters[c].size()-1], clusters[c][0], true, 20, basePerimiterDrawID );
 		}
 	}
 

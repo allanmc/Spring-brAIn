@@ -23,7 +23,7 @@ namespace brainSpace
 		void RemoveUnit( Unit* unit );
 
 		int DelegateBuildOrder( SBuildUnitCommand order );
-		
+		bool IsIdle();
 		void UnitIdle( Unit* unit );
 	private:
 		vector<ConstructionUnitGroup*> UnitGroups;
