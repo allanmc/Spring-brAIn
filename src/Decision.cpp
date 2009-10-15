@@ -243,6 +243,7 @@ void Decision::Update(int frame)
 
 		}
 		*/
+		ai->knowledge->mapInfo->scoutMap->DrawGrid();
 		ai->knowledge->mapInfo->resourceMap->Update();
 		UnitDef *solar, *kbotLab, *metalEx, *lltDef;
 		SBuildUnitCommand metalExOrder, kbotLabOrder, solarOrder, lltDefOrder;

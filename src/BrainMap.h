@@ -41,6 +41,7 @@ public:
 
 	virtual void Update();
 	const MapData *GetMapData();
+	void DrawGrid();
 
 protected:
 
@@ -53,7 +54,7 @@ protected:
 	int FigureID;
 	int GridFigureID;
 	
-	void DrawGrid();
+	
 	void Reset();
 	void EffectCircle( SAIFloat3 center, float radius, float value );
 	virtual void EffectCell(int index, float value)=0;

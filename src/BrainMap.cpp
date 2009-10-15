@@ -18,7 +18,7 @@ BrainMap::BrainMap( AIClasses* aiClasses, int resolution )
 	FigureID = 0;
 	GridFigureID = 0;
 
-	DrawGrid();
+	//DrawGrid();
 	Reset();
 }
 
@@ -26,7 +26,6 @@ BrainMap::BrainMap( AIClasses* aiClasses, int resolution )
 BrainMap::~BrainMap()
 {
 	delete(MapArray);
-	delete(mapData);
 }
 
 ///Should be overwrited in sub-classes and be used for keeping the map up to date.
