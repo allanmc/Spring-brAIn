@@ -441,33 +441,39 @@ void Decision::BuildSomethingUsefull()
 {
 	if (gc->ConstructionGroupIsIdle())
 	{
-		//ai->utility->Log(ALL, GROUPING, "I have absolutely nothing to do now!");
+		//ai->utility->Log(ALL, MISC, "I have absolutely nothing to do now!");
 		UnitDef *armsolar = ai->utility->GetUnitDef("armsolar");
 		UnitDef *armmex = ai->utility->GetUnitDef("armmex");
 		UnitDef *armlab = ai->utility->GetUnitDef("armlab");
 		UnitDef *armcom = ai->utility->GetUnitDef("armcom");
+		int isAffordable = 0;
 		ResourceInfo *ri = ai->knowledge->selfInfo->resourceInfo;
 		SBuildUnitCommand buildOrder;
 		buildOrder.timeOut = 10000000;
 		buildOrder.facing = 0;
 		buildOrder.options = 0;
 		
-		if (ri->IsAffordableToBuild(armcom, armlab))
+		isAffordable = ri->IsAffordableToBuild(armcom, armlab);
+
+		if (isAffordable==0)
 		{
 			buildOrder.toBuildUnitDefId = armlab->GetUnitDefId();
 		}
-		else if (ri->GetTimeToMetalDepletion()>=0 && ri->IsAffordableToBuild(armcom, armmex))
+		else if (isAffordable==-1)
 		{
 			buildOrder.toBuildUnitDefId = armmex->GetUnitDefId();
 		}
-		else if (ri->GetTimeToEnergyDepletion()>=0 && ri->IsAffordableToBuild(armcom, armsolar))
+		else if (isAffordable==-2 || isAffordable==-3)
 		{
 			buildOrder.toBuildUnitDefId = armsolar->GetUnitDefId();
 		}
 		else 
 		{
+			//buildOrder.toBuildUnitDefId = armmex->GetUnitDefId();
+			ai->utility->Log(ALL, MISC, "I don't want to build anything right now... This shouldn't be the case:)");
 			return;
 		}
+		ai->utility->Log(ALL, MISC, "I want to build: %s", UnitDef::GetInstance(ai->callback, buildOrder.toBuildUnitDefId)->GetName());
 		gc->ErectBuilding(buildOrder);
 	}
 }

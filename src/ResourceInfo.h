@@ -27,7 +27,7 @@ namespace brainSpace
 		float GetTimeToMetalDepletion();
 		float GetTimeToEnergyDepletion();
 
-		bool IsAffordableToBuild(springai::UnitDef *builder, springai::UnitDef *building);
+		int IsAffordableToBuild(springai::UnitDef *builder, springai::UnitDef *building);
 
 		/*
 		production in amount/sec

@@ -36,7 +36,8 @@ enum LogTypes {
 	BN			= 1<<6,
 	SCOUTING	= 1<<7,
 	KMEDOIDS	= 1<<8,
-	GROUPING	= 1<<9
+	GROUPING	= 1<<9,
+	MISC		= 1<<10
 };
 
 

@@ -46,6 +46,8 @@ float ResourceInfo::GetTimeToDepletion(Resource *resource, float currentProducti
 
 	int frame = ai->frame;
 	list<Change>::iterator it;
+	ai->utility->Log(ALL, MISC, "#Changes to come: %i", changes.size());
+	ai->utility->Log(ALL, MISC, "Production before GetTimeToDepletion: %f", production);
 	for(it = changes.begin(); it != changes.end(); it++)
 	{
 		if( ((Change)*it).ETA <= frame )
@@ -73,38 +75,53 @@ float ResourceInfo::GetTimeToDepletion(Resource *resource, float currentProducti
 			}
 		}
 	}
+	ai->utility->Log(ALL, MISC, "Production after GetTimeToDepletion: %f", production);
 
 	if(production < 0)
-		return (frame - ai->frame + (-storage / production))/AIFRAMES_PR_SECOND;
+	{
+		//return ((frame - ai->frame) + (-storage / (production/AIFRAMES_PR_SECOND)))/AIFRAMES_PR_SECOND;
+		return (frame - ai->frame)/AIFRAMES_PR_SECOND - storage/production;
+	}
 	else
+	{
 		return -1;
+	}
 }
 ///@return -1 if storage will never get depleted else returns seconds to depletion
 float ResourceInfo::GetTimeToMetalDepletion()
 {
 
-	float production = economy->GetUsage(*metal) - economy->GetIncome(*metal);
+	float production = - economy->GetUsage(*metal) + economy->GetIncome(*metal);
 	return GetTimeToDepletion(metal, production);
 }
 
 ///@return -1 if storage will never get depleted else seconds to depletion
 float ResourceInfo::GetTimeToEnergyDepletion()
 {
-	float production = economy->GetUsage(*energy) - economy->GetIncome(*energy);
+	float production = - economy->GetUsage(*energy) + economy->GetIncome(*energy);
 	return GetTimeToDepletion(energy, production);
 }
 
-///@return Can we afford to build this unit
-bool ResourceInfo::IsAffordableToBuild(UnitDef *builder, UnitDef *building)
+///@return 0 if we can afford, -1 if we need metal, -2 if we need energy and -3 if both a needed
+int ResourceInfo::IsAffordableToBuild(UnitDef *builder, UnitDef *building)
 {
+	int retVal = 0;
 	float timeToBuild = building->GetBuildTime() / builder->GetBuildSpeed();
 	float incomeMetal = - (building->GetCost(*metal) / timeToBuild);
 	float incomeEnergy = - (building->GetCost(*energy) / timeToBuild);
-	float productionMetal = incomeMetal + economy->GetUsage(*metal) - economy->GetIncome(*metal);
-	float productionEnergy = incomeEnergy + economy->GetUsage(*energy) - economy->GetIncome(*energy);
+	float productionMetal = incomeMetal - economy->GetUsage(*metal) + economy->GetIncome(*metal);
+	float productionEnergy = incomeEnergy - economy->GetUsage(*energy) + economy->GetIncome(*energy);
+	ai->utility->Log(ALL, MISC, "Metal sotrage = %f", economy->GetCurrent(*metal)); 
+	ai->utility->Log(ALL, MISC, "Metal stats: usage = %f, income = %f", economy->GetUsage(*metal), economy->GetIncome(*metal));
+	ai->utility->Log(ALL, MISC, "Checking affordability... timeToBuild = %f, incomeMetal = %f, incomeEnergy = %f, productionMetal = %f, productionEnergy = %f", timeToBuild, incomeMetal, incomeEnergy, productionMetal, productionEnergy);
 	//TODO: Test if we run out of resources before build time is up...
-	return	GetTimeToDepletion(metal, productionMetal)>timeToBuild && 
-			GetTimeToDepletion(energy, productionEnergy)>timeToBuild;
+	
+	float metalTime = GetTimeToDepletion(metal, productionMetal);
+	float energyTime = GetTimeToDepletion(energy, productionEnergy);
+	
+	retVal += (metalTime>=0 && metalTime<timeToBuild ? -1 : 0);
+	retVal += (energyTime>=0 && energyTime<timeToBuild ? -2 : 0);
+	return retVal;
 }
 
 
