@@ -1,7 +1,6 @@
 #include "Decision.h"
 #include "Unit.h"
 #include "UnitDef.h"
-
 using namespace std;
 using namespace springai;
 using namespace brainSpace;
@@ -224,6 +223,26 @@ void Decision::Update(int frame)
 
 	if(frame == 1)
 	{
+		
+
+			
+/*
+		vector<UnitDef*> p = ai->callback->GetUnitDefs();
+		for ( int i = 0 ; i < p.size() ; i++ )
+		{
+			MoveData* d = p[i]->GetMoveData();
+			if ( d == NULL )
+			{
+				ai->utility->Log( ALL, SLOPEMAP, "Unit data was null: %s - speed: %f, height: %f, waterline: %f, CanFly: %d", p[i]->GetHumanName(), p[i]->GetSpeed(), p[i]->GetHeight(), p[i]->GetWaterline(), p[i]->IsAbleToFly() );
+				continue;
+			}
+
+			float slope = d->GetMaxSlope();
+			float slopeMod = d->GetSlopeMod();
+			ai->utility->Log( ALL, SLOPEMAP, "Unit %s: Max slope: %f, SlopeMod: %f, Max height diff: %f. Max pitch: %f", p[i]->GetHumanName(), slope, slopeMod, p[i]->GetMaxHeightDif(), p[i]->GetMaxPitch() );
+
+		}
+		*/
 		ai->knowledge->mapInfo->resourceMap->Update();
 		UnitDef *solar, *kbotLab, *metalEx, *lltDef;
 		SBuildUnitCommand metalExOrder, kbotLabOrder, solarOrder, lltDefOrder;

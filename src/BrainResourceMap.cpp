@@ -5,6 +5,7 @@ using namespace std;
 
 BrainResourceMap::BrainResourceMap( AIClasses* aiClasses ):BrainMap(aiClasses)
 {
+	Resolution = 2*8;
 }
 
 
