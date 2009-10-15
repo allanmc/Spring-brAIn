@@ -7,6 +7,7 @@ using namespace brainSpace;
 
 ScoutMap::ScoutMap( AIClasses* aiClasses):BrainMap(aiClasses)
 {
+	ai->utility->Log( ALL, SLOPEMAP, "ScoutMap resolution %d. Width: %d. Height: %d", Resolution, MapWidth, MapHeight );
 }
 
 ScoutMap::~ScoutMap()

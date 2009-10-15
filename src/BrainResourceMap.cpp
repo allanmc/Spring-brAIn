@@ -3,9 +3,8 @@
 using namespace brainSpace;
 using namespace std;
 
-BrainResourceMap::BrainResourceMap( AIClasses* aiClasses ):BrainMap(aiClasses)
+BrainResourceMap::BrainResourceMap( AIClasses* aiClasses ):BrainMap(aiClasses, 2)
 {
-	Resolution = 2*8;
 }
 
 

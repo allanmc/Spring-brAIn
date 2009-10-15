@@ -16,5 +16,6 @@ MapInfo::~MapInfo()
 	delete(threatMap);
 	delete(scoutMap);
 	delete(resourceMap);
+	delete(pathfindingMap);
 }
 
