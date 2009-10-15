@@ -21,6 +21,8 @@ namespace brainSpace
 		AIClasses* ai;
 		FILE *fp;
 		void AssignColorToGraphics( int figureGroupID );
+		bool debug;
+		void InitializeOptions();
 
 	public:
 		Utility( AIClasses* aiClasses );

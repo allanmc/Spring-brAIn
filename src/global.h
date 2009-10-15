@@ -10,7 +10,7 @@
 
 //typedef int(*pfunc)(void);
 
-#include "hugin.h"
+//#include "hugin.h"
 
 /*
 using namespace std;

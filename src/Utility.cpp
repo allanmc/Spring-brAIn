@@ -16,12 +16,31 @@ Utility::Utility( AIClasses* aiClasses )
 	SNPRINTF( filename, 200, "\\Brain-log-team%d.txt", aiClasses->callback->GetTeamId() );
 	strcat(path, filename);
 	fp = FOPEN(path, "w");
-
+	debug = false;
+	InitializeOptions();
+	
 }
 
 Utility::~Utility()
 {
 	fclose(fp);
+}
+
+///@return if debug is enabled
+bool Utility::IsDebug()
+{
+	return debug;
+}
+
+///Load the options set for the AI
+void Utility::InitializeOptions()
+{
+	if (strcmp(OptionValues::GetInstance(ai->callback)->GetValueByKey("debug"),"true")==0
+		||
+		strcmp(OptionValues::GetInstance(ai->callback)->GetValueByKey("debug"),"1")==0)
+	{
+		debug = true;
+	}
 }
 
 ///Prints a line in the log file
@@ -30,7 +49,7 @@ Utility::~Utility()
 ///@param msg the text to be printed in printf-syntax
 void Utility::Log(int logLevel, int logType, const char* msg, ...)
 {		
-	if (LOG_LEVEL < logLevel)
+	if (!IsDebug() || LOG_LEVEL < logLevel)
 	{
 		return;
 	}
@@ -54,10 +73,6 @@ void Utility::ChatMsg(const char* msg, ...)
 {
 	static char c[200];
 
-	if (strcmp(Info::GetInstance(ai->callback)->GetValueByKey("debug"),"true")!=0)
-	{
-		return;
-	}
 	
 	va_list list;
 	va_start(list, msg);
