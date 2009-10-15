@@ -17,6 +17,7 @@ namespace brainSpace {
 		PathfindingMap( AIClasses* aiClasses );
 		virtual ~PathfindingMap();
 
+		void Update();
 	private:
 		void EffectCell(int index, float value);
 	};

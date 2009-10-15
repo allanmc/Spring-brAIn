@@ -227,6 +227,7 @@ void Decision::Update(int frame)
 		ai->knowledge->mapInfo->scoutMap->DrawGrid();
 
 		ai->knowledge->mapInfo->resourceMap->Update();
+		ai->knowledge->mapInfo->pathfindingMap->Update();
 		UnitDef *solar, *kbotLab, *metalEx, *lltDef;
 		SBuildUnitCommand metalExOrder, kbotLabOrder, solarOrder, lltDefOrder;
 		for ( int i = 0 ; i < ai->callback->GetUnitDefs().size() ; i++ )
