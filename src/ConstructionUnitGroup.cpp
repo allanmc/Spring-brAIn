@@ -59,7 +59,7 @@ bool ConstructionUnitGroup::IsAbleToBuild(UnitDef* unit)
 void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 {
 	//SAIFloat3 buildPos = Units[0]->GetPos();
-	SAIFloat3 buildPos = ai->callback->GetMap()->GetStartPos();
+	SAIFloat3 buildPos = Units.begin()->first->GetPos(); //ai->callback->GetMap()->GetStartPos();
 	
 	Idle = false;
 	
