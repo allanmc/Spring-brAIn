@@ -35,7 +35,8 @@ struct MapData
 class BrainMap
 {
 public:
-	BrainMap( AIClasses* aiClasses);
+	///Resolution is in map units, not real-world units
+	BrainMap( AIClasses* aiClasses, int resolution = 64 );
 	virtual ~BrainMap();
 
 	virtual void Update();

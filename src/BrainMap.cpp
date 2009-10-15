@@ -5,10 +5,10 @@ using namespace springai;
 using namespace brainSpace;
 
 
-BrainMap::BrainMap( AIClasses* aiClasses )
+BrainMap::BrainMap( AIClasses* aiClasses, int resolution )
 {
 	ai = aiClasses;
-	Resolution = 64*8; //real world size of a map tile
+	Resolution = resolution*8; //real world size of a map tile
 
 	MapWidth = (ai->callback->GetMap()->GetWidth()*8)/Resolution;
 	MapHeight = (ai->callback->GetMap()->GetHeight()*8)/Resolution;
@@ -26,6 +26,7 @@ BrainMap::BrainMap( AIClasses* aiClasses )
 BrainMap::~BrainMap()
 {
 	delete(MapArray);
+	delete(mapData);
 }
 
 ///Should be overwrited in sub-classes and be used for keeping the map up to date.

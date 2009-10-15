@@ -8,6 +8,7 @@ MapInfo::MapInfo( AIClasses* aiClasses )
 	threatMap = new ThreatMap(ai);
 	scoutMap = new ScoutMap(ai);
 	resourceMap = new BrainResourceMap(ai);
+	pathfindingMap = new PathfindingMap( ai );
 }
 
 MapInfo::~MapInfo()

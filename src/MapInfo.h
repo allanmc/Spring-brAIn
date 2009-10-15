@@ -5,6 +5,7 @@
 #include "ThreatMap.h"
 #include "ScoutMap.h"
 #include "BrainResourceMap.h"
+#include "PathfindingMap.h"
 
 namespace brainSpace
 {
@@ -17,6 +18,7 @@ namespace brainSpace
 		ThreatMap *threatMap;
 		ScoutMap *scoutMap;
 		BrainResourceMap* resourceMap;
+		PathfindingMap* pathfindingMap;
 
 	protected:
 
