@@ -38,7 +38,8 @@ enum LogTypes {
 	SCOUTING	= 1<<7,
 	KMEDOIDS	= 1<<8,
 	GROUPING	= 1<<9,
-	SLOPEMAP	= 1<<10
+	MISC		= 1<<10,
+	SLOPEMAP	= 1<<11
 };
 
 

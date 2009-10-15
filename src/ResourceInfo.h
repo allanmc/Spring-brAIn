@@ -27,6 +27,8 @@ namespace brainSpace
 		float GetTimeToMetalDepletion();
 		float GetTimeToEnergyDepletion();
 
+		int IsAffordableToBuild(springai::UnitDef *builder, springai::UnitDef *building);
+
 		/*
 		production in amount/sec
 		ETA, the build time in frames
@@ -36,6 +38,7 @@ namespace brainSpace
 		void RemoveChangeToCome(springai::Unit* unit);
 
 	private:
+		float GetTimeToDepletion(springai::Resource *resource, float currentProduction);
 		AIClasses* ai;
 		springai::Economy* economy;
 

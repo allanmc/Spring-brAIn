@@ -32,7 +32,7 @@ public:
 	void UnitIdle( int unitID );
 	void BuildAttackUnit();
 	void UpdateFrindlyPositions();
-
+	void BuildSomethingUsefull();
 	Decision(AIClasses* aiClasses);
 	~Decision(void);
 private:

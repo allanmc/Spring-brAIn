@@ -295,10 +295,10 @@ void Decision::Update(int frame)
 		gc->ErectBuilding(solarOrder);
 		gc->ErectBuilding(kbotLabOrder);
 
-		int num = 100;
-		while (num--) {
-			gc->ErectBuilding(lltDefOrder);
-		}
+		//int num = 100;
+		//while (num--) {
+		//	gc->ErectBuilding(lltDefOrder);
+		//}
 	}
 
 	if(frame % 60 == 0)
@@ -354,6 +354,7 @@ void Decision::Update(int frame)
 	{
 		ai->knowledge->selfInfo->baseInfo->DrawBasePerimiter();
 		ai->knowledge->enemyInfo->baseInfo->DrawBasePerimiter();
+		BuildSomethingUsefull();
 	}
 
 	if ( frame % 120 == 60 )
@@ -452,11 +453,48 @@ void Decision::UnitIdle( int id )
 {
 	Unit* u = Unit::GetInstance( ai->callback, id );
 	gc->UnitIdle( u );
-
+	BuildSomethingUsefull();
 	//Construction groups has nothing to do... So build something we need!
+}
+
+void Decision::BuildSomethingUsefull()
+{
 	if (gc->ConstructionGroupIsIdle())
 	{
-		ai->utility->Log(ALL, GROUPING, "I have absolutely nothing to do now!");
+		//ai->utility->Log(ALL, MISC, "I have absolutely nothing to do now!");
+		UnitDef *armsolar = ai->utility->GetUnitDef("armsolar");
+		UnitDef *armmex = ai->utility->GetUnitDef("armmex");
+		UnitDef *armlab = ai->utility->GetUnitDef("armlab");
+		UnitDef *armcom = ai->utility->GetUnitDef("armcom");
+		int isAffordable = 0;
+		ResourceInfo *ri = ai->knowledge->selfInfo->resourceInfo;
+		SBuildUnitCommand buildOrder;
+		buildOrder.timeOut = 10000000;
+		buildOrder.facing = 0;
+		buildOrder.options = 0;
+		
+		isAffordable = ri->IsAffordableToBuild(armcom, armlab);
+
+		if (isAffordable==0)
+		{
+			buildOrder.toBuildUnitDefId = armlab->GetUnitDefId();
+		}
+		else if (isAffordable==-1)
+		{
+			buildOrder.toBuildUnitDefId = armmex->GetUnitDefId();
+		}
+		else if (isAffordable==-2 || isAffordable==-3)
+		{
+			buildOrder.toBuildUnitDefId = armsolar->GetUnitDefId();
+		}
+		else 
+		{
+			//buildOrder.toBuildUnitDefId = armmex->GetUnitDefId();
+			ai->utility->Log(ALL, MISC, "I don't want to build anything right now... This shouldn't be the case:)");
+			return;
+		}
+		ai->utility->Log(ALL, MISC, "I want to build: %s", UnitDef::GetInstance(ai->callback, buildOrder.toBuildUnitDefId)->GetName());
+		gc->ErectBuilding(buildOrder);
 	}
 }
 
