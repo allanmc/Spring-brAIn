@@ -137,8 +137,6 @@ int ResourceInfo::AddChangeToCome(Unit *unit, int ETA)
 	temp.id = unit->GetUnitId();
 	temp.metalProduction = - ud->GetUpkeep(*metal) + ud->GetResourceMake(*metal) + ud->GetExtractsResource(*metal);
 	temp.energyProduction = - ud->GetUpkeep(*energy) + ud->GetResourceMake(*energy) + ud->GetExtractsResource(*energy);
-	
-	ai->utility->ChatMsg("%s has production of (%f,%f)",ud->GetName(),temp.metalProduction,temp.energyProduction);
 
 	list<Change>::iterator it;
 	for(it = changes.begin(); it != changes.end(); it++)
@@ -154,7 +152,6 @@ int ResourceInfo::AddChangeToCome(Unit *unit, int ETA)
 void ResourceInfo::RemoveChangeToCome(Unit *unit)
 {
 	list<Change>::iterator it;
-	ai->utility->ChatMsg("RemoveChangeToCome: %s",unit->GetDef()->GetName());
 
 	for(it = changes.begin(); it != changes.end(); it++)
 	{

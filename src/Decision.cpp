@@ -90,18 +90,18 @@ void Decision::UnitFinished(int unit)
 	{
 		ai->knowledge->selfInfo->baseInfo->AddBuilding(u);
 	}
-	int unitDefId = rl->Update()->UnitDefID;
-	if ( unitDefId != -1 )
+	RL_Action *action = rl->Update();
+	if ( action->ID != -1 )
 	{
 		SBuildUnitCommand c;
-		c.toBuildUnitDefId = unitDefId;
+		c.toBuildUnitDefId = action->UnitDefID;
 		c.timeOut = 10000000;
 		c.facing = 0;
 		c.options = 0;
 		gc->ErectBuilding( c );
 	}
 	else ai->utility->ChatMsg( "we have reached our goal!!" );
-	ai->utility->ChatMsg( "RL: Building unit with unitdef: %d", unitDefId );
+	ai->utility->ChatMsg( "RL: Building unit with unitdef: %d", action->UnitDefID );
 
 }
 

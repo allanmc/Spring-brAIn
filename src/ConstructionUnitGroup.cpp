@@ -227,7 +227,6 @@ SAIFloat3 ConstructionUnitGroup::FindGoodBuildSite(SAIFloat3 builderPos, UnitDef
 	for(it = nearByBuildings.begin(); it != nearByBuildings.end(); it++)
 	{
 		UnitDef* ud = (*it)->GetDef();
-		ai->utility->ChatMsg("yay i have a %s",ud->GetName());
 		if(!ud->IsBuilder())
 		{
 			SAIFloat3 unitPos = (*it)->GetPos();

@@ -4,7 +4,7 @@
 #define RL_SOLAR_INDEX 20
 #define RL_MEX_INDEX 20
 #define RL_LAB_INDEX 5
-#define RL_ACTION_INDEX 4
+#define RL_ACTION_INDEX 3
 
 #define GAMMA 0.9
 #define ALPHA 1
@@ -43,9 +43,10 @@ namespace brainSpace {
 			strcpy(path, dir);
 			SNPRINTF( filename, 200, "q.bin");
 			strcat(path, filename);
+			File = path;
 
 			FILE* fp = NULL;
-			fp = fopen( path, "rb" );
+			fp = fopen( File, "rb" );
 			if( fp != NULL )
 			{
 				fclose( fp );
@@ -56,7 +57,6 @@ namespace brainSpace {
 				for ( int i = 0 ; i < size ; i++ )
 					actionValueFunction[i] = 0;
 			}
-			File = path;
 		}
 
 		~RL_Q()
@@ -67,11 +67,10 @@ namespace brainSpace {
 
 		void SaveToFile()
 		{
-			
 			ofstream file( File, ios::binary | ios::out );
 			file.write( (char*)actionValueFunction, sizeof(float)*size );
+			file.flush();
 			file.close();
-			
 		}
 
 		float GetValue( RL_State* state, RL_Action* action )
@@ -102,6 +101,7 @@ namespace brainSpace {
 
 		RL_State* PreviousState;
 		RL_Action* PreviousAction;
+		int PreviousFrame;
 
 		int Epsilon;
 		RL_State* GetState();

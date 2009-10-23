@@ -15,16 +15,16 @@ namespace brainSpace {
 
 		int GetID();
 
-		vector<RL_Action> GetActions();
-
+		vector<RL_Action*> GetActions();
+		int LabCount;
 	private:
 
 		AIClasses* ai;
-		int LabCount;
+		
 		int SolarCount;
 		int MexCount;
 		int ID;
-		vector<RL_Action> Actions;
+		vector<RL_Action*> Actions;
 
 	};
 }
