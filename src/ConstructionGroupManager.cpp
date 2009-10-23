@@ -23,7 +23,7 @@ void ConstructionGroupManager::AddUnit( Unit* unit )
 	}
 
 	BrainGroup* smallestSet = (*UnitGroups.begin());
-	for ( int i = 0 ; i < UnitGroups.size() ; i++ )
+	for ( int i = 0 ; i < (int)UnitGroups.size() ; i++ )
 	{
 		if ( UnitGroups[i]->GetSize() < smallestSet->GetSize() )
 		{
@@ -45,7 +45,7 @@ void ConstructionGroupManager::RemoveUnit( Unit* unit )
 int ConstructionGroupManager::DelegateBuildOrder(SBuildUnitCommand order)
 {
 	//u->ChatMsg( "Unitgroups size: %d", UnitGroups.size() );
-	for ( int i = 0 ; i < UnitGroups.size() ; i++ )
+	for ( int i = 0 ; i < (int)UnitGroups.size() ; i++ )
 	{
 		if ( UnitGroups[i]->IsIdle() && UnitGroups[i]->GetSize() > 0 )
 		{

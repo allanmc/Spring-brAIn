@@ -106,7 +106,7 @@ UnitDef* Utility::GetUnitDef(const char* unitDefName)
 {
 	vector<UnitDef*> defs = ai->callback->GetUnitDefs();
 
-	for ( int i = 0 ; i < defs.size() ; i++ )
+	for ( int i = 0 ; i < (int)defs.size() ; i++ )
 	{
 		if ( strcmp( defs[i]->GetName(), unitDefName ) == 0 )
 		{
@@ -121,7 +121,7 @@ Resource* Utility::GetResource(const char* resourceName)
 {
 	vector<Resource*> resources = ai->callback->GetResources();
 
-	for ( int i = 0 ; i < resources.size() ; i++ )
+	for ( int i = 0 ; i < (int)resources.size() ; i++ )
 	{
 		if ( strcmp( resources[i]->GetName(), resourceName ) == 0 )
 		{

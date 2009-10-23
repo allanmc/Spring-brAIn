@@ -5,7 +5,7 @@
 #include "QuadTreeNode.h"
 #include <algorithm>
 
-static bool cmpSAIFloat3 (SAIFloat3 P1, SAIFloat3 P2);
+//static bool cmpSAIFloat3 (SAIFloat3 P1, SAIFloat3 P2);
 
 namespace brainSpace 
 {

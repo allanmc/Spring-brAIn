@@ -21,7 +21,7 @@ void KMedoids::Clear()
 
 void KMedoids::AddPoints(vector<SAIFloat3> newPoints)
 {
-	for ( int i = 0; i < newPoints.size(); i++ )
+	for ( int i = 0; i < (int)newPoints.size(); i++ )
 	{
 		points.push_back((KPoint){newPoints[i], 0, points.size()});
 	}
@@ -40,13 +40,13 @@ vector< vector<SAIFloat3> > KMedoids::GetConvexHulls( unsigned short numClusters
 	int num;
 	ConvexHull *ch = new ConvexHull( ai );
 
-	for (int c = 0; c < clusters.size(); c++ )
+	for (int c = 0; c < (int)clusters.size(); c++ )
 	{	
 		points.clear();//Is it necesarry?
 		points = ai->math->Sort(clusters[c]);
 		SAIFloat3 pointsA[points.size()];
 		SAIFloat3 resultA[points.size()];
-		for (int i = 0; i < points.size(); i++) //Sorry for doing vector->array->vector :)
+		for (int i = 0; i < (int)points.size(); i++) //Sorry for doing vector->array->vector :)
 		{
 			pointsA[i] = points[i];
 		}
@@ -121,7 +121,7 @@ vector< vector<SAIFloat3> > KMedoids::GetClusters( unsigned short numClusters )
 		for ( int c = 0; c < numClusters; c++ )
 		{
 			//Step 3.1 - For each non-mediod data point o
-			for ( int i = 0; i < points.size(); i++ )
+			for ( int i = 0; i < (int)points.size(); i++ )
 			{
 				//Skip if current point is a medoid (cluster=-1)
 				if (points[i].cluster==-1) continue;
@@ -159,7 +159,7 @@ vector< vector<SAIFloat3> > KMedoids::GetClusters( unsigned short numClusters )
 	{
 		result_temp.clear();
 		result_temp.push_back(points[medoids[c]].pos);
-		for ( int i = 0; i < points.size(); i++ )
+		for ( int i = 0; i < (int)points.size(); i++ )
 		{
 			//Skip if current point is a medoid (cluster=-1)
 			if (points[i].cluster==-1 || points[i].cluster!=c) continue;
@@ -192,7 +192,7 @@ void KMedoids::Swap(int pointIndex, int medoidIndex, bool print)
 
 void KMedoids::Print(vector<int> medoids)
 {
-	for ( int i = 0; i < medoids.size(); i++ )
+	for ( int i = 0; i < (int)medoids.size(); i++ )
 	{
 		ai->utility->Log(ALL, KMEDOIDS, "Medoid %i: %i", i, medoids[i]);
 	}
@@ -200,7 +200,7 @@ void KMedoids::Print(vector<int> medoids)
 
 void KMedoids::Print(vector<KPoint> kpoints)
 {
-	for ( int i = 0; i < kpoints.size(); i++ )
+	for ( int i = 0; i < (int)kpoints.size(); i++ )
 	{
 		ai->utility->Log(ALL, KMEDOIDS, "Point %i: index=%i, cluster=%i", i, kpoints[i].index, kpoints[i].cluster);
 	}
@@ -213,7 +213,7 @@ float KMedoids::AssociateDatapoints()
 	int current_best = 0;
 	int numClusters = medoids.size();
 	float current_min = 0.0f;
-	for ( int i = 0; i < points.size(); i++ )
+	for ( int i = 0; i < (int)points.size(); i++ )
 	{
 		//Skip if current point is a medoid (cluster=-1)
 		if (points[i].cluster==-1) continue;

@@ -22,7 +22,7 @@ void BuildingController::AddBuilding(springai::Unit *unit)
 	//ai->utility->ChatMsg("Recieved building! type: %s, name: %s",def->GetType(), def->GetName());
 	vector<Resource*> resources = ai->callback->GetResources();
 	bool isResource = false;
-	for(int i = 0; i < resources.size(); i++)
+	for(int i = 0; i < (int)resources.size(); i++)
 	{
 		if(def->IsResourceMaker(*resources[i]) || def->GetUpkeep(*resources[i]) < 0 || def->GetExtractsResource(*resources[i]) > 0
 			|| def->GetResourceMake(*resources[i]) > 0)
@@ -59,7 +59,7 @@ void BuildingController::RemoveBuilding(springai::Unit *unit)
 ///@param order is the build order containing all information except the contructor
 void BuildingController::ConstructUnit(SBuildUnitCommand order)
 {
-	for(int i=0; i<ConstructionBuildings.size(); ++i)
+	for(int i=0; i < (int)ConstructionBuildings.size(); ++i)
 	{
 		order.unitId = ConstructionBuildings[i]->GetUnitId();
 		

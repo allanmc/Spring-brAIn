@@ -95,7 +95,7 @@ void QuadTree::InsertUnit( int unitID, SAIFloat3 pos )
 		{
 			Unit* u = Unit::GetInstance( ai->callback, unitID );
 			UnitDef* def = u->GetDef();
-			if ( def->GetUnitDefId() == -1 )
+			if ( def == NULL )
 			{
 				iter->InsertUnit( unitID, pos );
 				units[unitID].def = NULL;

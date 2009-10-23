@@ -17,7 +17,7 @@ void BrainResourceMap::Update()
 	SAIFloat3 dummy;
 
 	vector<SAIFloat3> spots = ai->callback->GetMap()->GetResourceMapSpotsPositions( *(ai->utility->GetResource("Metal")), &dummy );
-	for ( int i = 0 ; i < spots.size() ; i++ )
+	for ( int i = 0 ; i < (int)spots.size() ; i++ )
 	{
 		int MapX, MapZ;
 		MapX = (int)floorf(spots[i].x/Resolution);

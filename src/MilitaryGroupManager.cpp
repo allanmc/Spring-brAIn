@@ -24,7 +24,7 @@ brainSpace::MilitaryGroupManager::~MilitaryGroupManager()
 void brainSpace::MilitaryGroupManager::AddUnit( Unit* unit )
 {
 	MilitaryUnitGroup* tmpGroup = NULL;
-	for(int i = 0; i < UnitGroups.size(); i++)
+	for(int i = 0; i < (int)UnitGroups.size(); i++)
 	{
 		if(UnitGroups[i]->GetSize() < 10 && UnitGroups[i]->GetStatus() == MilitaryUnitGroup::MILI_UNIT_GRP_REGROUPING )
 		{
@@ -47,7 +47,7 @@ void brainSpace::MilitaryGroupManager::AddUnit( Unit* unit )
 
 void brainSpace::MilitaryGroupManager::RemoveUnit( Unit* unit )
 {
-	for(int i = 0; i < UnitGroups.size(); i++)
+	for(int i = 0; i < (int)UnitGroups.size(); i++)
 	{
 		UnitGroups[i]->RemoveUnit(unit);
 		if(UnitGroups[i]->GetSize() == 0)
@@ -65,7 +65,7 @@ vector<MilitaryUnitGroup*> MilitaryGroupManager::GetIdleGroups()
 //	u->ChatMsg("Creating vector with idle groups");
 	vector<MilitaryUnitGroup*> result;
 	
-	for(int i = 0; i < UnitGroups.size(); i++)
+	for(int i = 0; i < (int)UnitGroups.size(); i++)
 	{
 		if(UnitGroups[i]->GetStatus() == MilitaryUnitGroup::MILI_UNIT_GRP_IDLE)
 		{
@@ -96,7 +96,7 @@ void MilitaryGroupManager::GiveScoutOrder(brainSpace::MilitaryUnitGroup* group)
 
 	vector<Point*> points = ai->callback->GetMap()->GetPoints(true);
 	SAIFloat3 enemyStartingPosition;
-	for( int i = 0 ; i < points.size() ; i++ )
+	for( int i = 0 ; i < (int)points.size() ; i++ )
 	{
 		if ( points[i]->GetPosition().x == ai->callback->GetMap()->GetStartPos().x &&
 			 points[i]->GetPosition().y == ai->callback->GetMap()->GetStartPos().y &&
@@ -157,7 +157,7 @@ void MilitaryGroupManager::GiveScoutOrder(brainSpace::MilitaryUnitGroup* group)
 ///informs the groups that a unit has gone idle
 void MilitaryGroupManager::UnitIdle(Unit* unit)
 {
-	for(int i = 0; i < UnitGroups.size(); i++)
+	for(int i = 0; i < (int)UnitGroups.size(); i++)
 	{
 		UnitGroups[i]->UnitIdle(unit);
 	}
@@ -168,7 +168,7 @@ vector<MilitaryUnitGroup*> MilitaryGroupManager::GetNonAttackingGroups()
 {
 	vector<MilitaryUnitGroup*> result;
 	
-	for(int i = 0; i < UnitGroups.size(); i++)
+	for(int i = 0; i < (int)UnitGroups.size(); i++)
 	{
 		if(UnitGroups[i]->GetStatus() == MilitaryUnitGroup::MILI_UNIT_GRP_IDLE || UnitGroups[i]->GetStatus() == MilitaryUnitGroup::MILI_UNIT_GRP_SCOUTING)
 		{			

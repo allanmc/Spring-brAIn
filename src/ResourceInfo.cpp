@@ -50,7 +50,7 @@ float ResourceInfo::GetTimeToDepletion(Resource *resource, float currentProducti
 	ai->utility->Log(ALL, MISC, "Production before GetTimeToDepletion: %f", production);
 	for(it = changes.begin(); it != changes.end(); it++)
 	{
-		if( ((Change)*it).ETA <= frame )
+		if( (int)((Change)*it).ETA <= frame )
 		{
 			if ( strcmp(resource->GetName(), "Metal") == 0 )
 			{
@@ -158,7 +158,7 @@ void ResourceInfo::RemoveChangeToCome(Unit *unit)
 
 	for(it = changes.begin(); it != changes.end(); it++)
 	{
-		if(((Change)*it).id == unit->GetUnitId())
+		if((int)((Change)*it).id == unit->GetUnitId())
 		{
 			changes.erase(it);
 			break;

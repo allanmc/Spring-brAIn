@@ -103,7 +103,7 @@ void Decision::UnitDestroyed(int unit, int attacker)
 
 	if ( d == NULL )
 		ai->utility->Log( DEBUG, DECISION, "UnitDestroyed: UnitDef was null" );
-	if ( d->GetUnitDefId() == -1 )
+	else if ( d->GetUnitDefId() == -1 )
 		ai->utility->Log( DEBUG, DECISION, "UnitDestroyed: Unitdef was -1" );
 
 
@@ -143,7 +143,7 @@ void Decision::EnemyEnterLOS(int enemy)
 	
 	if ( d == NULL )
 		ai->utility->Log( DEBUG, DECISION, "EnemyEnterLOS: UnitDef was null" );
-	if ( d->GetUnitDefId() == -1 )
+	else if ( d->GetUnitDefId() == -1 )
 		ai->utility->Log( DEBUG, DECISION, "EnemyEnterLOS: Unitdef was -1" );
 
 	if (d->GetWeaponMounts().size()>0) 
@@ -166,7 +166,7 @@ void Decision::EnemyDestroyed(int enemy, int attacker)
 
 	if ( d == NULL )
 		ai->utility->Log( DEBUG, DECISION, "EnemyDestroyed: UnitDef was null" );
-	if ( d->GetUnitDefId() == -1 )
+	else if ( d->GetUnitDefId() == -1 )
 		ai->utility->Log( DEBUG, DECISION, "EnemyDestroyed: Unitdef was -1" );
 
 
@@ -174,7 +174,7 @@ void Decision::EnemyDestroyed(int enemy, int attacker)
 
 	BattleInfoInstance->EnemyDestroyed( unit, attackerUnit );
 
-	if ( unit->GetDef()->GetUnitDefId() == -1 )
+	if ( unit->GetDef() == NULL )
 	{
 		defPointer = ai->knowledge->enemyInfo->armyInfo->GetUnitDef( unit->GetUnitId() );
 	}
@@ -230,7 +230,7 @@ void Decision::Update(int frame)
 		ai->knowledge->mapInfo->pathfindingMap->Update();
 		UnitDef *solar, *kbotLab, *metalEx, *lltDef;
 		SBuildUnitCommand metalExOrder, kbotLabOrder, solarOrder, lltDefOrder;
-		for ( int i = 0 ; i < ai->callback->GetUnitDefs().size() ; i++ )
+		for ( int i = 0 ; i < (int)ai->callback->GetUnitDefs().size() ; i++ )
 		{
 			if ( strcmp( ai->callback->GetUnitDefs()[i]->GetName(), "armsolar" ) == 0 )
 			{

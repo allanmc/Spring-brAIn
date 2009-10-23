@@ -77,6 +77,7 @@ void Battle::UnitEnteredBattle( Unit* u, bool enemy )
 	ai->utility->Log(ALL, KNOWLEDGE, "UnitEnteredBattle 4");
 
 	//ai->utility->Log( DEBUG, KNOWLEDGE, "UnitID %d entered battle: defID %d", unitID, container.def->GetUnitDefId() );
+	
 	if ( container.def == NULL )
 	{
 		ai->utility->Log(ALL, KNOWLEDGE, "UnitEnteredBattle Unitdef = NULL");
@@ -290,7 +291,7 @@ void Battle::ToString()
 	ai->utility->Log( DEBUG, KNOWLEDGE, "Dead friendly units: \n--------------" );
 	for ( map<int, int>::iterator iter = DeadFriendlyUnits.begin() ; iter != DeadFriendlyUnits.end() ; iter++ )
 	{
-		for ( int i = 0 ; i < unitDefs.size() ; i++ )
+		for ( int i = 0 ; i < (int)unitDefs.size() ; i++ )
 		{
 			if ( unitDefs[i]->GetUnitDefId() == (*iter).first )
 			{
@@ -304,7 +305,7 @@ void Battle::ToString()
 	ai->utility->Log( DEBUG, KNOWLEDGE, "Dead enemy units: \n--------------" );
 	for ( map<int, int>::iterator iter = DeadEnemyUnits.begin() ; iter != DeadEnemyUnits.end() ; iter++ )
 	{
-		for ( int i = 0 ; i < unitDefs.size() ; i++ )
+		for ( int i = 0 ; i < (int)unitDefs.size() ; i++ )
 		{
 			if ( unitDefs[i]->GetUnitDefId() == (*iter).first )
 			{
@@ -324,7 +325,7 @@ void Battle::Update()
 		//If unit has moved outside the radius of the battle, remove it from the battle
 		if ( ai->utility->EuclideanDistance(iter->second.pos, Center ) > Radius  )
 			enemyUnitsToErase.push_back( (iter)->first );
-		else if ( iter->second.def->GetUnitDefId() == -1 )
+		else if ( iter->second.def == NULL )
 		{
 			UnitDef* d = ai->knowledge->enemyInfo->armyInfo->GetUnitDef( iter->first );
 			if ( d != NULL )
@@ -337,7 +338,7 @@ void Battle::Update()
 		//If unit has moved outside the radius of the battle, remove it from the battle
 		if ( ai->utility->EuclideanDistance(iter->second.pos, Center ) > Radius  )
 			friendlyUnitsToErase.push_back( (iter)->first );
-		else if ( iter->second.def->GetUnitDefId() == -1 )
+		else if ( iter->second.def == NULL )
 		{
 			UnitDef* d = ai->knowledge->enemyInfo->armyInfo->GetUnitDef( iter->first );
 			if ( d != NULL )

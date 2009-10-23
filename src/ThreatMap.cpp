@@ -70,7 +70,7 @@ void ThreatMap::InsertUnit(Unit *u, struct UnitInformationContainer c )
 
 
 	vector<WeaponMount*> weaponMounts = c.def->GetWeaponMounts();
-	for ( int i = 0 ; i < weaponMounts.size() ; i++ )
+	for ( int i = 0 ; i < (int)weaponMounts.size() ; i++ )
 	{
 		WeaponDef* def = weaponMounts.at(i)->GetWeaponDef();
 		EffectCircle(c.pos, def->GetRange(), CalculateDPS( def ));
