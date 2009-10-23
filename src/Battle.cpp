@@ -70,19 +70,16 @@ void Battle::UnitEnteredBattle( Unit* u, bool enemy )
 {
 	ai->utility->Log(ALL, KNOWLEDGE, "UnitEnteredBattle start");
 	UnitInformationContainer container;
-	ai->utility->Log(ALL, KNOWLEDGE, "UnitEnteredBattle 1");
 	container.def = u->GetDef();
-	ai->utility->Log(ALL, KNOWLEDGE, "UnitEnteredBattle 2");
 	container.pos = u->GetPos();
-	ai->utility->Log(ALL, KNOWLEDGE, "UnitEnteredBattle 3");
 	
 	int unitID = u->GetUnitId();
 	ai->utility->Log(ALL, KNOWLEDGE, "UnitEnteredBattle 4");
 
 	//ai->utility->Log( DEBUG, KNOWLEDGE, "UnitID %d entered battle: defID %d", unitID, container.def->GetUnitDefId() );
-	if ( container.def->GetUnitDefId() == -1 )
+	if ( container.def == NULL )
 	{
-		ai->utility->Log(ALL, KNOWLEDGE, "UnitEnteredBattle GetUnitDefId = -1");
+		ai->utility->Log(ALL, KNOWLEDGE, "UnitEnteredBattle Unitdef = NULL");
 		//ai->utility->Log( DEBUG, KNOWLEDGE, "defID was -1" );
 		UnitDef* def = ai->knowledge->enemyInfo->armyInfo->GetUnitDef( unitID );
 		if ( def != NULL && def->GetUnitDefId() != -1 )

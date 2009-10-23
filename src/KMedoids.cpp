@@ -77,7 +77,6 @@ vector< vector<SAIFloat3> > KMedoids::GetClusters( unsigned short numClusters )
 	int swap_best_medoid = 0;
 	int swap_best_point = 0;
 	bool changed = false;
-	int tmp_cluster = 0;
 	int tmp_index = 0;
 	vector<int>::iterator it;
 
