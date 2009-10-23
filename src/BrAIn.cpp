@@ -52,7 +52,7 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 		case EVENT_MESSAGE:
 			{
 				ai->utility->Log(DEBUG,EVENT,"message");
-				struct SMessageEvent* evt = (struct SMessageEvent*) data;
+				//struct SMessageEvent* evt = (struct SMessageEvent*) data;
 				//why are you talking to me? im a bot!
 				break;
 			}
