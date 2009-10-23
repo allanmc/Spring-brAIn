@@ -11,9 +11,9 @@ Utility::Utility( AIClasses* aiClasses )
 	ai = aiClasses;
 	char filename[200];
 	char path[200];
-	const char *dir = DataDirs::GetInstance(ai->callback)->GetConfigDir();
+	const char *dir = DataDirs::GetInstance(ai->callback)->GetWriteableDir();
 	strcpy(path, dir);
-	SNPRINTF( filename, 200, "\\Brain-log-team%d.txt", aiClasses->callback->GetTeamId() );
+	SNPRINTF( filename, 200, "Brain-log-team%d.txt", aiClasses->callback->GetTeamId() );
 	strcat(path, filename);
 	fp = FOPEN(path, "w");
 	debug = false;
@@ -35,9 +35,12 @@ bool Utility::IsDebug()
 ///Load the options set for the AI
 void Utility::InitializeOptions()
 {
-	if (strcmp(OptionValues::GetInstance(ai->callback)->GetValueByKey("debug"),"true")==0
+	const char* optionStr = OptionValues::GetInstance(ai->callback)->GetValueByKey("debug");
+	if (optionStr == NULL
 		||
-		strcmp(OptionValues::GetInstance(ai->callback)->GetValueByKey("debug"),"1")==0)
+		strcmp(optionStr,"true")==0
+		||
+		strcmp(optionStr,"1")==0)
 	{
 		debug = true;
 	}
@@ -64,8 +67,8 @@ void Utility::Log(int logLevel, int logType, const char* msg, ...)
 		va_start(list, msg);
 		vfprintf(fp, msg, list);
 		va_end(list);
+		fputc('\n', fp);
 	}
-	fputc('\n', fp);
 }
 
 ///prints a line to the chat

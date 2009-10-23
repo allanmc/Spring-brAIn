@@ -25,7 +25,7 @@
 #include "Info.h"
 #include "ExternalAI/Interface/AISCommands.h"
 #include "Point.h"
-#include "Movedata.h"
+#include "MoveData.h"
 //namespace brainSpace {
 enum LogTypes {
 	CHAT		= 1<<0,
