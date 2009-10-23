@@ -42,14 +42,9 @@ void Utility::InitializeOptions()
 		||
 		strcmp(optionStr,"1")==0)
 	{
-		if (strcmp(c ,"true")==0
-			||
-			strcmp( c ,"1")==0)
-		{
-			debug = true;
-		}
+		debug = true;
 	}
-	else debug = true;
+	else debug = false;
 }
 
 ///Prints a line in the log file

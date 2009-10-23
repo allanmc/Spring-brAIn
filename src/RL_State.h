@@ -1,14 +1,12 @@
 #ifndef _BRAINSPACE_RL_STATE_H
 #define _BRAINSPACE_RL_STATE_H
 
-
-#include "global.h"
+#include "types.h"
 
 using namespace springai;
+using namespace std;
 
 namespace brainSpace {
-	///This class has the responsibillty to choose the apropriate actions, when an event occurs.
-
 
 	class RL_State
 	{
@@ -28,6 +26,7 @@ namespace brainSpace {
 		int ID;
 		vector<RL_Action> Actions;
 
-
 	};
 }
+
+#endif

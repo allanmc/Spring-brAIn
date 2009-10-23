@@ -11,33 +11,19 @@ RL::RL( AIClasses* aiClasses)
 	ai = aiClasses;
 
 
-	Actions.push_back( RL_Action( ai->utility->GetUnitDef( "armsolar" ), 0 ) );
+	Actions.push_back( new RL_Action( ai->utility->GetUnitDef( "armsolar" )->GetUnitDefId(), 0 ) );
 
-	Actions.push_back( RL_Action( ai->utility->GetUnitDef( "armmex" ), 1 ) );
+	Actions.push_back( new RL_Action( ai->utility->GetUnitDef( "armmex" )->GetUnitDefId(), 1 ) );
 
-	Actions.push_back( RL_Action( ai->utility->GetUnitDef( "armlab" ), 2 ) );
+	Actions.push_back( new RL_Action( ai->utility->GetUnitDef( "armlab" )->GetUnitDefId(), 2 ) );
 
-	Actions.push_back( RL_Action( -1, 3 ) );
+	Actions.push_back( new RL_Action( -1, 3 ) );
 
 
 	if ( FileExists( "q.bin" ) )
 	{
 		ai->utility->Log( ALL, LOG_RL, "File exists, loading data" );
-		ifstream readFile;
-
-		readFile.open( "q.bin", ios::binary | ios::in );
-
-		for ( int i = 0 ; i < RL_ACTION_INDEX ; i++ )
-		{
-			for ( int j = 0 ; j < RL_SOLAR_INDEX*RL_MEX_INDEX*RL_LAB_INDEX ; j++ )
-			{
-				float f;
-				readFile.read( (char*)&f, sizeof(float) );
-				RL_State s( ai, j/400, (j%400)/20, j%20 );
-				ValueFunction.SetValue( s, Actions.at(i) );
-			}
-		}
-		readFile.close();
+		ValueFunction->LoadFromFile("q.bin");
 	}
 	else
 	{
@@ -73,62 +59,57 @@ RL_State* RL::GetState()
 	int solarCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName( "armsolar" );
 	int labCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName( "armmex" );
 	int mexCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName( "armlab" );
-	int state = solarCount+(labCount*400)+(mexCount*20);
+	RL_State *state = new RL_State(ai,labCount,solarCount,mexCount);
 	ai->utility->Log( ALL, LOG_RL, "Solar: %d. Lab: %d. Mex: %d. State: %d", solarCount, labCount, mexCount, state );
 	return state;
 }
 
-int RL::FindNextAction( int state )
+RL_Action *RL::FindNextAction( RL_State* state )
 {
-	int action = 0; //unitdefID
+	RL_Action* action = Actions[0]; //unitdefID
 	
 	int r = rand()%100;
 	if ( r <= Epsilon ) //non-greedy
 	{
 		action = Actions[rand()%RL_ACTION_INDEX];
-		ai->utility->Log( ALL, LOG_RL, "Non-greedy: %d", action );
+		ai->utility->Log( ALL, LOG_RL, "Non-greedy: id=%d unitdef=", action->ID, action->UnitDefID );
 	}
 	else //greedy
 	{
-		float bestValue = Q[state][0];
-		for ( int i = 1 ; i < RL_ACTION_INDEX ; i++ )
-		{
-			if ( Q[state][i] > bestValue )
-			{
-				bestValue = Q[state][i];
-				action = i;
-			}
-		}
-		ai->utility->Log( ALL, LOG_RL, "Greedy: %d", action );
+		action = FindBestAction(state);
+		ai->utility->Log( ALL, LOG_RL, "Greedy: id=%d unitdef=", action->ID, action->UnitDefID );
 	}
 	return action;
 }
 
-int RL::FindBestAction( int state )
+RL_Action *RL::FindBestAction( RL_State* state )
 {
-	int action = 0; //unitdefID
+	RL_Action *action = Actions[0]; //unitdefID
 
-	float bestValue = Q[state][0];
-	for ( int i = 1 ; i < RL_ACTION_INDEX ; i++ )
+	float bestValue = ValueFunction->GetValue(state, action);
+
+	vector<RL_Action*>::iterator it;
+	for ( it = Actions.begin()+1 ; it != Actions.end() ; it++ )
 	{
-		if ( Q[state][i] > bestValue )
+		RL_Action *tempAction = (RL_Action*)(*it);
+		if ( ValueFunction->GetValue(state, tempAction) > bestValue )
 		{
-			bestValue = Q[state][i];
-			action = i;
+			bestValue = ValueFunction->GetValue(state, tempAction);
+			action = tempAction;
 		}
 	}
 
 	return action;
 }
 
-int RL::Update( )
+RL_Action *RL::Update( )
 {
 	bool terminal = false;
-	int state = GetState();
-	int nextAction = FindNextAction( state );
-	int bestAction = FindBestAction( state );
+	RL_State *state = GetState();
+	RL_Action *nextAction = FindNextAction( state );
+	RL_Action *bestAction = FindBestAction( state );
 
-	if ( PreviousState == -1 )
+	if ( PreviousState == NULL )
 		return nextAction;
 
 	int reward = 0;
@@ -138,31 +119,19 @@ int RL::Update( )
 		terminal = true;
 	}
 
+	float value = ValueFunction->GetValue(PreviousState,PreviousAction) 
+		+ ALPHA*(
+			reward + GAMMA*ValueFunction->GetValue(state, bestAction) 
+			- ValueFunction->GetValue(PreviousState,PreviousAction) );
 
-	Q[PreviousState][PreviousAction] = Q[PreviousState][PreviousAction] + ALPHA*(reward + GAMMA*( Q[state][bestAction] )  - Q[PreviousState][PreviousAction] );
+	ValueFunction->SetValue(PreviousState,PreviousAction, value);
 	PreviousState = state;
 	PreviousAction = nextAction;
 
 	if ( terminal )
 	{
-		ofstream file( "q.bin", ios::binary | ios::out );
-		for ( int i = 0 ; i < RL_ACTION_INDEX ; i++ )
-		{
-			for ( int j = 0 ; j < RL_SOLAR_INDEX ; j++ )
-			{
-				for ( int k = 0 ; k < RL_MEX_INDEX ; k++ )
-			{
-				for ( int l = 0 ; l < RL_LAB_INDEX ; l++ )
-			{
-				RL_State s( ai, l, j, k );
-				RL_Action a(
-				file.write( (char*)&Q[j][i], sizeof(float) );
-
-			}
-		
-		}
-		file.close();
-		return -1;
+		ValueFunction->SaveToFile("q.bin");
+		return new RL_Action(-1,-1);//MEANS THAT YOU SHOULD STOP NOW!!
 	}
 	return nextAction;
 	

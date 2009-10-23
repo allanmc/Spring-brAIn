@@ -84,6 +84,19 @@ namespace brainSpace {
 	struct CBoundingBox;
 	class QuadTreeNode;
 	class QuadTree;
+
+	struct RL_Action
+	{
+		int UnitDefID;
+		int ID;
+		RL_Action( int unitDefID, int id )
+		{
+			UnitDefID = unitDefID;
+			ID = id;
+		}
+		
+	};
+
 }
 
 #include "Utility.h"
