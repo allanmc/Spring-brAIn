@@ -68,6 +68,7 @@ void Battle::UnitDied( Unit* u, bool enemy )
 
 void Battle::UnitEnteredBattle( Unit* u, bool enemy )
 {
+	ai->utility->Log(ALL, KNOWLEDGE, "UnitEnteredBattle start");
 	UnitInformationContainer container;
 	container.def = u->GetDef();
 	container.pos = u->GetPos();
@@ -77,6 +78,7 @@ void Battle::UnitEnteredBattle( Unit* u, bool enemy )
 	//ai->utility->Log( DEBUG, KNOWLEDGE, "UnitID %d entered battle: defID %d", unitID, container.def->GetUnitDefId() );
 	if ( container.def->GetUnitDefId() == -1 )
 	{
+		ai->utility->Log(ALL, KNOWLEDGE, "UnitEnteredBattle GetUnitDefId = -1");
 		//ai->utility->Log( DEBUG, KNOWLEDGE, "defID was -1" );
 		UnitDef* def = ai->knowledge->enemyInfo->armyInfo->GetUnitDef( unitID );
 		if ( def != NULL && def->GetUnitDefId() != -1 )
@@ -98,6 +100,8 @@ void Battle::UnitEnteredBattle( Unit* u, bool enemy )
 	}
 	if ( !enemy )
 	{
+		ai->utility->Log(ALL, KNOWLEDGE, "UnitEnteredBattle not enemy");
+
 		ActiveFriendlyUnits[unitID] = container;
 
 		SAIFloat3 pos[ActiveFriendlyUnits.size()];
@@ -111,6 +115,7 @@ void Battle::UnitEnteredBattle( Unit* u, bool enemy )
 	}
 	else
 	{
+		ai->utility->Log(ALL, KNOWLEDGE, "UnitEnteredBattle enemy");
 		ActiveEnemyUnits[unitID] = container;
 
 		SAIFloat3 pos[ActiveEnemyUnits.size()];

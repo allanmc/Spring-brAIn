@@ -308,7 +308,7 @@ void Decision::Update(int frame)
 		//ai->utility->Log( DEBUG, KNOWLEDGE, "Start position (%f, %f)", ai->callback->GetMap()->GetStartPos().x, ai->callback->GetMap()->GetStartPos().z );
 		//ai->utility->Log( DEBUG, KNOWLEDGE, "Number of battles close to our base within the last 6000 frames: %d. Current frame %d", BattleInfoInstance->NumberOfBattlesInArea( 6000, box ), ai->frame);
 		int battles = BattleInfoInstance->NumberOfBattlesInArea( 9000, box );
-		ai->utility->Log( DEBUG, KNOWLEDGE, "Number of battles close to our base within the last 9000 frames: %d", battles);
+		ai->utility->Log( DEBUG, DECISION, "Number of battles close to our base within the last 9000 frames: %d", battles);
 		//ai->utility->ChatMsg("Number of battles close to our base within the last 9000 frames: %d", battles);
 		int b_range;
 		if(battles == 0)
