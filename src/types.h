@@ -1,7 +1,7 @@
 #ifndef _BRAIN_TYPES_H
 #define _BRAIN_TYPES_H
 
-#include <windows.h>
+//#include <windows.h>
 #include <stdarg.h>
 #include <string>
 #include <string.h>
