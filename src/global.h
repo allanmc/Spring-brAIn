@@ -1,7 +1,7 @@
 #ifndef _BRAIN_GLOBAL_H
 #define _BRAIN_GLOBAL_H
 
-#define LOG_TYPE (SLOPEMAP)
+#define LOG_TYPE (LOG_RL)
 #define LOG_LEVEL ALL
 
 #include "types.h"
@@ -26,5 +26,6 @@ using namespace brainSpace;
 #include "ArmyInfo.h"
 #include "BaseInfo.h"
 #include "EnemyInfo.h"
+#include "RL.h"
 
 #endif

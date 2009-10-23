@@ -40,6 +40,7 @@ private:
 	BattlesInfo* BattleInfoInstance;
 	AIClasses* ai;
 	BayesianNetwork *bn;
+	RL* rl;
 };
 
 }

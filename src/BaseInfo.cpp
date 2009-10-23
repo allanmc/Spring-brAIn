@@ -137,3 +137,18 @@ bool BaseInfo::IsBuildingInRange(SAIFloat3 pos, float radius)
 	}
 	return false;
 }
+
+int BaseInfo::CountBuildingsByName( const char* name )
+{
+	map<int, UnitInformationContainer> i = quadTree->GetUnits();
+	map<int, UnitInformationContainer>::iterator it = i.begin();
+
+	int count = 0;
+	while ( it != i.end() )
+	{
+		if ( strcmp(it->second.def->GetName(), name ) == 0 )
+			count++;
+		it++;
+	}
+	return count;
+}

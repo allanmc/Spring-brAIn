@@ -24,6 +24,8 @@ namespace brainSpace
 		
 		int CountResourceBuildings();
 		int CountProductionBuildings();
+		int CountBuildingsByName( const char* name );
+
 		vector<Unit*> GetUnitsInRange(SAIFloat3 pos, float radius);
 		bool IsBuildingInRange(SAIFloat3 pos, float radius);
 

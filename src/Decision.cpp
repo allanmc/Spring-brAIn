@@ -12,6 +12,7 @@ Decision::Decision(AIClasses* aiClasses)
 	
 	gc = new GroupController( ai );
 	bc = new BuildingController( ai );
+	rl = new RL( ai );
 	BattleInfoInstance = new BattlesInfo( ai );
 
 	//time_t t1, t2, t3, t4, t5;
@@ -72,12 +73,12 @@ void Decision::UnitFinished(int unit)
 		gc->AddUnit(u);
 		if (!ud->IsBuilder())
 		{
-			BuildAttackUnit();
+			//BuildAttackUnit();
 		}
 	}else{
 		//add to BuildingController
 		bc->AddBuilding(u);
-		BuildAttackUnit();
+		//BuildAttackUnit();
 		ai->knowledge->selfInfo->resourceInfo->RemoveChangeToCome(u);
 	}
 
@@ -89,6 +90,19 @@ void Decision::UnitFinished(int unit)
 	{
 		ai->knowledge->selfInfo->baseInfo->AddBuilding(u);
 	}
+		int unitDefId = rl->Update();
+		if ( unitDefId != -1 )
+		{
+			SBuildUnitCommand c;
+			c.toBuildUnitDefId = unitDefId;
+			c.timeOut = 10000000;
+			c.facing = 0;
+			c.options = 0;
+			gc->ErectBuilding( c );
+		}
+		else ai->utility->ChatMsg( "we have reached our goal!!" );
+		ai->utility->ChatMsg( "RL: Building unit with unitdef: %d", unitDefId );
+	
 }
 
 ///called when one of our units are destoyed
@@ -223,11 +237,12 @@ void Decision::Update(int frame)
 {
 
 	if(frame == 1)
-	{
+	{	
 		ai->knowledge->mapInfo->scoutMap->DrawGrid();
 
 		ai->knowledge->mapInfo->resourceMap->Update();
 		ai->knowledge->mapInfo->pathfindingMap->Update();
+		/*
 		UnitDef *solar, *kbotLab, *metalEx, *lltDef;
 		SBuildUnitCommand metalExOrder, kbotLabOrder, solarOrder, lltDefOrder;
 		for ( int i = 0 ; i < ai->callback->GetUnitDefs().size() ; i++ )
@@ -282,6 +297,7 @@ void Decision::Update(int frame)
 		//while (num--) {
 		//	gc->ErectBuilding(lltDefOrder);
 		//}
+		*/
 	}
 
 	if(frame % 60 == 0)
@@ -337,7 +353,7 @@ void Decision::Update(int frame)
 	{
 		ai->knowledge->selfInfo->baseInfo->DrawBasePerimiter();
 		ai->knowledge->enemyInfo->baseInfo->DrawBasePerimiter();
-		BuildSomethingUsefull();
+		//BuildSomethingUsefull();
 	}
 
 	if ( frame % 120 == 60 )
@@ -436,7 +452,7 @@ void Decision::UnitIdle( int id )
 {
 	Unit* u = Unit::GetInstance( ai->callback, id );
 	gc->UnitIdle( u );
-	BuildSomethingUsefull();
+	//BuildSomethingUsefull();
 	//Construction groups has nothing to do... So build something we need!
 }
 

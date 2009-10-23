@@ -12,6 +12,8 @@
 #include <stdlib.h>
 #include <map>
 #include <math.h>
+#include <iostream>
+#include <fstream>
 
 #include "Unit.h"
 #include "UnitDef.h"
@@ -39,7 +41,8 @@ enum LogTypes {
 	KMEDOIDS	= 1<<8,
 	GROUPING	= 1<<9,
 	MISC		= 1<<10,
-	SLOPEMAP	= 1<<11
+	SLOPEMAP	= 1<<11,
+	LOG_RL		= 1<<12
 };
 
 

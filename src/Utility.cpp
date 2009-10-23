@@ -35,12 +35,17 @@ bool Utility::IsDebug()
 ///Load the options set for the AI
 void Utility::InitializeOptions()
 {
-	if (strcmp(OptionValues::GetInstance(ai->callback)->GetValueByKey("debug"),"true")==0
-		||
-		strcmp(OptionValues::GetInstance(ai->callback)->GetValueByKey("debug"),"1")==0)
+	const char* c = OptionValues::GetInstance(ai->callback)->GetValueByKey("debug");
+	if ( c != NULL )
 	{
-		debug = true;
+		if (strcmp(c ,"true")==0
+			||
+			strcmp( c ,"1")==0)
+		{
+			debug = true;
+		}
 	}
+	else debug = true;
 }
 
 ///Prints a line in the log file
