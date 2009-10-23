@@ -20,61 +20,58 @@ namespace brainSpace {
 	struct RL_Q
 	{
 		float* actionValueFunction;
-
-		RL_Q( int numStates, int numActions )
+		int size;
+		char *File;
+		
+		void LoadFromFile()
 		{
-			actionValueFunction = new float[numStates*numActions];
-			for ( int i = 0 ; i < numStates*numActions ; i++ )
-				actionValueFunction[i] = 0;
+			ifstream readFile;
+
+			readFile.open( File, ios::binary | ios::in );
+			readFile.read( (char*)actionValueFunction, sizeof(float)*size );
+
+			readFile.close();
+		}
+
+		RL_Q( int numStates, int numActions,const char *dir )
+		{
+			size = numStates*numActions;
+			actionValueFunction = new float[size];
+			
+			char filename[200];
+			char *path = new char[200];
+			strcpy(path, dir);
+			SNPRINTF( filename, 200, "q.bin");
+			strcat(path, filename);
+
+			FILE* fp = NULL;
+			fp = fopen( path, "rb" );
+			if( fp != NULL )
+			{
+				fclose( fp );
+				LoadFromFile();
+			}
+			else
+			{
+				for ( int i = 0 ; i < size ; i++ )
+					actionValueFunction[i] = 0;
+			}
+			File = path;
 		}
 
 		~RL_Q()
 		{
 			delete[] actionValueFunction;
+			delete[] File;
 		}
 
-		void LoadFromFile( const char* file )
+		void SaveToFile()
 		{
-			/*
-			ifstream readFile;
-
-			readFile.open( "q.bin", ios::binary | ios::in );
-
-			for ( int i = 0 ; i < RL_ACTION_INDEX ; i++ )
-			{
-				for ( int j = 0 ; j < RL_SOLAR_INDEX*RL_MEX_INDEX*RL_LAB_INDEX ; j++ )
-				{
-					float f;
-					readFile.read( (char*)&f, sizeof(float) );
-					RL_State s( ai, j/400, (j%400)/20, j%20 );
-					ValueFunction->SetValue( &s, Actions[i], f );
-				}
-			}
-			readFile.close();
-			*/
-		}
-
-		void SaveToFile( const char* file )
-		{
-			/*
-			ofstream file( "q.bin", ios::binary | ios::out );
-			for ( int i = 0 ; i < RL_ACTION_INDEX ; i++ )
-			{
-				for ( int j = 0 ; j < RL_SOLAR_INDEX ; j++ )
-				{
-					for ( int k = 0 ; k < RL_MEX_INDEX ; k++ )
-				{
-					for ( int l = 0 ; l < RL_LAB_INDEX ; l++ )
-				{
-					RL_State s( ai, l, j, k );
-					RL_Action a(
-					file.write( (char*)&Q[j][i], sizeof(float) );
-
-				}
 			
-			}
+			ofstream file( File, ios::binary | ios::out );
+			file.write( (char*)actionValueFunction, sizeof(float)*size );
 			file.close();
-			*/
+			
 		}
 
 		float GetValue( RL_State* state, RL_Action* action )

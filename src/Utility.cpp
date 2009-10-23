@@ -273,3 +273,18 @@ void Utility::AssignColorToGraphics( int figureGroupID )
 	}
 	ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_DRAWER_FIGURE_SET_COLOR, &color);
 }
+
+bool Utility::FileExists( const char* FileName )
+{
+    FILE* fp = NULL;
+
+	ai->utility->Log( ALL, LOG_RL, "Pik!" );
+    fp = fopen( FileName, "rb" );
+    if( fp != NULL )
+    {
+        fclose( fp );
+        return true;
+    }
+
+    return false;
+}

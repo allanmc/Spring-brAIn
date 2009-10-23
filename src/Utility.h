@@ -39,6 +39,7 @@ namespace brainSpace
 		int DrawLine(SAIFloat3 start, SAIFloat3 end, bool arrow = false, float width = 20.0f, int figureId = 0 );
 		void RemoveGraphics(int figureId);
 		bool IsDebug();
+		bool FileExists( const char* FileName );
 	};
 }
 #endif

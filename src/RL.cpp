@@ -20,15 +20,7 @@ RL::RL( AIClasses* aiClasses)
 	Actions.push_back( new RL_Action( -1, 3 ) );
 
 
-	if ( FileExists( "q.bin" ) )
-	{
-		ai->utility->Log( ALL, LOG_RL, "File exists, loading data" );
-		ValueFunction->LoadFromFile("q.bin");
-	}
-	else
-	{
-		ValueFunction = new RL_Q( RL_SOLAR_INDEX*RL_MEX_INDEX*RL_LAB_INDEX, RL_ACTION_INDEX );
-	}
+	ValueFunction = new RL_Q(RL_LAB_INDEX*RL_MEX_INDEX*RL_SOLAR_INDEX,RL_ACTION_INDEX,DataDirs::GetInstance(ai->callback)->GetWriteableDir());
 
 	Epsilon = 9;
 	PreviousState = NULL;
@@ -37,21 +29,6 @@ RL::RL( AIClasses* aiClasses)
 
 RL::~RL()
 {
-}
-
-bool RL::FileExists( const char* FileName )
-{
-    FILE* fp = NULL;
-
-	ai->utility->Log( ALL, LOG_RL, "Pik!" );
-    fp = fopen( FileName, "rb" );
-    if( fp != NULL )
-    {
-        fclose( fp );
-        return true;
-    }
-
-    return false;
 }
 
 RL_State* RL::GetState()
@@ -130,7 +107,7 @@ RL_Action *RL::Update( )
 
 	if ( terminal )
 	{
-		ValueFunction->SaveToFile("q.bin");
+		ValueFunction->SaveToFile();
 		return new RL_Action(-1,-1);//MEANS THAT YOU SHOULD STOP NOW!!
 	}
 	return nextAction;
