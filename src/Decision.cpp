@@ -302,6 +302,7 @@ void Decision::Update(int frame)
 
 	if(frame % 60 == 0)
 	{
+		ai->knowledge->mapInfo->pathfindingMap->Update();
 		//ai->utility->Log( DEBUG, KNOWLEDGE, "pre-update" );
 		ai->knowledge->mapInfo->scoutMap->Update();
 		//ai->utility->Log( DEBUG, KNOWLEDGE, "update" );
