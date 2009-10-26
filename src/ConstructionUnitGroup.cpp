@@ -229,14 +229,13 @@ bool ConstructionUnitGroup::InersectsWithMex(UnitDef *unitDef, SAIFloat3 pos, SA
 ///@return the closest nonmex buildsite
 SAIFloat3 ConstructionUnitGroup::FindClosestNonMetalExtractionSite(UnitDef *unitDef, SAIFloat3 buildPos, float searchRadius, int minDist, int facing)
 {
-	UnitDef *mexDef = ai->utility->GetUnitDef("armmex");
 	SAIFloat3 pos;
 	SAIFloat3 closestMexSite;
 	float tempMinDist = minDist;
 	bool firstRun = true;
 	bool isAllMetalMap = false;
-	SAIFloat3 *hmm;
-	if (ai->callback->GetMap()->GetResourceMapSpotsPositions(*ai->utility->GetResource("Metal"), hmm).size() > 200)
+	
+	if (ai->callback->GetMap()->GetResourceMapSpotsPositions(*ai->utility->GetResource("Metal"), NULL).size() > 200)
 	{
 		isAllMetalMap = true;
 	}
