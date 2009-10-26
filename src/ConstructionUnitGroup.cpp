@@ -197,6 +197,26 @@ void ConstructionUnitGroup::SetAvailable()
 	
 }
 
+///@returns whether the build location is on a metal extraction site
+bool ConstructionUnitGroup::IsMetalExtracitonSite(UnitDef *unitDef, SAIFloat3 pos)
+{
+	SAIFloat3 closestMexSite = FindClosestMetalExtractionSite(pos);
+	return InersectsWithMex(unitDef, pos, closestMexSite); 
+}
+
+bool ConstructionUnitGroup::InersectsWithMex(UnitDef *unitDef, SAIFloat3 pos, SAIFloat3 mexPos)
+{
+	UnitDef *mexDef = ai->utility->GetUnitDef("armmex");
+	bool retVal = ai->math->BoxIntersect(	pos,
+											unitDef->GetXSize(),
+											unitDef->GetZSize(),
+											mexPos,
+											mexDef->GetXSize(),
+											mexDef->GetZSize());
+	ai->utility->Log(ALL, MISC, "Checking IsMetalExtracitonSite: %i", retVal);
+	return retVal;
+}
+
 ///Find closest buildPos which is not on a metal extraction site
 ///@return the closest nonmex buildsite
 SAIFloat3 ConstructionUnitGroup::FindClosestNonMetalExtractionSite(UnitDef *unitDef, SAIFloat3 buildPos, float searchRadius, int minDist, int facing)
@@ -206,6 +226,11 @@ SAIFloat3 ConstructionUnitGroup::FindClosestNonMetalExtractionSite(UnitDef *unit
 	SAIFloat3 closestMexSite;
 	float tempMinDist = minDist;
 	bool firstRun = true;
+	
+	SAIFloat3 *hmm;
+	ai->utility->Log(ALL, MISC,"Check NumResourceMapSpots: %i", ai->callback->GetMap()->GetResourceMapSpotsPositions(*ai->utility->GetResource("Metal"), hmm).size());
+	ai->utility->Log(ALL, MISC,"Check MaxResource: %i", ai->callback->GetMap()->GetMaxResource(*ai->utility->GetResource("Metal")));
+	
 	do
 	{
 		if (!firstRun) {
@@ -218,7 +243,7 @@ SAIFloat3 ConstructionUnitGroup::FindClosestNonMetalExtractionSite(UnitDef *unit
 		pos = ai->callback->GetMap()->FindClosestBuildSite( *unitDef , buildPos, searchRadius, tempMinDist, facing);
 		closestMexSite = FindClosestMetalExtractionSite(pos);
 		ai->utility->Log(ALL, MISC, "Doing FindClosestMetalExtractionSite iteration");
-	} while ( ai->utility->EuclideanDistance(pos, closestMexSite) < mexDef->GetRadius()+unitDef->GetRadius()
+	} while ( InersectsWithMex(unitDef, pos, closestMexSite)
 			  &&
 			  tempMinDist<searchRadius );
 	
@@ -281,7 +306,9 @@ SAIFloat3 ConstructionUnitGroup::FindGoodBuildSite(SAIFloat3 builderPos, UnitDef
 				newPos.x += muls[i][0]*((ud->GetXSize()*8/2)+(building->GetXSize()*8/2));
 				newPos.z += muls[i][1]*((ud->GetZSize()*8/2)+(building->GetZSize()*8/2));
 				float newDist = ai->utility->EuclideanDistance(builderPos,newPos);
-				if(newDist < bestDistance &&  ai->callback->GetMap()->IsPossibleToBuildAt(*building, newPos, 0))
+				if(newDist < bestDistance
+					&&  ai->callback->GetMap()->IsPossibleToBuildAt(*building, newPos, 0)
+					&& !IsMetalExtracitonSite(building, newPos))
 				{
 					//TODO: test if it is blocking a contruction yard
 					bestBuildSpot = newPos;

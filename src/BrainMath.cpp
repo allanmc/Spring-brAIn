@@ -27,6 +27,20 @@ vector<SAIFloat3> BrainMath::Sort(vector<SAIFloat3> points)
 	return points;
 }
 
+bool BrainMath::BoxIntersect(SAIFloat3 pos1, float width1, float height1, SAIFloat3 pos2, float width2, float height2)
+{
+	CBoundingBox box1;
+	CBoundingBox box2;
+	box1.topLeft.x = pos1.x - width1/2;
+	box1.topLeft.z = pos1.z - height1/2;
+	box1.bottomRight.x = pos1.x + width1/2;
+	box1.bottomRight.z = pos1.z + height1/2;
+	box2.topLeft.x = pos2.x - width2/2;
+	box2.topLeft.z = pos2.z - height2/2;
+	box2.bottomRight.x = pos2.x + width2/2;
+	box2.bottomRight.z = pos2.z + height2/2;
+	return box1.Intersects(box2);
+}
 
 bool BrainMath::CircleIntersectBoundingBox( CBoundingBox box, SAIFloat3 center, float radius )
 {
