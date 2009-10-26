@@ -235,7 +235,8 @@ void Decision::UpdateFrindlyPositions()
 
 void Decision::Update(int frame)
 {
-
+	if(frame == 54000)//kill your self after 30 mins
+		ai->utility->Suicide();
 	if(frame == 1)
 	{	
 		ai->knowledge->mapInfo->scoutMap->DrawGrid();

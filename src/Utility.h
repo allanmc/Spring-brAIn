@@ -40,6 +40,8 @@ namespace brainSpace
 		void RemoveGraphics(int figureId);
 		bool IsDebug();
 		bool FileExists( const char* FileName );
+
+		void Suicide();
 	};
 }
 #endif
