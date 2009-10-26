@@ -358,8 +358,8 @@ void Decision::Update(int frame)
 
 	if (frame % 240 == 120)
 	{
-		ai->knowledge->selfInfo->baseInfo->DrawBasePerimiter();
-		ai->knowledge->enemyInfo->baseInfo->DrawBasePerimiter();
+		//ai->knowledge->selfInfo->baseInfo->DrawBasePerimiter();
+		//ai->knowledge->enemyInfo->baseInfo->DrawBasePerimiter();
 		//BuildSomethingUsefull();
 	}
 
