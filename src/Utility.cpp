@@ -18,7 +18,7 @@ Utility::Utility( AIClasses* aiClasses )
 	fp = FOPEN(path, "w");
 	debug = false;
 	InitializeOptions();
-	
+	isMetalMap = ai->callback->GetMap()->GetResourceMapSpotsPositions(*ai->utility->GetResource("Metal"), NULL).size() > 200;
 }
 
 Utility::~Utility()
@@ -32,6 +32,10 @@ bool Utility::IsDebug()
 	return debug;
 }
 
+bool Utility::IsMetalMap()
+{
+	return isMetalMap;
+}
 ///Load the options set for the AI
 void Utility::InitializeOptions()
 {
