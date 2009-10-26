@@ -162,7 +162,7 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 		{
 			ai->utility->ChatMsg( "Setting lab build position set" );	
 			//order.buildPos = ai->callback->GetMap()->FindClosestBuildSite( *unitDef , buildPos, 200, 0, 0 );
-			order.buildPos = FindClosestNonMetalExtractionSite(unitDef, buildPos, 200, 0, 0);
+			order.buildPos = FindClosestNonMetalExtractionSite(unitDef, buildPos, 1000, 0, 0);
 			if (order.buildPos.y == -1)
 			{
 				ai->utility->ChatMsg("Could not FindClosestNonMexSite...");
@@ -234,11 +234,13 @@ SAIFloat3 ConstructionUnitGroup::FindClosestNonMetalExtractionSite(UnitDef *unit
 	SAIFloat3 closestMexSite;
 	float tempMinDist = minDist;
 	bool firstRun = true;
-	
+	bool isAllMetalMap = false;
 	SAIFloat3 *hmm;
-	ai->utility->Log(ALL, MISC,"Check NumResourceMapSpots: %i", ai->callback->GetMap()->GetResourceMapSpotsPositions(*ai->utility->GetResource("Metal"), hmm).size());
-	ai->utility->Log(ALL, MISC,"Check MaxResource: %i", ai->callback->GetMap()->GetMaxResource(*ai->utility->GetResource("Metal")));
-	
+	if (ai->callback->GetMap()->GetResourceMapSpotsPositions(*ai->utility->GetResource("Metal"), hmm).size() > 200)
+	{
+		isAllMetalMap = true;
+	}
+
 	do
 	{
 		if (!firstRun) {
@@ -251,7 +253,9 @@ SAIFloat3 ConstructionUnitGroup::FindClosestNonMetalExtractionSite(UnitDef *unit
 		pos = ai->callback->GetMap()->FindClosestBuildSite( *unitDef , buildPos, searchRadius, tempMinDist, facing);
 		closestMexSite = FindClosestMetalExtractionSite(pos);
 		ai->utility->Log(ALL, MISC, "Doing FindClosestMetalExtractionSite iteration");
-	} while ( InersectsWithMex(unitDef, pos, closestMexSite)
+	} while ( !isAllMetalMap
+			  &&
+			  InersectsWithMex(unitDef, pos, closestMexSite)
 			  &&
 			  tempMinDist<searchRadius );
 	
