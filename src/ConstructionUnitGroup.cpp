@@ -156,7 +156,14 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 		}
 		else
 		{
-			order.buildPos = ai->callback->GetMap()->FindClosestBuildSite( *unitDef , buildPos, 200, 0, 0 );
+			//order.buildPos = ai->callback->GetMap()->FindClosestBuildSite( *unitDef , buildPos, 200, 0, 0 );
+			order.buildPos = FindClosestNonMetalExtractionSite(unitDef, buildPos, 200, 0, 0);
+			if (order.buildPos.y == -1)
+			{
+				ai->utility->Log(ALL, DECISION, "Could not FindClosestNonMexSite...");
+				return;
+			}
+		}
 			ai->utility->ChatMsg( "Lab build position set" );
 		}
 	}
@@ -192,6 +199,40 @@ void ConstructionUnitGroup::SetAvailable()
 		AssignBuildOrder( next );
 	}
 	
+}
+
+///Find closest buildPos which is not on a metal extraction site
+///@return the closest nonmex buildsite
+SAIFloat3 ConstructionUnitGroup::FindClosestNonMetalExtractionSite(UnitDef *unitDef, SAIFloat3 buildPos, float searchRadius, int minDist, int facing)
+{
+	UnitDef *mexDef = ai->utility->GetUnitDef("armmex");
+	SAIFloat3 pos;
+	SAIFloat3 closestMexSite;
+	float tempMinDist = minDist;
+	bool firstRun = true;
+	do
+	{
+		if (!firstRun) {
+			tempMinDist = tempMinDist +
+				ai->utility->EuclideanDistance(buildPos, closestMexSite) +
+				unitDef->GetRadius();//Increase minimum distance a suitable amount
+		} else {
+			firstRun = false;
+		}
+		pos = ai->callback->GetMap()->FindClosestBuildSite( *unitDef , buildPos, searchRadius, tempMinDist, facing);
+		closestMexSite = FindClosestMetalExtractionSite(pos);
+		ai->utility->Log(ALL, MISC, "Doing FindClosestMetalExtractionSite iteration");
+	} while ( ai->utility->EuclideanDistance(pos, closestMexSite) < mexDef->GetRadius()+unitDef->GetRadius()
+			  &&
+			  tempMinDist<searchRadius );
+	
+	if (ai->utility->EuclideanDistance(pos, buildPos) > searchRadius)
+	{
+		pos = buildPos; //We did not find a good place to build... Return orginal buildPos,
+		pos.y = -1;		//and set y=-1 to indicate error
+	}
+	
+	return pos;
 }
 
 ///Maybe we should look into Voronoi diagrams to optimize this :P

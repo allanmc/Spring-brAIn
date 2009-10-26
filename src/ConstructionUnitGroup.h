@@ -30,6 +30,7 @@ namespace brainSpace
 		void QueueBuildOrder( SBuildUnitCommand order );
 	private:
 		SAIFloat3 FindClosestMetalExtractionSite( SAIFloat3 pos );
+		SAIFloat3 FindClosestNonMetalExtractionSite(UnitDef *unitDef, SAIFloat3 buildPos, float searchRadius, int minDist, int facing);
 		queue<SBuildUnitCommand> BuildQueue;
 		int BaseDefenseCounter;
 		int BaseDefenseCounterStart;
