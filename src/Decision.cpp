@@ -243,6 +243,7 @@ void Decision::Update(int frame)
 		ai->utility->Suicide();
 	if(frame == 1)
 	{	
+		ai->utility->LaterInitialization();
 		ai->knowledge->mapInfo->scoutMap->DrawGrid();
 
 		ai->knowledge->mapInfo->resourceMap->Update();

@@ -41,6 +41,7 @@ namespace brainSpace
 		bool IsDebug();
 		bool FileExists( const char* FileName );
 		bool IsMetalMap();
+		void LaterInitialization();
 		void Suicide();
 	};
 }

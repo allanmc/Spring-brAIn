@@ -205,9 +205,41 @@ void ConstructionUnitGroup::SetAvailable()
 	
 }
 
+///@returns whether a new building would block a lab
+bool ConstructionUnitGroup::BuildBlocksLabs(UnitDef *toBuildUnitDef, SAIFloat3 pos)
+{
+	vector<Unit*> units = ai->callback->GetFriendlyUnits();
+	UnitDef *unitDef;
+	//Check if the new building at the selected location would block any exsisting labs
+	for (int i = 0; i < units.size(); i++) 
+	{
+		unitDef = units[i]->GetDef();
+		if ( strcmp(unitDef->GetName(), "armlab")==0 )
+		{
+			//Use pathfinding to check if units[i] has a path out of the base
+			//without using the locaion of the new building
+			if (false/*is there a path?*/) 
+			{
+				//There is a blocking problem with that build
+				return false;
+			}
+		}
+	}
+	//If what we want to build is a lab, check that this position allows its units a path out of the base
+	if ( strcmp(toBuildUnitDef->GetName(), "armlab")==0 && false/*is there a path?*/) 
+	{
+		return false;
+	}
+	return true;
+}
+
 ///@returns whether the build location is on a metal extraction site
 bool ConstructionUnitGroup::IsMetalExtracitonSite(UnitDef *unitDef, SAIFloat3 pos)
 {
+	if (ai->utility->IsMetalMap())
+	{
+		return false;//Since metal can be extracted from all spots, there are no limited metal extraction sites
+	}
 	SAIFloat3 closestMexSite = FindClosestMetalExtractionSite(pos);
 	return InersectsWithMex(unitDef, pos, closestMexSite); 
 }
@@ -265,13 +297,13 @@ SAIFloat3 ConstructionUnitGroup::FindClosestNonMetalExtractionSite(UnitDef *unit
 ///@return the closest metal spot to a given position
 SAIFloat3 ConstructionUnitGroup::FindClosestMetalExtractionSite(SAIFloat3 pos/*, Resource* metal */ )
 {
-	/*if (ai->utility->IsMetalMap())
+	if (ai->utility->IsMetalMap())
 	{
-		ai->utility->Log(ALL, MISC, "FindClosestMetalExtractionSite on MetalMap");
+		//ai->utility->Log(ALL, MISC, "FindClosestMetalExtractionSite on MetalMap");
 		UnitDef *mexDef = ai->utility->GetUnitDef("armmex");
-		ai->utility->Log(ALL, MISC, "FindClosestMetalExtractionSite found  mexDef");
+		//ai->utility->Log(ALL, MISC, "FindClosestMetalExtractionSite found  mexDef");
 		return ai->callback->GetMap()->FindClosestBuildSite( *mexDef, pos, 1000, 0, 0);
-	}*/
+	}
 	
 	vector<SAIFloat3> spots;
 	spots = ai->callback->GetMap()->GetResourceMapSpotsPositions( *(ai->utility->GetResource("Metal")), &pos );
