@@ -100,7 +100,7 @@ RL_Action *RL::Update( )
 	int reward = -(ai->frame - PreviousFrame)/30;
 	if ( state->LabCount == 4 )
 	{
-		reward = 100;
+		reward += 100;
 		terminal = true;
 	}
 
