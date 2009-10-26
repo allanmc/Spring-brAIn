@@ -290,6 +290,7 @@ bool Utility::FileExists( const char* FileName )
 
 void Utility::Suicide()
 {
+	Log(IMPORTANT, MISC, "Bye Cruel world!!...."); 
 	vector<Unit*> units = ai->callback->GetFriendlyUnits();
 
 	vector<Unit*>::iterator it;
