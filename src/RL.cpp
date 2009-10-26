@@ -37,7 +37,7 @@ RL_State* RL::GetState()
 	int mexCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName( "armmex" );
 	int labCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName( "armlab" );
 	RL_State *state = new RL_State(ai,labCount,solarCount,mexCount);
-	ai->utility->Log( ALL, LOG_RL, "Solar: %d. Lab: %d. Mex: %d. State: %d", solarCount, labCount, mexCount, state );
+	ai->utility->Log( ALL, LOG_RL, "Solar: %d. Lab: %d. Mex: %d. State: %d", solarCount, labCount, mexCount, state->GetID() );
 	return state;
 }
 
@@ -89,7 +89,6 @@ RL_Action *RL::Update( )
 	RL_Action *nextAction = FindNextAction( state );
 	RL_Action *bestAction = FindBestAction( state );
 
-	ai->utility->Log( ALL, LOG_RL, "State: %d", state->GetID() );
 	if ( PreviousState == NULL )
 	{
 		PreviousState = state;
