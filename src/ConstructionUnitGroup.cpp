@@ -217,6 +217,7 @@ SAIFloat3 ConstructionUnitGroup::FindClosestNonMetalExtractionSite(UnitDef *unit
 		}
 		pos = ai->callback->GetMap()->FindClosestBuildSite( *unitDef , buildPos, searchRadius, tempMinDist, facing);
 		closestMexSite = FindClosestMetalExtractionSite(pos);
+		ai->utility->Log(ALL, MISC, "Doing FindClosestMetalExtractionSite iteration");
 	} while ( ai->utility->EuclideanDistance(pos, closestMexSite) < mexDef->GetRadius()+unitDef->GetRadius()
 			  &&
 			  tempMinDist<searchRadius );
