@@ -50,12 +50,12 @@ RL_Action *RL::FindNextAction( RL_State* state )
 	if ( r <= Epsilon ) //non-greedy
 	{
 		action = stateActions[rand()%stateActions.size()];
-		ai->utility->Log( ALL, LOG_RL, "Non-greedy: id=%d unitdef=", action->ID, action->UnitDefID );
+		ai->utility->Log( ALL, LOG_RL, "Non-greedy: actionID=%d unitdef=%d", action->ID, action->UnitDefID );
 	}
 	else //greedy
 	{
 		action = FindBestAction(state);
-		ai->utility->Log( ALL, LOG_RL, "Greedy: id=%d unitdef=", action->ID, action->UnitDefID );
+		ai->utility->Log( ALL, LOG_RL, "Greedy: actionID=%d unitdef=%d", action->ID, action->UnitDefID );
 	}
 	return action;
 }
@@ -89,6 +89,7 @@ RL_Action *RL::Update( )
 	RL_Action *nextAction = FindNextAction( state );
 	RL_Action *bestAction = FindBestAction( state );
 
+	ai->utility->Log( ALL, LOG_RL, "State: %d", state->GetID() );
 	if ( PreviousState == NULL )
 	{
 		PreviousState = state;
