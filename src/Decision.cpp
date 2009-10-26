@@ -100,7 +100,11 @@ void Decision::UnitFinished(int unit)
 		c.options = 0;
 		gc->ErectBuilding( c );
 	}
-	else ai->utility->ChatMsg( "we have reached our goal!!" );
+	else 
+	{
+		ai->utility->ChatMsg( "we have reached our goal!!" );
+		ai->utility->Suicide();
+	}
 	ai->utility->ChatMsg( "RL: Building unit with unitdef: %d", action->UnitDefID );
 
 }
@@ -235,7 +239,8 @@ void Decision::UpdateFrindlyPositions()
 
 void Decision::Update(int frame)
 {
-
+	if(frame == 54000)//kill your self after 30 mins
+		ai->utility->Suicide();
 	if(frame == 1)
 	{	
 		ai->knowledge->mapInfo->scoutMap->DrawGrid();
