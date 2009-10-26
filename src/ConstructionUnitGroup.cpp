@@ -60,13 +60,17 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 {
 	//SAIFloat3 buildPos = Units[0]->GetPos();
 	SAIFloat3 buildPos = Units.begin()->first->GetPos(); //ai->callback->GetMap()->GetStartPos();
+	ai->utility->ChatMsg( "order tobuild id: %d", order.toBuildUnitDefId );
+	ai->utility->ChatMsg( "order options : %d", order.options );
+	ai->utility->ChatMsg( "order timeout : %d", order.timeOut );
+	ai->utility->ChatMsg( "order facing: %d", order.facing );
+	
 	
 	Idle = false;
 	
 	order.unitId = Units.begin()->first->GetUnitId();
+	ai->utility->ChatMsg( "order builder id: %d", order.unitId );
 	order.timeOut = 40000;
-	
-	vector<UnitDef*> defs = ai->callback->GetUnitDefs();
 
 	bool isMetalExtractor = false;
 	bool isDefense = false;
@@ -75,6 +79,7 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	{
 		buildPos = FindClosestMetalExtractionSite( buildPos );
 		isMetalExtractor = true;
+		ai->utility->ChatMsg( "building metal extractor" );
 	}
 	
 
@@ -151,21 +156,24 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 		if(order.toBuildUnitDefId == ai->utility->GetUnitDef("armsolar")->GetUnitDefId())
 		{
 			order.buildPos = FindGoodBuildSite(this->GetPos(),unitDef, 1024);
+			ai->utility->ChatMsg( "Solar build position set" );
 		}
 		else
 		{
+			ai->utility->ChatMsg( "Setting lab build position set" );	
 			//order.buildPos = ai->callback->GetMap()->FindClosestBuildSite( *unitDef , buildPos, 200, 0, 0 );
 			order.buildPos = FindClosestNonMetalExtractionSite(unitDef, buildPos, 200, 0, 0);
 			if (order.buildPos.y == -1)
 			{
-				ai->utility->Log(ALL, DECISION, "Could not FindClosestNonMexSite...");
+				ai->utility->ChatMsg("Could not FindClosestNonMexSite...");
 				return;
 			}
+			ai->utility->ChatMsg( "Lab build position set" );			
 		}
 	}
 	else
 	{
-		//ai->utility->ChatMsg( "Metal extractor build position set" );
+		ai->utility->ChatMsg( "Metal extractor build position set" );
 		order.buildPos = buildPos;
 	}
 	ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &order );
@@ -191,7 +199,7 @@ void ConstructionUnitGroup::SetAvailable()
 	{
 		const SBuildUnitCommand next = BuildQueue.front();
 		BuildQueue.pop();
-		//u->ChatMsg( "Queue is now: %d units long", BuildQueue.size() );
+		ai->utility->ChatMsg( "Queue is now: %d units long", BuildQueue.size() );
 		AssignBuildOrder( next );
 	}
 	
