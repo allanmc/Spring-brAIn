@@ -163,8 +163,7 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 				ai->utility->Log(ALL, DECISION, "Could not FindClosestNonMexSite...");
 				return;
 			}
-		}
-			ai->utility->ChatMsg( "Lab build position set" );
+			ai->utility->ChatMsg( "Lab build position set" );			
 		}
 	}
 	else
