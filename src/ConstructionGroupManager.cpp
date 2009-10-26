@@ -44,12 +44,12 @@ void ConstructionGroupManager::RemoveUnit( Unit* unit )
 ///@return 1 if an idle group was found, or 0 if the order was queued
 int ConstructionGroupManager::DelegateBuildOrder(SBuildUnitCommand order)
 {
-	//u->ChatMsg( "Unitgroups size: %d", UnitGroups.size() );
+	ai->utility->ChatMsg( "Unitgroups size: %d", UnitGroups.size() );
 	for ( int i = 0 ; i < (int)UnitGroups.size() ; i++ )
 	{
 		if ( UnitGroups[i]->IsIdle() && UnitGroups[i]->GetSize() > 0 )
 		{
-			//u->ChatMsg( "Assigning order to unit group %d", i );
+			ai->utility->ChatMsg( "Assigning order to unit group %d", i );
 			UnitGroups[i]->AssignBuildOrder( order );
 			return 1;
 		}

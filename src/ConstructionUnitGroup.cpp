@@ -75,6 +75,7 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	{
 		buildPos = FindClosestMetalExtractionSite( buildPos );
 		isMetalExtractor = true;
+		ai->utility->ChatMsg( "building metal extractor" );
 	}
 	
 
@@ -149,13 +150,19 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	{
 		UnitDef *unitDef = UnitDef::GetInstance(ai->callback, order.toBuildUnitDefId);
 		if(order.toBuildUnitDefId == ai->utility->GetUnitDef("armsolar")->GetUnitDefId())
+		{
 			order.buildPos = FindGoodBuildSite(this->GetPos(),unitDef, 1024);
+			ai->utility->ChatMsg( "Solar build position set" );
+		}
 		else
+		{
 			order.buildPos = ai->callback->GetMap()->FindClosestBuildSite( *unitDef , buildPos, 200, 0, 0 );
+			ai->utility->ChatMsg( "Lab build position set" );
+		}
 	}
 	else
 	{
-		//ai->utility->ChatMsg( "Metal extractor build position set" );
+		ai->utility->ChatMsg( "Metal extractor build position set" );
 		order.buildPos = buildPos;
 	}
 	ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &order );
