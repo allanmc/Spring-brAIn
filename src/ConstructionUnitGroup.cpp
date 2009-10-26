@@ -69,9 +69,8 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	Idle = false;
 	
 	order.unitId = Units.begin()->first->GetUnitId();
+	ai->utility->ChatMsg( "order builder id: %d", order.unitId );
 	order.timeOut = 40000;
-	
-	vector<UnitDef*> defs = ai->callback->GetUnitDefs();
 
 	bool isMetalExtractor = false;
 	bool isDefense = false;
@@ -161,11 +160,12 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 		}
 		else
 		{
+			ai->utility->ChatMsg( "Setting lab build position set" );	
 			//order.buildPos = ai->callback->GetMap()->FindClosestBuildSite( *unitDef , buildPos, 200, 0, 0 );
 			order.buildPos = FindClosestNonMetalExtractionSite(unitDef, buildPos, 200, 0, 0);
 			if (order.buildPos.y == -1)
 			{
-				ai->utility->Log(ALL, DECISION, "Could not FindClosestNonMexSite...");
+				ai->utility->ChatMsg("Could not FindClosestNonMexSite...");
 				return;
 			}
 			ai->utility->ChatMsg( "Lab build position set" );			
