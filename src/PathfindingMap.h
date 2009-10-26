@@ -18,6 +18,10 @@ namespace brainSpace {
 		virtual ~PathfindingMap();
 
 		void Update();
+
+		void AddBuilding( int unitID );
+
+		void RemoveBuilding( int unitID );
 	private:
 		void EffectCell(int index, float value);
 	};

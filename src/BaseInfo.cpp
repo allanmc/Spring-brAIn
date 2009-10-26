@@ -40,6 +40,8 @@ void BaseInfo::AddBuilding(Unit* building)
 	{
 		resourceBuildings++;
 	}
+
+	ai->knowledge->mapInfo->pathfindingMap->AddBuilding( building->GetUnitId() );
 }
 
 void BaseInfo::RemoveBuilding(Unit* building)

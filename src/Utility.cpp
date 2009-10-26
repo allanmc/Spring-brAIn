@@ -278,7 +278,6 @@ bool Utility::FileExists( const char* FileName )
 {
     FILE* fp = NULL;
 
-	ai->utility->Log( ALL, LOG_RL, "Pik!" );
     fp = fopen( FileName, "rb" );
     if( fp != NULL )
     {
@@ -287,4 +286,19 @@ bool Utility::FileExists( const char* FileName )
     }
 
     return false;
+}
+
+void Utility::Suicide()
+{
+	Log(IMPORTANT, MISC, "Bye Cruel world!!...."); 
+	vector<Unit*> units = ai->callback->GetFriendlyUnits();
+
+	vector<Unit*>::iterator it;
+	for(it = units.begin(); it != units.end(); it++)
+	{
+		SSelfDestroyUnitCommand command;
+		command.unitId = (*it)->GetUnitId();
+		command.timeOut = 99999;
+		ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_UNIT_SELF_DESTROY, &command);
+	}
 }
