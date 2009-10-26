@@ -60,6 +60,11 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 {
 	//SAIFloat3 buildPos = Units[0]->GetPos();
 	SAIFloat3 buildPos = Units.begin()->first->GetPos(); //ai->callback->GetMap()->GetStartPos();
+	ai->utility->ChatMsg( "order tobuild id: %d", order.toBuildUnitDefId );
+	ai->utility->ChatMsg( "order options : %d", order.options );
+	ai->utility->ChatMsg( "order timeout : %d", order.timeOut );
+	ai->utility->ChatMsg( "order facing: %d", order.facing );
+	
 	
 	Idle = false;
 	
