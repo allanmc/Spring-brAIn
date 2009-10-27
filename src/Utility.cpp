@@ -19,6 +19,11 @@ Utility::Utility( AIClasses* aiClasses )
 	debug = false;
 	InitializeOptions();
 	isMetalMap = false;
+	mexDef = GetUnitDef("armmex");
+	solarDef = GetUnitDef("armsolar");
+	lltDef = GetUnitDef("armllt");
+
+	Log(ALL, MISC, "Initialized Utility-class...");
 }
 
 Utility::~Utility()
@@ -34,6 +39,7 @@ bool Utility::IsDebug()
 
 void Utility::LaterInitialization()
 {
+	Log(ALL, MISC, "LaterInitialization()");
 	isMetalMap = ai->callback->GetMap()->GetResourceMapSpotsPositions(*ai->utility->GetResource("Metal"), NULL).size() > 200;
 }
 
@@ -109,6 +115,21 @@ void Utility::ChatMsg(std::string msg)
 	cmd.text = msg.c_str();
 	cmd.zone = 0;
 	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_SEND_TEXT_MESSAGE, &cmd);
+}
+
+UnitDef* Utility::GetMexDef()
+{
+	return mexDef;
+}
+
+UnitDef* Utility::GetSolarDef()
+{
+	return solarDef;
+}
+
+UnitDef* Utility::GetLLTDef()
+{
+	return lltDef;
 }
 
 ///@return the UnitDef of with a given name, or NULL if the UnitDef does not exists

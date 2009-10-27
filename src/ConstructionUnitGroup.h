@@ -37,7 +37,7 @@ namespace brainSpace
 		int BaseDefenseCounter;
 		int BaseDefenseCounterStart;
 		bool BaseDefenseHitBorder;
-		UnitDef* metalExtractorUnit;
+		SAIFloat3 safePosition;
 		bool BuildBlocksSelf(UnitDef *unitDef, SAIFloat3 pos, int facing);
 		SAIFloat3 FindBestDefensePosition(UnitDef *unitDef, SAIFloat3 buildPos);
 		SAIFloat3 GetUnitExitOfLab(SAIFloat3 centerPos, UnitDef *unitDef, int facing);

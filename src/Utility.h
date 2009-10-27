@@ -24,6 +24,10 @@ namespace brainSpace
 		bool debug;
 		void InitializeOptions();
 		bool isMetalMap;
+		springai::UnitDef *mexDef;
+		springai::UnitDef *solarDef;
+		springai::UnitDef *lltDef;
+
 	public:
 		Utility( AIClasses* aiClasses );
 		~Utility();
@@ -43,6 +47,9 @@ namespace brainSpace
 		bool IsMetalMap();
 		void LaterInitialization();
 		void Suicide();
+		springai::UnitDef* GetMexDef();
+		springai::UnitDef* GetSolarDef();
+		springai::UnitDef* GetLLTDef();
 	};
 }
 #endif

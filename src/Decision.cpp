@@ -468,8 +468,8 @@ void Decision::BuildSomethingUsefull()
 	if (gc->ConstructionGroupIsIdle())
 	{
 		//ai->utility->Log(ALL, MISC, "I have absolutely nothing to do now!");
-		UnitDef *armsolar = ai->utility->GetUnitDef("armsolar");
-		UnitDef *armmex = ai->utility->GetUnitDef("armmex");
+		UnitDef *armsolar = ai->utility->GetSolarDef();
+		UnitDef *armmex = ai->utility->GetMexDef();
 		UnitDef *armlab = ai->utility->GetUnitDef("armlab");
 		UnitDef *armcom = ai->utility->GetUnitDef("armcom");
 		int isAffordable = 0;

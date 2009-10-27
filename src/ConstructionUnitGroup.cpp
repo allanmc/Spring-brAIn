@@ -9,11 +9,17 @@ ConstructionUnitGroup::ConstructionUnitGroup( AIClasses* aiClasses, int groupID 
 	BaseDefenseCounter = 0;
 	BaseDefenseCounterStart = 0; 
 	BaseDefenseHitBorder = false;
-	metalExtractorUnit = ai->utility->GetUnitDef("armmex");
+	safePosition = (SAIFloat3){ai->callback->GetMap()->GetWidth()*8/2, 0.0, ai->callback->GetMap()->GetHeight()*8/2};
 }
 
 ConstructionUnitGroup::~ConstructionUnitGroup()
 {
+}
+
+///@return the safe position whether a building blocks the exit of out base
+SAIFloat3 ConstructionUnitGroup::GetSafePosition()
+{
+	return safePosition;
 }
 
 ///@return the UnitDef's of the units that the group is able to construct
@@ -70,22 +76,22 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	
 	Idle = false;
 	
-	order.unitId = Units.begin()->first->GetUnitId();
+	order.unitId = commander->GetUnitId();
 	ai->utility->ChatMsg( "order builder id: %d", order.unitId );
 	order.timeOut = 40000;
 
 
-	if ( order.toBuildUnitDefId == ai->utility->GetUnitDef("armmex")->GetUnitDefId() )
+	if ( order.toBuildUnitDefId == ai->utility->GetMexDef()->GetUnitDefId() )
 	{
 		order.buildPos = FindClosestMetalExtractionSite( buildPos );
 		ai->utility->ChatMsg( "Metal extractor build position set" );
 	}
 	//Check to see if unit-to-build is LLT, the defense structure, and find good spot
-	else if (order.toBuildUnitDefId == ai->utility->GetUnitDef("armllt")->GetUnitDefId()) {
-		order.buildPos = FindBestDefensePosition(ai->utility->GetUnitDef("armllt"), buildPos);
+	else if (order.toBuildUnitDefId == ai->utility->GetLLTDef()->GetUnitDefId()) {
+		order.buildPos = FindBestDefensePosition(ai->utility->GetLLTDef(), buildPos);
 		ai->utility->ChatMsg( "Defense build position set" );
 	}
-	else if (order.toBuildUnitDefId == ai->utility->GetUnitDef("armsolar")->GetUnitDefId())
+	else if (order.toBuildUnitDefId == ai->utility->GetSolarDef()->GetUnitDefId())
 	{
 		order.buildPos = FindGoodBuildSite(this->GetPos(),unitDef, 1024);
 		ai->utility->ChatMsg( "Solar build position set" );
@@ -284,7 +290,7 @@ bool ConstructionUnitGroup::InersectsWithMex(UnitDef *unitDef, SAIFloat3 pos, SA
 	{
 		return false;//Since metal can be extracted from all spots, there are no limited metal extraction sites
 	}
-	UnitDef *mexDef = ai->utility->GetUnitDef("armmex");
+	UnitDef *mexDef = ai->utility->GetMexDef();
 	bool retVal = ai->math->BoxIntersect(	pos,
 											unitDef->GetXSize(),
 											unitDef->GetZSize(),
@@ -341,7 +347,7 @@ SAIFloat3 ConstructionUnitGroup::FindClosestNonConflictingBuildSite(UnitDef *uni
 ///@return the closest metal spot to a given position
 SAIFloat3 ConstructionUnitGroup::FindClosestMetalExtractionSite(SAIFloat3 pos/*, Resource* metal */ )
 {
-	UnitDef *mexDef = ai->utility->GetUnitDef("armmex");
+	UnitDef *mexDef = ai->utility->GetMexDef();
 	if (ai->utility->IsMetalMap())
 	{
 		ai->utility->Log(ALL, MISC, "FindClosestMetalExtractionSite on MetalMap");
@@ -364,7 +370,7 @@ SAIFloat3 ConstructionUnitGroup::FindClosestMetalExtractionSite(SAIFloat3 pos/*,
 		//u->ChatMsg( "Distance: %f", distance );
 
 		if ( distance < closest
-			 && ai->callback->GetMap()->IsPossibleToBuildAt( *metalExtractorUnit, spots[i], 0 )
+			&& ai->callback->GetMap()->IsPossibleToBuildAt( *(ai->utility->GetMexDef()), spots[i], 0 )
 			 && !BuildBlocksSelf(mexDef, spots[i], 0) )
 		{
 			closest = distance;
