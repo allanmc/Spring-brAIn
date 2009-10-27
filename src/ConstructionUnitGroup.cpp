@@ -68,117 +68,42 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	ai->utility->ChatMsg( "order timeout : %d", order.timeOut );
 	ai->utility->ChatMsg( "order facing: %d", order.facing );
 	
-	
 	Idle = false;
 	
 	order.unitId = Units.begin()->first->GetUnitId();
 	ai->utility->ChatMsg( "order builder id: %d", order.unitId );
 	order.timeOut = 40000;
 
-	bool isMetalExtractor = false;
-	bool isDefense = false;
 
 	if ( order.toBuildUnitDefId == ai->utility->GetUnitDef("armmex")->GetUnitDefId() )
 	{
-		buildPos = FindClosestMetalExtractionSite( buildPos );
-		isMetalExtractor = true;
-		ai->utility->ChatMsg( "building metal extractor" );
+		order.buildPos = FindClosestMetalExtractionSite( buildPos );
+		ai->utility->ChatMsg( "Metal extractor build position set" );
 	}
-	
-
 	//Check to see if unit-to-build is LLT, the defense structure, and find good spot
-	if (order.toBuildUnitDefId == ai->utility->GetUnitDef("armllt")->GetUnitDefId()) {
-		UnitDef* llt = ai->utility->GetUnitDef("armllt");
-		isDefense = true;
-		//ai->utility->ChatMsg("We are now building a Defense structure, LLT");
-		//Divide map into quads, and find corner which buildPos is within
-		int mapSplitX = (ai->callback->GetMap()->GetWidth() / 2) * 8;
-		int mapSplitZ = (ai->callback->GetMap()->GetHeight() / 2) * 8;
-		float baseX = buildPos.x;
-		float baseZ = buildPos.z; 
-		float deltaX, deltaZ;
-		int defenseDensity = 3;
-		float weaponRange = llt->GetMaxWeaponRange();
-		/*
-		1|2
-		---
-		3|4
-		*/
-		if ( baseX <= mapSplitX && baseZ <= mapSplitZ ) //Quad 1
-		{
-			//ai->utility->ChatMsg("Quad 1");
-			deltaX = weaponRange - ( BaseDefenseCounter%2==0 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2)*(weaponRange/defenseDensity) : 0 );
-			deltaZ = weaponRange - ( BaseDefenseCounter%2==1 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2+1)*(weaponRange/defenseDensity) : 0 );
-		}
-		else if ( baseX > mapSplitX && baseZ <= mapSplitZ ) //Quad 2
-		{
-			//ai->utility->ChatMsg("Quad 2");
-			deltaX = -weaponRange + ( BaseDefenseCounter%2==0 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2)*(weaponRange/defenseDensity) : 0 );
-			deltaZ = weaponRange - ( BaseDefenseCounter%2==1 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2+1)*(weaponRange/defenseDensity) : 0 );
-		}
-		else if ( baseX <= mapSplitX && baseZ > mapSplitZ ) //Quad 3
-		{
-			//ai->utility->ChatMsg("Quad 3");
-			deltaX = weaponRange - ( BaseDefenseCounter%2==0 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2)*(weaponRange/defenseDensity) : 0 );
-			deltaZ = -weaponRange + ( BaseDefenseCounter%2==1 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2+1)*(weaponRange/defenseDensity) : 0 );
-		}
-		else //Quad 4
-		{
-			//ai->utility->ChatMsg("Quad 4");
-			deltaX = -weaponRange + ( BaseDefenseCounter%2==0 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2)*(weaponRange/defenseDensity) : 0 );
-			deltaZ = -weaponRange + ( BaseDefenseCounter%2==1 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2+1)*(weaponRange/defenseDensity) : 0 );
-		}
-		//ai->utility->ChatMsg("WeaponRange: %f", weaponRange);
-		//ai->utility->ChatMsg("deltX: %f", deltaX);
-		buildPos.x += deltaX;
-		buildPos.z += deltaZ;
-
-		
-		BaseDefenseCounter+=2;
-
-		if (BaseDefenseCounter >= 4) 
-		{
-			if (BaseDefenseCounter%2==0)
-			{
-				BaseDefenseCounter = 1;
-			}
-			else
-			{
-				BaseDefenseCounter = 0;
-				BaseDefenseCounterStart += 4;
-			}
-
-		}
-		
+	else if (order.toBuildUnitDefId == ai->utility->GetUnitDef("armllt")->GetUnitDefId()) {
+		order.buildPos = FindBestDefensePosition(ai->utility->GetUnitDef("armllt"), buildPos);
+		ai->utility->ChatMsg( "Defense build position set" );
 	}
-	
-	//Make sure that we can build at the desired position by finding the closest available buildsite to the desired site
-	if ( !isMetalExtractor )
+	else if (order.toBuildUnitDefId == ai->utility->GetUnitDef("armsolar")->GetUnitDefId())
 	{
-		if(order.toBuildUnitDefId == ai->utility->GetUnitDef("armsolar")->GetUnitDefId())
-		{
-			order.buildPos = FindGoodBuildSite(this->GetPos(),unitDef, 1024);
-			ai->utility->ChatMsg( "Solar build position set" );
-		}
-		else
-		{
-			ai->utility->ChatMsg( "Setting lab build position set" );	
-			//order.buildPos = ai->callback->GetMap()->FindClosestBuildSite( *unitDef , buildPos, 200, 0, 0 );
-			order.buildPos = FindClosestNonConflictingBuildSite(unitDef, buildPos, 1000, 0, 0);
-			if (order.buildPos.y == -1)
-			{
-				ai->utility->ChatMsg("Could not FindClosestNonMexSite...");
-				return;
-			}
-			ai->utility->ChatMsg( "Lab build position set" );			
-		}
+		order.buildPos = FindGoodBuildSite(this->GetPos(),unitDef, 1024);
+		ai->utility->ChatMsg( "Solar build position set" );
 	}
 	else
 	{
-		ai->utility->ChatMsg( "Metal extractor build position set" );
-		order.buildPos = buildPos;
+		order.buildPos = FindClosestNonConflictingBuildSite(unitDef, buildPos, 1000, 0, 0);
+		ai->utility->ChatMsg( "Lab build position set" );			
 	}
+	
 	//ai->utility->DrawLine(Units.begin()->first->GetPos(), order.buildPos, true);
+
+	//Did we get an errones buildPos`?
+	if (order.buildPos.y == -1)
+	{
+		ai->utility->ChatMsg("Could not get a build position in AssignBuildOrder()...");
+		return;
+	}
 
 	//Can we build here without blocking ourself?
 	if (BuildBlocksSelf(unitDef, order.buildPos, order.facing))
@@ -187,6 +112,70 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 		return;
 	}
 	ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &order );
+}
+
+SAIFloat3 ConstructionUnitGroup::FindBestDefensePosition(UnitDef *unitDef, SAIFloat3 buildPos)
+{
+	ai->utility->ChatMsg("We are now building a Defense structure: %s", unitDef->GetName());
+	//Divide map into quads, and find corner which buildPos is within
+	int mapSplitX = (ai->callback->GetMap()->GetWidth() / 2) * 8;
+	int mapSplitZ = (ai->callback->GetMap()->GetHeight() / 2) * 8;
+	float baseX = buildPos.x;
+	float baseZ = buildPos.z; 
+	float deltaX, deltaZ;
+	int defenseDensity = 3;
+	float weaponRange = unitDef->GetMaxWeaponRange();
+	/*
+	1|2
+	---
+	3|4
+	*/
+	if ( baseX <= mapSplitX && baseZ <= mapSplitZ ) //Quad 1
+	{
+		//ai->utility->ChatMsg("Quad 1");
+		deltaX = weaponRange - ( BaseDefenseCounter%2==0 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2)*(weaponRange/defenseDensity) : 0 );
+		deltaZ = weaponRange - ( BaseDefenseCounter%2==1 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2+1)*(weaponRange/defenseDensity) : 0 );
+	}
+	else if ( baseX > mapSplitX && baseZ <= mapSplitZ ) //Quad 2
+	{
+		//ai->utility->ChatMsg("Quad 2");
+		deltaX = -weaponRange + ( BaseDefenseCounter%2==0 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2)*(weaponRange/defenseDensity) : 0 );
+		deltaZ = weaponRange - ( BaseDefenseCounter%2==1 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2+1)*(weaponRange/defenseDensity) : 0 );
+	}
+	else if ( baseX <= mapSplitX && baseZ > mapSplitZ ) //Quad 3
+	{
+		//ai->utility->ChatMsg("Quad 3");
+		deltaX = weaponRange - ( BaseDefenseCounter%2==0 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2)*(weaponRange/defenseDensity) : 0 );
+		deltaZ = -weaponRange + ( BaseDefenseCounter%2==1 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2+1)*(weaponRange/defenseDensity) : 0 );
+	}
+	else //Quad 4
+	{
+		//ai->utility->ChatMsg("Quad 4");
+		deltaX = -weaponRange + ( BaseDefenseCounter%2==0 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2)*(weaponRange/defenseDensity) : 0 );
+		deltaZ = -weaponRange + ( BaseDefenseCounter%2==1 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2+1)*(weaponRange/defenseDensity) : 0 );
+	}
+	//ai->utility->ChatMsg("WeaponRange: %f", weaponRange);
+	//ai->utility->ChatMsg("deltX: %f", deltaX);
+	buildPos.x += deltaX;
+	buildPos.z += deltaZ;
+
+	
+	BaseDefenseCounter+=2;
+
+	if (BaseDefenseCounter >= 4) 
+	{
+		if (BaseDefenseCounter%2==0)
+		{
+			BaseDefenseCounter = 1;
+		}
+		else
+		{
+			BaseDefenseCounter = 0;
+			BaseDefenseCounterStart += 4;
+		}
+
+	}
+	return buildPos;
 }
 
 ///puts an order into a queue to be done later (when the group goes idle)
