@@ -9,7 +9,8 @@ PathfindingMap::PathfindingMap( AIClasses* aiClasses ) : BrainMap( aiClasses, 4 
 {
 
 	//Slopemap has Resolution = 2, where PFmap has Resolution = 4.
-
+	vector<float> slopeMap = ai->callback->GetMap()->GetSlopeMap();
+	SlopeMap = slopeMap;
 	for ( int z = 0 ; z < MapHeight ; z++ )
 		for ( int x = 0 ; x < MapWidth ; x++ )
 			ResetSlope( x, z );
@@ -137,13 +138,12 @@ void PathfindingMap::RemoveBuilding(Unit* unit)
 
 void PathfindingMap::ResetSlope( int xTile, int zTile )
 {
-	int width = ai->callback->GetMap()->GetWidth()/2;
 
-	vector<float> slopeMap = ai->callback->GetMap()->GetSlopeMap();
-	float slope1 = slopeMap[xTile*2+width*2*zTile];
-	float slope2 = slopeMap[((xTile*2)+1)+width*2*zTile];
-	float slope3 = slopeMap[(xTile*2)+width*2*zTile+width];
-	float slope4 = slopeMap[((xTile*2)+1)+width*2*zTile+width];
+	int width = ai->callback->GetMap()->GetWidth()/2;
+	float slope1 = SlopeMap[xTile*2+width*2*zTile];
+	float slope2 = SlopeMap[((xTile*2)+1)+width*2*zTile];
+	float slope3 = SlopeMap[(xTile*2)+width*2*zTile+width];
+	float slope4 = SlopeMap[((xTile*2)+1)+width*2*zTile+width];
 	float maxSlope =  max( slope4, max( slope3, max( slope1, slope2 ) ) );
 	MapArray[zTile*MapWidth + xTile] = maxSlope;
 }
