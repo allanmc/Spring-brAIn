@@ -143,7 +143,7 @@ vector<PathfindingNode*> PathfindingMap::FindPathTo( Unit* u, SAIFloat3 destinat
 		/** FIND IN OPENSET **/
 		for ( map<int, PathfindingNode*>::iterator i = openSet.begin() ; i != openSet.end() ; i++ )
 		{
-			if ( i->second->Fscore < lowestF && i->second->Slope < u->GetDef()->GetMoveData()->GetMaxSlope() )
+			if ( i->second->Fscore < lowestF )
 			{
 				lowestF = i->second->Fscore;
 				current = i->second;
@@ -215,11 +215,16 @@ vector<PathfindingNode*> PathfindingMap::FindPathTo( Unit* u, SAIFloat3 destinat
 					neighbour->ZIndex = z;
 					neighbour->Slope = MapArray[ z*MapWidth + x ];
 					//ai->utility->Log( ALL, SLOPEMAP, "(%d, %d) not in openset", neighbour->XIndex, neighbour->ZIndex );
-					openSet.insert( make_pair( z*MapWidth + x, neighbour ) );
+					if ( neighbour->Slope > u->GetDef()->GetMoveData()->GetMaxSlope() )
+					{
+						closedSet.insert( make_pair( z*MapWidth + x, neighbour ) );
+						tentativeIsBetter = false;
+					}
+					else
+						openSet.insert( make_pair( z*MapWidth + x, neighbour ) );
 				}
 				else
 				{
-					
 					neighbour = it->second;
 					if ( tentativeGScore < neighbour->Gscore )
 					{
