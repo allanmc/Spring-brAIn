@@ -273,10 +273,10 @@ void Decision::Update(int frame)
 	if(frame == 1)
 	{	
 		ai->utility->LaterInitialization();
-		ai->knowledge->mapInfo->scoutMap->DrawGrid();
+		//ai->knowledge->mapInfo->scoutMap->DrawGrid();
 
 		ai->knowledge->mapInfo->resourceMap->Update();
-		ai->knowledge->mapInfo->pathfindingMap->DrawGrid();
+		//ai->knowledge->mapInfo->pathfindingMap->DrawGrid();
 		ai->knowledge->mapInfo->pathfindingMap->Update();
 
 		/*

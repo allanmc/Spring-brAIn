@@ -8,6 +8,7 @@ using namespace brainSpace;
 
 Utility::Utility( AIClasses* aiClasses )
 {
+	debug = true;
 	ai = aiClasses;
 	char filename[200];
 	char path[200];
@@ -16,14 +17,16 @@ Utility::Utility( AIClasses* aiClasses )
 	SNPRINTF( filename, 200, "Brain-log-team%d.txt", aiClasses->callback->GetTeamId() );
 	strcat(path, filename);
 	fp = FOPEN(path, "w");
-	debug = false;
+	Log(ALL, MISC, "Initialized Utility-class...");
+
+	
 	InitializeOptions();
 	isMetalMap = false;
 	mexDef = GetUnitDef("armmex");
 	solarDef = GetUnitDef("armsolar");
 	lltDef = GetUnitDef("armllt");
 
-	Log(ALL, MISC, "Initialized Utility-class...");
+	
 }
 
 Utility::~Utility()
@@ -84,6 +87,7 @@ void Utility::Log(int logLevel, int logType, const char* msg, ...)
 		vfprintf(fp, msg, list);
 		va_end(list);
 		fputc('\n', fp);
+		fflush(fp);
 	}
 }
 

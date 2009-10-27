@@ -213,6 +213,8 @@ void ConstructionUnitGroup::SetAvailable()
 ///@returns whether a new building would block a lab
 bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 pos, int facing)
 {
+	ai->utility->Log(ALL, MISC, "BuildBlocksSelf...");
+
 	vector<Unit*> units = ai->callback->GetFriendlyUnits();
 	SAIFloat3 fromPos;
 	UnitDef *unitDef;
@@ -226,7 +228,7 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 			//without using the locaion of the new building
 			fromPos = GetUnitExitOfLab(units[i]->GetPos(), unitDef, units[i]->GetBuildingFacing());
 			
-			if (!IsPossibleToEscapeFrom(unitDef->GetBuildOptions()->first, toBuildUnitDef, pos, fromPos, GetSafePosition())) 
+			if (!ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom(unitDef->GetBuildOptions()[0], toBuildUnitDef, pos, fromPos, GetSafePosition())) 
 			{
 				//There is a blocking problem with that build
 				ai->utility->Log(ALL, MISC, "BuildBlocksSelf blocked build by reason 1 (No path from exit of an old %s)", unitDef->GetName());
@@ -239,7 +241,7 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 	if ( strcmp(toBuildUnitDef->GetName(), "armlab")==0) 
 	{
 		fromPos = GetUnitExitOfLab(pos, toBuildUnitDef, facing);
-		if (!IsPossibleToEscapeFrom(toBuildUnitDef->GetBuildOptions()->first, toBuildUnitDef, pos, fromPos, GetSafePosition()))
+		if (!ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom(toBuildUnitDef->GetBuildOptions()[0], toBuildUnitDef, pos, fromPos, GetSafePosition()))
 		{
 			ai->utility->Log(ALL, MISC, "BuildBlocksSelf blocked build by reason 2 (No path from exit of this new %s)", toBuildUnitDef->GetName());
 			return true;
@@ -248,7 +250,7 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 	//If we build this new building, does the commander have a path out of the base?
 	fromPos = commander->GetPos();
 	///TODO: Maybe ensure that the commander does not walk into a building-block "trap" :)
-	if (!IsPossibleToEscapeFrom(commander->GetDef(), toBuildUnitDef, pos, fromPos, GetSafePosition()))
+	if (!ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom(commander->GetDef(), toBuildUnitDef, pos, fromPos, GetSafePosition()))
 	{
 		ai->utility->Log(ALL, MISC, "BuildBlocksSelf blocked build by reason 3 (No path for commander)");
 		return true;
@@ -313,11 +315,13 @@ SAIFloat3 ConstructionUnitGroup::FindClosestNonConflictingBuildSite(UnitDef *uni
 	float tempMinDist = minDist;
 	bool firstRun = true;
 
+	ai->utility->Log(ALL, MISC, "FindClosestNonConflictingBuildSite...");
+
 	do
 	{
 		if (!firstRun) {
 			tempMinDist = tempMinDist +
-				ai->utility->EuclideanDistance(buildPos, closestMexSite) +
+				ai->utility->EuclideanDistance(buildPos, pos) +
 				unitDef->GetRadius();//Increase minimum distance a suitable amount
 		} else {
 			firstRun = false;

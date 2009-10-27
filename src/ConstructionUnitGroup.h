@@ -2,6 +2,7 @@
 #define _BRAINSPACE_CONSTRUCTION_UNIT_GROUP_H
 
 #include "BrainGroup.h"
+#include "PathfindingMap.h"
 #include "global.h"
 #include <math.h>
 

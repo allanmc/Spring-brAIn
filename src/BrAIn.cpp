@@ -9,13 +9,15 @@ brainSpace::BrAIn::BrAIn(springai::AICallback* cb)
 	ai = new AIClasses();
 	ai->callback = cb;
 	ai->utility = new Utility(ai);
+	ai->utility->Log(ALL, MISC, "Utility loaded...");
 	ai->knowledge = new Knowledge(ai);
+	ai->utility->Log(ALL, MISC, "Knowledge loaded...");
 	ai->math = new BrainMath( ai );
 
 	teamId = (ai->callback != NULL ? ai->callback->GetTeamId() : -1);
 
 	decision = new Decision(ai);
-
+	ai->utility->Log(ALL, MISC, "Decision loaded...");
 	//ai->utility->ChatMsg("Hello world i am team: %d",teamId);
 	srand(0);
 }
