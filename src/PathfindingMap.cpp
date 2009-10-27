@@ -57,12 +57,12 @@ void PathfindingMap::Update()
 void PathfindingMap::AddBuilding(Unit* unit)
 {
 	SAIFloat3 pos = unit->GetPos();
-	int xSize = unit->GetDef()->GetXSize();
-	int zSize = unit->GetDef()->GetZSize();
-	int topCell = (pos.z-zSize)/Resolution;
-	int bottomCell = (pos.z+zSize)/Resolution;
-	int leftCell = (pos.x-xSize)/Resolution;
-	int rightCell = (pos.x+xSize)/Resolution;
+	int xSize = unit->GetDef()->GetXSize()*8;
+	int zSize = unit->GetDef()->GetZSize()*8;
+	int topCell = (pos.z-zSize/2)/Resolution;
+	int bottomCell = (pos.z+zSize/2)/Resolution;
+	int leftCell = (pos.x-xSize/2)/Resolution;
+	int rightCell = (pos.x+xSize/2)/Resolution;
 
 
 	for ( int i = topCell ; i <= bottomCell ; i++ )
@@ -78,12 +78,12 @@ void PathfindingMap::AddBuilding(Unit* unit)
 
 void PathfindingMap::AddHypotheticalBuilding(UnitDef* unit, SAIFloat3 pos)
 {
-	int xSize = unit->GetXSize();
-	int zSize = unit->GetZSize();
-	int topCell = (pos.z-zSize)/Resolution;
-	int bottomCell = (pos.z+zSize)/Resolution;
-	int leftCell = (pos.x-xSize)/Resolution;
-	int rightCell = (pos.x+xSize)/Resolution;
+	int xSize = unit->GetXSize()*8;
+	int zSize = unit->GetZSize()*8;
+	int topCell = (pos.z-zSize/2)/Resolution;
+	int bottomCell = (pos.z+zSize/2)/Resolution;
+	int leftCell = (pos.x-xSize/2)/Resolution;
+	int rightCell = (pos.x+xSize/2)/Resolution;
 
 
 	for ( int i = topCell ; i <= bottomCell ; i++ )
@@ -91,7 +91,7 @@ void PathfindingMap::AddHypotheticalBuilding(UnitDef* unit, SAIFloat3 pos)
 		{
 			if ( i > MapHeight || i < 0 || j > MapWidth || j < 0 )
 				continue;
-
+			backUp[i*MapWidth + j] = MapArray[i*MapWidth + j];//remember the old value
 			MapArray[i*MapWidth + j] = 10.0f; //Now this tile is impassable.
 		}
 }
@@ -99,12 +99,12 @@ void PathfindingMap::AddHypotheticalBuilding(UnitDef* unit, SAIFloat3 pos)
 
 void PathfindingMap::RemoveHypotheticalBuilding(UnitDef* unit, SAIFloat3 pos)
 {
-	int xSize = unit->GetXSize();
-	int zSize = unit->GetZSize();
-	int topCell = (pos.z-zSize)/Resolution;
-	int bottomCell = (pos.z+zSize)/Resolution;
-	int leftCell = (pos.x-xSize)/Resolution;
-	int rightCell = (pos.x+xSize)/Resolution;
+	int xSize = unit->GetXSize()*8;
+	int zSize = unit->GetZSize()*8;
+	int topCell = (pos.z-zSize/2)/Resolution;
+	int bottomCell = (pos.z+zSize/2)/Resolution;
+	int leftCell = (pos.x-xSize/2)/Resolution;
+	int rightCell = (pos.x+xSize/2)/Resolution;
 
 
 	for ( int i = topCell ; i <= bottomCell ; i++ )
@@ -112,20 +112,22 @@ void PathfindingMap::RemoveHypotheticalBuilding(UnitDef* unit, SAIFloat3 pos)
 		{
 			if ( i > MapHeight || i < 0 || j > MapWidth || j < 0 )
 				continue;
-			ResetSlope( j, i );
+			MapArray[i*MapWidth + j] = backUp[i*MapWidth + j];
+			//ResetSlope( j, i );
 		}
+	backUp.clear();
 }
 
 
 void PathfindingMap::RemoveBuilding(Unit* unit)
 {
 	SAIFloat3 pos = unit->GetPos();
-	int xSize = unit->GetDef()->GetXSize();
-	int zSize = unit->GetDef()->GetZSize();
-	int topCell = (pos.z-zSize)/Resolution;
-	int bottomCell = (pos.z+zSize)/Resolution;
-	int leftCell = (pos.x-xSize)/Resolution;
-	int rightCell = (pos.x+xSize)/Resolution;
+	int xSize = unit->GetDef()->GetXSize()*8;
+	int zSize = unit->GetDef()->GetZSize()*8;
+	int topCell = (pos.z-zSize/2)/Resolution;
+	int bottomCell = (pos.z+zSize/2)/Resolution;
+	int leftCell = (pos.x-xSize/2)/Resolution;
+	int rightCell = (pos.x+xSize/2)/Resolution;
 
 	for ( int i = topCell ; i <= bottomCell ; i++ )
 		for ( int j = leftCell ; j <= rightCell ; j++ )
@@ -153,7 +155,9 @@ vector<PathfindingNode*> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFlo
 	int goalXIndex = destination.x/Resolution;
 	int goalZIndex = destination.z/Resolution;
 
-	if ( MapArray[ goalZIndex*MapWidth + goalXIndex] > pathfinder->GetMoveData()->GetMaxSlope() )
+	if ( MapArray[ goalZIndex*MapWidth + goalXIndex] > pathfinder->GetMoveData()->GetMaxSlope()
+		||
+		 MapArray[ (int)(start.z/Resolution)*MapWidth + (int)start.x/Resolution] > pathfinder->GetMoveData()->GetMaxSlope() )
 	{
 		ai->utility->ChatMsg( "I cannot reach the destination!!" );
 	}
@@ -291,6 +295,7 @@ vector<PathfindingNode*> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFlo
 
 bool PathfindingMap::IsPossibleToEscapeFrom( UnitDef* pathfinder, UnitDef* building, SAIFloat3 buildPosition, SAIFloat3 escapeFrom, SAIFloat3 escapeTo )
 {
+	ai->utility->Log(ALL, MISC, "Trying to escape...");
 	AddHypotheticalBuilding( building, buildPosition );
 	vector<PathfindingNode*> path = FindPathTo( pathfinder, escapeFrom, escapeTo );
 	RemoveHypotheticalBuilding( building, buildPosition );

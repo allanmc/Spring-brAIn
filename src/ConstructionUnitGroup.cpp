@@ -364,6 +364,7 @@ SAIFloat3 ConstructionUnitGroup::FindClosestNonConflictingBuildSite(UnitDef *uni
 ///@return the closest metal spot to a given position
 SAIFloat3 ConstructionUnitGroup::FindClosestMetalExtractionSite(SAIFloat3 pos/*, Resource* metal */ )
 {
+	ai->utility->Log(ALL, MISC, "FindClosestMetalExtractionSite...");
 	UnitDef *mexDef = ai->utility->GetMexDef();
 	if (ai->utility->IsMetalMap())
 	{

@@ -75,6 +75,7 @@ namespace brainSpace {
 		void DeleteUnusedPathfindingNodes( std::map<int, PathfindingNode*> closedSet, std::map<int, PathfindingNode*> openSet, std::vector<PathfindingNode*> shortestPath );
 
 		std::vector<float> SlopeMap;
+		std::map<int,float> backUp;
 	};
 }
 
