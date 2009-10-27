@@ -279,46 +279,6 @@ void Decision::Update(int frame)
 		ai->knowledge->mapInfo->pathfindingMap->DrawGrid();
 		ai->knowledge->mapInfo->pathfindingMap->Update();
 
-		ai->callback->GetCheats()->SetEnabled( true );
-		UnitDef* def = ai->utility->GetUnitDef( "armfav" );
-		map<int, UnitInformationContainer> a = ai->knowledge->selfInfo->armyInfo->GetUnits();
-
-		SAIFloat3 p = a.begin()->second.pos;
-		p.x -= 96;
-		p.z -= 128;
-
-		SGiveMeNewUnitCheatCommand c;
-		c.unitDefId = def->GetUnitDefId();
-		c.pos = p;
-		ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_CHEATS_GIVE_ME_NEW_UNIT, &c );
-		ai->utility->ChatMsg( "UnitID: %d", c.ret_newUnitId );
-		Unit* u = Unit::GetInstance( ai->callback, c.ret_newUnitId );
-		SAIFloat3 dest;
-		dest.x = 500;
-		dest.z = 500;
-
-		ai->utility->ChatMsg( "MaxSlope %s: %f", u->GetDef()->GetHumanName(), u->GetDef()->GetMoveData()->GetMaxSlope() );
-
-		
-		vector<PathfindingNode*> shortestPath = ai->knowledge->mapInfo->pathfindingMap->FindPathTo( u, dest );
-
-
-		ai->utility->Log( ALL, SLOPEMAP, "Path size: %d", shortestPath.size() );
-		
-		for ( int i = shortestPath.size()-1 ; i >= 0 ; i-- )
-		{
-			ai->utility->DrawCircle( shortestPath[i]->Pos, 10.0f );
-/*
-			SMoveUnitCommand m;
-			m.timeOut = 30000;
-			m.toPos = shortestPath[i]->Pos;
-			m.unitId = u->GetUnitId();
-			m.options = UNIT_COMMAND_OPTION_SHIFT_KEY;
-			ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_MOVE, &m );
-			ai->utility->ChatMsg( "Order pushed!" );
-			*/
-		}
-		
 		/*
 		UnitDef *solar, *kbotLab, *metalEx, *lltDef;
 		SBuildUnitCommand metalExOrder, kbotLabOrder, solarOrder, lltDefOrder;
