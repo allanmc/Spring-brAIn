@@ -47,6 +47,7 @@ namespace brainSpace {
 
 
 		PathfindingMap( AIClasses* aiClasses );
+		
 		virtual ~PathfindingMap();
 
 		void Update();
@@ -72,6 +73,8 @@ namespace brainSpace {
 		void ResetSlope( int xTile, int zTile );
 
 		void DeleteUnusedPathfindingNodes( std::map<int, PathfindingNode*> closedSet, std::map<int, PathfindingNode*> openSet, std::vector<PathfindingNode*> shortestPath );
+
+		std::vector<float> SlopeMap;
 	};
 }
 

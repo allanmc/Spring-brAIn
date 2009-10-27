@@ -219,7 +219,7 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 	SAIFloat3 fromPos;
 	UnitDef *unitDef;
 	//Check if the new building at the selected location would block any exsisting labs
-	for (int i = 0; i < units.size(); i++) 
+	for (int i = 0; i < (int)units.size(); i++) 
 	{
 		unitDef = units[i]->GetDef();
 		if ( strcmp(unitDef->GetName(), "armlab")==0 )

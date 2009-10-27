@@ -91,6 +91,36 @@ void Decision::UnitFinished(int unit)
 	{
 		ai->knowledge->selfInfo->baseInfo->AddBuilding(u);
 	}
+
+
+	SAIFloat3 dest;
+	dest.x = 2000;
+	dest.z = 500;
+	Unit* aa = Unit::GetInstance(ai->callback, unit );
+	UnitDef* lab = ai->utility->GetUnitDef( "armlab" );
+	SAIFloat3 pos;
+	pos.x = aa->GetPos().x + 50;
+	pos.z = aa->GetPos().z + 50;
+	pos.y = aa->GetPos().y;
+
+	if ( ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom( aa->GetDef(), lab, pos, aa->GetPos(), dest ) )
+		ai->utility->ChatMsg( "You can escape from here!!" );
+	else ai->utility->ChatMsg( "You cannot escape from here!!");
+
+
+	vector<PathfindingNode*> path = ai->knowledge->mapInfo->pathfindingMap->FindPathTo( aa->GetDef(), aa->GetPos(), dest );
+	
+	ai->utility->ChatMsg( "Path size: %d", path.size() );
+	for ( int i = path.size()-1 ; i >= 0 ; i-- )
+	{
+		SMoveUnitCommand c;
+		c.options = UNIT_COMMAND_OPTION_SHIFT_KEY;
+		c.toPos = path[i]->Pos;
+		c.unitId = unit;
+		c.timeOut = 20000;
+		ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_MOVE, &c );
+	}
+	
 	/*
 	RL_Action *action = rl->Update();
 	if ( action->ID != -1 )
@@ -277,7 +307,7 @@ void Decision::Update(int frame)
 
 		ai->knowledge->mapInfo->resourceMap->Update();
 		//ai->knowledge->mapInfo->pathfindingMap->DrawGrid();
-		ai->knowledge->mapInfo->pathfindingMap->Update();
+		//ai->knowledge->mapInfo->pathfindingMap->Update();
 
 		/*
 		UnitDef *solar, *kbotLab, *metalEx, *lltDef;
@@ -339,7 +369,7 @@ void Decision::Update(int frame)
 
 	if(frame % 60 == 0)
 	{
-		ai->knowledge->mapInfo->pathfindingMap->Update();
+		
 		//ai->utility->Log( DEBUG, KNOWLEDGE, "pre-update" );
 		ai->knowledge->mapInfo->scoutMap->Update();
 		//ai->utility->Log( DEBUG, KNOWLEDGE, "update" );
