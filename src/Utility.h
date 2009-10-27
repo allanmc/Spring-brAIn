@@ -23,7 +23,7 @@ namespace brainSpace
 		void AssignColorToGraphics( int figureGroupID );
 		bool debug;
 		void InitializeOptions();
-
+		bool isMetalMap;
 	public:
 		Utility( AIClasses* aiClasses );
 		~Utility();
@@ -40,7 +40,8 @@ namespace brainSpace
 		void RemoveGraphics(int figureId);
 		bool IsDebug();
 		bool FileExists( const char* FileName );
-
+		bool IsMetalMap();
+		void LaterInitialization();
 		void Suicide();
 	};
 }

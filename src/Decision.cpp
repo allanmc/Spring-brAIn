@@ -272,7 +272,8 @@ void Decision::Update(int frame)
 		ai->utility->Suicide();
 	if(frame == 1)
 	{	
-		//ai->knowledge->mapInfo->scoutMap->DrawGrid();
+		ai->utility->LaterInitialization();
+		ai->knowledge->mapInfo->scoutMap->DrawGrid();
 
 		ai->knowledge->mapInfo->resourceMap->Update();
 		ai->knowledge->mapInfo->pathfindingMap->DrawGrid();
@@ -428,8 +429,8 @@ void Decision::Update(int frame)
 
 	if (frame % 240 == 120)
 	{
-		ai->knowledge->selfInfo->baseInfo->DrawBasePerimiter();
-		ai->knowledge->enemyInfo->baseInfo->DrawBasePerimiter();
+		//ai->knowledge->selfInfo->baseInfo->DrawBasePerimiter();
+		//ai->knowledge->enemyInfo->baseInfo->DrawBasePerimiter();
 		//BuildSomethingUsefull();
 	}
 

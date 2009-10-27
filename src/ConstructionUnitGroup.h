@@ -31,12 +31,15 @@ namespace brainSpace
 	private:
 		SAIFloat3 FindClosestMetalExtractionSite( SAIFloat3 pos );
 		SAIFloat3 FindClosestNonMetalExtractionSite(UnitDef *unitDef, SAIFloat3 buildPos, float searchRadius, int minDist, int facing);
+		bool IsMetalExtracitonSite(UnitDef *toBuildUnitDef, SAIFloat3 buildPos);
+		bool InersectsWithMex(UnitDef *unitDef, SAIFloat3 pos, SAIFloat3 mexPos);
 		queue<SBuildUnitCommand> BuildQueue;
 		int BaseDefenseCounter;
 		int BaseDefenseCounterStart;
 		bool BaseDefenseHitBorder;
 		UnitDef* metalExtractorUnit;
-
+		bool BuildBlocksSelf(UnitDef *unitDef, SAIFloat3 pos, int facing);
+		SAIFloat3 GetUnitExitOfLab(SAIFloat3 centerPos, UnitDef *unitDef, int facing);
 		SAIFloat3 FindGoodBuildSite(SAIFloat3 builderPos, UnitDef* building, float radius);
 
 	};

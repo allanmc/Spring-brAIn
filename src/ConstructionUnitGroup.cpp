@@ -59,14 +59,19 @@ bool ConstructionUnitGroup::IsAbleToBuild(UnitDef* unit)
 void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 {
 	//SAIFloat3 buildPos = Units[0]->GetPos();
-	SAIFloat3 buildPos = Units.begin()->first->GetPos(); //ai->callback->GetMap()->GetStartPos();
+	//SAIFloat3 buildPos = Units.begin()->first->GetPos(); //ai->callback->GetMap()->GetStartPos();
+	SAIFloat3 buildPos = commander->GetPos();
+	ai->utility->ChatMsg( "order tobuild id: %d", order.toBuildUnitDefId );
+	ai->utility->ChatMsg( "order options : %d", order.options );
+	ai->utility->ChatMsg( "order timeout : %d", order.timeOut );
+	ai->utility->ChatMsg( "order facing: %d", order.facing );
+	
 	
 	Idle = false;
 	
 	order.unitId = Units.begin()->first->GetUnitId();
+	ai->utility->ChatMsg( "order builder id: %d", order.unitId );
 	order.timeOut = 40000;
-	
-	vector<UnitDef*> defs = ai->callback->GetUnitDefs();
 
 	bool isMetalExtractor = false;
 	bool isDefense = false;
@@ -75,6 +80,7 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	{
 		buildPos = FindClosestMetalExtractionSite( buildPos );
 		isMetalExtractor = true;
+		ai->utility->ChatMsg( "building metal extractor" );
 	}
 	
 
@@ -151,23 +157,27 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 		if(order.toBuildUnitDefId == ai->utility->GetUnitDef("armsolar")->GetUnitDefId())
 		{
 			order.buildPos = FindGoodBuildSite(this->GetPos(),unitDef, 1024);
+			ai->utility->ChatMsg( "Solar build position set" );
 		}
 		else
 		{
+			ai->utility->ChatMsg( "Setting lab build position set" );	
 			//order.buildPos = ai->callback->GetMap()->FindClosestBuildSite( *unitDef , buildPos, 200, 0, 0 );
-			order.buildPos = FindClosestNonMetalExtractionSite(unitDef, buildPos, 200, 0, 0);
+			order.buildPos = FindClosestNonMetalExtractionSite(unitDef, buildPos, 1000, 0, 0);
 			if (order.buildPos.y == -1)
 			{
-				ai->utility->Log(ALL, DECISION, "Could not FindClosestNonMexSite...");
+				ai->utility->ChatMsg("Could not FindClosestNonMexSite...");
 				return;
 			}
+			ai->utility->ChatMsg( "Lab build position set" );			
 		}
 	}
 	else
 	{
-		//ai->utility->ChatMsg( "Metal extractor build position set" );
+		ai->utility->ChatMsg( "Metal extractor build position set" );
 		order.buildPos = buildPos;
 	}
+	//ai->utility->DrawLine(Units.begin()->first->GetPos(), order.buildPos, true);
 	ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &order );
 }
 
@@ -191,21 +201,105 @@ void ConstructionUnitGroup::SetAvailable()
 	{
 		const SBuildUnitCommand next = BuildQueue.front();
 		BuildQueue.pop();
-		//u->ChatMsg( "Queue is now: %d units long", BuildQueue.size() );
+		ai->utility->ChatMsg( "Queue is now: %d units long", BuildQueue.size() );
 		AssignBuildOrder( next );
 	}
 	
+}
+
+///@returns whether a new building would block a lab
+bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 pos, int facing)
+{
+	vector<Unit*> units = ai->callback->GetFriendlyUnits();
+	SAIFloat3 fromPos;
+	UnitDef *unitDef;
+	//Check if the new building at the selected location would block any exsisting labs
+	for (int i = 0; i < units.size(); i++) 
+	{
+		unitDef = units[i]->GetDef();
+		if ( strcmp(unitDef->GetName(), "armlab")==0 )
+		{
+			//Use pathfinding to check if unit-exit of the lab units[i] has a path out of the base
+			//without using the locaion of the new building
+			fromPos = GetUnitExitOfLab(units[i]->GetPos(), unitDef, units[i]->GetBuildingFacing());
+			if (false/*is there a safepath from fromPos?*/) 
+			{
+				//There is a blocking problem with that build
+				return false;
+			}
+		}
+	}
+	//If what we want to build is a lab, check that this position allows its units a path out of the base
+	//without using the locaion of the new building
+	if ( strcmp(toBuildUnitDef->GetName(), "armlab")==0) 
+	{
+		fromPos = GetUnitExitOfLab(pos, toBuildUnitDef, facing);
+		if (false/*is there a safepath from fromPos?*/)
+		{
+			return false;
+		}
+	}
+	//If we build this new building, does the commander have a path out of the base?
+	if (false/*is there a safepath from fromPos?*/)
+	{
+		return false;
+	}
+	return true;
+}
+
+///@return unit-exit of a armlab or vehicleplant (bottom on facing=0)
+SAIFloat3 ConstructionUnitGroup::GetUnitExitOfLab(SAIFloat3 centerPos, UnitDef *unitDef, int facing)
+{
+	SAIFloat3 pos = centerPos;
+	switch (facing)
+	{
+		case 0:
+			pos.z += unitDef->GetZSize()/2;break;
+		case 1:
+			pos.x -= unitDef->GetZSize()/2;break;
+		case 2:
+			pos.z -= unitDef->GetZSize()/2;break;
+		case 3:
+			pos.x += unitDef->GetZSize()/2;break;
+		default:
+			ai->utility->Log(CRITICAL, MISC, "GetUnitExitOfLab got unexpected facing!");
+	}
+	return pos;
+}
+
+///@returns whether the build location is on a metal extraction site
+bool ConstructionUnitGroup::IsMetalExtracitonSite(UnitDef *unitDef, SAIFloat3 pos)
+{
+	if (ai->utility->IsMetalMap())
+	{
+		return false;//Since metal can be extracted from all spots, there are no limited metal extraction sites
+	}
+	SAIFloat3 closestMexSite = FindClosestMetalExtractionSite(pos);
+	return InersectsWithMex(unitDef, pos, closestMexSite); 
+}
+
+bool ConstructionUnitGroup::InersectsWithMex(UnitDef *unitDef, SAIFloat3 pos, SAIFloat3 mexPos)
+{
+	UnitDef *mexDef = ai->utility->GetUnitDef("armmex");
+	bool retVal = ai->math->BoxIntersect(	pos,
+											unitDef->GetXSize(),
+											unitDef->GetZSize(),
+											mexPos,
+											mexDef->GetXSize(),
+											mexDef->GetZSize());
+	ai->utility->Log(ALL, MISC, "Checking IsMetalExtracitonSite: %i", retVal);
+	return retVal;
 }
 
 ///Find closest buildPos which is not on a metal extraction site
 ///@return the closest nonmex buildsite
 SAIFloat3 ConstructionUnitGroup::FindClosestNonMetalExtractionSite(UnitDef *unitDef, SAIFloat3 buildPos, float searchRadius, int minDist, int facing)
 {
-	UnitDef *mexDef = ai->utility->GetUnitDef("armmex");
 	SAIFloat3 pos;
 	SAIFloat3 closestMexSite;
 	float tempMinDist = minDist;
 	bool firstRun = true;
+
 	do
 	{
 		if (!firstRun) {
@@ -218,7 +312,9 @@ SAIFloat3 ConstructionUnitGroup::FindClosestNonMetalExtractionSite(UnitDef *unit
 		pos = ai->callback->GetMap()->FindClosestBuildSite( *unitDef , buildPos, searchRadius, tempMinDist, facing);
 		closestMexSite = FindClosestMetalExtractionSite(pos);
 		ai->utility->Log(ALL, MISC, "Doing FindClosestMetalExtractionSite iteration");
-	} while ( ai->utility->EuclideanDistance(pos, closestMexSite) < mexDef->GetRadius()+unitDef->GetRadius()
+	} while ( !ai->utility->IsMetalMap()
+			  &&
+			  InersectsWithMex(unitDef, pos, closestMexSite)
 			  &&
 			  tempMinDist<searchRadius );
 	
@@ -235,6 +331,14 @@ SAIFloat3 ConstructionUnitGroup::FindClosestNonMetalExtractionSite(UnitDef *unit
 ///@return the closest metal spot to a given position
 SAIFloat3 ConstructionUnitGroup::FindClosestMetalExtractionSite(SAIFloat3 pos/*, Resource* metal */ )
 {
+	if (ai->utility->IsMetalMap())
+	{
+		//ai->utility->Log(ALL, MISC, "FindClosestMetalExtractionSite on MetalMap");
+		UnitDef *mexDef = ai->utility->GetUnitDef("armmex");
+		//ai->utility->Log(ALL, MISC, "FindClosestMetalExtractionSite found  mexDef");
+		return ai->callback->GetMap()->FindClosestBuildSite( *mexDef, pos, 1000, 0, 0);
+	}
+	
 	vector<SAIFloat3> spots;
 	spots = ai->callback->GetMap()->GetResourceMapSpotsPositions( *(ai->utility->GetResource("Metal")), &pos );
 
@@ -281,7 +385,9 @@ SAIFloat3 ConstructionUnitGroup::FindGoodBuildSite(SAIFloat3 builderPos, UnitDef
 				newPos.x += muls[i][0]*((ud->GetXSize()*8/2)+(building->GetXSize()*8/2));
 				newPos.z += muls[i][1]*((ud->GetZSize()*8/2)+(building->GetZSize()*8/2));
 				float newDist = ai->utility->EuclideanDistance(builderPos,newPos);
-				if(newDist < bestDistance &&  ai->callback->GetMap()->IsPossibleToBuildAt(*building, newPos, 0))
+				if(newDist < bestDistance
+					&&  ai->callback->GetMap()->IsPossibleToBuildAt(*building, newPos, 0)
+					&& !IsMetalExtracitonSite(building, newPos))
 				{
 					//TODO: test if it is blocking a contruction yard
 					bestBuildSpot = newPos;
