@@ -231,7 +231,7 @@ vector<PathfindingNode*> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFlo
 				pos.y = 50;
 
 				float tentativeGScore = current->Gscore + ai->utility->EuclideanDistance( current->Pos, pos );
-				ai->utility->Log( ALL, SLOPEMAP, "Tentative g score %f for neighbour (%d, %d)", tentativeGScore, x, z );
+				//ai->utility->Log( ALL, SLOPEMAP, "Tentative g score %f for neighbour (%d, %d)", tentativeGScore, x, z );
 				//ai->utility->Log( ALL, SLOPEMAP, "Neighbour pos: (%f, %f) tile:(%d, %d)", neighbour.Pos.x, neighbour.Pos.z, neighbour.XIndex, neighbour.ZIndex );
 				bool tentativeIsBetter = true;
 				
