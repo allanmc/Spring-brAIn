@@ -9,8 +9,6 @@ PathfindingMap::PathfindingMap( AIClasses* aiClasses ) : BrainMap( aiClasses, 4 
 {
 
 	//Slopemap has Resolution = 2, where PFmap has Resolution = 4.
-	int width = ai->callback->GetMap()->GetWidth()/2;
-	int height = ai->callback->GetMap()->GetHeight()/2;
 
 	for ( int z = 0 ; z < MapHeight ; z++ )
 		for ( int x = 0 ; x < MapWidth ; x++ )
@@ -58,8 +56,6 @@ void PathfindingMap::Update()
 void PathfindingMap::AddBuilding(Unit* unit)
 {
 	SAIFloat3 pos = unit->GetPos();
-	int centerCellX = pos.x/Resolution;
-	int centerCellZ = pos.z/Resolution;
 	int xSize = unit->GetDef()->GetXSize();
 	int zSize = unit->GetDef()->GetZSize();
 	int topCell = (pos.z-zSize)/Resolution;
@@ -81,8 +77,6 @@ void PathfindingMap::AddBuilding(Unit* unit)
 
 void PathfindingMap::AddHypotheticalBuilding(UnitDef* unit, SAIFloat3 pos)
 {
-	int centerCellX = pos.x/Resolution;
-	int centerCellZ = pos.z/Resolution;
 	int xSize = unit->GetXSize();
 	int zSize = unit->GetZSize();
 	int topCell = (pos.z-zSize)/Resolution;
@@ -104,8 +98,6 @@ void PathfindingMap::AddHypotheticalBuilding(UnitDef* unit, SAIFloat3 pos)
 
 void PathfindingMap::RemoveHypotheticalBuilding(UnitDef* unit, SAIFloat3 pos)
 {
-	int centerCellX = pos.x/Resolution;
-	int centerCellZ = pos.z/Resolution;
 	int xSize = unit->GetXSize();
 	int zSize = unit->GetZSize();
 	int topCell = (pos.z-zSize)/Resolution;
@@ -127,8 +119,6 @@ void PathfindingMap::RemoveHypotheticalBuilding(UnitDef* unit, SAIFloat3 pos)
 void PathfindingMap::RemoveBuilding(Unit* unit)
 {
 	SAIFloat3 pos = unit->GetPos();
-	int centerCellX = pos.x/Resolution;
-	int centerCellZ = pos.z/Resolution;
 	int xSize = unit->GetDef()->GetXSize();
 	int zSize = unit->GetDef()->GetZSize();
 	int topCell = (pos.z-zSize)/Resolution;
@@ -148,7 +138,6 @@ void PathfindingMap::RemoveBuilding(Unit* unit)
 void PathfindingMap::ResetSlope( int xTile, int zTile )
 {
 	int width = ai->callback->GetMap()->GetWidth()/2;
-	int height = ai->callback->GetMap()->GetHeight()/2;
 
 	vector<float> slopeMap = ai->callback->GetMap()->GetSlopeMap();
 	float slope1 = slopeMap[xTile*2+width*2*zTile];
@@ -332,7 +321,7 @@ void PathfindingMap::DeleteUnusedPathfindingNodes( map<int, PathfindingNode*> cl
 	bool exists = false;
 	for ( map<int, PathfindingNode*>::iterator it = openSet.begin() ; it != openSet.end() ; it++ )
 	{
-		for ( int k = 0 ; k < shortestPath.size() ; k++ )
+		for ( int k = 0 ; k < (int)shortestPath.size() ; k++ )
 		{
 			if ( it->second->XIndex == shortestPath[k]->XIndex && it->second->ZIndex == shortestPath[k]->ZIndex )
 			{
@@ -349,7 +338,7 @@ void PathfindingMap::DeleteUnusedPathfindingNodes( map<int, PathfindingNode*> cl
 	
 	for ( map<int, PathfindingNode*>::iterator it = closedSet.begin() ; it != closedSet.end() ; it++ )
 	{
-		for ( int k = 0 ; k < shortestPath.size() ; k++ )
+		for ( int k = 0 ; k < (int)shortestPath.size() ; k++ )
 		{
 			if ( it->second->XIndex == shortestPath[k]->XIndex && it->second->ZIndex == shortestPath[k]->ZIndex )
 			{
@@ -365,6 +354,6 @@ void PathfindingMap::DeleteUnusedPathfindingNodes( map<int, PathfindingNode*> cl
 	}
 
 	ai->utility->Log( ALL, SLOPEMAP, "Deleting %d unused nodes", nodesToDelete.size() );
-	for ( int k = 0 ; k < nodesToDelete.size() ; k++ )
+	for ( int k = 0 ; k < (int)nodesToDelete.size() ; k++ )
 		delete nodesToDelete[k];
 }
