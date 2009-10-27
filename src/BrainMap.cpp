@@ -129,10 +129,10 @@ void BrainMap::DrawGrid()
 	{
 		SAIFloat3 start, end;
 		start.x = 0;
-		start.y = 200;
+		start.y = 50;
 		start.z = i*Resolution;
 		end.x = MapWidth*Resolution;
-		end.y = 200;
+		end.y = 50;
 		end.z = i*Resolution;
 		int id = ai->utility->DrawLine( start, end, false, 5, GridFigureID );
 		if(GridFigureID == 0) GridFigureID = id;
@@ -142,10 +142,10 @@ void BrainMap::DrawGrid()
 	{		
 		SAIFloat3 start, end;
 		start.x = i*Resolution;
-		start.y = 200;
+		start.y = 50;
 		start.z = 0;
 		end.x = i*Resolution;
-		end.y = 200;
+		end.y = 50;
 		end.z = MapHeight*Resolution;
 
 		ai->utility->DrawLine( start, end, false, 5 , GridFigureID );

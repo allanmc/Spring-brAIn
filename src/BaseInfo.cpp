@@ -41,7 +41,7 @@ void BaseInfo::AddBuilding(Unit* building)
 		resourceBuildings++;
 	}
 
-	ai->knowledge->mapInfo->pathfindingMap->AddBuilding( building->GetUnitId() );
+	ai->knowledge->mapInfo->pathfindingMap->AddBuilding( building );
 }
 
 void BaseInfo::RemoveBuilding(Unit* building)
@@ -65,6 +65,8 @@ void BaseInfo::RemoveBuilding(Unit* building)
 	{
 		resourceBuildings--;
 	}
+
+	ai->knowledge->mapInfo->pathfindingMap->RemoveBuilding( building );
 }
 
 ///@return the number of resource producing buildings

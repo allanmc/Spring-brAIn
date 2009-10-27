@@ -1,6 +1,7 @@
 #include "Decision.h"
 #include "Unit.h"
 #include "UnitDef.h"
+#include "Cheats.h"
 
 using namespace std;
 using namespace springai;
@@ -90,6 +91,7 @@ void Decision::UnitFinished(int unit)
 	{
 		ai->knowledge->selfInfo->baseInfo->AddBuilding(u);
 	}
+	/*
 	RL_Action *action = rl->Update();
 	if ( action->ID != -1 )
 	{
@@ -106,6 +108,33 @@ void Decision::UnitFinished(int unit)
 		ai->utility->Suicide();
 	}
 	ai->utility->ChatMsg( "RL: Building unit with unitdef: %d", action->UnitDefID );
+	*/
+
+
+	/*
+	Unit* uu = Unit::GetInstance( ai->callback, unit );
+	SAIFloat3 dest;
+	dest.x = 1500;
+	dest.z = 1500;
+
+	if ( strcmp( uu->GetDef()->GetName(), "armfav" ) == 0 )
+	{
+		vector<PathfindingNode*> path = ai->knowledge->mapInfo->pathfindingMap->FindPathTo( uu, dest );
+		ai->utility->Log( ALL, SLOPEMAP, "Path size: %d", path.size() );
+		for ( int i = path.size()-1 ; i >= 0 ; i-- )
+		{
+			ai->utility->DrawCircle( path[i]->Pos, 10.0f );
+			
+			SMoveUnitCommand m;
+			m.timeOut = 30000;
+			m.toPos = path[i]->Pos;
+			m.unitId = unit;
+			m.options = UNIT_COMMAND_OPTION_SHIFT_KEY;
+			ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_MOVE, &m );
+			ai->utility->ChatMsg( "Order pushed!" );
+		}
+	}
+	*/
 
 }
 
@@ -243,10 +272,52 @@ void Decision::Update(int frame)
 		ai->utility->Suicide();
 	if(frame == 1)
 	{	
-		ai->knowledge->mapInfo->scoutMap->DrawGrid();
+		//ai->knowledge->mapInfo->scoutMap->DrawGrid();
 
 		ai->knowledge->mapInfo->resourceMap->Update();
+		ai->knowledge->mapInfo->pathfindingMap->DrawGrid();
 		ai->knowledge->mapInfo->pathfindingMap->Update();
+
+		ai->callback->GetCheats()->SetEnabled( true );
+		UnitDef* def = ai->utility->GetUnitDef( "armfav" );
+		map<int, UnitInformationContainer> a = ai->knowledge->selfInfo->armyInfo->GetUnits();
+
+		SAIFloat3 p = a.begin()->second.pos;
+		p.x -= 96;
+		p.z -= 128;
+
+		SGiveMeNewUnitCheatCommand c;
+		c.unitDefId = def->GetUnitDefId();
+		c.pos = p;
+		ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_CHEATS_GIVE_ME_NEW_UNIT, &c );
+		ai->utility->ChatMsg( "UnitID: %d", c.ret_newUnitId );
+		Unit* u = Unit::GetInstance( ai->callback, c.ret_newUnitId );
+		SAIFloat3 dest;
+		dest.x = 500;
+		dest.z = 500;
+
+		ai->utility->ChatMsg( "MaxSlope %s: %f", u->GetDef()->GetHumanName(), u->GetDef()->GetMoveData()->GetMaxSlope() );
+
+		
+		vector<PathfindingNode*> shortestPath = ai->knowledge->mapInfo->pathfindingMap->FindPathTo( u, dest );
+
+
+		ai->utility->Log( ALL, SLOPEMAP, "Path size: %d", shortestPath.size() );
+		
+		for ( int i = shortestPath.size()-1 ; i >= 0 ; i-- )
+		{
+			ai->utility->DrawCircle( shortestPath[i]->Pos, 10.0f );
+/*
+			SMoveUnitCommand m;
+			m.timeOut = 30000;
+			m.toPos = shortestPath[i]->Pos;
+			m.unitId = u->GetUnitId();
+			m.options = UNIT_COMMAND_OPTION_SHIFT_KEY;
+			ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_MOVE, &m );
+			ai->utility->ChatMsg( "Order pushed!" );
+			*/
+		}
+		
 		/*
 		UnitDef *solar, *kbotLab, *metalEx, *lltDef;
 		SBuildUnitCommand metalExOrder, kbotLabOrder, solarOrder, lltDefOrder;
