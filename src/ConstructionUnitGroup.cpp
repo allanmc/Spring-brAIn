@@ -291,6 +291,10 @@ bool ConstructionUnitGroup::IsMetalExtracitonSite(UnitDef *unitDef, SAIFloat3 po
 
 bool ConstructionUnitGroup::InersectsWithMex(UnitDef *unitDef, SAIFloat3 pos, SAIFloat3 mexPos)
 {
+	if (ai->utility->IsMetalMap())
+	{
+		return false;//Since metal can be extracted from all spots, there are no limited metal extraction sites
+	}
 	UnitDef *mexDef = ai->utility->GetUnitDef("armmex");
 	bool retVal = ai->math->BoxIntersect(	pos,
 											unitDef->GetXSize(),
@@ -306,8 +310,8 @@ bool ConstructionUnitGroup::InersectsWithMex(UnitDef *unitDef, SAIFloat3 pos, SA
 ///@return the closest nonmex buildsite
 SAIFloat3 ConstructionUnitGroup::FindClosestNonMetalExtractionSite(UnitDef *unitDef, SAIFloat3 buildPos, float searchRadius, int minDist, int facing)
 {
-	SAIFloat3 pos;
-	SAIFloat3 closestMexSite;
+	SAIFloat3 pos = (SAIFloat3){0,0,0};
+	SAIFloat3 closestMexSite = (SAIFloat3){0,0,0};
 	float tempMinDist = minDist;
 	bool firstRun = true;
 
@@ -321,13 +325,15 @@ SAIFloat3 ConstructionUnitGroup::FindClosestNonMetalExtractionSite(UnitDef *unit
 			firstRun = false;
 		}
 		pos = ai->callback->GetMap()->FindClosestBuildSite( *unitDef , buildPos, searchRadius, tempMinDist, facing);
-		closestMexSite = FindClosestMetalExtractionSite(pos);
+		
+		if (!ai->utility->IsMetalMap()) {
+			closestMexSite = FindClosestMetalExtractionSite(pos);
+		}
 		ai->utility->Log(ALL, MISC, "Doing FindClosestMetalExtractionSite iteration");
-	} while ( !ai->utility->IsMetalMap()
-			  &&
-			  InersectsWithMex(unitDef, pos, closestMexSite)
-			  &&
-			  tempMinDist<searchRadius );
+		if (tempMinDist>searchRadius) break;
+	} while ( InersectsWithMex(unitDef, pos, closestMexSite)
+			  ||
+			  BuildBlocksSelf(unitDef, pos, facing) );
 	
 	if (ai->utility->EuclideanDistance(pos, buildPos) > searchRadius)
 	{
@@ -342,12 +348,13 @@ SAIFloat3 ConstructionUnitGroup::FindClosestNonMetalExtractionSite(UnitDef *unit
 ///@return the closest metal spot to a given position
 SAIFloat3 ConstructionUnitGroup::FindClosestMetalExtractionSite(SAIFloat3 pos/*, Resource* metal */ )
 {
+	UnitDef *mexDef = ai->utility->GetUnitDef("armmex");
 	if (ai->utility->IsMetalMap())
 	{
-		//ai->utility->Log(ALL, MISC, "FindClosestMetalExtractionSite on MetalMap");
-		UnitDef *mexDef = ai->utility->GetUnitDef("armmex");
-		//ai->utility->Log(ALL, MISC, "FindClosestMetalExtractionSite found  mexDef");
-		return ai->callback->GetMap()->FindClosestBuildSite( *mexDef, pos, 1000, 0, 0);
+		ai->utility->Log(ALL, MISC, "FindClosestMetalExtractionSite on MetalMap");
+		//If this is an all-metal map, we can safely fallback to use FindClosestNonMetalExtractionSite
+		return FindClosestNonMetalExtractionSite(mexDef, pos, 1000, 0, 0);
+		//return ai->callback->GetMap()->FindClosestBuildSite( *mexDef, pos, 1000, 0, 0);
 	}
 	
 	vector<SAIFloat3> spots;
@@ -363,13 +370,15 @@ SAIFloat3 ConstructionUnitGroup::FindClosestMetalExtractionSite(SAIFloat3 pos/*,
 		double distance = ai->utility->EuclideanDistance( spots[i], pos );
 		//u->ChatMsg( "Distance: %f", distance );
 
-		if ( distance < closest && ai->callback->GetMap()->IsPossibleToBuildAt( *metalExtractorUnit, spots[i], 0 ))
+		if ( distance < closest
+			 && ai->callback->GetMap()->IsPossibleToBuildAt( *metalExtractorUnit, spots[i], 0 )
+			 && !BuildBlocksSelf(mexDef, spots[i], 0) )
 		{
 			closest = distance;
 			lowestIdx = i;
 		}
 	}
-
+	///TODO: What if we didn't find an accaptable spot? (lowestIdx=-1)
 	pos = spots[lowestIdx];
 
 	return pos;
@@ -398,7 +407,8 @@ SAIFloat3 ConstructionUnitGroup::FindGoodBuildSite(SAIFloat3 builderPos, UnitDef
 				float newDist = ai->utility->EuclideanDistance(builderPos,newPos);
 				if(newDist < bestDistance
 					&&  ai->callback->GetMap()->IsPossibleToBuildAt(*building, newPos, 0)
-					&& !IsMetalExtracitonSite(building, newPos))
+					&& !IsMetalExtracitonSite(building, newPos)
+					&& !BuildBlocksSelf(building, newPos, 0) )
 				{
 					//TODO: test if it is blocking a contruction yard
 					bestBuildSpot = newPos;
