@@ -61,6 +61,8 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	//SAIFloat3 buildPos = Units[0]->GetPos();
 	//SAIFloat3 buildPos = Units.begin()->first->GetPos(); //ai->callback->GetMap()->GetStartPos();
 	SAIFloat3 buildPos = commander->GetPos();
+	UnitDef *unitDef = UnitDef::GetInstance(ai->callback, order.toBuildUnitDefId);
+
 	ai->utility->ChatMsg( "order tobuild id: %d", order.toBuildUnitDefId );
 	ai->utility->ChatMsg( "order options : %d", order.options );
 	ai->utility->ChatMsg( "order timeout : %d", order.timeOut );
@@ -153,7 +155,6 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	//Make sure that we can build at the desired position by finding the closest available buildsite to the desired site
 	if ( !isMetalExtractor )
 	{
-		UnitDef *unitDef = UnitDef::GetInstance(ai->callback, order.toBuildUnitDefId);
 		if(order.toBuildUnitDefId == ai->utility->GetUnitDef("armsolar")->GetUnitDefId())
 		{
 			order.buildPos = FindGoodBuildSite(this->GetPos(),unitDef, 1024);
@@ -178,6 +179,13 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 		order.buildPos = buildPos;
 	}
 	//ai->utility->DrawLine(Units.begin()->first->GetPos(), order.buildPos, true);
+
+	//Can we build here without blocking ourself?
+	if (BuildBlocksSelf(unitDef, order.buildPos, order.facing))
+	{
+		ai->utility->Log(ALL, MISC, "We would block ourself if we build this %s!", unitDef->GetName());
+		return;
+	}
 	ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &order );
 }
 
@@ -225,7 +233,8 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 			if (false/*is there a safepath from fromPos?*/) 
 			{
 				//There is a blocking problem with that build
-				return false;
+				ai->utility->Log(ALL, MISC, "BuildBlocksSelf blocked build by reason 1");
+				return true;
 			}
 		}
 	}
@@ -236,15 +245,17 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 		fromPos = GetUnitExitOfLab(pos, toBuildUnitDef, facing);
 		if (false/*is there a safepath from fromPos?*/)
 		{
-			return false;
+			ai->utility->Log(ALL, MISC, "BuildBlocksSelf blocked build by reason 2");
+			return true;
 		}
 	}
 	//If we build this new building, does the commander have a path out of the base?
 	if (false/*is there a safepath from fromPos?*/)
 	{
-		return false;
+		ai->utility->Log(ALL, MISC, "BuildBlocksSelf blocked build by reason 3");
+		return true;
 	}
-	return true;
+	return false;
 }
 
 ///@return unit-exit of a armlab or vehicleplant (bottom on facing=0)
