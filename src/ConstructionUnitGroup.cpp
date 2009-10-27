@@ -225,10 +225,11 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 			//Use pathfinding to check if unit-exit of the lab units[i] has a path out of the base
 			//without using the locaion of the new building
 			fromPos = GetUnitExitOfLab(units[i]->GetPos(), unitDef, units[i]->GetBuildingFacing());
-			if (false/*is there a safepath from fromPos?*/) 
+			
+			if (!IsPossibleToEscapeFrom(unitDef->GetBuildOptions()->first, toBuildUnitDef, pos, fromPos, GetSafePosition())) 
 			{
 				//There is a blocking problem with that build
-				ai->utility->Log(ALL, MISC, "BuildBlocksSelf blocked build by reason 1");
+				ai->utility->Log(ALL, MISC, "BuildBlocksSelf blocked build by reason 1 (No path from exit of an old %s)", unitDef->GetName());
 				return true;
 			}
 		}
@@ -238,16 +239,18 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 	if ( strcmp(toBuildUnitDef->GetName(), "armlab")==0) 
 	{
 		fromPos = GetUnitExitOfLab(pos, toBuildUnitDef, facing);
-		if (false/*is there a safepath from fromPos?*/)
+		if (!IsPossibleToEscapeFrom(toBuildUnitDef->GetBuildOptions()->first, toBuildUnitDef, pos, fromPos, GetSafePosition()))
 		{
-			ai->utility->Log(ALL, MISC, "BuildBlocksSelf blocked build by reason 2");
+			ai->utility->Log(ALL, MISC, "BuildBlocksSelf blocked build by reason 2 (No path from exit of this new %s)", toBuildUnitDef->GetName());
 			return true;
 		}
 	}
 	//If we build this new building, does the commander have a path out of the base?
-	if (false/*is there a safepath from fromPos?*/)
+	fromPos = commander->GetPos();
+	///TODO: Maybe ensure that the commander does not walk into a building-block "trap" :)
+	if (!IsPossibleToEscapeFrom(commander->GetDef(), toBuildUnitDef, pos, fromPos, GetSafePosition()))
 	{
-		ai->utility->Log(ALL, MISC, "BuildBlocksSelf blocked build by reason 3");
+		ai->utility->Log(ALL, MISC, "BuildBlocksSelf blocked build by reason 3 (No path for commander)");
 		return true;
 	}
 	return false;
