@@ -247,6 +247,7 @@ vector<PathfindingNode*> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFlo
 					neighbour->XIndex = x;
 					neighbour->ZIndex = z;
 					neighbour->Slope = MapArray[ z*MapWidth + x ];
+					
 					//ai->utility->Log( ALL, SLOPEMAP, "(%d, %d) not in openset", neighbour->XIndex, neighbour->ZIndex );
 					if ( neighbour->Slope > pathfinder->GetMoveData()->GetMaxSlope() )
 					{
@@ -319,8 +320,10 @@ void PathfindingMap::DeleteUnusedPathfindingNodes( map<int, PathfindingNode*> cl
 	vector<PathfindingNode*> nodesToDelete;
 	map<int, PathfindingNode*>::iterator it;
 	bool exists = false;
+
 	for ( map<int, PathfindingNode*>::iterator it = openSet.begin() ; it != openSet.end() ; it++ )
 	{
+		exists = false;
 		for ( int k = 0 ; k < (int)shortestPath.size() ; k++ )
 		{
 			if ( it->second->XIndex == shortestPath[k]->XIndex && it->second->ZIndex == shortestPath[k]->ZIndex )
@@ -329,7 +332,7 @@ void PathfindingMap::DeleteUnusedPathfindingNodes( map<int, PathfindingNode*> cl
 				break;
 			}
 		}
-		if ( exists )
+		if ( !exists )
 		{
 			nodesToDelete.push_back( it->second );
 			continue;
@@ -338,6 +341,7 @@ void PathfindingMap::DeleteUnusedPathfindingNodes( map<int, PathfindingNode*> cl
 	
 	for ( map<int, PathfindingNode*>::iterator it = closedSet.begin() ; it != closedSet.end() ; it++ )
 	{
+		exists = false;
 		for ( int k = 0 ; k < (int)shortestPath.size() ; k++ )
 		{
 			if ( it->second->XIndex == shortestPath[k]->XIndex && it->second->ZIndex == shortestPath[k]->ZIndex )
@@ -346,7 +350,7 @@ void PathfindingMap::DeleteUnusedPathfindingNodes( map<int, PathfindingNode*> cl
 				break;
 			}
 		}
-		if ( exists )
+		if ( !exists )
 		{
 			nodesToDelete.push_back( it->second );
 			continue;

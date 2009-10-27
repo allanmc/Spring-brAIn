@@ -92,7 +92,7 @@ void Decision::UnitFinished(int unit)
 		ai->knowledge->selfInfo->baseInfo->AddBuilding(u);
 	}
 
-
+	/*
 	SAIFloat3 dest;
 	dest.x = 2000;
 	dest.z = 500;
@@ -116,10 +116,12 @@ void Decision::UnitFinished(int unit)
 		SMoveUnitCommand c;
 		c.options = UNIT_COMMAND_OPTION_SHIFT_KEY;
 		c.toPos = path[i]->Pos;
+		ai->utility->ChatMsg( "Path point %i: %f, %f, %f", i, c.toPos.x, c.toPos.z, c.toPos.y );
 		c.unitId = unit;
 		c.timeOut = 20000;
 		ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_MOVE, &c );
 	}
+	*/
 	
 	/*
 	RL_Action *action = rl->Update();
@@ -139,7 +141,6 @@ void Decision::UnitFinished(int unit)
 	}
 	ai->utility->ChatMsg( "RL: Building unit with unitdef: %d", action->UnitDefID );
 	*/
-
 
 	/*
 	Unit* uu = Unit::GetInstance( ai->callback, unit );
@@ -298,6 +299,7 @@ void Decision::UpdateFrindlyPositions()
 
 void Decision::Update(int frame)
 {
+	
 	if(frame == 54000)//kill your self after 30 mins
 		ai->utility->Suicide();
 	if(frame == 1)
@@ -309,7 +311,7 @@ void Decision::Update(int frame)
 		//ai->knowledge->mapInfo->pathfindingMap->DrawGrid();
 		//ai->knowledge->mapInfo->pathfindingMap->Update();
 
-		/*
+		
 		UnitDef *solar, *kbotLab, *metalEx, *lltDef;
 		SBuildUnitCommand metalExOrder, kbotLabOrder, solarOrder, lltDefOrder;
 		for ( int i = 0 ; i < (int)ai->callback->GetUnitDefs().size() ; i++ )
@@ -352,19 +354,33 @@ void Decision::Update(int frame)
 		lltDefOrder.options = 0;
 		lltDefOrder.toBuildUnitDefId = lltDef->GetUnitDefId();
 
-		gc->ErectBuilding(metalExOrder);
-		gc->ErectBuilding(solarOrder);
-		gc->ErectBuilding(metalExOrder);
-		gc->ErectBuilding(solarOrder);
-		gc->ErectBuilding(metalExOrder);
-		gc->ErectBuilding(solarOrder);
-		gc->ErectBuilding(kbotLabOrder);
+		Unit *commander = ai->callback->GetFriendlyUnits()[0];
+		kbotLabOrder.buildPos = commander->GetPos();
+		kbotLabOrder.unitId = commander->GetUnitId();
+		//kbotLabOrder.options = UNIT_COMMAND_OPTION_SHIFT_KEY;
+		ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &kbotLabOrder );
+		/*kbotLabOrder.buildPos.z += ai->utility->GetUnitDef("armlab")->GetZSize() * 8;
+		SMoveUnitCommand m;
+		m.timeOut = 30000;
+		m.toPos = kbotLabOrder.buildPos;
+		m.unitId = commander->GetUnitId();
+		m.options = UNIT_COMMAND_OPTION_SHIFT_KEY;
+		ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_MOVE, &m );*/
+
+		
+		//gc->ErectBuilding(metalExOrder);
+		//gc->ErectBuilding(solarOrder);
+		//gc->ErectBuilding(metalExOrder);
+		//gc->ErectBuilding(solarOrder);
+		//gc->ErectBuilding(metalExOrder);
+		//gc->ErectBuilding(solarOrder);
+		//gc->ErectBuilding(kbotLabOrder);
 
 		//int num = 100;
 		//while (num--) {
 		//	gc->ErectBuilding(lltDefOrder);
 		//}
-		*/
+		
 	}
 
 	if(frame % 60 == 0)
@@ -520,7 +536,7 @@ void Decision::UnitIdle( int id )
 {
 	Unit* u = Unit::GetInstance( ai->callback, id );
 	gc->UnitIdle( u );
-	//BuildSomethingUsefull();
+	BuildSomethingUsefull();
 	//Construction groups has nothing to do... So build something we need!
 }
 
@@ -540,6 +556,7 @@ void Decision::BuildSomethingUsefull()
 		buildOrder.facing = 0;
 		buildOrder.options = 0;
 		
+		/*
 		isAffordable = ri->IsAffordableToBuild(armcom, armlab);
 
 		if (isAffordable==0)
@@ -561,6 +578,8 @@ void Decision::BuildSomethingUsefull()
 			return;
 		}
 		ai->utility->Log(ALL, MISC, "I want to build: %s", UnitDef::GetInstance(ai->callback, buildOrder.toBuildUnitDefId)->GetName());
+		*/
+		buildOrder.toBuildUnitDefId = armsolar->GetUnitDefId();
 		gc->ErectBuilding(buildOrder);
 	}
 }

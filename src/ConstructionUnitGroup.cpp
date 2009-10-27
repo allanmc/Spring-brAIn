@@ -67,6 +67,9 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	//SAIFloat3 buildPos = Units[0]->GetPos();
 	//SAIFloat3 buildPos = Units.begin()->first->GetPos(); //ai->callback->GetMap()->GetStartPos();
 	SAIFloat3 buildPos = commander->GetPos();
+	buildPos = ai->callback->GetMap()->GetStartPos();
+	buildPos.z += (ai->utility->GetUnitDef("armlab")->GetZSize() * 8)/2 + (ai->utility->GetSolarDef()->GetZSize()*8)/2;
+	
 	UnitDef *unitDef = UnitDef::GetInstance(ai->callback, order.toBuildUnitDefId);
 
 	ai->utility->ChatMsg( "order tobuild id: %d", order.toBuildUnitDefId );
@@ -93,7 +96,7 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	}
 	else if (order.toBuildUnitDefId == ai->utility->GetSolarDef()->GetUnitDefId())
 	{
-		order.buildPos = FindGoodBuildSite(this->GetPos(),unitDef, 1024);
+		order.buildPos = FindGoodBuildSite(/*this->GetPos()*/buildPos,unitDef, 1024);
 		ai->utility->ChatMsg( "Solar build position set" );
 	}
 	else
@@ -214,7 +217,7 @@ void ConstructionUnitGroup::SetAvailable()
 bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 pos, int facing)
 {
 	ai->utility->Log(ALL, MISC, "BuildBlocksSelf...");
-
+	
 	vector<Unit*> units = ai->callback->GetFriendlyUnits();
 	SAIFloat3 fromPos;
 	UnitDef *unitDef;
@@ -227,7 +230,10 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 			//Use pathfinding to check if unit-exit of the lab units[i] has a path out of the base
 			//without using the locaion of the new building
 			fromPos = GetUnitExitOfLab(units[i]->GetPos(), unitDef, units[i]->GetBuildingFacing());
-			
+			ai->utility->Log(ALL, MISC, "BuildBlocksSelf is checking an old lab...");
+			pos.y = 50.0;
+			ai->utility->DrawLine(pos, fromPos, true);
+			ai->utility->DrawLine(fromPos, GetSafePosition(), true);
 			if (!ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom(unitDef->GetBuildOptions()[0], toBuildUnitDef, pos, fromPos, GetSafePosition())) 
 			{
 				//There is a blocking problem with that build
@@ -265,13 +271,13 @@ SAIFloat3 ConstructionUnitGroup::GetUnitExitOfLab(SAIFloat3 centerPos, UnitDef *
 	switch (facing)
 	{
 		case 0:
-			pos.z += unitDef->GetZSize()/2;break;
+			pos.z += (unitDef->GetZSize()/2)*8+8;break;
 		case 1:
-			pos.x -= unitDef->GetZSize()/2;break;
+			pos.x -= (unitDef->GetZSize()/2)*8+8;break;
 		case 2:
-			pos.z -= unitDef->GetZSize()/2;break;
+			pos.z -= (unitDef->GetZSize()/2)*8+8;break;
 		case 3:
-			pos.x += unitDef->GetZSize()/2;break;
+			pos.x += (unitDef->GetZSize()/2)*8+8;break;
 		default:
 			ai->utility->Log(CRITICAL, MISC, "GetUnitExitOfLab got unexpected facing!");
 	}
@@ -317,6 +323,8 @@ SAIFloat3 ConstructionUnitGroup::FindClosestNonConflictingBuildSite(UnitDef *uni
 
 	ai->utility->Log(ALL, MISC, "FindClosestNonConflictingBuildSite...");
 
+	ai->utility->ChatMsg("FindClosestNonConflictingBuildSite started");
+
 	do
 	{
 		if (!firstRun) {
@@ -341,6 +349,8 @@ SAIFloat3 ConstructionUnitGroup::FindClosestNonConflictingBuildSite(UnitDef *uni
 			  ||
 			  BuildBlocksSelf(unitDef, pos, facing) );
 	
+	ai->utility->ChatMsg("FindClosestNonConflictingBuildSite ended");
+
 	if (ai->utility->EuclideanDistance(pos, buildPos) > searchRadius)
 	{
 		pos = buildPos; //We did not find a good place to build... Return orginal buildPos,
