@@ -177,7 +177,7 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 		ai->utility->ChatMsg( "Metal extractor build position set" );
 		order.buildPos = buildPos;
 	}
-	ai->utility->DrawLine(Units.begin()->first->GetPos(), order.buildPos, true);
+	//ai->utility->DrawLine(Units.begin()->first->GetPos(), order.buildPos, true);
 	ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &order );
 }
 
