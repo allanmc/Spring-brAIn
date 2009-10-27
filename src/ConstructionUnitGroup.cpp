@@ -59,7 +59,8 @@ bool ConstructionUnitGroup::IsAbleToBuild(UnitDef* unit)
 void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 {
 	//SAIFloat3 buildPos = Units[0]->GetPos();
-	SAIFloat3 buildPos = Units.begin()->first->GetPos(); //ai->callback->GetMap()->GetStartPos();
+	//SAIFloat3 buildPos = Units.begin()->first->GetPos(); //ai->callback->GetMap()->GetStartPos();
+	SAIFloat3 buildPos = commander->GetPos();
 	ai->utility->ChatMsg( "order tobuild id: %d", order.toBuildUnitDefId );
 	ai->utility->ChatMsg( "order options : %d", order.options );
 	ai->utility->ChatMsg( "order timeout : %d", order.timeOut );
@@ -207,7 +208,7 @@ void ConstructionUnitGroup::SetAvailable()
 }
 
 ///@returns whether a new building would block a lab
-bool ConstructionUnitGroup::BuildBlocksLabs(UnitDef *toBuildUnitDef, SAIFloat3 pos)
+bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 pos)
 {
 	vector<Unit*> units = ai->callback->GetFriendlyUnits();
 	UnitDef *unitDef;
@@ -227,7 +228,13 @@ bool ConstructionUnitGroup::BuildBlocksLabs(UnitDef *toBuildUnitDef, SAIFloat3 p
 		}
 	}
 	//If what we want to build is a lab, check that this position allows its units a path out of the base
+	//without using the locaion of the new building
 	if ( strcmp(toBuildUnitDef->GetName(), "armlab")==0 && false/*is there a path?*/) 
+	{
+		return false;
+	}
+	//If we build this new building, does the commander have a path out of the base?
+	if (false/*is there a path?*/)
 	{
 		return false;
 	}

@@ -33,8 +33,6 @@ namespace brainSpace
 		///Gets the GroupID. IDs are only unique for groups of the same type (construction or military).
 		int GetGroupID();
 
-
-
 	protected:
 		///Unit*, boolean map. The boolean flag indicates if the unit is idle.
 		map<Unit*, bool> Units;
@@ -42,6 +40,8 @@ namespace brainSpace
 		///Is the group idle?
 		bool Idle;
 
+		///The commander unit, if it has been added
+		Unit *commander;
 
 		///Svend!
 		AIClasses* ai;
