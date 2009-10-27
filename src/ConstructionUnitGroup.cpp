@@ -164,7 +164,7 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 		{
 			ai->utility->ChatMsg( "Setting lab build position set" );	
 			//order.buildPos = ai->callback->GetMap()->FindClosestBuildSite( *unitDef , buildPos, 200, 0, 0 );
-			order.buildPos = FindClosestNonMetalExtractionSite(unitDef, buildPos, 1000, 0, 0);
+			order.buildPos = FindClosestNonConflictingBuildSite(unitDef, buildPos, 1000, 0, 0);
 			if (order.buildPos.y == -1)
 			{
 				ai->utility->ChatMsg("Could not FindClosestNonMexSite...");
@@ -306,9 +306,9 @@ bool ConstructionUnitGroup::InersectsWithMex(UnitDef *unitDef, SAIFloat3 pos, SA
 	return retVal;
 }
 
-///Find closest buildPos which is not on a metal extraction site
-///@return the closest nonmex buildsite
-SAIFloat3 ConstructionUnitGroup::FindClosestNonMetalExtractionSite(UnitDef *unitDef, SAIFloat3 buildPos, float searchRadius, int minDist, int facing)
+///Find closest buildPos, allowing only metal extractors on metal spots, and ensures no blocking buildings
+///@return the closest non-conflicting buildsite
+SAIFloat3 ConstructionUnitGroup::FindClosestNonConflictingBuildSite(UnitDef *unitDef, SAIFloat3 buildPos, float searchRadius, int minDist, int facing)
 {
 	SAIFloat3 pos = (SAIFloat3){0,0,0};
 	SAIFloat3 closestMexSite = (SAIFloat3){0,0,0};
@@ -328,6 +328,10 @@ SAIFloat3 ConstructionUnitGroup::FindClosestNonMetalExtractionSite(UnitDef *unit
 		
 		if (!ai->utility->IsMetalMap()) {
 			closestMexSite = FindClosestMetalExtractionSite(pos);
+		}
+		else
+		{
+			closestMexSite = pos;
 		}
 		ai->utility->Log(ALL, MISC, "Doing FindClosestMetalExtractionSite iteration");
 		if (tempMinDist>searchRadius) break;
@@ -352,8 +356,8 @@ SAIFloat3 ConstructionUnitGroup::FindClosestMetalExtractionSite(SAIFloat3 pos/*,
 	if (ai->utility->IsMetalMap())
 	{
 		ai->utility->Log(ALL, MISC, "FindClosestMetalExtractionSite on MetalMap");
-		//If this is an all-metal map, we can safely fallback to use FindClosestNonMetalExtractionSite
-		return FindClosestNonMetalExtractionSite(mexDef, pos, 1000, 0, 0);
+		//If this is an all-metal map, we can safely fallback to use FindClosestNonConflictingBuildSite
+		return FindClosestNonConflictingBuildSite(mexDef, pos, 1000, 0, 0);
 		//return ai->callback->GetMap()->FindClosestBuildSite( *mexDef, pos, 1000, 0, 0);
 	}
 	

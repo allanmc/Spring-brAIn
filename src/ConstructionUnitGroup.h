@@ -30,7 +30,7 @@ namespace brainSpace
 		void QueueBuildOrder( SBuildUnitCommand order );
 	private:
 		SAIFloat3 FindClosestMetalExtractionSite( SAIFloat3 pos );
-		SAIFloat3 FindClosestNonMetalExtractionSite(UnitDef *unitDef, SAIFloat3 buildPos, float searchRadius, int minDist, int facing);
+		SAIFloat3 FindClosestNonConflictingBuildSite(UnitDef *unitDef, SAIFloat3 buildPos, float searchRadius, int minDist, int facing);
 		bool IsMetalExtracitonSite(UnitDef *toBuildUnitDef, SAIFloat3 buildPos);
 		bool InersectsWithMex(UnitDef *unitDef, SAIFloat3 pos, SAIFloat3 mexPos);
 		queue<SBuildUnitCommand> BuildQueue;
