@@ -55,11 +55,15 @@ namespace brainSpace {
 
 		void RemoveBuilding( springai::Unit* unit );
 
-		std::vector<PathfindingNode*> FindPathTo( springai::Unit* u, SAIFloat3 destination );
+		std::vector<PathfindingNode*> FindPathTo( springai::UnitDef* pathfinder, SAIFloat3 source, SAIFloat3 destination );
 
-		bool IsPossibleToEscapeFrom( springai::Unit* building, SAIFloat3 position, SAIFloat3 findPathTo );
+		bool IsPossibleToEscapeFrom( springai::UnitDef* pathfinder, springai::UnitDef* building, SAIFloat3 buildPosition, SAIFloat3 escapeFrom, SAIFloat3 escapeTo );
 
 	private:
+
+		void RemoveHypotheticalBuilding(springai::UnitDef* unit, SAIFloat3 pos);
+
+		void AddHypotheticalBuilding(springai::UnitDef* unit, SAIFloat3 pos);
 
 		std::vector<PathfindingNode*> ReconstructPath( PathfindingNode* currentNode );
 

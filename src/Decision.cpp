@@ -300,7 +300,7 @@ void Decision::Update(int frame)
 		ai->utility->ChatMsg( "MaxSlope %s: %f", u->GetDef()->GetHumanName(), u->GetDef()->GetMoveData()->GetMaxSlope() );
 
 		
-		vector<PathfindingNode*> shortestPath = ai->knowledge->mapInfo->pathfindingMap->FindPathTo( u, dest );
+		vector<PathfindingNode*> shortestPath = ai->knowledge->mapInfo->pathfindingMap->FindPathTo( u->GetDef(), u->GetPos(), dest );
 
 
 		ai->utility->Log( ALL, SLOPEMAP, "Path size: %d", shortestPath.size() );

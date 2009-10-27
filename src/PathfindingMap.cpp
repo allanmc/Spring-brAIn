@@ -78,6 +78,52 @@ void PathfindingMap::AddBuilding(Unit* unit)
 		}
 }
 
+
+void PathfindingMap::AddHypotheticalBuilding(UnitDef* unit, SAIFloat3 pos)
+{
+	int centerCellX = pos.x/Resolution;
+	int centerCellZ = pos.z/Resolution;
+	int xSize = unit->GetXSize();
+	int zSize = unit->GetZSize();
+	int topCell = (pos.z-zSize)/Resolution;
+	int bottomCell = (pos.z+zSize)/Resolution;
+	int leftCell = (pos.x-xSize)/Resolution;
+	int rightCell = (pos.x+xSize)/Resolution;
+
+
+	for ( int i = topCell ; i <= bottomCell ; i++ )
+		for ( int j = leftCell ; j <= rightCell ; j++ )
+		{
+			if ( i > MapHeight || i < 0 || j > MapWidth || j < 0 )
+				continue;
+
+			MapArray[i*MapWidth + j] = 10.0f; //Now this tile is impassable.
+		}
+}
+
+
+void PathfindingMap::RemoveHypotheticalBuilding(UnitDef* unit, SAIFloat3 pos)
+{
+	int centerCellX = pos.x/Resolution;
+	int centerCellZ = pos.z/Resolution;
+	int xSize = unit->GetXSize();
+	int zSize = unit->GetZSize();
+	int topCell = (pos.z-zSize)/Resolution;
+	int bottomCell = (pos.z+zSize)/Resolution;
+	int leftCell = (pos.x-xSize)/Resolution;
+	int rightCell = (pos.x+xSize)/Resolution;
+
+
+	for ( int i = topCell ; i <= bottomCell ; i++ )
+		for ( int j = leftCell ; j <= rightCell ; j++ )
+		{
+			if ( i > MapHeight || i < 0 || j > MapWidth || j < 0 )
+				continue;
+			ResetSlope( j, i );
+		}
+}
+
+
 void PathfindingMap::RemoveBuilding(Unit* unit)
 {
 	SAIFloat3 pos = unit->GetPos();
@@ -113,14 +159,12 @@ void PathfindingMap::ResetSlope( int xTile, int zTile )
 	MapArray[zTile*MapWidth + xTile] = maxSlope;
 }
 
-vector<PathfindingNode*> PathfindingMap::FindPathTo( Unit* u, SAIFloat3 destination )
+vector<PathfindingNode*> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start, SAIFloat3 destination )
 {
-	SAIFloat3 start = u->GetPos();
-
 	int goalXIndex = destination.x/Resolution;
 	int goalZIndex = destination.z/Resolution;
 
-	if ( MapArray[ goalZIndex*MapWidth + goalXIndex] > u->GetDef()->GetMoveData()->GetMaxSlope() )
+	if ( MapArray[ goalZIndex*MapWidth + goalXIndex] > pathfinder->GetMoveData()->GetMaxSlope() )
 	{
 		ai->utility->ChatMsg( "I cannot reach the destination!!" );
 	}
@@ -215,7 +259,7 @@ vector<PathfindingNode*> PathfindingMap::FindPathTo( Unit* u, SAIFloat3 destinat
 					neighbour->ZIndex = z;
 					neighbour->Slope = MapArray[ z*MapWidth + x ];
 					//ai->utility->Log( ALL, SLOPEMAP, "(%d, %d) not in openset", neighbour->XIndex, neighbour->ZIndex );
-					if ( neighbour->Slope > u->GetDef()->GetMoveData()->GetMaxSlope() )
+					if ( neighbour->Slope > pathfinder->GetMoveData()->GetMaxSlope() )
 					{
 						closedSet.insert( make_pair( z*MapWidth + x, neighbour ) );
 						tentativeIsBetter = false;
@@ -255,11 +299,11 @@ vector<PathfindingNode*> PathfindingMap::FindPathTo( Unit* u, SAIFloat3 destinat
 }
 
 
-bool PathfindingMap::IsPossibleToEscapeFrom( Unit* building, SAIFloat3 position, SAIFloat3 findPathTo )
+bool PathfindingMap::IsPossibleToEscapeFrom( UnitDef* pathfinder, UnitDef* building, SAIFloat3 buildPosition, SAIFloat3 escapeFrom, SAIFloat3 escapeTo )
 {
-	AddBuilding( building );
-	vector<PathfindingNode*> path = FindPathTo( building, findPathTo );
-	RemoveBuilding( building );
+	AddHypotheticalBuilding( building, buildPosition );
+	vector<PathfindingNode*> path = FindPathTo( pathfinder, escapeFrom, escapeTo );
+	RemoveHypotheticalBuilding( building, buildPosition );
 	return ( path.size() > 0 );
 }
 
