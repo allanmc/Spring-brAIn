@@ -208,9 +208,10 @@ void ConstructionUnitGroup::SetAvailable()
 }
 
 ///@returns whether a new building would block a lab
-bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 pos)
+bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 pos, int facing)
 {
 	vector<Unit*> units = ai->callback->GetFriendlyUnits();
+	SAIFloat3 fromPos;
 	UnitDef *unitDef;
 	//Check if the new building at the selected location would block any exsisting labs
 	for (int i = 0; i < units.size(); i++) 
@@ -218,9 +219,10 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 		unitDef = units[i]->GetDef();
 		if ( strcmp(unitDef->GetName(), "armlab")==0 )
 		{
-			//Use pathfinding to check if units[i] has a path out of the base
+			//Use pathfinding to check if unit-exit of the lab units[i] has a path out of the base
 			//without using the locaion of the new building
-			if (false/*is there a path?*/) 
+			fromPos = GetUnitExitOfLab(units[i]->GetPos(), unitDef, units[i]->GetBuildingFacing());
+			if (false/*is there a safepath from fromPos?*/) 
 			{
 				//There is a blocking problem with that build
 				return false;
@@ -229,16 +231,40 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 	}
 	//If what we want to build is a lab, check that this position allows its units a path out of the base
 	//without using the locaion of the new building
-	if ( strcmp(toBuildUnitDef->GetName(), "armlab")==0 && false/*is there a path?*/) 
+	if ( strcmp(toBuildUnitDef->GetName(), "armlab")==0) 
 	{
-		return false;
+		fromPos = GetUnitExitOfLab(pos, toBuildUnitDef, facing);
+		if (false/*is there a safepath from fromPos?*/)
+		{
+			return false;
+		}
 	}
 	//If we build this new building, does the commander have a path out of the base?
-	if (false/*is there a path?*/)
+	if (false/*is there a safepath from fromPos?*/)
 	{
 		return false;
 	}
 	return true;
+}
+
+///@return unit-exit of a armlab or vehicleplant (bottom on facing=0)
+SAIFloat3 ConstructionUnitGroup::GetUnitExitOfLab(SAIFloat3 centerPos, UnitDef *unitDef, int facing)
+{
+	SAIFloat3 pos = centerPos;
+	switch (facing)
+	{
+		case 0:
+			pos.z += unitDef->GetZSize()/2;break;
+		case 1:
+			pos.x -= unitDef->GetZSize()/2;break;
+		case 2:
+			pos.z -= unitDef->GetZSize()/2;break;
+		case 3:
+			pos.x += unitDef->GetZSize()/2;break;
+		default:
+			ai->utility->Log(CRITICAL, MISC, "GetUnitExitOfLab got unexpected facing!");
+	}
+	return pos;
 }
 
 ///@returns whether the build location is on a metal extraction site

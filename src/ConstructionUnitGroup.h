@@ -38,7 +38,8 @@ namespace brainSpace
 		int BaseDefenseCounterStart;
 		bool BaseDefenseHitBorder;
 		UnitDef* metalExtractorUnit;
-		bool BuildBlocksSelf(UnitDef *unitDef, SAIFloat3 pos);
+		bool BuildBlocksSelf(UnitDef *unitDef, SAIFloat3 pos, int facing);
+		SAIFloat3 GetUnitExitOfLab(SAIFloat3 centerPos, UnitDef *unitDef, int facing);
 		SAIFloat3 FindGoodBuildSite(SAIFloat3 builderPos, UnitDef* building, float radius);
 
 	};
