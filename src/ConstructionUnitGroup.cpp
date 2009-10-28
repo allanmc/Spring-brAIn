@@ -67,9 +67,9 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	//SAIFloat3 buildPos = Units[0]->GetPos();
 	//SAIFloat3 buildPos = Units.begin()->first->GetPos(); //ai->callback->GetMap()->GetStartPos();
 	SAIFloat3 buildPos = commander->GetPos();
-	buildPos = ai->callback->GetMap()->GetStartPos();
+	/*buildPos = ai->callback->GetMap()->GetStartPos();
 	buildPos.z += (ai->utility->GetUnitDef("armlab")->GetZSize() * 8)/2
-				+ (ai->utility->GetSolarDef()->GetZSize()*8)/2;
+				+ (ai->utility->GetSolarDef()->GetZSize()*8)/2;*/
 	
 	UnitDef *unitDef = UnitDef::GetInstance(ai->callback, order.toBuildUnitDefId);
 
