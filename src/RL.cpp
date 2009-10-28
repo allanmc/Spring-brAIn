@@ -10,16 +10,6 @@ RL::RL( AIClasses* aiClasses)
 	
 	ai = aiClasses;
 
-
-	Actions.push_back( new RL_Action( ai->utility->GetUnitDef( "armsolar" )->GetUnitDefId(), 0 ) );
-
-	Actions.push_back( new RL_Action( ai->utility->GetUnitDef( "armmex" )->GetUnitDefId(), 1 ) );
-
-	Actions.push_back( new RL_Action( ai->utility->GetUnitDef( "armlab" )->GetUnitDefId(), 2 ) );
-
-	Actions.push_back( new RL_Action( ai->utility->GetUnitDef( "armvp" )->GetUnitDefId(), 3 ) );
-	
-
 	ValueFunction = new RL_Q(RL_PLANT_INDEX*RL_LAB_INDEX*RL_MEX_INDEX*RL_SOLAR_INDEX,RL_ACTION_INDEX, DataDirs::GetInstance(ai->callback)->GetWriteableDir());
 
 	Epsilon = 9;
