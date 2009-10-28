@@ -75,12 +75,12 @@ void Decision::UnitFinished(int unit)
 		gc->AddUnit(u);
 		if (!ud->IsBuilder())
 		{
-			//BuildAttackUnit();
+			BuildAttackUnit();
 		}
 	}else{
 		//add to BuildingController
 		bc->AddBuilding(u);
-		//BuildAttackUnit();
+		BuildAttackUnit();
 		ai->knowledge->selfInfo->resourceInfo->RemoveChangeToCome(u);
 	}
 
@@ -93,7 +93,7 @@ void Decision::UnitFinished(int unit)
 		ai->knowledge->selfInfo->baseInfo->AddBuilding(u);
 	}
 	
-	/*
+	
 	RL_Action *action = rl->Update();
 	if ( action->ID != -1 )
 	{
@@ -107,10 +107,10 @@ void Decision::UnitFinished(int unit)
 	else 
 	{
 		ai->utility->ChatMsg( "we have reached our goal!!" );
-		ai->utility->Suicide();
+		//ai->utility->Suicide();
 	}
 	ai->utility->ChatMsg( "RL: Building unit with unitdef: %d", action->UnitDefID );
-	*/
+	
 
 }
 
@@ -343,7 +343,7 @@ void Decision::Update(int frame)
 
 	if(frame % 60 == 0)
 	{
-		ai->knowledge->mapInfo->pathfindingMap->Update();
+		//ai->knowledge->mapInfo->pathfindingMap->Update();
 		//ai->utility->Log( DEBUG, KNOWLEDGE, "pre-update" );
 		ai->knowledge->mapInfo->scoutMap->Update();
 		//ai->utility->Log( DEBUG, KNOWLEDGE, "update" );
@@ -494,26 +494,6 @@ void Decision::UnitIdle( int id )
 {
 	Unit* u = Unit::GetInstance( ai->callback, id );
 	gc->UnitIdle( u );
-	if ( ai->knowledge->selfInfo->baseInfo->CountBuildingsByName( "armsolar" ) == 6 )
-	{
-		if ( strcmp( u->GetDef()->GetName(), "armcom" ) == 0 )
-		{
-			vector<Unit*> units = ai->knowledge->selfInfo->baseInfo->GetUnitsInRange( u->GetPos(), 300 );
-			for ( int i = 0 ; i < units.size() ; i++ )
-			{
-				if ( strcmp( units[i]->GetDef()->GetName(), "armsolar" ) == 0 )
-				{
-					SReclaimUnitCommand r;
-					r.timeOut = 50000;
-					r.unitId = COMMANDERID;
-					r.toReclaimUnitIdOrFeatureId = units[i]->GetUnitId();
-					r.options = UNIT_COMMAND_OPTION_SHIFT_KEY;
-					ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_RECLAIM, &r );
-					ai->utility->ChatMsg( "RECLAIM ORDER GIVEN" );
-				}
-			}
-		}
-	}
 	//BuildSomethingUsefull();
 	//Construction groups has nothing to do... So build something we need!
 }
@@ -522,7 +502,7 @@ void Decision::BuildSomethingUsefull()
 {
 	if (gc->ConstructionGroupIsIdle())
 	{
-		//ai->utility->Log(ALL, MISC, "I have absolutely nothing to do now!");
+		ai->utility->Log(ALL, MISC, "I have absolutely nothing to do now!");
 		UnitDef *armsolar = ai->utility->GetSolarDef();
 		UnitDef *armmex = ai->utility->GetMexDef();
 		UnitDef *armlab = ai->utility->GetUnitDef("armlab");

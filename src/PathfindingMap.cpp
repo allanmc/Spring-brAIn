@@ -204,12 +204,14 @@ vector<PathfindingNode*> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFlo
 {
 	int goalXIndex = destination.x/Resolution;
 	int goalZIndex = destination.z/Resolution;
-
+	
 	if ( MapArray[ goalZIndex*MapWidth + goalXIndex] > pathfinder->GetMoveData()->GetMaxSlope()
-		||
-		 MapArray[ (int)(start.z/Resolution)*MapWidth + (int)start.x/Resolution] > pathfinder->GetMoveData()->GetMaxSlope() )
+		/*||
+		 MapArray[ (int)(start.z/Resolution)*MapWidth + (int)start.x/Resolution] > pathfinder->GetMoveData()->GetMaxSlope()*/ )
 	{
 		ai->utility->ChatMsg( "Svend: I cannot reach the destination!!" );
+		vector<PathfindingNode*> emptyVector;
+		return emptyVector;
 	}
 	map<int, PathfindingNode*> closedSet;
 	map<int, PathfindingNode*> openSet;

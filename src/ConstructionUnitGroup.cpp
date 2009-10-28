@@ -115,12 +115,12 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 		return;
 	}
 
-	//Can we build here without blocking ourself?
+	/*//Can we build here without blocking ourself?
 	if (BuildBlocksSelf(unitDef, order.buildPos, order.facing))
 	{
 		ai->utility->Log(ALL, MISC, "We would block ourself if we build this %s!", unitDef->GetName());
 		return;
-	}
+	}*/
 	ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &order );
 }
 
@@ -293,6 +293,9 @@ bool ConstructionUnitGroup::IsMetalExtracitonSite(UnitDef *unitDef, SAIFloat3 po
 		return false;//Since metal can be extracted from all spots, there are no limited metal extraction sites
 	}
 	SAIFloat3 closestMexSite = FindClosestMetalExtractionSite(pos, false);
+	//pos.y = 50;
+	//closestMexSite.y = 50;
+	//ai->utility->DrawLine(pos, closestMexSite);
 	return InersectsWithMex(unitDef, pos, closestMexSite); 
 }
 
@@ -304,12 +307,14 @@ bool ConstructionUnitGroup::InersectsWithMex(UnitDef *unitDef, SAIFloat3 pos, SA
 	}
 	UnitDef *mexDef = ai->utility->GetMexDef();
 	bool retVal = ai->math->BoxIntersect(	pos,
-											unitDef->GetXSize(),
-											unitDef->GetZSize(),
+											unitDef->GetXSize()*8,
+											unitDef->GetZSize()*8,
 											mexPos,
-											mexDef->GetXSize(),
-											mexDef->GetZSize());
-	ai->utility->Log(ALL, MISC, "Checking IsMetalExtracitonSite: %i", retVal);
+											mexDef->GetXSize()*8,
+											mexDef->GetZSize()*8);
+	ai->utility->Log(ALL, MISC, "Mex intersect box 1 at (%f,%f,%f): %ix%i", pos.x, pos.y, pos.z, unitDef->GetXSize()*8, unitDef->GetZSize()*8);
+	ai->utility->Log(ALL, MISC, "Mex intersect box 2 at (%f,%f,%f): %ix%i", mexPos.x, mexPos.y, mexPos.z, mexDef->GetXSize()*8, mexDef->GetZSize()*8);
+	ai->utility->Log(ALL, MISC, "Checking InersectsWithMex: %i", retVal);
 	return retVal;
 }
 
@@ -318,9 +323,12 @@ bool ConstructionUnitGroup::InersectsWithMex(UnitDef *unitDef, SAIFloat3 pos, SA
 SAIFloat3 ConstructionUnitGroup::FindClosestNonConflictingBuildSite(UnitDef *unitDef, SAIFloat3 buildPos, float searchRadius, int minDist, int facing)
 {
 	SAIFloat3 pos = (SAIFloat3){0,0,0};
+	SAIFloat3 searchPos = buildPos;
 	SAIFloat3 closestMexSite = (SAIFloat3){0,0,0};
-	float tempMinDist = minDist;
+	float tempMinRadius = 0;
 	bool firstRun = true;
+	short unsigned int corner = 0;
+
 
 	ai->utility->Log(ALL, MISC, "FindClosestNonConflictingBuildSite...");
 
@@ -329,13 +337,34 @@ SAIFloat3 ConstructionUnitGroup::FindClosestNonConflictingBuildSite(UnitDef *uni
 	do
 	{
 		if (!firstRun) {
-			tempMinDist = tempMinDist +
-				ai->utility->EuclideanDistance(buildPos, pos) +
-				unitDef->GetRadius();//Increase minimum distance a suitable amount
+			if ( corner>3 )
+			{
+				tempMinRadius = tempMinRadius +
+					ai->utility->EuclideanDistance(buildPos, pos) +
+					unitDef->GetRadius();//Increase minimum distance a suitable amount
+				corner = 0;
+			}
 		} else {
 			firstRun = false;
 		}
-		pos = ai->callback->GetMap()->FindClosestBuildSite( *unitDef , buildPos, searchRadius, tempMinDist, facing);
+		searchPos = buildPos;
+		switch (corner)
+		{
+			case 0:
+				searchPos.z += tempMinRadius;
+				break;
+			case 1:
+				searchPos.x -= tempMinRadius;
+				break;
+			case 2:
+				searchPos.z -= tempMinRadius;
+				break;
+			case 3:
+				searchPos.x += tempMinRadius;
+				break;
+		}
+		corner++;
+		pos = ai->callback->GetMap()->FindClosestBuildSite( *unitDef , searchPos, searchRadius, minDist, facing);
 		
 		if (!ai->utility->IsMetalMap()) {
 			closestMexSite = FindClosestMetalExtractionSite(pos, false);
@@ -345,7 +374,7 @@ SAIFloat3 ConstructionUnitGroup::FindClosestNonConflictingBuildSite(UnitDef *uni
 			closestMexSite = pos;
 		}
 		ai->utility->Log(ALL, MISC, "Doing FindClosestNonConflictingBuildSite iteration");
-		if (tempMinDist>searchRadius) break;
+		if (tempMinRadius>searchRadius) break;
 	} while ( InersectsWithMex(unitDef, pos, closestMexSite)
 			  ||
 			  BuildBlocksSelf(unitDef, pos, facing) );
