@@ -129,18 +129,65 @@ void PathfindingMap::RemoveBuilding(Unit* unit)
 	int leftCell = (pos.x-xSize/2)/Resolution;
 	int rightCell = (pos.x+xSize/2)/Resolution;
 
+	vector<int> deadBuildingTiles;
+
 	for ( int i = topCell ; i <= bottomCell ; i++ )
 		for ( int j = leftCell ; j <= rightCell ; j++ )
 		{
-			if ( i > MapHeight || i < 0 || j > MapWidth || j < 0 )
-				continue;
-			ResetSlope( j, i );
+			deadBuildingTiles.push_back( i*MapWidth+j );
 		}
+	
+
+	vector<Unit*> unitsInRange = ai->knowledge->selfInfo->baseInfo->GetUnitsInRange( pos, max( xSize, zSize ) + Resolution );
+	for ( int i = 0 ; i < unitsInRange.size() ; i++ )
+	{
+		SAIFloat3 unitPos = unitsInRange[i]->GetPos();
+		int unitXsize = unitsInRange[i]->GetDef()->GetXSize()*8;
+		int unitZsize = unitsInRange[i]->GetDef()->GetZSize()*8;
+
+		int unitTopCell = (unitPos.z-unitZsize/2)/Resolution;
+		int unitBottomCell = (unitPos.z+unitZsize/2)/Resolution;
+		int unitLeftCell = (unitPos.x-unitXsize/2)/Resolution;
+		int unitRightCell = (unitPos.x+unitXsize/2)/Resolution;
+
+
+		vector<int> indicesToDelete;
+
+		for ( int k = topCell ; k <= bottomCell ; k++ )
+		{
+			for ( int j = leftCell ; j <= rightCell ; j++ )
+			{
+				if ( k > MapHeight || k < 0 || j > MapWidth || j < 0 )
+					continue;
+				for ( int h = 0 ; h < deadBuildingTiles.size() ; h++ )
+				{
+					if ( deadBuildingTiles[h] == k*MapWidth+j )
+					{
+						//if another building also occupies the tile previously 
+						//occupied by the now dead building, push it to the vector
+						indicesToDelete.push_back( h );
+					}
+				}
+			}
+		}
+		for ( int k = 0 ; k < indicesToDelete.size() ; k++ )
+		{
+			//Erase all the selected indices
+			//The index value must be decremented as we iterate through this vector
+			deadBuildingTiles.erase( deadBuildingTiles.begin()+(indicesToDelete[k]-k) );
+		}	
+	}
+
+	for ( int k = 0 ; k < deadBuildingTiles.size() ; k++ )
+	{
+		int xTile = deadBuildingTiles[k]%MapWidth;
+		int zTile = deadBuildingTiles[k]/MapWidth;
+		ResetSlope( xTile, zTile );
+	}
 }
 
 void PathfindingMap::ResetSlope( int xTile, int zTile )
 {
-
 	int width = ai->callback->GetMap()->GetWidth()/2;
 	float slope1 = SlopeMap[xTile*2+width*2*zTile];
 	float slope2 = SlopeMap[((xTile*2)+1)+width*2*zTile];
@@ -149,6 +196,7 @@ void PathfindingMap::ResetSlope( int xTile, int zTile )
 	float maxSlope =  max( slope4, max( slope3, max( slope1, slope2 ) ) );
 	MapArray[zTile*MapWidth + xTile] = maxSlope;
 }
+
 
 vector<PathfindingNode*> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start, SAIFloat3 destination )
 {
