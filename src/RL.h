@@ -8,6 +8,7 @@
 
 #define GAMMA 0.9
 #define ALPHA 1
+#define FILE_HEADER "QB"
 #include "global.h"
 #include "RL_State.h"
 
@@ -16,6 +17,12 @@ using namespace springai;
 namespace brainSpace {
 	///This class has the responsibillty to choose the apropriate actions, when an event occurs.
 
+	struct FileHeader
+	{
+		char header[2];
+		short unsigned int type; //1==flat, 2==hierarchical
+		short unsigned int size;
+	};
 
 	struct RL_Q
 	{
@@ -26,9 +33,15 @@ namespace brainSpace {
 		void LoadFromFile()
 		{
 			ifstream readFile;
-
+			FileHeader fileHeader;
 			readFile.open( File, ios::binary | ios::in );
-			readFile.read( (char*)actionValueFunction, sizeof(float)*size );
+			readFile.read( (char*)&fileHeader, sizeof(FileHeader) );
+			if (fileHeader.header[0]==FILE_HEADER[0] &&
+				fileHeader.header[1]==FILE_HEADER[1] &&
+				fileHeader.type==1)
+			{
+				readFile.read( (char*)actionValueFunction, sizeof(float)*fileHeader.size );
+			}
 
 			readFile.close();
 		}
@@ -67,7 +80,14 @@ namespace brainSpace {
 
 		void SaveToFile()
 		{
+			FileHeader fileHeader;
+			fileHeader.header[0] = FILE_HEADER[0];
+			fileHeader.header[1] = FILE_HEADER[1];
+			fileHeader.type = 1;
+			fileHeader.size = size;
+
 			ofstream file( File, ios::binary | ios::out );
+			file.write( (char*)&fileHeader, sizeof(fileHeader) );
 			file.write( (char*)actionValueFunction, sizeof(float)*size );
 			file.flush();
 			file.close();
