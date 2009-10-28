@@ -33,12 +33,16 @@ bool BrainMath::BoxIntersect(SAIFloat3 pos1, float width1, float height1, SAIFlo
 	CBoundingBox box2;
 	box1.topLeft.x = pos1.x - width1/2;
 	box1.topLeft.z = pos1.z - height1/2;
+	box1.topLeft.y = 50;
 	box1.bottomRight.x = pos1.x + width1/2;
 	box1.bottomRight.z = pos1.z + height1/2;
+	box1.bottomRight.y = 50;
 	box2.topLeft.x = pos2.x - width2/2;
 	box2.topLeft.z = pos2.z - height2/2;
+	box2.topLeft.y = 50;
 	box2.bottomRight.x = pos2.x + width2/2;
 	box2.bottomRight.z = pos2.z + height2/2;
+	box2.bottomRight.y = 50;
 	return box1.Intersects(box2);
 }
 
