@@ -10,6 +10,7 @@ RL::RL( AIClasses* aiClasses)
 	
 	ai = aiClasses;
 
+<<<<<<< HEAD
 
 	Actions.push_back( new RL_Action( ai->utility->GetUnitDef( "armsolar" )->GetUnitDefId(), 0 ) );
 
@@ -20,7 +21,13 @@ RL::RL( AIClasses* aiClasses)
 	Actions.push_back( new RL_Action( ai->utility->GetUnitDef( "armvp" )->GetUnitDefId(), 3 ) );
 	
 
+	ValueFunction = new RL_Q(	ai,
+								RL_PLANT_INDEX*RL_LAB_INDEX*RL_MEX_INDEX*RL_SOLAR_INDEX,
+								RL_ACTION_INDEX,
+								DataDirs::GetInstance(ai->callback)->GetWriteableDir());
+=======
 	ValueFunction = new RL_Q(RL_PLANT_INDEX*RL_LAB_INDEX*RL_MEX_INDEX*RL_SOLAR_INDEX,RL_ACTION_INDEX, DataDirs::GetInstance(ai->callback)->GetWriteableDir());
+>>>>>>> 76089964304040e3c90c72ae6f9aa238beb1897d
 
 	Epsilon = 9;
 	PreviousState = NULL;
@@ -38,7 +45,7 @@ RL_State* RL::GetState()
 	int labCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName( "armlab" );
 	int plantCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName( "armvp" );
 
-	RL_State *state = new RL_State(ai, plantCount, labCount,solarCount,mexCount);
+	RL_State *state = new RL_State( ai, plantCount, labCount,solarCount,mexCount);
 	ai->utility->Log( ALL, LOG_RL, "Solar: %d. Lab: %d. Mex: %d. Plant: %d. State: %d", solarCount, labCount, mexCount, plantCount, state->GetID() );
 	return state;
 }

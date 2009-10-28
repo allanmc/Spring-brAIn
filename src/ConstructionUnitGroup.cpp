@@ -262,6 +262,13 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 		ai->utility->Log(ALL, MISC, "BuildBlocksSelf blocked build by reason 3 (No path for commander)");
 		return true;
 	}
+
+	vector<PathfindingNode*> path = ai->knowledge->mapInfo->pathfindingMap->FindPathTo( commander->GetDef(), fromPos, pos );
+	if ( path.size() == 0 )
+	{
+		ai->utility->Log( ALL, MISC, "BuildBlocksSelf blocked build by reason 4 (No path to buildsite)");
+		return true;
+	}
 	return false;
 }
 
