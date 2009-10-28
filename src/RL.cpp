@@ -38,7 +38,7 @@ RL_State* RL::GetState()
 	int labCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName( "armlab" );
 	int plantCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName( "armvp" );
 
-	RL_State *state = new RL_State(ai, plantCount, labCount,solarCount,mexCount);
+	RL_State *state = new RL_State( ai, plantCount, labCount,solarCount,mexCount);
 	ai->utility->Log( ALL, LOG_RL, "Solar: %d. Lab: %d. Mex: %d. Plant: %d. State: %d", solarCount, labCount, mexCount, plantCount, state->GetID() );
 	return state;
 }

@@ -246,17 +246,18 @@ void Decision::UpdateFrindlyPositions()
 void Decision::Update(int frame)
 {
 	
-	if(frame == 54000)//kill your self after 30 mins
-		ai->utility->Suicide();
+	//if(frame == 54000)//kill your self after 30 mins
+		//ai->utility->Suicide();
 	if(frame == 1)
 	{	
 		ai->utility->LaterInitialization();
 		//ai->knowledge->mapInfo->scoutMap->DrawGrid();
 
 		ai->knowledge->mapInfo->resourceMap->Update();
-		ai->knowledge->mapInfo->pathfindingMap->DrawGrid();
-		ai->knowledge->mapInfo->pathfindingMap->Update();
+		//ai->knowledge->mapInfo->pathfindingMap->DrawGrid();
+		//ai->knowledge->mapInfo->pathfindingMap->Update();
 
+		/*
 		
 		UnitDef *solar, *kbotLab, *metalEx, *lltDef;
 		SBuildUnitCommand metalExOrder, kbotLabOrder, solarOrder, lltDefOrder;
@@ -312,8 +313,8 @@ void Decision::Update(int frame)
 		{
 			gc->ErectBuilding( solarOrder );
 
-			//ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &solarOrder );
 		}
+		*/
 
 		//kbotLabOrder.options = UNIT_COMMAND_OPTION_SHIFT_KEY;
 		//ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &kbotLabOrder );
