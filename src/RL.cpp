@@ -20,7 +20,10 @@ RL::RL( AIClasses* aiClasses)
 	Actions.push_back( new RL_Action( ai->utility->GetUnitDef( "armvp" )->GetUnitDefId(), 3 ) );
 	
 
-	ValueFunction = new RL_Q(RL_PLANT_INDEX*RL_LAB_INDEX*RL_MEX_INDEX*RL_SOLAR_INDEX,RL_ACTION_INDEX, DataDirs::GetInstance(ai->callback)->GetWriteableDir());
+	ValueFunction = new RL_Q(	ai,
+								RL_PLANT_INDEX*RL_LAB_INDEX*RL_MEX_INDEX*RL_SOLAR_INDEX,
+								RL_ACTION_INDEX,
+								DataDirs::GetInstance(ai->callback)->GetWriteableDir());
 
 	Epsilon = 9;
 	PreviousState = NULL;

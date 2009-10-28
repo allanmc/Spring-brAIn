@@ -93,7 +93,6 @@ void Decision::UnitFinished(int unit)
 		ai->knowledge->selfInfo->baseInfo->AddBuilding(u);
 	}
 	
-	
 	RL_Action *action = rl->Update();
 	if ( action->ID != -1 )
 	{
