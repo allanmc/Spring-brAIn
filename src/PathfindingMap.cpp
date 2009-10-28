@@ -35,7 +35,7 @@ void PathfindingMap::Update()
 	for ( int j = 0 ; j < MapHeight ; j++ )
 		for ( int i = 0 ; i < MapWidth ; i++ )
 		{
-			if ( MapArray[ j*MapWidth + i ] > 0.40f )
+			if ( MapArray[ j*MapWidth + i ] > 5.0f )
 			{
 				//ai->utility->Log( ALL, SLOPEMAP, "(%d, %d) is equal to 10", i, j );
 				SAIFloat3 start, end;
@@ -138,6 +138,7 @@ void PathfindingMap::RemoveBuilding(Unit* unit)
 		}
 	
 
+
 	vector<Unit*> unitsInRange = ai->knowledge->selfInfo->baseInfo->GetUnitsInRange( pos, max( xSize, zSize ) + Resolution );
 	for ( int i = 0 ; i < unitsInRange.size() ; i++ )
 	{
@@ -153,9 +154,9 @@ void PathfindingMap::RemoveBuilding(Unit* unit)
 
 		vector<int> indicesToDelete;
 
-		for ( int k = topCell ; k <= bottomCell ; k++ )
+		for ( int k = unitTopCell ; k <= unitBottomCell ; k++ )
 		{
-			for ( int j = leftCell ; j <= rightCell ; j++ )
+			for ( int j = unitLeftCell ; j <= unitRightCell ; j++ )
 			{
 				if ( k > MapHeight || k < 0 || j > MapWidth || j < 0 )
 					continue;
@@ -170,6 +171,7 @@ void PathfindingMap::RemoveBuilding(Unit* unit)
 				}
 			}
 		}
+
 		for ( int k = 0 ; k < indicesToDelete.size() ; k++ )
 		{
 			//Erase all the selected indices
@@ -207,7 +209,7 @@ vector<PathfindingNode*> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFlo
 		||
 		 MapArray[ (int)(start.z/Resolution)*MapWidth + (int)start.x/Resolution] > pathfinder->GetMoveData()->GetMaxSlope() )
 	{
-		ai->utility->ChatMsg( "I cannot reach the destination!!" );
+		ai->utility->ChatMsg( "Svend: I cannot reach the destination!!" );
 	}
 	map<int, PathfindingNode*> closedSet;
 	map<int, PathfindingNode*> openSet;

@@ -7,6 +7,7 @@ using namespace std;
 using namespace springai;
 using namespace brainSpace;
 
+int COMMANDERID = -1;
 Decision::Decision(AIClasses* aiClasses)
 {
 	ai = aiClasses;
@@ -91,37 +92,6 @@ void Decision::UnitFinished(int unit)
 	{
 		ai->knowledge->selfInfo->baseInfo->AddBuilding(u);
 	}
-
-	/*
-	SAIFloat3 dest;
-	dest.x = 2000;
-	dest.z = 500;
-	Unit* aa = Unit::GetInstance(ai->callback, unit );
-	UnitDef* lab = ai->utility->GetUnitDef( "armlab" );
-	SAIFloat3 pos;
-	pos.x = aa->GetPos().x + 50;
-	pos.z = aa->GetPos().z + 50;
-	pos.y = aa->GetPos().y;
-
-	if ( ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom( aa->GetDef(), lab, pos, aa->GetPos(), dest ) )
-		ai->utility->ChatMsg( "You can escape from here!!" );
-	else ai->utility->ChatMsg( "You cannot escape from here!!");
-
-
-	vector<PathfindingNode*> path = ai->knowledge->mapInfo->pathfindingMap->FindPathTo( aa->GetDef(), aa->GetPos(), dest );
-	
-	ai->utility->ChatMsg( "Path size: %d", path.size() );
-	for ( int i = path.size()-1 ; i >= 0 ; i-- )
-	{
-		SMoveUnitCommand c;
-		c.options = UNIT_COMMAND_OPTION_SHIFT_KEY;
-		c.toPos = path[i]->Pos;
-		ai->utility->ChatMsg( "Path point %i: %f, %f, %f", i, c.toPos.x, c.toPos.z, c.toPos.y );
-		c.unitId = unit;
-		c.timeOut = 20000;
-		ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_MOVE, &c );
-	}
-	*/
 	
 	/*
 	RL_Action *action = rl->Update();
@@ -142,36 +112,12 @@ void Decision::UnitFinished(int unit)
 	ai->utility->ChatMsg( "RL: Building unit with unitdef: %d", action->UnitDefID );
 	*/
 
-	/*
-	Unit* uu = Unit::GetInstance( ai->callback, unit );
-	SAIFloat3 dest;
-	dest.x = 1500;
-	dest.z = 1500;
-
-	if ( strcmp( uu->GetDef()->GetName(), "armfav" ) == 0 )
-	{
-		vector<PathfindingNode*> path = ai->knowledge->mapInfo->pathfindingMap->FindPathTo( uu, dest );
-		ai->utility->Log( ALL, SLOPEMAP, "Path size: %d", path.size() );
-		for ( int i = path.size()-1 ; i >= 0 ; i-- )
-		{
-			ai->utility->DrawCircle( path[i]->Pos, 10.0f );
-			
-			SMoveUnitCommand m;
-			m.timeOut = 30000;
-			m.toPos = path[i]->Pos;
-			m.unitId = unit;
-			m.options = UNIT_COMMAND_OPTION_SHIFT_KEY;
-			ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_MOVE, &m );
-			ai->utility->ChatMsg( "Order pushed!" );
-		}
-	}
-	*/
-
 }
 
 ///called when one of our units are destoyed
 void Decision::UnitDestroyed(int unit, int attacker)
 {
+
 	Unit* destroyee = Unit::GetInstance( ai->callback, unit );
 	Unit* destroyer = Unit::GetInstance( ai->callback, attacker );
 	BattleInfoInstance->UnitDestroyed( destroyee, destroyer );
@@ -190,7 +136,8 @@ void Decision::UnitDestroyed(int unit, int attacker)
 		ai->knowledge->selfInfo->armyInfo->RemoveUnit(destroyee);
 	}
 	else 
-	{
+	{	
+		ai->utility->ChatMsg( "Unit destroyed: %s", destroyee->GetDef()->GetHumanName() );
 		ai->knowledge->selfInfo->baseInfo->RemoveBuilding(destroyee);
 	}
 
@@ -281,7 +228,6 @@ void Decision::EnemyDestroyed(int enemy, int attacker)
 ///used to update the positions of all friendly units in the ArmyInfo
 void Decision::UpdateFrindlyPositions()
 {
-	
 	vector<Unit*> units = ai->callback->GetFriendlyUnits();
 	ArmyInfo* armyUnits = ai->knowledge->selfInfo->armyInfo;
 	int unitCount = units.size();
@@ -308,8 +254,8 @@ void Decision::Update(int frame)
 		//ai->knowledge->mapInfo->scoutMap->DrawGrid();
 
 		ai->knowledge->mapInfo->resourceMap->Update();
-		//ai->knowledge->mapInfo->pathfindingMap->DrawGrid();
-		//ai->knowledge->mapInfo->pathfindingMap->Update();
+		ai->knowledge->mapInfo->pathfindingMap->DrawGrid();
+		ai->knowledge->mapInfo->pathfindingMap->Update();
 
 		
 		UnitDef *solar, *kbotLab, *metalEx, *lltDef;
@@ -355,10 +301,22 @@ void Decision::Update(int frame)
 		lltDefOrder.toBuildUnitDefId = lltDef->GetUnitDefId();
 
 		Unit *commander = ai->callback->GetFriendlyUnits()[0];
+		COMMANDERID = commander->GetUnitId();
 		kbotLabOrder.buildPos = commander->GetPos();
 		kbotLabOrder.unitId = commander->GetUnitId();
+
+		solarOrder.unitId = commander->GetUnitId();
+		solarOrder.buildPos = ai->callback->GetMap()->FindClosestBuildSite( *solar, commander->GetPos(), 128, 0, 0 );
+		solarOrder.options = UNIT_COMMAND_OPTION_SHIFT_KEY;
+		for ( int i = 0 ; i < 6 ; i++ )
+		{
+			gc->ErectBuilding( solarOrder );
+
+			//ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &solarOrder );
+		}
+
 		//kbotLabOrder.options = UNIT_COMMAND_OPTION_SHIFT_KEY;
-		ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &kbotLabOrder );
+		//ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &kbotLabOrder );
 		/*kbotLabOrder.buildPos.z += ai->utility->GetUnitDef("armlab")->GetZSize() * 8;
 		SMoveUnitCommand m;
 		m.timeOut = 30000;
@@ -536,7 +494,27 @@ void Decision::UnitIdle( int id )
 {
 	Unit* u = Unit::GetInstance( ai->callback, id );
 	gc->UnitIdle( u );
-	BuildSomethingUsefull();
+	if ( ai->knowledge->selfInfo->baseInfo->CountBuildingsByName( "armsolar" ) == 6 )
+	{
+		if ( strcmp( u->GetDef()->GetName(), "armcom" ) == 0 )
+		{
+			vector<Unit*> units = ai->knowledge->selfInfo->baseInfo->GetUnitsInRange( u->GetPos(), 300 );
+			for ( int i = 0 ; i < units.size() ; i++ )
+			{
+				if ( strcmp( units[i]->GetDef()->GetName(), "armsolar" ) == 0 )
+				{
+					SReclaimUnitCommand r;
+					r.timeOut = 50000;
+					r.unitId = COMMANDERID;
+					r.toReclaimUnitIdOrFeatureId = units[i]->GetUnitId();
+					r.options = UNIT_COMMAND_OPTION_SHIFT_KEY;
+					ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_RECLAIM, &r );
+					ai->utility->ChatMsg( "RECLAIM ORDER GIVEN" );
+				}
+			}
+		}
+	}
+	//BuildSomethingUsefull();
 	//Construction groups has nothing to do... So build something we need!
 }
 
