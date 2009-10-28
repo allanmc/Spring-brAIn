@@ -128,7 +128,6 @@ namespace brainSpace {
 		RL_State* GetState();
 		AIClasses* ai;
 
-		vector<RL_Action*> Actions;
 		RL_Q* ValueFunction;
 	};
 }
