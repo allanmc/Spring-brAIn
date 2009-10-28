@@ -107,7 +107,7 @@ void Decision::UnitFinished(int unit)
 	else 
 	{
 		ai->utility->ChatMsg( "we have reached our goal!!" );
-		//ai->utility->Suicide();
+		ai->utility->Suicide();
 	}
 	ai->utility->ChatMsg( "RL: Building unit with unitdef: %d", action->UnitDefID );
 	
