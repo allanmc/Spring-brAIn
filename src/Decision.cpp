@@ -308,8 +308,8 @@ void Decision::Update(int frame)
 		//ai->knowledge->mapInfo->scoutMap->DrawGrid();
 
 		ai->knowledge->mapInfo->resourceMap->Update();
-		ai->knowledge->mapInfo->pathfindingMap->DrawGrid();
-		ai->knowledge->mapInfo->pathfindingMap->Update();
+		//ai->knowledge->mapInfo->pathfindingMap->DrawGrid();
+		//ai->knowledge->mapInfo->pathfindingMap->Update();
 
 		
 		UnitDef *solar, *kbotLab, *metalEx, *lltDef;
