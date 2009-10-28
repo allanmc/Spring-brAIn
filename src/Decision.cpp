@@ -75,12 +75,12 @@ void Decision::UnitFinished(int unit)
 		gc->AddUnit(u);
 		if (!ud->IsBuilder())
 		{
-			BuildAttackUnit();
+			//BuildAttackUnit();
 		}
 	}else{
 		//add to BuildingController
 		bc->AddBuilding(u);
-		BuildAttackUnit();
+		//BuildAttackUnit();
 		ai->knowledge->selfInfo->resourceInfo->RemoveChangeToCome(u);
 	}
 
