@@ -13,7 +13,10 @@ RL_State::RL_State( AIClasses* aiClasses, int plantCount, int labCount, int sola
 	ID = (PlantCount*2000)+(LabCount*400)+(20*MexCount)+SolarCount;
 
 	if ( SolarCount < RL_SOLAR_INDEX )
+	{
+		ai->utility->Log( ALL, LOG_RL, "%d is lower than %d", SolarCount, RL_SOLAR_INDEX );
 		Actions.push_back( new RL_Action( ai->utility->GetUnitDef( "armsolar" )->GetUnitDefId(), 0 ) );
+	}
 	if ( MexCount < RL_MEX_INDEX )
 		Actions.push_back( new RL_Action( ai->utility->GetUnitDef( "armmex" )->GetUnitDefId(), 1 ) );
 	if ( LabCount < RL_LAB_INDEX )
