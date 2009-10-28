@@ -74,12 +74,12 @@ void Decision::UnitFinished(int unit)
 		gc->AddUnit(u);
 		if (!ud->IsBuilder())
 		{
-			//BuildAttackUnit();
+			BuildAttackUnit();
 		}
 	}else{
 		//add to BuildingController
 		bc->AddBuilding(u);
-		//BuildAttackUnit();
+		BuildAttackUnit();
 		ai->knowledge->selfInfo->resourceInfo->RemoveChangeToCome(u);
 	}
 
@@ -123,7 +123,7 @@ void Decision::UnitFinished(int unit)
 	}
 	*/
 	
-	/*
+	
 	RL_Action *action = rl->Update();
 	if ( action->ID != -1 )
 	{
@@ -137,10 +137,10 @@ void Decision::UnitFinished(int unit)
 	else 
 	{
 		ai->utility->ChatMsg( "we have reached our goal!!" );
-		ai->utility->Suicide();
+		//ai->utility->Suicide();
 	}
 	ai->utility->ChatMsg( "RL: Building unit with unitdef: %d", action->UnitDefID );
-	*/
+	
 
 	/*
 	Unit* uu = Unit::GetInstance( ai->callback, unit );
@@ -536,7 +536,7 @@ void Decision::UnitIdle( int id )
 {
 	Unit* u = Unit::GetInstance( ai->callback, id );
 	gc->UnitIdle( u );
-	BuildSomethingUsefull();
+	//BuildSomethingUsefull();
 	//Construction groups has nothing to do... So build something we need!
 }
 
@@ -544,7 +544,7 @@ void Decision::BuildSomethingUsefull()
 {
 	if (gc->ConstructionGroupIsIdle())
 	{
-		//ai->utility->Log(ALL, MISC, "I have absolutely nothing to do now!");
+		ai->utility->Log(ALL, MISC, "I have absolutely nothing to do now!");
 		UnitDef *armsolar = ai->utility->GetSolarDef();
 		UnitDef *armmex = ai->utility->GetMexDef();
 		UnitDef *armlab = ai->utility->GetUnitDef("armlab");

@@ -115,12 +115,12 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 		return;
 	}
 
-	//Can we build here without blocking ourself?
+	/*//Can we build here without blocking ourself?
 	if (BuildBlocksSelf(unitDef, order.buildPos, order.facing))
 	{
 		ai->utility->Log(ALL, MISC, "We would block ourself if we build this %s!", unitDef->GetName());
 		return;
-	}
+	}*/
 	ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &order );
 }
 
