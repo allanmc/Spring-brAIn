@@ -11,7 +11,7 @@ namespace brainSpace {
 	class RL_State
 	{
 	public:
-		RL_State( AIClasses* ai, int labCount, int solarCount, int mexCount );
+		RL_State( AIClasses* ai, int plantCount, int labCount, int solarCount, int mexCount );
 
 		int GetID();
 
@@ -20,7 +20,8 @@ namespace brainSpace {
 	private:
 
 		AIClasses* ai;
-		
+
+		int PlantCount;
 		int SolarCount;
 		int MexCount;
 		int ID;

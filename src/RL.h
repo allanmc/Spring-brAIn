@@ -4,7 +4,8 @@
 #define RL_SOLAR_INDEX 20
 #define RL_MEX_INDEX 20
 #define RL_LAB_INDEX 5
-#define RL_ACTION_INDEX 3
+#define RL_PLANT_INDEX 5
+#define RL_ACTION_INDEX 4
 
 #define GAMMA 0.9
 #define ALPHA 1
