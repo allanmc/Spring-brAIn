@@ -18,10 +18,20 @@ RL::RL( AIClasses* aiClasses)
 	Epsilon = 9;
 	PreviousState = NULL;
 	PreviousAction = NULL;
+	totalReward = 0.0;
+	goalAchieved = false;
 }
 
 RL::~RL()
 {
+	if (goalAchieved)
+	{
+		ai->utility->ChatMsg("RL goal achieved with total reward: %f", totalReward);
+	} 
+	else
+	{
+		ai->utility->ChatMsg("RL goal NOT achieved, but total reward is: %f", totalReward);
+	}
 }
 
 RL_State* RL::GetState()
@@ -98,6 +108,7 @@ RL_Action *RL::Update( )
 		reward += 100;
 		terminal = true;
 	}
+	totalReward += reward;
 
 	float value = ValueFunction->GetValue(PreviousState,PreviousAction) 
 		+ ALPHA*(
@@ -112,6 +123,7 @@ RL_Action *RL::Update( )
 	ValueFunction->SaveToFile();//move to terminal later
 	if ( terminal )
 	{
+		goalAchieved = true;
 		return new RL_Action(-1,-1);//MEANS THAT YOU SHOULD STOP NOW!!
 	}
 	return nextAction;

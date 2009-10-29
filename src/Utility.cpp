@@ -356,13 +356,13 @@ bool Utility::FileExists( const char* FileName )
     return false;
 }
 
-void Utility::ResetGame(RL *rl)
+void Utility::ResetGame(RL **rl)
 {
 	Log(IMPORTANT, MISC, "brAIn is now resetting..."); 
 
 	Log(IMPORTANT, MISC, "Resetting RL...");
-	delete(rl);
-	rl = new RL( ai );
+	delete(*rl);
+	*rl = new RL( ai );//FY!
 
 	Log(IMPORTANT, MISC, "Creating new commander..."); 
 	//Give me a new commander

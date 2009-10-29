@@ -191,7 +191,8 @@ namespace brainSpace {
 		RL_State* PreviousState;
 		RL_Action* PreviousAction;
 		int PreviousFrame;
-
+		float totalReward;
+		bool goalAchieved;
 		int Epsilon;
 		RL_State* GetState();
 		AIClasses* ai;

@@ -49,7 +49,7 @@ namespace brainSpace
 		bool IsMetalMap();
 		void LaterInitialization();
 		void Suicide();
-		void ResetGame(RL *rl);
+		void ResetGame(RL **rl);
 		void GoTo(int unitId, SAIFloat3 pos);
 		springai::UnitDef* GetMexDef();
 		springai::UnitDef* GetSolarDef();
