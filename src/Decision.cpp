@@ -16,7 +16,7 @@ Decision::Decision(AIClasses* aiClasses)
 	bc = new BuildingController( ai );
 	rl = new RL( ai );
 	BattleInfoInstance = new BattlesInfo( ai );
-
+	resettingGame = false;
 	//time_t t1, t2, t3, t4, t5;
 	//int i;
 	//int iterations = 100;
@@ -106,7 +106,9 @@ void Decision::UnitFinished(int unit)
 	else 
 	{
 		ai->utility->ChatMsg( "we have reached our goal!!" );
-		ai->utility->Suicide();
+		//ai->utility->Suicide();
+		ai->utility->ResetGame(rl);
+		resettingGame = true;
 	}
 	ai->utility->ChatMsg( "RL: Building unit with unitdef: %d", action->UnitDefID );
 	
@@ -244,9 +246,38 @@ void Decision::UpdateFrindlyPositions()
 
 void Decision::Update(int frame)
 {
+	//ai->utility->Log(ALL, MISC, "Currentframe: %i", frame);
 	
-	//if(frame == 54000)//kill your self after 30 mins
+	if (resettingGame) 
+	{
+		vector<Unit*> units = ai->callback->GetFriendlyUnits();
+		ai->utility->Log(ALL, MISC, "Checking if new commander is in position X:(%f == %f), Z:(%f == %f)", units[0]->GetPos().x, ai->callback->GetMap()->GetStartPos().x, units[0]->GetPos().z, ai->callback->GetMap()->GetStartPos().z);
+		if (units.size()==1 &&
+			abs(units[0]->GetPos().x - ai->callback->GetMap()->GetStartPos().x)<20 &&
+			abs(units[0]->GetPos().z - ai->callback->GetMap()->GetStartPos().z)<20)
+		{
+			resettingGame = false;
+			delete(ai->knowledge);
+			ai->knowledge = new Knowledge( ai );
+			delete(ai->utility);
+			ai->utility = new Utility( ai );
+			delete(ai->math);
+			ai->math = new BrainMath( ai );
+			delete(gc);
+			gc = new GroupController( ai );
+			delete(bc);
+			bc = new BuildingController( ai );
+			UnitFinished(units[0]->GetUnitId());
+		}
+		return;
+	}
+
+	if(frame == 54000)
+	{//kill your self after 30 mins
 		//ai->utility->Suicide();
+		//ai->utility->ResetGame(rl);
+		//resettingGame = true;
+	}
 	if(frame == 1)
 	{	
 		ai->utility->LaterInitialization();

@@ -19,6 +19,11 @@ brainSpace::MilitaryGroupManager::MilitaryGroupManager( AIClasses* aiClasses )
 
 brainSpace::MilitaryGroupManager::~MilitaryGroupManager()
 {
+	for (int i = 0; i < UnitGroups.size(); i++)
+	{
+		delete(UnitGroups[i]);
+	}
+	UnitGroups.clear();
 }
 
 void brainSpace::MilitaryGroupManager::AddUnit( Unit* unit )
