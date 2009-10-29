@@ -14,6 +14,8 @@ GroupController::GroupController( AIClasses* aiClasses )
 
 brainSpace::GroupController::~GroupController(void)
 {
+	delete(ConstructionGroupMgr);
+	delete(MilitaryGroupMgr);
 }
 
 void GroupController::AddUnit(Unit *unit)

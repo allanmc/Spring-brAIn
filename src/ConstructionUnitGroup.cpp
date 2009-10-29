@@ -8,12 +8,15 @@ ConstructionUnitGroup::ConstructionUnitGroup( AIClasses* aiClasses, int groupID 
 {
 	BaseDefenseCounter = 0;
 	BaseDefenseCounterStart = 0; 
+	figureId = 0;
 	BaseDefenseHitBorder = false;
 	safePosition = (SAIFloat3){ai->callback->GetMap()->GetWidth()*8/2, 0.0, ai->callback->GetMap()->GetHeight()*8/2};
 }
 
 ConstructionUnitGroup::~ConstructionUnitGroup()
 {
+	ai->utility->Log(ALL, MISC, "Trying to remove graphics of figureId %i", figureId);
+	ai->utility->RemoveGraphics(figureId);
 }
 
 ///@return the safe position whether a building blocks the exit of out base
@@ -88,6 +91,7 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	if ( order.toBuildUnitDefId == ai->utility->GetMexDef()->GetUnitDefId() )
 	{
 		order.buildPos = FindClosestMetalExtractionSite( buildPos );
+		order.buildPos.y = 30;
 		ai->utility->Log(ALL, MISC, "Metal extractor build position set" );
 	}
 	//Check to see if unit-to-build is LLT, the defense structure, and find good spot
@@ -115,12 +119,22 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 		return;
 	}
 
+	if (figureId == 0)
+		figureId = ai->utility->DrawCircle(order.buildPos, 75, figureId);
+	else
+		ai->utility->DrawCircle(order.buildPos, 50, figureId);
+
 	/*//Can we build here without blocking ourself?
 	if (BuildBlocksSelf(unitDef, order.buildPos, order.facing))
 	{
 		ai->utility->Log(ALL, MISC, "We would block ourself if we build this %s!", unitDef->GetName());
 		return;
 	}*/
+	
+	//TODO: Add the target action directly with HandleCommand, when we can, instead of using out own step-by-step pathfinding
+	//ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &order );
+	ai->utility->GoTo(order.unitId, order.buildPos);
+	order.options = UNIT_COMMAND_OPTION_SHIFT_KEY;
 	ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &order );
 }
 
@@ -217,7 +231,7 @@ void ConstructionUnitGroup::SetAvailable()
 ///@returns whether a new building would block a lab
 bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 pos, int facing)
 {
-	ai->utility->Log(ALL, MISC, "BuildBlocksSelf...");
+	ai->utility->Log(ALL, MISC, "BuildBlocksSelf check position (%f,%f)...", pos.x, pos.z);
 	
 	vector<Unit*> units = ai->callback->GetFriendlyUnits();
 	SAIFloat3 fromPos;
@@ -243,6 +257,7 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 			}
 		}
 	}
+	ai->utility->Log(ALL, MISC, "BuildBlocksSelf check 1 done");
 	//If what we want to build is a lab, check that this position allows its units a path out of the base
 	//without using the locaion of the new building
 	if ( strcmp(toBuildUnitDef->GetName(), "armlab")==0) 
@@ -254,6 +269,7 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 			return true;
 		}
 	}
+	ai->utility->Log(ALL, MISC, "BuildBlocksSelf check 2 done");
 	//If we build this new building, does the commander have a path out of the base?
 	fromPos = commander->GetPos();
 	///TODO: Maybe ensure that the commander does not walk into a building-block "trap" :)
@@ -262,6 +278,7 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 		ai->utility->Log(ALL, MISC, "BuildBlocksSelf blocked build by reason 3 (No path for commander)");
 		return true;
 	}
+	ai->utility->Log(ALL, MISC, "BuildBlocksSelf check 3 done");
 
 	vector<PathfindingNode*> path = ai->knowledge->mapInfo->pathfindingMap->FindPathTo( commander->GetDef(), fromPos, pos );
 	if ( path.size() == 0 )
@@ -269,6 +286,7 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 		ai->utility->Log( ALL, MISC, "BuildBlocksSelf blocked build by reason 4 (No path to buildsite)");
 		return true;
 	}
+	ai->utility->Log(ALL, MISC, "BuildBlocksSelf check 4 done");
 	return false;
 }
 
@@ -434,7 +452,7 @@ SAIFloat3 ConstructionUnitGroup::FindClosestMetalExtractionSite(SAIFloat3 pos, b
 	}
 	///TODO: What if we didn't find an accaptable spot? (lowestIdx=-1)
 	pos = spots[lowestIdx];
-
+	
 	return pos;
 
 }
