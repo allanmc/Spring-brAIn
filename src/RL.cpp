@@ -1,38 +1,118 @@
 #include "RL.h"
 
+
+
 using namespace brainSpace;
 using namespace std;
 using namespace springai;
 
 RL::RL( AIClasses* aiClasses)
-{
-	vector<float> f;
-	
+{	
 	ai = aiClasses;
+	
+	currentNode = 0;
 
-	ValueFunction = new RL_Q(	ai,
-								RL_PLANT_INDEX*RL_LAB_INDEX*RL_MEX_INDEX*RL_SOLAR_INDEX,
-								RL_ACTION_INDEX,
-								DataDirs::GetInstance(ai->callback)->GetWriteableDir());
+	for(int i = 0; i < RL_NUM_NODES; i++)
+	{
+		PreviousState[i] = NULL;
+		PreviousAction[i] = NULL;
+	}
+
+	ValueFunction[0] = new RL_Q(ai,2*2/*states*/,2/*actions*/); //root
+	ValueFunction[1] = new RL_Q(ai,5*5/*states*/,2/*actions*/); //Factory
+	ValueFunction[2] = new RL_Q(ai,20*20/*states*/,2/*actions*/); //Resource
 
 	Epsilon = 9;
-	PreviousState = NULL;
-	PreviousAction = NULL;
 }
 
 RL::~RL()
 {
 }
 
-RL_State* RL::GetState()
+void RL::LoadFromFile()
 {
-	int solarCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName( "armsolar" );
-	int mexCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName( "armmex" );
-	int labCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName( "armlab" );
-	int plantCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName( "armvp" );
+	const char* dir = ai->callback->GetDataDirs()->GetWriteableDir();
 
-	RL_State *state = new RL_State( ai, plantCount, labCount,solarCount,mexCount);
-	ai->utility->Log( ALL, LOG_RL, "Solar: %d. Lab: %d. Mex: %d. Plant: %d. State: %d", solarCount, labCount, mexCount, plantCount, state->GetID() );
+	char *path = new char[200];
+	strcpy(path, dir);
+	strcat(path, "q.bin");
+
+	FILE* fp = NULL;
+	fp = fopen( path, "rb" );
+	if( fp != NULL )
+	{
+		fclose( fp );
+		//load stuff
+
+		FileHeader fileHeader;
+		ifstream *readFile = new ifstream(path, ios::binary | ios::in);
+		
+		ai->utility->Log(ALL, LOG_RL, "I am going to read RL file!");
+		
+		readFile->read( (char*)&fileHeader, sizeof(FileHeader) );
+		if (fileHeader.header[0]==FILE_HEADER[0] &&
+			fileHeader.header[1]==FILE_HEADER[1] &&
+			fileHeader.type==1)
+		{
+			for(int i = 0 ; i < fileHeader.numQTables; i++)
+			{
+				ValueFunction[i]->LoadFromFile(readFile);
+			}
+		}
+	}
+	else
+	{
+		ValueFunction[0]->Clear();
+		ValueFunction[1]->Clear();
+		ValueFunction[2]->Clear();
+	}
+}
+
+void RL::SaveToFile()
+{
+	const char* dir = ai->callback->GetDataDirs()->GetWriteableDir();
+
+	char *path = new char[200];
+	strcpy(path, dir);
+	strcat(path, "q.bin");
+
+	ofstream *file = new ofstream(path, ios::binary | ios::out);
+
+	FileHeader fileHeader;
+
+	fileHeader.header[0] = FILE_HEADER[0];
+	fileHeader.header[1] = FILE_HEADER[1];
+	fileHeader.numQTables = 3;
+	fileHeader.type = 1;
+
+
+	file->write( (char*)&fileHeader, sizeof(fileHeader) );
+
+	for(int i; i< fileHeader.numQTables; i++)
+	{
+		ValueFunction[i]->SaveToFile(file);
+	}
+
+	file->flush();
+	file->close();
+}
+
+RL_State* RL::GetState(int node)
+{
+	RL_State* state;
+	switch(node)
+	{
+	case 0:
+		state = new RL_State_Root(ai);
+		break;
+	case 1:
+		state = new RL_State_Factory(ai);
+		break;
+	case 2:
+		state = new RL_State_Resource(ai);
+		break;
+	}
+
 	return state;
 }
 
@@ -61,15 +141,15 @@ RL_Action *RL::FindBestAction( RL_State* state )
 
 	RL_Action *action = stateActions[0]; //unitdefID
 
-	float bestValue = ValueFunction->GetValue(state, action);
+	float bestValue = ValueFunction[currentNode]->GetValue(state, action);
 
 	vector<RL_Action*>::iterator it;
 	for ( it = stateActions.begin()+1 ; it != stateActions.end() ; it++ )
 	{
 		RL_Action *tempAction = (RL_Action*)(*it);
-		if ( ValueFunction->GetValue(state, tempAction) > bestValue )
+		if ( ValueFunction[currentNode]->GetValue(state, tempAction) > bestValue )
 		{
-			bestValue = ValueFunction->GetValue(state, tempAction);
+			bestValue = ValueFunction[currentNode]->GetValue(state, tempAction);
 			action = tempAction;
 		}
 	}
@@ -77,42 +157,76 @@ RL_Action *RL::FindBestAction( RL_State* state )
 	return action;
 }
 
-RL_Action *RL::Update( )
+RL_Action* RL::Update()
 {
 	bool terminal = false;
-	RL_State *state = GetState();
+	RL_State *state = GetState(currentNode);
 	RL_Action *nextAction = FindNextAction( state );
-	RL_Action *bestAction = FindBestAction( state );
 
-	if ( PreviousState == NULL )
+	if ( PreviousState[currentNode] == NULL )
 	{
-		PreviousState = state;
-		PreviousAction = nextAction;
-		PreviousFrame = ai->frame;
-		return nextAction;
+		PreviousState[currentNode] = state;
+		PreviousAction[currentNode] = nextAction;
+		PreviousFrame[currentNode] = ai->frame;
+		if(!nextAction->Complex)
+			return nextAction;
+		else
+		{
+			currentNode = (currentNode == 0 ? nextAction->ID + 1 : 0 );
+			return Update();//recursive call
+		}
 	}
 
-	int reward = -(ai->frame - PreviousFrame)/30;
-	if ( state->LabCount == 4 )
+	int reward = -(ai->frame - PreviousFrame[currentNode])/30;
+	if ( state->IsTerminal() )
 	{
-		reward += 100;
+		if(currentNode == 0)
+			reward += 100;
+		
 		terminal = true;
 	}
 
-	float value = ValueFunction->GetValue(PreviousState,PreviousAction) 
+	float bestFutureValue;
+	if(terminal)
+		bestFutureValue = 0;
+	else
+	{	
+		RL_Action *bestAction = FindBestAction( state );
+		bestFutureValue = ValueFunction[currentNode]->GetValue(state, bestAction);
+	}
+	if(currentNode == 0)
+	{//Update the subNode's value function
+		int subNode = PreviousAction[currentNode]->ID + 1;
+
+		float subValue = ValueFunction[subNode]->GetValue(PreviousState[subNode],PreviousAction[subNode]) 
 		+ ALPHA*(
-			reward + GAMMA*ValueFunction->GetValue(state, bestAction) 
-			- ValueFunction->GetValue(PreviousState,PreviousAction) );
+			reward + GAMMA*bestFutureValue 
+			- ValueFunction[subNode]->GetValue(PreviousState[subNode],PreviousAction[subNode]) );
 
-	ValueFunction->SetValue(PreviousState,PreviousAction, value);
-	PreviousState = state;
-	PreviousAction = nextAction;
-	PreviousFrame = ai->frame;
+		ValueFunction[subNode]->SetValue(PreviousState[subNode],PreviousAction[subNode], subValue);
+	}
+	
+	//update own value function
+	float value = ValueFunction[currentNode]->GetValue(PreviousState[currentNode],PreviousAction[currentNode]) 
+		+ ALPHA*(
+			reward + GAMMA*bestFutureValue 
+			- ValueFunction[currentNode]->GetValue(PreviousState[currentNode],PreviousAction[currentNode]) );
 
-	ValueFunction->SaveToFile();//move to terminal later
+	ValueFunction[currentNode]->SetValue(PreviousState[currentNode],PreviousAction[currentNode], value);
+	PreviousState[currentNode] = state;
+	PreviousAction[currentNode] = nextAction;
+	PreviousFrame[currentNode] = ai->frame;
+
+
 	if ( terminal )
 	{
-		return new RL_Action(-1,-1);//MEANS THAT YOU SHOULD STOP NOW!!
+		if(currentNode == 0)
+			return new RL_Action(-1,-1, false);//MEANS THAT YOU SHOULD STOP NOW!!
+		else
+		{
+			currentNode = 0;//parentNode
+			return Update();//recursive call
+		}
 	}
 	return nextAction;
 	

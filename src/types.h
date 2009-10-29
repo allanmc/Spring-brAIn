@@ -89,10 +89,12 @@ namespace brainSpace {
 	{
 		int UnitDefID;
 		int ID;
-		RL_Action( int unitDefID, int id )
+		bool Complex;
+		RL_Action( int unitDefID, int id, bool complex)
 		{
 			UnitDefID = unitDefID;
 			ID = id;
+			Complex = complex;
 		}
 		
 	};

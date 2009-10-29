@@ -3,25 +3,20 @@
 
 using namespace brainSpace;
 
-RL_State::RL_State( AIClasses* aiClasses, int plantCount, int labCount, int solarCount, int mexCount )
+RL_State::RL_State( AIClasses* aiClasses)
 {
 	ai = aiClasses;
-	MexCount = mexCount;
-	LabCount = labCount;
-	SolarCount = solarCount;
-	PlantCount = plantCount;
-	ID = (PlantCount*2000)+(LabCount*400)+(20*MexCount)+SolarCount;
+    ID = 0;//should be over written by the specific constructor
+}
 
-	if ( SolarCount < RL_SOLAR_INDEX-1 )
+RL_State::~RL_State()
+{
+	vector<RL_Action*>::iterator it;
+	for(it = Actions.begin(); it != Actions.end(); it++)
 	{
-		Actions.push_back( new RL_Action( ai->utility->GetUnitDef( "armsolar" )->GetUnitDefId(), 0 ) );
+		delete (*it);
 	}
-	if ( MexCount < RL_MEX_INDEX-1 )
-		Actions.push_back( new RL_Action( ai->utility->GetUnitDef( "armmex" )->GetUnitDefId(), 1 ) );
-	if ( LabCount < RL_LAB_INDEX-1 )
-		Actions.push_back( new RL_Action( ai->utility->GetUnitDef( "armlab" )->GetUnitDefId(), 2 ) );
-	if ( PlantCount < RL_PLANT_INDEX-1 )
-		Actions.push_back( new RL_Action( ai->utility->GetUnitDef( "armvp" )->GetUnitDefId(), 3 ) );
+	Actions.clear();
 }
 
 int RL_State::GetID()
