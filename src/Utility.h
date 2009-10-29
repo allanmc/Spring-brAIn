@@ -3,6 +3,8 @@
 #define MAGIC_CIRCLE_NUMBER 0.55228475
 #include "types.h"
 
+#include "Cheats.h"
+
 const SAIFloat3 TEAM_0_COLOR = { 255, 0, 0 };
 const SAIFloat3 TEAM_1_COLOR = { 255, 255, 0 };
 const SAIFloat3 TEAM_2_COLOR = { 255, 0, 255 };
@@ -47,6 +49,8 @@ namespace brainSpace
 		bool IsMetalMap();
 		void LaterInitialization();
 		void Suicide();
+		void ResetGame(RL *rl);
+		void GoTo(int unitId, SAIFloat3 pos);
 		springai::UnitDef* GetMexDef();
 		springai::UnitDef* GetSolarDef();
 		springai::UnitDef* GetLLTDef();

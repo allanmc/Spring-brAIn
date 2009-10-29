@@ -28,7 +28,7 @@ brainSpace::BrAIn::~BrAIn() {}
 ///return 0 on success, and something else if an error happend.
 int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 
-	ai->utility->Log(ALL,EVENT,"Recived an event with topic: %i", topic);
+	//ai->utility->Log(ALL,EVENT,"Recived an event with topic: %i", topic);
 
 	//if(topic > 50) ai->utility->Log(ALL,EVENT,"wierd crap");
 	switch (topic) {
@@ -44,7 +44,7 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 			break;
 		case EVENT_UPDATE:
 			{
-				ai->utility->Log(DEBUG,EVENT,"update");
+				//ai->utility->Log(DEBUG,EVENT,"update");
 				struct SUpdateEvent* evt = (struct SUpdateEvent*) data;
 				int frame = evt->frame;
 				ai->frame = frame;

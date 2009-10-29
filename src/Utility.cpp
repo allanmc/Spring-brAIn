@@ -165,6 +165,40 @@ Resource* Utility::GetResource(const char* resourceName)
 	}
 	return NULL;
 }
+
+///Order the unit to goto a specific location using our own pathfinding
+void Utility::GoTo(int unitId, SAIFloat3 pos)
+{
+	ai->utility->Log(ALL, MISC, "GoTo: I am no going to find a path..");
+	Unit* unit = Unit::GetInstance(ai->callback, unitId);
+	vector<SAIFloat3> wayPoints;
+	if (ai->utility->EuclideanDistance(unit->GetPos(), pos)<50)
+	{
+		wayPoints.push_back(pos);
+	}
+	else
+	{
+		wayPoints = ai->knowledge->mapInfo->pathfindingMap->FindPathToSimple(unit->GetDef(), unit->GetPos(), pos);
+	}
+
+	SMoveUnitCommand moveCommand;
+	moveCommand.timeOut = 100000000;
+	moveCommand.options = 0;
+	moveCommand.unitId = unitId;
+	
+	for (int i = 0; i < wayPoints.size(); i++)
+	{
+		
+		if (unit->GetDef()->GetBuildDistance() > ai->utility->EuclideanDistance(wayPoints[i], pos))
+			break; //Ignore moves that goes unnecesarry close to the building-spot
+		
+		moveCommand.toPos = wayPoints[i];
+		moveCommand.options = UNIT_COMMAND_OPTION_SHIFT_KEY;
+		ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &moveCommand);
+	}
+	ai->utility->Log(ALL, MISC, "GoTo: I am done!");
+}
+
 ///draws a circle on the map
 int Utility::DrawCircle(SAIFloat3 pos, float radius)
 {
@@ -320,6 +354,49 @@ bool Utility::FileExists( const char* FileName )
     }
 
     return false;
+}
+
+void Utility::ResetGame(RL *rl)
+{
+	Log(IMPORTANT, MISC, "brAIn is now resetting..."); 
+
+	Log(IMPORTANT, MISC, "Resetting RL...");
+	delete(rl);
+	rl = new RL( ai );
+
+	Log(IMPORTANT, MISC, "Creating new commander..."); 
+	//Give me a new commander
+	int newCommanderId = 0;
+	ai->callback->GetCheats()->SetEnabled(true);
+	SGiveMeNewUnitCheatCommand giveUnitOrder;
+	giveUnitOrder.pos = (SAIFloat3){10,ai->callback->GetMap()->GetStartPos().y, 10};
+	giveUnitOrder.unitDefId = ai->utility->GetUnitDef("armcom")->GetUnitDefId();
+	ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_CHEATS_GIVE_ME_NEW_UNIT, &giveUnitOrder);
+	newCommanderId = giveUnitOrder.ret_newUnitId;
+	ai->callback->GetCheats()->SetEnabled(false);
+	
+	Log(IMPORTANT, MISC, "Telling the new commander to move to startPos");
+	SMoveUnitCommand moveCommand;
+	moveCommand.toPos = ai->callback->GetMap()->GetStartPos();
+	moveCommand.timeOut = 100000000;
+	moveCommand.options = 0;
+	moveCommand.unitId = newCommanderId;
+	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &moveCommand);
+
+	Log(IMPORTANT, MISC, "Killing all units besides the commander..."); 
+	//Delete all units besides out new commander
+	vector<Unit*> units = ai->callback->GetFriendlyUnits();
+	vector<Unit*>::iterator it;
+	for(it = units.begin(); it != units.end(); it++)
+	{
+		SSelfDestroyUnitCommand command;
+		command.unitId = (*it)->GetUnitId();
+		if (command.unitId == newCommanderId) continue; //Don't kill out new commander
+		command.timeOut = 99999;
+		ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_UNIT_SELF_DESTROY, &command);
+	}
+
+	Log(IMPORTANT, MISC, "brAIn has been reset!"); 
 }
 
 void Utility::Suicide()

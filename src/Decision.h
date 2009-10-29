@@ -41,6 +41,7 @@ private:
 	AIClasses* ai;
 	BayesianNetwork *bn;
 	RL* rl;
+	bool resettingGame;
 };
 
 }

@@ -57,6 +57,8 @@ namespace brainSpace {
 		void RemoveBuilding( springai::Unit* unit );
 
 		std::vector<PathfindingNode*> FindPathTo( springai::UnitDef* pathfinder, SAIFloat3 source, SAIFloat3 destination );
+		
+		std::vector<SAIFloat3> FindPathToSimple( springai::UnitDef* pathfinder, SAIFloat3 start, SAIFloat3 destination );
 
 		bool IsPossibleToEscapeFrom( springai::UnitDef* pathfinder, springai::UnitDef* building, SAIFloat3 buildPosition, SAIFloat3 escapeFrom, SAIFloat3 escapeTo );
 

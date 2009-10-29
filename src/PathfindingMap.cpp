@@ -199,6 +199,17 @@ void PathfindingMap::ResetSlope( int xTile, int zTile )
 	MapArray[zTile*MapWidth + xTile] = maxSlope;
 }
 
+vector<SAIFloat3> PathfindingMap::FindPathToSimple( UnitDef* pathfinder, SAIFloat3 start, SAIFloat3 destination )
+{
+	vector<PathfindingNode*> path = FindPathTo(pathfinder, start, destination);
+	vector<SAIFloat3> resultingPath;
+	for (int i = path.size()-1; i >= 0; i--)
+	{
+		resultingPath.push_back(path[i]->Pos);
+	}
+	
+	return resultingPath;
+}
 
 vector<PathfindingNode*> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start, SAIFloat3 destination )
 {
