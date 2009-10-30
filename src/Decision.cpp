@@ -45,9 +45,11 @@ Decision::Decision(AIClasses* aiClasses)
 
 Decision::~Decision(void)
 {
-	delete(gc);
-	delete(bc);
-	delete(rl);
+	delete gc;
+	delete bc;
+	delete rl;
+	delete BattleInfoInstance;
+	delete bn;
 }
 
 ///called when a unit enters the world
