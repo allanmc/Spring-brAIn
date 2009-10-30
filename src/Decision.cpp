@@ -258,8 +258,8 @@ void Decision::Update(int frame)
 		vector<Unit*> units = ai->callback->GetFriendlyUnits();
 		ai->utility->Log(ALL, MISC, "Checking if new commander is in position X:(%f == %f), Z:(%f == %f)", units[0]->GetPos().x, ai->callback->GetMap()->GetStartPos().x, units[0]->GetPos().z, ai->callback->GetMap()->GetStartPos().z);
 		if (units.size()==1 &&
-			abs(units[0]->GetPos().x - ai->callback->GetMap()->GetStartPos().x)<20 &&
-			abs(units[0]->GetPos().z - ai->callback->GetMap()->GetStartPos().z)<20)
+			abs(units[0]->GetPos().x - ai->callback->GetMap()->GetStartPos().x)<50 &&
+			abs(units[0]->GetPos().z - ai->callback->GetMap()->GetStartPos().z)<50)
 		{
 			resettingGame = false;
 			delete(ai->knowledge);

@@ -25,6 +25,8 @@ RL::RL( AIClasses* aiClasses)
 	Epsilon = 9;
 	LoadFromFile();
 
+	totalReward = 0.0;
+	goalAchieved = false;
 }
 
 RL::~RL()
@@ -35,6 +37,14 @@ RL::~RL()
 		delete ValueFunction[i];
 		delete PreviousAction[i];
 		delete PreviousState[i];
+	}
+	if (goalAchieved)
+	{
+		ai->utility->ChatMsg("RL goal achieved with total reward: %f", totalReward);
+	} 
+	else
+	{
+		ai->utility->ChatMsg("RL goal NOT achieved, but total reward is: %f", totalReward);
 	}
 }
 
@@ -206,6 +216,7 @@ RL_Action* RL::Update()
 		
 		terminal = true;
 	}
+	totalReward += reward;
 
 	float bestFutureValue;
 	if(terminal)
@@ -246,7 +257,10 @@ RL_Action* RL::Update()
 	if ( terminal )
 	{
 		if(currentNode == 0)
+		{
+			goalAchieved = true;
 			return new RL_Action(-1,-1, false);//MEANS THAT YOU SHOULD STOP NOW!!
+		}
 		else
 		{
 			currentNode = 0;//parentNode

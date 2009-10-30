@@ -44,7 +44,8 @@ namespace brainSpace {
 		RL_State* PreviousState[RL_NUM_NODES];
 		RL_Action* PreviousAction[RL_NUM_NODES];
 		int PreviousFrame[RL_NUM_NODES];
-
+		float totalReward;
+		bool goalAchieved;
 		int Epsilon;
 		RL_State* GetState(int node);
 		

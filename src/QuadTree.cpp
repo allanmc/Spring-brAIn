@@ -13,6 +13,7 @@ QuadTree::QuadTree( AIClasses* aiClasses, CBoundingBox box )
 
 QuadTree::~QuadTree()
 {
+	///TODO: Cleanup!
 }
 
 bool QuadTree::RemoveUnit( int unitID )

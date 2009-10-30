@@ -11,10 +11,9 @@ RL_State::RL_State( AIClasses* aiClasses)
 
 RL_State::~RL_State()
 {
-	vector<RL_Action*>::iterator it;
-	for(it = Actions.begin(); it != Actions.end(); it++)
+	for (int i = 0; i < Actions.size(); i++)
 	{
-		delete (*it);
+		delete(Actions[i]);
 	}
 	Actions.clear();
 }
