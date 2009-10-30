@@ -26,12 +26,18 @@ Utility::Utility( AIClasses* aiClasses )
 	solarDef = GetUnitDef("armsolar");
 	lltDef = GetUnitDef("armllt");
 
-	
+	safePosition = (SAIFloat3){ai->callback->GetMap()->GetWidth()*8/2, 0.0, ai->callback->GetMap()->GetHeight()*8/2};
 }
 
 Utility::~Utility()
 {
 	fclose(fp);
+}
+
+///@return the safe position whether a building blocks the exit of out base
+SAIFloat3 Utility::GetSafePosition()
+{
+	return safePosition;
 }
 
 ///@return if debug is enabled
@@ -172,13 +178,18 @@ void Utility::GoTo(int unitId, SAIFloat3 pos)
 	ai->utility->Log(ALL, MISC, "GoTo: I am now going to find a path..");
 	Unit* unit = Unit::GetInstance(ai->callback, unitId);
 	vector<SAIFloat3> wayPoints;
+	bool goToward = true;
 	if (ai->utility->EuclideanDistance(unit->GetPos(), pos)<50)
 	{
-		wayPoints.push_back(pos);
+		//wayPoints.push_back(pos);
+		wayPoints = ai->knowledge->mapInfo->pathfindingMap->FindPathToSimple(unit->GetDef(), unit->GetPos(), GetSafePosition());
+		ai->utility->Log(ALL, MISC, "GoTo: I am going backwards!");
+		goToward = false;
 	}
 	else
 	{
 		wayPoints = ai->knowledge->mapInfo->pathfindingMap->FindPathToSimple(unit->GetDef(), unit->GetPos(), pos);
+		ai->utility->Log(ALL, MISC, "GoTo: I am going towards buildlocation!");
 	}
 
 	SMoveUnitCommand moveCommand;
@@ -189,7 +200,8 @@ void Utility::GoTo(int unitId, SAIFloat3 pos)
 	for (int i = 0; i < wayPoints.size(); i++)
 	{
 		
-		if (unit->GetDef()->GetBuildDistance() > ai->utility->EuclideanDistance(wayPoints[i], pos))
+		if ( (goToward && (unit->GetDef()->GetBuildDistance() > ai->utility->EuclideanDistance(wayPoints[i], pos))) ||
+			 (!goToward && (unit->GetDef()->GetBuildDistance() < ai->utility->EuclideanDistance(wayPoints[i], pos))) )
 			break; //Ignore moves that goes unnecesarry close to the building-spot
 		toWalk++;
 		moveCommand.toPos = wayPoints[i];

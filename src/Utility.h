@@ -29,7 +29,7 @@ namespace brainSpace
 		springai::UnitDef *mexDef;
 		springai::UnitDef *solarDef;
 		springai::UnitDef *lltDef;
-
+		SAIFloat3 safePosition;
 	public:
 		Utility( AIClasses* aiClasses );
 		~Utility();
@@ -51,6 +51,7 @@ namespace brainSpace
 		void Suicide();
 		void ResetGame(RL **rl);
 		void GoTo(int unitId, SAIFloat3 pos);
+		SAIFloat3 GetSafePosition();
 		springai::UnitDef* GetMexDef();
 		springai::UnitDef* GetSolarDef();
 		springai::UnitDef* GetLLTDef();

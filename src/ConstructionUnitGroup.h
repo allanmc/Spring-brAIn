@@ -38,8 +38,6 @@ namespace brainSpace
 		int BaseDefenseCounter;
 		int BaseDefenseCounterStart;
 		bool BaseDefenseHitBorder;
-		SAIFloat3 safePosition;
-		SAIFloat3 GetSafePosition();
 		int figureId;
 		bool BuildBlocksSelf(UnitDef *unitDef, SAIFloat3 pos, int facing);
 		SAIFloat3 FindBestDefensePosition(UnitDef *unitDef, SAIFloat3 buildPos);
