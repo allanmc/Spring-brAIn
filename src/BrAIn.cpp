@@ -21,7 +21,13 @@ brainSpace::BrAIn::BrAIn(springai::AICallback* cb)
 	//ai->utility->ChatMsg("Hello world i am team: %d",teamId);
 	srand(0);
 }
-brainSpace::BrAIn::~BrAIn() {}
+brainSpace::BrAIn::~BrAIn() 
+{
+	delete ai->knowledge;
+	delete ai->math;
+	delete ai->utility;
+	delete ai;
+}
 
 ///Passes the events received on to the Decision class
 ///@see Decision

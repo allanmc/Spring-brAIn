@@ -21,6 +21,7 @@ BaseInfo::BaseInfo( AIClasses* aiClasses )
 
 BaseInfo::~BaseInfo()
 {
+	delete quadTree;
 }
 
 void BaseInfo::AddBuilding(Unit* building)

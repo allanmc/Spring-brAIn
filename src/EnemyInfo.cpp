@@ -14,4 +14,7 @@ EnemyInfo::EnemyInfo( AIClasses* aiClasses )
 
 EnemyInfo::~EnemyInfo()
 {
+	delete armyInfo;
+	delete baseInfo;
+	ai->utility->Log( ALL, MISC, "LOLOLOL" );
 }
