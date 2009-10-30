@@ -1,3 +1,5 @@
+#this is a test
+
 ### Generic native Skirmish AI config
 #
 message ("WEW ARE IN brAIn, here: ${CMAKE_CURRENT_SOURCE_DIR}")
