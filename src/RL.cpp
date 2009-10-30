@@ -27,6 +27,9 @@ RL::RL( AIClasses* aiClasses)
 
 RL::~RL()
 {
+	delete[] ValueFunction[0];
+	delete[] ValueFunction[1];
+	delete[] ValueFunction[2];
 }
 
 void RL::LoadFromFile()
@@ -59,6 +62,7 @@ void RL::LoadFromFile()
 				ValueFunction[i]->LoadFromFile(readFile);
 			}
 		}
+		delete readFile;
 	}
 	else
 	{
@@ -66,6 +70,7 @@ void RL::LoadFromFile()
 		ValueFunction[1]->Clear();
 		ValueFunction[2]->Clear();
 	}
+	delete[] path;
 }
 
 void RL::SaveToFile()
@@ -95,6 +100,8 @@ void RL::SaveToFile()
 
 	file->flush();
 	file->close();
+	delete[] path;
+	delete file;
 }
 
 RL_State* RL::GetState(int node)
