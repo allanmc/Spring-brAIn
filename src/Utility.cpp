@@ -374,7 +374,7 @@ void Utility::ResetGame(RL **rl)
 
 	Log(IMPORTANT, MISC, "Resetting RL...");
 	delete(*rl);
-	*rl = new RL( ai );
+	*rl = new RL( ai );//FY!
 
 	Log(IMPORTANT, MISC, "Creating new commander..."); 
 	//Give me a new commander
