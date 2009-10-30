@@ -47,6 +47,7 @@ namespace brainSpace
 	public:
 
 		QuadTreeNode( AIClasses* aiClasses, CBoundingBox box, int level, QuadTreeNode* parentNode );
+		virtual ~QuadTreeNode();
 
 		bool IsLeafNode();
 

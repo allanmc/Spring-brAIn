@@ -12,7 +12,7 @@ namespace brainSpace {
 	{
 	public:
 		RL_State( AIClasses* ai, int plantCount, int labCount, int solarCount, int mexCount );
-
+		virtual ~RL_State();
 		int GetID();
 
 		vector<RL_Action*> GetActions();

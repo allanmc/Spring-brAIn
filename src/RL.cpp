@@ -24,6 +24,9 @@ RL::RL( AIClasses* aiClasses)
 
 RL::~RL()
 {
+	delete(ValueFunction);
+	delete(PreviousState);
+	
 	if (goalAchieved)
 	{
 		ai->utility->ChatMsg("RL goal achieved with total reward: %f", totalReward);
@@ -116,6 +119,7 @@ RL_Action *RL::Update( )
 			- ValueFunction->GetValue(PreviousState,PreviousAction) );
 
 	ValueFunction->SetValue(PreviousState,PreviousAction, value);
+	delete(PreviousState);
 	PreviousState = state;
 	PreviousAction = nextAction;
 	PreviousFrame = ai->frame;

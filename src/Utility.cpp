@@ -169,7 +169,7 @@ Resource* Utility::GetResource(const char* resourceName)
 ///Order the unit to goto a specific location using our own pathfinding
 void Utility::GoTo(int unitId, SAIFloat3 pos)
 {
-	ai->utility->Log(ALL, MISC, "GoTo: I am no going to find a path..");
+	ai->utility->Log(ALL, MISC, "GoTo: I am now going to find a path..");
 	Unit* unit = Unit::GetInstance(ai->callback, unitId);
 	vector<SAIFloat3> wayPoints;
 	if (ai->utility->EuclideanDistance(unit->GetPos(), pos)<50)
@@ -185,18 +185,18 @@ void Utility::GoTo(int unitId, SAIFloat3 pos)
 	moveCommand.timeOut = 100000000;
 	moveCommand.options = 0;
 	moveCommand.unitId = unitId;
-	
+	int toWalk = 0;
 	for (int i = 0; i < wayPoints.size(); i++)
 	{
 		
 		if (unit->GetDef()->GetBuildDistance() > ai->utility->EuclideanDistance(wayPoints[i], pos))
 			break; //Ignore moves that goes unnecesarry close to the building-spot
-		
+		toWalk++;
 		moveCommand.toPos = wayPoints[i];
 		moveCommand.options = UNIT_COMMAND_OPTION_SHIFT_KEY;
 		ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &moveCommand);
 	}
-	ai->utility->Log(ALL, MISC, "GoTo: I am done!");
+	ai->utility->Log(ALL, MISC, "GoTo: I am done! I want to walk %i out of %i waypoints", toWalk, wayPoints.size());
 }
 
 ///draws a circle on the map

@@ -57,7 +57,7 @@ SAIFloat3 BrainGroup::GetPos()
 	}
 	k->AddPoints( points );
 	vector<vector<SAIFloat3> > clusters = k->GetClusters( 1 );
-
+	delete(k);
 	return clusters[0][0];
 }
 

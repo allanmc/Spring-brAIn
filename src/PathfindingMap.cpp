@@ -19,6 +19,7 @@ PathfindingMap::PathfindingMap( AIClasses* aiClasses ) : BrainMap( aiClasses, 4 
 
 PathfindingMap::~PathfindingMap()
 {
+	
 }
 
 
@@ -206,8 +207,10 @@ vector<SAIFloat3> PathfindingMap::FindPathToSimple( UnitDef* pathfinder, SAIFloa
 	for (int i = path.size()-1; i >= 0; i--)
 	{
 		resultingPath.push_back(path[i]->Pos);
+		delete(path[i]);
 	}
-	
+	path.clear();
+
 	return resultingPath;
 }
 

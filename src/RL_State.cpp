@@ -24,6 +24,15 @@ RL_State::RL_State( AIClasses* aiClasses, int plantCount, int labCount, int sola
 		Actions.push_back( new RL_Action( ai->utility->GetUnitDef( "armvp" )->GetUnitDefId(), 3 ) );
 }
 
+RL_State::~RL_State()
+{
+	for (int i = 0; i < Actions.size(); i++)
+	{
+		delete(Actions[i]);
+	}
+	Actions.clear();
+}
+
 int RL_State::GetID()
 {
 	return ID;
