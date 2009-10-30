@@ -7,10 +7,10 @@ RL_State_Factory::RL_State_Factory(AIClasses *aiClasses, int labCount, int plant
 {
 	LabCount = labCount;
 	PlantCount = plantCount;
-	ID = PlantCount * 5 + LabCount;
-	if(PlantCount < 4)
+	ID = PlantCount * RL_PLANT_INDEX + LabCount;
+	if(PlantCount < RL_PLANT_INDEX-1)
 		Actions.push_back(new RL_Action(ai->utility->GetUnitDef("armvp")->GetUnitDefId(),0,false));
-	if(LabCount < 4)
+	if(LabCount < RL_LAB_INDEX-1)
 		Actions.push_back(new RL_Action(ai->utility->GetUnitDef("armlab")->GetUnitDefId(),1,false));
 }
 
@@ -18,10 +18,10 @@ RL_State_Factory::RL_State_Factory(AIClasses *aiClasses ): RL_State(aiClasses)
 {
 	LabCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armlab");
 	PlantCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armvp");
-	ID = PlantCount * 5 + LabCount;
-	if(PlantCount < 4)
+	ID = PlantCount * RL_PLANT_INDEX + LabCount;
+	if(PlantCount < RL_PLANT_INDEX-1)
 		Actions.push_back(new RL_Action(ai->utility->GetUnitDef("armvp")->GetUnitDefId(),0,false));
-	if(LabCount < 4)
+	if(LabCount < RL_LAB_INDEX-1)
 		Actions.push_back(new RL_Action(ai->utility->GetUnitDef("armlab")->GetUnitDefId(),1,false));
 }
 
