@@ -27,6 +27,7 @@ brainSpace::BrAIn::~BrAIn()
 	delete ai->knowledge;
 	delete ai->math;
 	delete ai->utility;
+	delete decision;
 	delete ai;
 }
 
