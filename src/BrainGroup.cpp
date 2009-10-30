@@ -48,6 +48,7 @@ bool BrainGroup::IsIdle()
 
 SAIFloat3 BrainGroup::GetPos()
 {
+
 	KMedoids k( ai );
 	vector<SAIFloat3> points;
 	for ( map<Unit*, bool>::iterator it = Units.begin() ; it != Units.end() ; it++ )
@@ -56,6 +57,7 @@ SAIFloat3 BrainGroup::GetPos()
 	}
 	k.AddPoints( points );
 	vector<vector<SAIFloat3> > clusters = k.GetClusters( 1 );
+	
 	return clusters[0][0];
 }
 

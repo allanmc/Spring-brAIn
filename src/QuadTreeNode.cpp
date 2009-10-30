@@ -13,6 +13,11 @@ QuadTreeNode::QuadTreeNode( AIClasses* aiClasses, CBoundingBox box, int level, Q
 	parent = parentNode;
 }
 
+QuadTreeNode::~QuadTreeNode()
+{
+	///TODO: Cleanup!
+}
+
 QuadTreeNode* QuadTreeNode::GetParentNode()
 {
 	return parent;

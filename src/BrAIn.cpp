@@ -99,7 +99,8 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 				break;
 			}
 		case EVENT_UNIT_MOVE_FAILED:
-			ai->utility->Log(DEBUG,EVENT,"move failed");
+			ai->utility->Log(ALL,MISC,"I GOT A MOVE FAILED!!!!! WARNING, THIS SHALL NEVER HAPPEN!!!!!");
+			ai->utility->Log(IMPORTANT,EVENT,"I GOT A MOVE FAILED!!!!! WARNING, THIS SHALL NEVER HAPPEN!!!!!");
 			break;
 		case EVENT_UNIT_DAMAGED:
 			{

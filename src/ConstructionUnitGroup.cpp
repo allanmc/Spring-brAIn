@@ -10,7 +10,6 @@ ConstructionUnitGroup::ConstructionUnitGroup( AIClasses* aiClasses, int groupID 
 	BaseDefenseCounterStart = 0; 
 	figureId = 0;
 	BaseDefenseHitBorder = false;
-	safePosition = (SAIFloat3){ai->callback->GetMap()->GetWidth()*8/2, 0.0, ai->callback->GetMap()->GetHeight()*8/2};
 }
 
 ConstructionUnitGroup::~ConstructionUnitGroup()
@@ -18,13 +17,6 @@ ConstructionUnitGroup::~ConstructionUnitGroup()
 	ai->utility->Log(ALL, MISC, "Trying to remove graphics of figureId %i", figureId);
 	ai->utility->RemoveGraphics(figureId);
 }
-
-///@return the safe position whether a building blocks the exit of out base
-SAIFloat3 ConstructionUnitGroup::GetSafePosition()
-{
-	return safePosition;
-}
-
 ///@return the UnitDef's of the units that the group is able to construct
 vector<UnitDef*> ConstructionUnitGroup::IsAbleToBuild()
 {
@@ -249,7 +241,7 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 			//pos.y = 50.0;
 			//ai->utility->DrawLine(pos, fromPos, true);
 			//ai->utility->DrawLine(fromPos, GetSafePosition(), true);
-			if (!ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom(unitDef->GetBuildOptions()[0], toBuildUnitDef, pos, fromPos, GetSafePosition())) 
+			if (!ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom(unitDef->GetBuildOptions()[0], toBuildUnitDef, pos, fromPos, ai->utility->GetSafePosition())) 
 			{
 				//There is a blocking problem with that build
 				ai->utility->Log(ALL, MISC, "BuildBlocksSelf blocked build by reason 1 (No path from exit of an old %s)", unitDef->GetName());
@@ -263,7 +255,7 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 	if ( strcmp(toBuildUnitDef->GetName(), "armlab")==0) 
 	{
 		fromPos = GetUnitExitOfLab(pos, toBuildUnitDef, facing);
-		if (!ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom(toBuildUnitDef->GetBuildOptions()[0], toBuildUnitDef, pos, fromPos, GetSafePosition()))
+		if (!ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom(toBuildUnitDef->GetBuildOptions()[0], toBuildUnitDef, pos, fromPos, ai->utility->GetSafePosition()))
 		{
 			ai->utility->Log(ALL, MISC, "BuildBlocksSelf blocked build by reason 2 (No path from exit of this new %s)", toBuildUnitDef->GetName());
 			return true;
@@ -273,7 +265,7 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 	//If we build this new building, does the commander have a path out of the base?
 	fromPos = commander->GetPos();
 	///TODO: Maybe ensure that the commander does not walk into a building-block "trap" :)
-	if (!ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom(commander->GetDef(), toBuildUnitDef, pos, fromPos, GetSafePosition()))
+	if (!ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom(commander->GetDef(), toBuildUnitDef, pos, fromPos, ai->utility->GetSafePosition()))
 	{
 		ai->utility->Log(ALL, MISC, "BuildBlocksSelf blocked build by reason 3 (No path for commander)");
 		return true;

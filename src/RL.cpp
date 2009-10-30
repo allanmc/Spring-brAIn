@@ -23,6 +23,8 @@ RL::RL( AIClasses* aiClasses)
 	ValueFunction[2] = new RL_Q(ai,RL_SOLAR_INDEX*RL_MEX_INDEX/*states*/,2/*actions*/); //Resource
 
 	Epsilon = 9;
+	totalReward = 0.0;
+	goalAchieved = false;
 }
 
 RL::~RL()
@@ -204,6 +206,7 @@ RL_Action* RL::Update()
 		
 		terminal = true;
 	}
+	totalReward += reward;
 
 	float bestFutureValue;
 	if(terminal)
