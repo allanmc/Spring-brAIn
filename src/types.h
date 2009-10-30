@@ -28,7 +28,7 @@
 #include "ExternalAI/Interface/AISCommands.h"
 #include "Point.h"
 #include "MoveData.h"
-//namespace brainSpace {
+namespace brainSpace {
 enum LogTypes {
 	CHAT		= 1<<0,
 	QUADTREE	= 1<<1,
@@ -54,7 +54,7 @@ enum LogLevels {
 	DEBUG		= 3,
 	ALL			= 4
 };
-//}
+}
 
 namespace brainSpace {
 	class Knowledge;
