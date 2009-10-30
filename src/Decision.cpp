@@ -13,15 +13,20 @@ Decision::Decision(AIClasses* aiClasses)
 	ai = aiClasses;
 	
 	gc = new GroupController( ai );
+	ai->utility->Log(ALL, MISC, "GroupController loaded...");
 	bc = new BuildingController( ai );
+	ai->utility->Log(ALL, MISC, "BuildingController loaded...");
 	rl = new RL( ai );
+	ai->utility->Log(ALL, MISC, "RL loaded...");
 	BattleInfoInstance = new BattlesInfo( ai );
+	ai->utility->Log(ALL, MISC, "BattlesInfo loaded...");
 	resettingGame = false;
 	//time_t t1, t2, t3, t4, t5;
 	//int i;
 	//int iterations = 100;
 	
 	bn = new BayesianNetwork( ai );
+	ai->utility->Log(ALL, MISC, "BayesianNetwork loaded...");
 	//huginTest = new HuginTest( ai );
 
 	bn->setEvidence(node::_myStrategy, node::myStrategy::_Aggressive);

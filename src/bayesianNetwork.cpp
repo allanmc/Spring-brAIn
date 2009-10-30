@@ -8,13 +8,15 @@ using namespace bayes_node_utils;
 BayesianNetwork::BayesianNetwork( AIClasses *aiClasses ) 
 {
 	ai = aiClasses;
-
+	ai->utility->Log(ALL, MISC, "Loading BN...");
 	#include "uber.h"
-
+	ai->utility->Log(ALL, MISC, "uber.h included...");
 	create_moral_graph(bn, join_tree);
+	ai->utility->Log(ALL, MISC, "Created moral_graph...");
 	create_join_tree(join_tree, join_tree);
-	
+	ai->utility->Log(ALL, MISC, "Created join_tree...");
 	solution = new bayesian_network_join_tree(bn, join_tree);
+	ai->utility->Log(ALL, MISC, "Created solution...");
 }
 
 BayesianNetwork::~BayesianNetwork()

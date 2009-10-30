@@ -13,7 +13,7 @@ brainSpace::BrAIn::BrAIn(springai::AICallback* cb)
 	ai->knowledge = new Knowledge(ai);
 	ai->utility->Log(ALL, MISC, "Knowledge loaded...");
 	ai->math = new BrainMath( ai );
-
+	ai->utility->Log(ALL, MISC, "BrainMath loaded...");
 	teamId = (ai->callback != NULL ? ai->callback->GetTeamId() : -1);
 
 	decision = new Decision(ai);
