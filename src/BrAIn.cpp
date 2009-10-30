@@ -45,13 +45,13 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 			//do i really need to do anything here? (i allready have a teamId and a callback)
 			break;
 		case EVENT_RELEASE:
-			ai->utility->Log(DEBUG,CHAT,"THE END!");
+			ai->utility->Log(LOG_DEBUG,CHAT,"THE END!");
 			//i am no longer needed
 			//delete(decision);
 			break;
 		case EVENT_UPDATE:
 			{
-				//ai->utility->Log(DEBUG,EVENT,"update");
+				//ai->utility->Log(LOG_DEBUG,EVENT,"update");
 				struct SUpdateEvent* evt = (struct SUpdateEvent*) data;
 				int frame = evt->frame;
 				ai->frame = frame;
@@ -60,14 +60,14 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 			}
 		case EVENT_MESSAGE:
 			{
-				ai->utility->Log(DEBUG,EVENT,"message");
+				ai->utility->Log(LOG_DEBUG,EVENT,"message");
 				//struct SMessageEvent* evt = (struct SMessageEvent*) data;
 				//why are you talking to me? im a bot!
 				break;
 			}
 		case EVENT_UNIT_CREATED:
 			{
-				ai->utility->Log(DEBUG,EVENT,"unit created");
+				ai->utility->Log(LOG_DEBUG,EVENT,"unit created");
 				struct SUnitCreatedEvent* evt = (struct SUnitCreatedEvent*) data;
 				int unitId = evt->unit;
 				int builder = evt->builder;
@@ -84,7 +84,7 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 			}
 		case EVENT_UNIT_FINISHED:
 			{
-				ai->utility->Log(DEBUG,EVENT,"Unit finished");
+				ai->utility->Log(LOG_DEBUG,EVENT,"Unit finished");
 				struct SUnitFinishedEvent* evt = (struct SUnitFinishedEvent*) data;
 				int unitId = evt->unit;
 				decision->UnitFinished(unitId);
@@ -92,7 +92,7 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 			}
 		case EVENT_UNIT_IDLE:
 			{
-				ai->utility->Log(DEBUG,EVENT,"UNIT IDLE");
+				ai->utility->Log(LOG_DEBUG,EVENT,"UNIT IDLE");
 				struct SUnitIdleEvent* evt = (struct SUnitIdleEvent*)data;
 				decision->UnitIdle( evt->unit );
 				//get back to work ya lazy git!
@@ -104,7 +104,7 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 			break;
 		case EVENT_UNIT_DAMAGED:
 			{
-				ai->utility->Log(DEBUG,EVENT,"unit damaged");
+				ai->utility->Log(LOG_DEBUG,EVENT,"unit damaged");
 				struct SUnitDamagedEvent* evt = (struct SUnitDamagedEvent*)data;
 				decision->UnitDamaged( evt->unit, evt->attacker );
 
@@ -112,7 +112,7 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 			}
 		case EVENT_UNIT_DESTROYED:
 			{
-				ai->utility->Log(DEBUG,EVENT,"unit destroyed");
+				ai->utility->Log(LOG_DEBUG,EVENT,"unit destroyed");
 				struct SUnitDestroyedEvent* evt = (struct SUnitDestroyedEvent*) data;
 				int unitId = evt->unit;
 				int attackerId = evt->attacker;
@@ -120,34 +120,34 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 				break;
 			}
 		case EVENT_UNIT_GIVEN:
-			ai->utility->Log(DEBUG,EVENT,"unit given");
+			ai->utility->Log(LOG_DEBUG,EVENT,"unit given");
 			break;
 		case EVENT_UNIT_CAPTURED:
-			ai->utility->Log(DEBUG,EVENT,"unit captured");
+			ai->utility->Log(LOG_DEBUG,EVENT,"unit captured");
 			break;
 		case EVENT_ENEMY_ENTER_LOS:
 			{
 				//ai->knowledge->selfInfo->armyInfo->Print();
 
-				ai->utility->Log(DEBUG,EVENT,"enemy enter los");
+				ai->utility->Log(LOG_DEBUG,EVENT,"enemy enter los");
 				//there he is, get him!
 				struct SEnemyEnterLOSEvent* evt = (struct SEnemyEnterLOSEvent*)data;
 				decision->EnemyEnterLOS(evt->enemy);
 				break;
 			}
 		case EVENT_ENEMY_LEAVE_LOS:
-			ai->utility->Log(DEBUG,EVENT,"enemy leave los");
+			ai->utility->Log(LOG_DEBUG,EVENT,"enemy leave los");
 			//Where did he go?
 			break;
 		case EVENT_ENEMY_ENTER_RADAR:
-			ai->utility->Log(DEBUG,EVENT,"enemy enter radar");
+			ai->utility->Log(LOG_DEBUG,EVENT,"enemy enter radar");
 			break;
 		case EVENT_ENEMY_LEAVE_RADAR:
-			ai->utility->Log(DEBUG,EVENT,"enemy leave radar");
+			ai->utility->Log(LOG_DEBUG,EVENT,"enemy leave radar");
 			break;
 		case EVENT_ENEMY_DAMAGED:
 			{
-			ai->utility->Log(DEBUG,EVENT,"enemy damaged");
+			ai->utility->Log(LOG_DEBUG,EVENT,"enemy damaged");
 			struct SEnemyDamagedEvent* evt = (struct SEnemyDamagedEvent*)data;
 			decision->EnemyDamaged( evt->attacker, evt->enemy );
 			break;
@@ -155,34 +155,34 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 		case EVENT_ENEMY_DESTROYED:
 			{
 				//gotcha bitch!
-				ai->utility->Log(DEBUG,EVENT,"enemy destroyed");
+				ai->utility->Log(LOG_DEBUG,EVENT,"enemy destroyed");
 
 				struct SEnemyDestroyedEvent* evt = (struct SEnemyDestroyedEvent*)data;
 				decision->EnemyDestroyed(evt->enemy, evt->attacker);
 				break;
 			}
 		case EVENT_WEAPON_FIRED:
-			ai->utility->Log(DEBUG,EVENT,"weapon fired");
+			ai->utility->Log(LOG_DEBUG,EVENT,"weapon fired");
 			break;
 		case EVENT_PLAYER_COMMAND:
-			ai->utility->Log(DEBUG,EVENT,"player command");
+			ai->utility->Log(LOG_DEBUG,EVENT,"player command");
 			//are you telling ME what to do?
 			break;
 		case EVENT_SEISMIC_PING:
-			ai->utility->Log(DEBUG,EVENT,"ping");
+			ai->utility->Log(LOG_DEBUG,EVENT,"ping");
 			//WTH was that?
 			break;
 		case EVENT_COMMAND_FINISHED:
-			ai->utility->Log(DEBUG,EVENT,"command finished");
+			ai->utility->Log(LOG_DEBUG,EVENT,"command finished");
 			break;
 		case EVENT_LOAD:
-			ai->utility->Log(DEBUG,EVENT,"load");
+			ai->utility->Log(LOG_DEBUG,EVENT,"load");
 			break;
 		case EVENT_SAVE:
-			ai->utility->Log(DEBUG,EVENT,"save");
+			ai->utility->Log(LOG_DEBUG,EVENT,"save");
 			break;
 		default: {
-			ai->utility->Log(DEBUG,EVENT,"recived an unhandled event with topic: %d",topic); 
+			ai->utility->Log(LOG_DEBUG,EVENT,"recived an unhandled event with topic: %d",topic); 
 			break;
 				 }
 	}

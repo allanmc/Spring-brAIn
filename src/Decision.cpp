@@ -72,7 +72,7 @@ void Decision::UnitFinished(int unit)
 {
 	Unit * u = Unit::GetInstance(ai->callback,unit);
 	
-	ai->utility->Log(DEBUG, EVENT, "Unit finished, \"%s\", pos:%f,%f", u->GetDef()->GetName(), u->GetPos().x, u->GetPos().z);
+	ai->utility->Log(LOG_DEBUG, EVENT, "Unit finished, \"%s\", pos:%f,%f", u->GetDef()->GetName(), u->GetPos().x, u->GetPos().z);
 	UnitDef * ud = u->GetDef();
 	if(ud->GetSpeed() > 0)
 	{
@@ -132,9 +132,9 @@ void Decision::UnitDestroyed(int unit, int attacker)
 	UnitDef* d = destroyee->GetDef();
 
 	if ( d == NULL )
-		ai->utility->Log( DEBUG, DECISION, "UnitDestroyed: UnitDef was null" );
+		ai->utility->Log( LOG_DEBUG, DECISION, "UnitDestroyed: UnitDef was null" );
 	else if ( d->GetUnitDefId() == -1 )
-		ai->utility->Log( DEBUG, DECISION, "UnitDestroyed: Unitdef was -1" );
+		ai->utility->Log( LOG_DEBUG, DECISION, "UnitDestroyed: Unitdef was -1" );
 
 
 	if (destroyee->GetDef()->GetWeaponMounts().size()>0) 
@@ -173,9 +173,9 @@ void Decision::EnemyEnterLOS(int enemy)
 	UnitDef* d = unit->GetDef();
 	
 	if ( d == NULL )
-		ai->utility->Log( DEBUG, DECISION, "EnemyEnterLOS: UnitDef was null" );
+		ai->utility->Log( LOG_DEBUG, DECISION, "EnemyEnterLOS: UnitDef was null" );
 	else if ( d->GetUnitDefId() == -1 )
-		ai->utility->Log( DEBUG, DECISION, "EnemyEnterLOS: Unitdef was -1" );
+		ai->utility->Log( LOG_DEBUG, DECISION, "EnemyEnterLOS: Unitdef was -1" );
 
 	if (d->GetWeaponMounts().size()>0) 
 	{
@@ -196,9 +196,9 @@ void Decision::EnemyDestroyed(int enemy, int attacker)
 	UnitDef* d = unit->GetDef();
 
 	if ( d == NULL )
-		ai->utility->Log( DEBUG, DECISION, "EnemyDestroyed: UnitDef was null" );
+		ai->utility->Log( LOG_DEBUG, DECISION, "EnemyDestroyed: UnitDef was null" );
 	else if ( d->GetUnitDefId() == -1 )
-		ai->utility->Log( DEBUG, DECISION, "EnemyDestroyed: Unitdef was -1" );
+		ai->utility->Log( LOG_DEBUG, DECISION, "EnemyDestroyed: Unitdef was -1" );
 
 
 	UnitDef* defPointer = NULL;
@@ -380,15 +380,15 @@ void Decision::Update(int frame)
 	if(frame % 60 == 0)
 	{
 		//ai->knowledge->mapInfo->pathfindingMap->Update();
-		//ai->utility->Log( DEBUG, KNOWLEDGE, "pre-update" );
+		//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "pre-update" );
 		ai->knowledge->mapInfo->scoutMap->Update();
-		//ai->utility->Log( DEBUG, KNOWLEDGE, "update" );
+		//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "update" );
 		ai->knowledge->mapInfo->threatMap->Update();
-		//ai->utility->Log( DEBUG, KNOWLEDGE, "update2" );
+		//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "update2" );
 		gc->ScoutWithIdleGroup();
-		//ai->utility->Log( DEBUG, KNOWLEDGE, "update3" );
+		//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "update3" );
 		BattleInfoInstance->Update( frame );
-		//ai->utility->Log( DEBUG, KNOWLEDGE, "update4" );
+		//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "update4" );
 	}
 
 	if ( frame % 120 ==0 )
@@ -399,10 +399,10 @@ void Decision::Update(int frame)
 		box.topLeft.z = ai->callback->GetMap()->GetStartPos().z - 1000;
 		box.bottomRight.x = ai->callback->GetMap()->GetStartPos().x + 1000;
 		box.bottomRight.z = ai->callback->GetMap()->GetStartPos().z + 1000;
-		//ai->utility->Log( DEBUG, KNOWLEDGE, "Start position (%f, %f)", ai->callback->GetMap()->GetStartPos().x, ai->callback->GetMap()->GetStartPos().z );
-		//ai->utility->Log( DEBUG, KNOWLEDGE, "Number of battles close to our base within the last 6000 frames: %d. Current frame %d", BattleInfoInstance->NumberOfBattlesInArea( 6000, box ), ai->frame);
+		//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "Start position (%f, %f)", ai->callback->GetMap()->GetStartPos().x, ai->callback->GetMap()->GetStartPos().z );
+		//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "Number of battles close to our base within the last 6000 frames: %d. Current frame %d", BattleInfoInstance->NumberOfBattlesInArea( 6000, box ), ai->frame);
 		int battles = BattleInfoInstance->NumberOfBattlesInArea( 9000, box );
-		ai->utility->Log( DEBUG, DECISION, "Number of battles close to our base within the last 9000 frames: %d", battles);
+		ai->utility->Log( LOG_DEBUG, DECISION, "Number of battles close to our base within the last 9000 frames: %d", battles);
 		//ai->utility->ChatMsg("Number of battles close to our base within the last 9000 frames: %d", battles);
 		int b_range;
 		if(battles == 0)

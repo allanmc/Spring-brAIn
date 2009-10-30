@@ -76,7 +76,7 @@ void BattlesInfo::Update ( int frame )
 			(*iter)->Oldify();
 			OldBattles.push_back( *iter );
 			iter = CurrentBattles.erase( iter );
-			ai->utility->Log( DEBUG, KNOWLEDGE, "Inactive battle erased" );
+			ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "Inactive battle erased" );
 		}
 		else //Else update the battle object
 		{
@@ -86,23 +86,23 @@ void BattlesInfo::Update ( int frame )
 
 	if ( frame % 600 == 0 )
 	{
-		ai->utility->Log( DEBUG, KNOWLEDGE, "\nPRINTING UPDATED BATTLE INFO: frame %d\n", frame );
-		ai->utility->Log( DEBUG, KNOWLEDGE, "\n\nNum active battles %d\n==============", CurrentBattles.size() );
+		ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "\nPRINTING UPDATED BATTLE INFO: frame %d\n", frame );
+		ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "\n\nNum active battles %d\n==============", CurrentBattles.size() );
 		int i = 0;
 		for ( list<Battle*>::iterator iter = CurrentBattles.begin() ; iter != CurrentBattles.end() ; iter++, i++ )
 		{
-			ai->utility->Log( DEBUG, KNOWLEDGE, "\n\nBattle number %d\n--------", i );
+			ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "\n\nBattle number %d\n--------", i );
 			(*iter)->ToString();
 		}
 
 		i = 0;
-		ai->utility->Log( DEBUG, KNOWLEDGE, "\n\nNum old battles %d\n==============", OldBattles.size() );
+		ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "\n\nNum old battles %d\n==============", OldBattles.size() );
 		for ( list<Battle*>::iterator iter = OldBattles.begin() ; iter != OldBattles.end() ; iter++, i++ )
 		{
-			ai->utility->Log( DEBUG, KNOWLEDGE, "Battle number %d", i );
+			ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "Battle number %d", i );
 			(*iter)->ToString();
 		}
-		ai->utility->Log( DEBUG, KNOWLEDGE, "\nDONE PRINTING UPDATED BATTLE INFO\n" );
+		ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "\nDONE PRINTING UPDATED BATTLE INFO\n" );
 	}
 }
 
@@ -159,7 +159,7 @@ void BattlesInfo::SomeoneDamaged( Unit* our, Unit* their )
 		}
 		//The unit is not a part of any battles, and there are no battles nearby so make a new Battle object.
 
-		ai->utility->Log( DEBUG, KNOWLEDGE, "New battle. Frame %d. Pos (%f, %f)", ai->frame, our->GetPos().x, our->GetPos().z );
+		ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "New battle. Frame %d. Pos (%f, %f)", ai->frame, our->GetPos().x, our->GetPos().z );
 		b = new Battle( ai, our->GetPos() );
 		b->UnitEnteredBattle( our, false );
 		b->UnitEnteredBattle( their, true );

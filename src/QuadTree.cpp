@@ -37,7 +37,7 @@ bool QuadTree::RemoveUnit( int unitID )
 		//The node has no children. Attempt to insert the unit here.
 		else
 		{
-			ai->utility->Log( DEBUG, KNOWLEDGE, "Removing unit %d", unitID );
+			ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "Removing unit %d", unitID );
 			iter->RemoveUnit(unitID);
 			units.erase(unitID);
 			do 
@@ -77,7 +77,7 @@ void QuadTree::InsertUnit( int unitID, SAIFloat3 pos )
 
 	if (!QuadTreeNode::IsInsideBoundingBox(pos, RootNode->GetBoundingBox()) )
 	{
-		ai->utility->Log(DEBUG, QUADTREE, "QuadTree error: The position is not inside the RootNode... Idiot.");
+		ai->utility->Log(LOG_DEBUG, QUADTREE, "QuadTree error: The position is not inside the RootNode... Idiot.");
 		return;
 	}
 

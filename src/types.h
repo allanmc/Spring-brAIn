@@ -51,7 +51,7 @@ enum LogLevels {
 	NONE		= 0,
 	CRITICAL	= 1,
 	IMPORTANT	= 2,
-	DEBUG		= 3,
+	LOG_DEBUG	= 3,
 	ALL			= 4
 };
 }
