@@ -254,7 +254,11 @@ vector<PathfindingNode*> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFlo
 			}
 		}
 
-
+		if (currentIndex == -1)
+		{
+			vector<PathfindingNode*> emptyVector;
+			return emptyVector;
+		}
 
 		/** CHECK FOR GOAL **/
 		//ai->utility->Log( ALL, SLOPEMAP, "\nCurr(%d, %d)G: %f. H = %f. F = %f", current->XIndex, current->ZIndex, current->Gscore, current->Hscore, current->Fscore );
