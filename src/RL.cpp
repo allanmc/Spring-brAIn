@@ -42,7 +42,7 @@ void RL::LoadFromFile()
 
 	char *path = new char[200];
 	strcpy(path, dir);
-	strcat(path, "q.bin");
+	strcat(path, "qh.bin");
 
 	FILE* fp = NULL;
 	fp = fopen( path, "rb" );
@@ -83,7 +83,7 @@ void RL::SaveToFile()
 
 	char *path = new char[200];
 	strcpy(path, dir);
-	strcat(path, "q.bin");
+	strcat(path, "qh.bin");
 
 	ofstream *file = new ofstream(path, ios::binary | ios::out);
 
@@ -97,7 +97,7 @@ void RL::SaveToFile()
 
 	file->write( (char*)&fileHeader, sizeof(fileHeader) );
 
-	for(int i; i< fileHeader.numQTables; i++)
+	for(int i = 0; i< fileHeader.numQTables; i++)
 	{
 		ValueFunction[i]->SaveToFile(file);
 	}
@@ -122,6 +122,8 @@ RL_State* RL::GetState(int node)
 	case 2:
 		state = new RL_State_Resource(ai);
 		break;
+	default:
+		state = NULL;
 	}
 
 	return state;
@@ -170,6 +172,10 @@ RL_Action *RL::FindBestAction( RL_State* state )
 
 RL_Action* RL::Update()
 {
+	ai->utility->Log( ALL, LOG_RL, "update node:%d", currentNode );
+	/*if(currentNode != 0)
+		return new RL_Action(ai->utility->GetUnitDef("armsolar")->GetUnitDefId(),0, false);*/
+
 	bool terminal = false;
 	RL_State *state = GetState(currentNode);
 	RL_Action *nextAction = FindNextAction( state );
@@ -183,6 +189,7 @@ RL_Action* RL::Update()
 			return nextAction;
 		else
 		{
+			ai->utility->Log( ALL, LOG_RL, "complex action(prev null) node:%d actionId:%d", currentNode, nextAction->ID );
 			currentNode = (currentNode == 0 ? nextAction->ID + 1 : 0 );
 			return Update();//recursive call
 		}
@@ -244,6 +251,18 @@ RL_Action* RL::Update()
 			return Update();//recursive call
 		}
 	}
-	return nextAction;
+
+	if(!nextAction->Complex)
+		return nextAction;
+	else
+	{
+		ai->utility->Log( ALL, LOG_RL, "complex action node:%d actionId:%d", currentNode, nextAction->ID );
+		currentNode = (currentNode == 0 ? nextAction->ID + 1 : 0 );
+		delete PreviousState[currentNode];
+		PreviousState[currentNode] = NULL;
+		delete PreviousAction[currentNode];
+		PreviousAction[currentNode] = NULL;
+		return Update();//recursive call
+	}
 	
 }

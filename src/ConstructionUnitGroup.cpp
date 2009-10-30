@@ -347,7 +347,7 @@ SAIFloat3 ConstructionUnitGroup::FindClosestNonConflictingBuildSite(UnitDef *uni
 	short unsigned int corner = 0;
 
 
-	ai->utility->Log(ALL, MISC, "FindClosestNonConflictingBuildSite...");
+	ai->utility->Log(ALL, MISC, "FindClosestNonConflictingBuildSite... %d",unitDef->GetUnitDefId());
 
 	ai->utility->ChatMsg("FindClosestNonConflictingBuildSite started");
 
