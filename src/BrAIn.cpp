@@ -23,6 +23,7 @@ brainSpace::BrAIn::BrAIn(springai::AICallback* cb)
 }
 brainSpace::BrAIn::~BrAIn() 
 {
+	delete decision;
 	delete ai->knowledge;
 	delete ai->math;
 	delete ai->utility;

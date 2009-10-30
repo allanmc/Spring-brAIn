@@ -23,11 +23,13 @@ RL::RL( AIClasses* aiClasses)
 	ValueFunction[2] = new RL_Q(ai,RL_SOLAR_INDEX*RL_MEX_INDEX/*states*/,2/*actions*/); //Resource
 
 	Epsilon = 9;
+	LoadFromFile();
+
 }
 
 RL::~RL()
 {
-
+	SaveToFile();
 	for ( int i = 0 ; i < 3 ; i++ )
 	{
 		delete ValueFunction[i];
@@ -264,5 +266,4 @@ RL_Action* RL::Update()
 		PreviousAction[currentNode] = NULL;
 		return Update();//recursive call
 	}
-	
 }
