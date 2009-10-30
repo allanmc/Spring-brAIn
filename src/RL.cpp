@@ -27,9 +27,13 @@ RL::RL( AIClasses* aiClasses)
 
 RL::~RL()
 {
-	delete[] ValueFunction[0];
-	delete[] ValueFunction[1];
-	delete[] ValueFunction[2];
+
+	for ( int i = 0 ; i < 3 ; i++ )
+	{
+		delete ValueFunction[i];
+		delete PreviousAction[i];
+		delete PreviousState[i];
+	}
 }
 
 void RL::LoadFromFile()
@@ -184,6 +188,7 @@ RL_Action* RL::Update()
 		}
 	}
 
+
 	int reward = -(ai->frame - PreviousFrame[currentNode])/30;
 	if ( state->IsTerminal() )
 	{
@@ -220,6 +225,10 @@ RL_Action* RL::Update()
 			- ValueFunction[currentNode]->GetValue(PreviousState[currentNode],PreviousAction[currentNode]) );
 
 	ValueFunction[currentNode]->SetValue(PreviousState[currentNode],PreviousAction[currentNode], value);
+
+	delete PreviousState[currentNode];
+	delete PreviousAction[currentNode];
+
 	PreviousState[currentNode] = state;
 	PreviousAction[currentNode] = nextAction;
 	PreviousFrame[currentNode] = ai->frame;
