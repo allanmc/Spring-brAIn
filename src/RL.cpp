@@ -19,14 +19,21 @@ RL::RL( AIClasses* aiClasses)
 	}
 
 	ValueFunction[0] = new RL_Q(ai,2*2/*states*/,2/*actions*/); //root
-	ValueFunction[1] = new RL_Q(ai,5*5/*states*/,2/*actions*/); //Factory
-	ValueFunction[2] = new RL_Q(ai,20*20/*states*/,2/*actions*/); //Resource
+	ValueFunction[1] = new RL_Q(ai,RL_LAB_INDEX*RL_PLANT_INDEX/*states*/,2/*actions*/); //Factory
+	ValueFunction[2] = new RL_Q(ai,RL_SOLAR_INDEX*RL_MEX_INDEX/*states*/,2/*actions*/); //Resource
 
 	Epsilon = 9;
 }
 
 RL::~RL()
 {
+
+	for ( int i = 0 ; i < 3 ; i++ )
+	{
+		delete ValueFunction[i];
+		delete PreviousAction[i];
+		delete PreviousState[i];
+	}
 }
 
 void RL::LoadFromFile()
@@ -59,6 +66,7 @@ void RL::LoadFromFile()
 				ValueFunction[i]->LoadFromFile(readFile);
 			}
 		}
+		delete readFile;
 	}
 	else
 	{
@@ -66,6 +74,7 @@ void RL::LoadFromFile()
 		ValueFunction[1]->Clear();
 		ValueFunction[2]->Clear();
 	}
+	delete[] path;
 }
 
 void RL::SaveToFile()
@@ -95,6 +104,8 @@ void RL::SaveToFile()
 
 	file->flush();
 	file->close();
+	delete[] path;
+	delete file;
 }
 
 RL_State* RL::GetState(int node)
@@ -184,6 +195,7 @@ RL_Action* RL::Update()
 		}
 	}
 
+
 	int reward = -(ai->frame - PreviousFrame[currentNode])/30;
 	if ( state->IsTerminal() )
 	{
@@ -220,6 +232,10 @@ RL_Action* RL::Update()
 			- ValueFunction[currentNode]->GetValue(PreviousState[currentNode],PreviousAction[currentNode]) );
 
 	ValueFunction[currentNode]->SetValue(PreviousState[currentNode],PreviousAction[currentNode], value);
+
+	delete PreviousState[currentNode];
+	delete PreviousAction[currentNode];
+
 	PreviousState[currentNode] = state;
 	PreviousAction[currentNode] = nextAction;
 	PreviousFrame[currentNode] = ai->frame;

@@ -13,6 +13,16 @@ BattlesInfo::BattlesInfo( AIClasses* aiClasses )
 
 BattlesInfo::~BattlesInfo()
 {
+	for ( list<Battle*>::iterator it = CurrentBattles.begin() ; it != CurrentBattles.end() ; it++ )
+	{
+		delete (*it);
+	}
+
+	for ( list<Battle*>::iterator it = OldBattles.begin() ; it != OldBattles.end() ; it++ )
+	{
+		delete (*it);
+	}
+
 }
 
 

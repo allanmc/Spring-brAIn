@@ -38,7 +38,7 @@ vector< vector<SAIFloat3> > KMedoids::GetConvexHulls( unsigned short numClusters
 	vector< SAIFloat3 > points;
 	vector< SAIFloat3 > result;
 	int num;
-	ConvexHull *ch = new ConvexHull( ai );
+	ConvexHull ch( ai );
 
 	for (int c = 0; c < (int)clusters.size(); c++ )
 	{	
@@ -51,7 +51,7 @@ vector< vector<SAIFloat3> > KMedoids::GetConvexHulls( unsigned short numClusters
 			pointsA[i] = points[i];
 		}
 		
-		num = ch->chainHull_2D(pointsA, points.size(), resultA);
+		num = ch.chainHull_2D(pointsA, points.size(), resultA);
 		clusters[c].clear();
 		for (int i = 0; i < num; i++)
 		{

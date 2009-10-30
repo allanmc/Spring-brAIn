@@ -45,6 +45,11 @@ Decision::Decision(AIClasses* aiClasses)
 
 Decision::~Decision(void)
 {
+	delete gc;
+	delete bc;
+	delete rl;
+	delete BattleInfoInstance;
+	delete bn;
 }
 
 ///called when a unit enters the world
@@ -107,7 +112,7 @@ void Decision::UnitFinished(int unit)
 	{
 		ai->utility->ChatMsg( "we have reached our goal!!" );
 		//ai->utility->Suicide();
-		ai->utility->ResetGame(rl);
+		ai->utility->ResetGame(&rl);
 		resettingGame = true;
 	}
 	ai->utility->ChatMsg( "RL: Building unit with unitdef: %d", action->UnitDefID );
