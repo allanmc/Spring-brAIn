@@ -239,7 +239,7 @@ vector<PathfindingNode*> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFlo
 	while (!openSet.empty() )
 	{
 		//ai->utility->Log( ALL, SLOPEMAP, "Openset is not empty" );
-		PathfindingNode* current;
+		PathfindingNode* current = NULL;;
 		int currentIndex = -1;
 		float lowestF = 90000000.0f;
 
@@ -254,7 +254,7 @@ vector<PathfindingNode*> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFlo
 			}
 		}
 
-		if (currentIndex == -1)
+		if (current == NULL)
 		{
 			vector<PathfindingNode*> emptyVector;
 			return emptyVector;
