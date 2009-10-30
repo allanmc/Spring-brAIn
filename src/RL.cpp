@@ -19,8 +19,8 @@ RL::RL( AIClasses* aiClasses)
 	}
 
 	ValueFunction[0] = new RL_Q(ai,2*2/*states*/,2/*actions*/); //root
-	ValueFunction[1] = new RL_Q(ai,5*5/*states*/,2/*actions*/); //Factory
-	ValueFunction[2] = new RL_Q(ai,20*20/*states*/,2/*actions*/); //Resource
+	ValueFunction[1] = new RL_Q(ai,RL_LAB_INDEX*RL_PLANT_INDEX/*states*/,2/*actions*/); //Factory
+	ValueFunction[2] = new RL_Q(ai,RL_SOLAR_INDEX*RL_MEX_INDEX/*states*/,2/*actions*/); //Resource
 
 	Epsilon = 9;
 }
