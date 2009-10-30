@@ -25,7 +25,7 @@ Decision::Decision(AIClasses* aiClasses)
 	//int i;
 	//int iterations = 100;
 	
-	bn = new BayesianNetwork( ai );
+	/*bn = new BayesianNetwork( ai );
 	ai->utility->Log(ALL, MISC, "BayesianNetwork loaded...");
 	//huginTest = new HuginTest( ai );
 
@@ -35,7 +35,7 @@ Decision::Decision(AIClasses* aiClasses)
 	bn->setEvidence(node::_seenProd, node::seenProd::_0);
 	bn->setEvidence(node::_seenRes, node::seenRes::_0);
 	bn->setEvidence(node::_attacks, node::attacks::_0);
-	bn->Propagate();
+	bn->Propagate();*/
 	/*
 	huginTest->setEvidence("myStrategy", "Aggressive");
 	huginTest->setEvidence("seenUnits", "0");
@@ -428,7 +428,7 @@ void Decision::Update(int frame)
 		}
 
 		//huginTest->setEvidence("attacks", b_range);
-		bn->setEvidence(node::_attacks, b_range);
+		//bn->setEvidence(node::_attacks, b_range);
 		
 	}
 
@@ -461,7 +461,7 @@ void Decision::Update(int frame)
 			u_range = node::seenUnits::_51_300;
 		}
 		//huginTest->setEvidence("seenUnits", u_range);
-		bn->setEvidence(node::_seenUnits, u_range);
+		//bn->setEvidence(node::_seenUnits, u_range);
 
 		ai->utility->Log(ALL, DECISION,"Seen units: %i", u_range);
 
@@ -483,7 +483,7 @@ void Decision::Update(int frame)
 			u_range = node::seenDef::_11_20;
 		}
 		//huginTest->setEvidence("seenDef", u_range);
-		bn->setEvidence(node::_seenDef, u_range);
+		//bn->setEvidence(node::_seenDef, u_range);
 		ai->utility->Log(ALL, DECISION,"Seen llt: %i", u_range);
 		enemyUnits = ai->knowledge->enemyInfo->baseInfo->CountProductionBuildings();
 		if(enemyUnits == 0)
@@ -503,7 +503,7 @@ void Decision::Update(int frame)
 			u_range = node::seenProd::_7_10;
 		}
 		//huginTest->setEvidence("seenProd", u_range);
-		bn->setEvidence(node::_seenProd, u_range);
+		//bn->setEvidence(node::_seenProd, u_range);
 		ai->utility->Log(ALL, DECISION,"Seen production: %i", u_range);
 		enemyUnits = ai->knowledge->enemyInfo->baseInfo->CountResourceBuildings();
 		if(enemyUnits == 0)
@@ -523,10 +523,12 @@ void Decision::Update(int frame)
 			u_range = node::seenRes::_21_40;
 		}
 		//huginTest->setEvidence("seenRes", u_range);
+		/*
 		bn->setEvidence(node::_seenRes, u_range);
 		ai->utility->Log(ALL, DECISION,"Seen resource: %i", u_range);
 		ai->utility->Log(ALL, BN, "My belief that that the enemy is aggressive: %f", bn->getBelief(node::_enemyStrategy, node::enemyStrategy::_Aggressive));
 		ai->utility->Log(ALL, BN, "My belief that that the enemy is defensive: %f", bn->getBelief(node::_enemyStrategy, node::enemyStrategy::_Defensive));
+		*/
 		//huginTest->print_beliefs_and_utilities();
 	}
 }
