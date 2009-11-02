@@ -18,6 +18,7 @@ brainSpace::BrAIn::BrAIn(springai::AICallback* cb)
 
 	decision = new Decision(ai);
 	ai->utility->Log(ALL, MISC, "Decision loaded...");
+	ai->frame = 0;
 	//ai->utility->ChatMsg("Hello world i am team: %d",teamId);
 	srand(0);
 }
