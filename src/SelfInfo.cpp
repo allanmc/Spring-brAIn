@@ -15,6 +15,9 @@ SelfInfo::SelfInfo(AIClasses *aiClasses)
 SelfInfo::~SelfInfo()
 {
 	delete resourceInfo;
+	resourceInfo = NULL;
 	delete armyInfo;
+	armyInfo = NULL;
 	delete baseInfo;
+	baseInfo = NULL;
 }

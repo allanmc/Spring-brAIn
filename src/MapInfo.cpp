@@ -17,9 +17,13 @@ MapInfo::MapInfo( AIClasses* aiClasses )
 
 MapInfo::~MapInfo()
 {
-	delete(threatMap);
-	delete(scoutMap);
-	delete(resourceMap);
-	delete(pathfindingMap);
+	delete threatMap;
+	threatMap = NULL;
+	delete scoutMap;
+	scoutMap = NULL;
+	delete resourceMap;
+	resourceMap = NULL;
+	delete pathfindingMap;
+	pathfindingMap = NULL;
 }
 

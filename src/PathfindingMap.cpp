@@ -414,12 +414,14 @@ void PathfindingMap::DeleteNodes( map<int, PathfindingNode*> closedSet, map<int,
 	for ( map<int, PathfindingNode*>::iterator it = openSet.begin() ; it != openSet.end() ; it++ )
 	{
 		delete it->second;
+		it->second = NULL;
 	}
 	openSet.clear();
 
 	for ( map<int, PathfindingNode*>::iterator it = closedSet.begin() ; it != closedSet.end() ; it++ )
 	{
 		delete it->second;
+		it->second = NULL;
 	}
 	closedSet.clear();
 }

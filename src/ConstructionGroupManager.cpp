@@ -13,7 +13,8 @@ ConstructionGroupManager::~ConstructionGroupManager()
 {
 	for (int i = 0; i < UnitGroups.size(); i++)
 	{
-		delete(UnitGroups[i]);
+		delete UnitGroups[i];
+		UnitGroups[i] = NULL;
 	}
 	UnitGroups.clear();
 }

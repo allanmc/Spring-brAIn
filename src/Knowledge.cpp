@@ -14,7 +14,10 @@ Knowledge::Knowledge( AIClasses* aiClasses )
 
 Knowledge::~Knowledge()
 {
-	delete(selfInfo);
-	delete(enemyInfo);
-	delete(mapInfo);
+	delete selfInfo;
+	selfInfo = NULL;
+	delete enemyInfo;
+	enemyInfo = NULL;
+	delete mapInfo;
+	mapInfo = NULL;
 }

@@ -21,7 +21,8 @@ brainSpace::MilitaryGroupManager::~MilitaryGroupManager()
 {
 	for (int i = 0; i < UnitGroups.size(); i++)
 	{
-		delete(UnitGroups[i]);
+		delete UnitGroups[i];
+		UnitGroups[i] = NULL;
 	}
 	UnitGroups.clear();
 }
@@ -60,6 +61,7 @@ void brainSpace::MilitaryGroupManager::RemoveUnit( Unit* unit )
 			MilitaryUnitGroup* tmp = UnitGroups[i];
 			UnitGroups.erase(UnitGroups.begin() + i);
 			delete tmp;
+			tmp = NULL;
 		}
 	}
 }

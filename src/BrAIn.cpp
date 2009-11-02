@@ -25,10 +25,15 @@ brainSpace::BrAIn::BrAIn(springai::AICallback* cb)
 brainSpace::BrAIn::~BrAIn() 
 {
 	delete decision;
+	decision = NULL;
 	delete ai->knowledge;
+	ai->knowledge = NULL;
 	delete ai->math;
+	ai->math = NULL;
 	delete ai->utility;
+	ai->utility = NULL;
 	delete ai;
+	ai = NULL;
 }
 
 ///Passes the events received on to the Decision class
