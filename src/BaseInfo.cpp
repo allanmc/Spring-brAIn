@@ -22,6 +22,7 @@ BaseInfo::BaseInfo( AIClasses* aiClasses )
 BaseInfo::~BaseInfo()
 {
 	delete quadTree;
+	quadTree = NULL;
 }
 
 void BaseInfo::AddBuilding(Unit* building)
@@ -99,7 +100,8 @@ int BaseInfo::CountProductionBuildings()
 	km->AddPoints(points);
 
 	vector< vector<SAIFloat3> > clusters = km->GetConvexHulls();
-	delete(km);
+	delete km;
+	km = NULL;
 	
 	if (basePerimiterDrawID>0) 
 	{
