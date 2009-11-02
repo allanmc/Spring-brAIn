@@ -145,13 +145,16 @@ UnitDef* Utility::GetLLTDef()
 ///@return the UnitDef of with a given name, or NULL if the UnitDef does not exists
 UnitDef* Utility::GetUnitDef(const char* unitDefName)
 {
-	vector<UnitDef*> defs = ai->callback->GetUnitDefs();
-
-	for ( int i = 0 ; i < (int)defs.size() ; i++ )
+	if(ai->frame > 0)
 	{
-		if ( strcmp( defs[i]->GetName(), unitDefName ) == 0 )
+		vector<UnitDef*> defs = ai->callback->GetUnitDefs();
+
+		for ( int i = 0 ; i < (int)defs.size() ; i++ )
 		{
-			return defs[i];
+			if ( strcmp( defs[i]->GetName(), unitDefName ) == 0 )
+			{
+				return defs[i];
+			}
 		}
 	}
 	return NULL;

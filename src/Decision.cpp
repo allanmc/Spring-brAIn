@@ -103,24 +103,27 @@ void Decision::UnitFinished(int unit)
 		ai->knowledge->selfInfo->baseInfo->AddBuilding(u);
 	}
 	
-	RL_Action *action = rl->Update();
-	if ( action->ID != -1 )
+	if(ai->frame > 0)
 	{
-		SBuildUnitCommand c;
-		c.toBuildUnitDefId = action->Action;
-		c.timeOut = 10000000;
-		c.facing = 0;
-		c.options = 0;
-		gc->ErectBuilding( c );
+		RL_Action *action = rl->Update();
+		if ( action->ID != -1 )
+		{
+			SBuildUnitCommand c;
+			c.toBuildUnitDefId = action->Action;
+			c.timeOut = 10000000;
+			c.facing = 0;
+			c.options = 0;
+			gc->ErectBuilding( c );
+		}
+		else 
+		{
+			ai->utility->ChatMsg( "we have reached our goal!!" );
+			//ai->utility->Suicide();
+			ai->utility->ResetGame(&rl);
+			resettingGame = true;
+		}
+		ai->utility->ChatMsg( "RL: Building unit with unitdef: %d", action->UnitDefID );
 	}
-	else 
-	{
-		ai->utility->ChatMsg( "we have reached our goal!!" );
-		//ai->utility->Suicide();
-		ai->utility->ResetGame(&rl);
-		resettingGame = true;
-	}
-	ai->utility->ChatMsg( "RL: Building unit with unitdef: %d", action->UnitDefID );
 	
 
 }
@@ -296,6 +299,18 @@ void Decision::Update(int frame)
 		ai->knowledge->mapInfo->resourceMap->Update();
 		//ai->knowledge->mapInfo->pathfindingMap->DrawGrid();
 		//ai->knowledge->mapInfo->pathfindingMap->Update();
+		RL_Action *action = rl->Update();
+		if ( action->ID != -1 )
+		{
+			SBuildUnitCommand c;
+			c.toBuildUnitDefId = action->UnitDefID;
+			c.timeOut = 10000000;
+			c.facing = 0;
+			c.options = 0;
+			gc->ErectBuilding( c );
+			ai->utility->ChatMsg( "RL: Building unit with unitdef: %d", action->UnitDefID );
+		}
+		
 
 		/*
 		
