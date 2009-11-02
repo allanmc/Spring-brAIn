@@ -286,6 +286,7 @@ void Decision::Update(int frame)
 		{
 			resettingGame = false;
 			UnitFinished(units[0]->GetUnitId());
+			frame = 1;
 		}
 		return;
 	}
