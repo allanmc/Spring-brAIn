@@ -57,6 +57,7 @@ bool GroupController::ConstructionGroupIsIdle()
 
 void GroupController::UnitIdle( Unit* unit )
 {
+	ai->utility->Log(ALL, MISC, "GroupController::UnitIdle()");
 	if ( unit->GetDef()->IsBuilder() )
 	{
 		ConstructionGroupMgr->UnitIdle( unit );

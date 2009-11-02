@@ -200,21 +200,7 @@ void PathfindingMap::ResetSlope( int xTile, int zTile )
 	MapArray[zTile*MapWidth + xTile] = maxSlope;
 }
 
-vector<SAIFloat3> PathfindingMap::FindPathToSimple( UnitDef* pathfinder, SAIFloat3 start, SAIFloat3 destination )
-{
-	vector<PathfindingNode*> path = FindPathTo(pathfinder, start, destination);
-	vector<SAIFloat3> resultingPath;
-	for (int i = path.size()-1; i >= 0; i--)
-	{
-		resultingPath.push_back(path[i]->Pos);
-		delete(path[i]);
-	}
-	path.clear();
-
-	return resultingPath;
-}
-
-vector<PathfindingNode*> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start, SAIFloat3 destination )
+list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start, SAIFloat3 destination )
 {
 	int goalXIndex = destination.x/Resolution;
 	int goalZIndex = destination.z/Resolution;
@@ -224,8 +210,8 @@ vector<PathfindingNode*> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFlo
 		 MapArray[ (int)(start.z/Resolution)*MapWidth + (int)start.x/Resolution] > pathfinder->GetMoveData()->GetMaxSlope()*/ )
 	{
 		ai->utility->ChatMsg( "Svend: I cannot reach the destination!!" );
-		vector<PathfindingNode*> emptyVector;
-		return emptyVector;
+		list<SAIFloat3> emptyResult;
+		return emptyResult;
 	}
 	map<int, PathfindingNode*> closedSet;
 	map<int, PathfindingNode*> openSet;
@@ -256,8 +242,8 @@ vector<PathfindingNode*> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFlo
 
 		if (current == NULL)
 		{
-			vector<PathfindingNode*> emptyVector;
-			return emptyVector;
+			list<SAIFloat3> emptyResult;
+			return emptyResult;
 		}
 
 		/** CHECK FOR GOAL **/
@@ -265,9 +251,9 @@ vector<PathfindingNode*> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFlo
 		if ( current->XIndex == goalXIndex && current->ZIndex == goalZIndex )
 		{
 			//ai->utility->Log( ALL, SLOPEMAP, "We have found the goal node" );
-			vector<PathfindingNode*> shortestPath = ReconstructPath( current );
+			list<SAIFloat3> shortestPath = ReconstructPath( current );
 
-			DeleteUnusedPathfindingNodes( closedSet, openSet, shortestPath );
+			DeleteNodes( closedSet, openSet );
 
 			return shortestPath;
 		}
@@ -358,81 +344,82 @@ vector<PathfindingNode*> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFlo
 			}
 		}
 	}
-	vector<PathfindingNode*> emptyVector;
-	return emptyVector;
+	list<SAIFloat3> emptyResult;
+	return emptyResult;
 }
 
-
-bool PathfindingMap::IsPossibleToEscapeFrom( UnitDef* pathfinder, UnitDef* building, SAIFloat3 buildPosition, SAIFloat3 escapeFrom, SAIFloat3 escapeTo )
+bool PathfindingMap::PathExists( UnitDef* pathfinder, SAIFloat3 escapeFrom, SAIFloat3 escapeTo )
 {
 	ai->utility->Log(ALL, MISC, "Trying to escape...");
-	AddHypotheticalBuilding( building, buildPosition );
-	vector<PathfindingNode*> path = FindPathTo( pathfinder, escapeFrom, escapeTo );
-	RemoveHypotheticalBuilding( building, buildPosition );
+	list<SAIFloat3> path = FindPathTo( pathfinder, escapeFrom, escapeTo );
 	return ( path.size() > 0 );
 }
 
-
-vector<PathfindingNode*> PathfindingMap::ReconstructPath( PathfindingNode* currentNode )
+bool PathfindingMap::IsPossibleToEscapeFrom( UnitDef* pathfinder, springai::UnitDef* building, SAIFloat3 buildPosition, SAIFloat3 escapeFrom, SAIFloat3 escapeTo )
 {
-	vector<PathfindingNode*> nodes;
-	nodes.push_back( currentNode );
+	
+	ai->utility->Log(ALL, MISC, "Trying to escape...");
+	AddHypotheticalBuilding( building, buildPosition );
+	bool retVal = PathExists(pathfinder, escapeFrom, escapeTo);
+	RemoveHypotheticalBuilding( building, buildPosition );
+	return retVal;
+}
 
+
+list<SAIFloat3>  PathfindingMap::ReconstructPath( PathfindingNode* currentNode )
+{
+	list<SAIFloat3>  nodes;
+	nodes.push_front( currentNode->Pos );
 
 	while ( currentNode->CameFrom != NULL )
 	{
 		//ai->utility->Log( ALL, SLOPEMAP, "(%d, %d) has a predecessor (%d, %d)", currentNode->XIndex, currentNode->ZIndex, currentNode->CameFrom->XIndex, currentNode->CameFrom->ZIndex );
-		nodes.push_back( currentNode->CameFrom );
+		nodes.push_front( currentNode->CameFrom->Pos );
 		currentNode = currentNode->CameFrom;
 	}
 
 	return nodes;
 }
 
+vector<SAIFloat3>  PathfindingMap::ReconstructPathVector( PathfindingNode* currentNode )
+{
+	vector<SAIFloat3>  tmp_nodes;
+	vector<SAIFloat3>  nodes;
+	tmp_nodes.push_back( currentNode->Pos );
 
-void PathfindingMap::DeleteUnusedPathfindingNodes( map<int, PathfindingNode*> closedSet, map<int, PathfindingNode*> openSet, vector<PathfindingNode*> shortestPath )
+
+	while ( currentNode->CameFrom != NULL )
+	{
+		//ai->utility->Log( ALL, SLOPEMAP, "(%d, %d) has a predecessor (%d, %d)", currentNode->XIndex, currentNode->ZIndex, currentNode->CameFrom->XIndex, currentNode->CameFrom->ZIndex );
+		tmp_nodes.push_back( currentNode->CameFrom->Pos );
+		currentNode = currentNode->CameFrom;
+	}
+
+	for (int i = tmp_nodes.size()-1; i > 0; i-- ) 
+	{
+		nodes.push_back(tmp_nodes[i]);
+	}
+
+	return nodes;
+}
+
+void PathfindingMap::DeleteNodes( map<int, PathfindingNode*> closedSet, map<int, PathfindingNode*> openSet )
 {
 	vector<PathfindingNode*> nodesToDelete;
 	map<int, PathfindingNode*>::iterator it;
-	bool exists = false;
+	
+
+	ai->utility->Log( ALL, SLOPEMAP, "Deleting %d nodes", closedSet.size()+openSet.size() );
 
 	for ( map<int, PathfindingNode*>::iterator it = openSet.begin() ; it != openSet.end() ; it++ )
 	{
-		exists = false;
-		for ( int k = 0 ; k < (int)shortestPath.size() ; k++ )
-		{
-			if ( it->second->XIndex == shortestPath[k]->XIndex && it->second->ZIndex == shortestPath[k]->ZIndex )
-			{
-				exists = true;
-				break;
-			}
-		}
-		if ( !exists )
-		{
-			nodesToDelete.push_back( it->second );
-			continue;
-		}
+		delete it->second;
 	}
-	
+	openSet.clear();
+
 	for ( map<int, PathfindingNode*>::iterator it = closedSet.begin() ; it != closedSet.end() ; it++ )
 	{
-		exists = false;
-		for ( int k = 0 ; k < (int)shortestPath.size() ; k++ )
-		{
-			if ( it->second->XIndex == shortestPath[k]->XIndex && it->second->ZIndex == shortestPath[k]->ZIndex )
-			{
-				exists = true;
-				break;
-			}
-		}
-		if ( !exists )
-		{
-			nodesToDelete.push_back( it->second );
-			continue;
-		}
+		delete it->second;
 	}
-
-	ai->utility->Log( ALL, SLOPEMAP, "Deleting %d unused nodes", nodesToDelete.size() );
-	for ( int k = 0 ; k < (int)nodesToDelete.size() ; k++ )
-		delete nodesToDelete[k];
+	closedSet.clear();
 }

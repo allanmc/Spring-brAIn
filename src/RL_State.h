@@ -11,15 +11,19 @@ namespace brainSpace {
 	class RL_State
 	{
 	public:
-		RL_State( AIClasses* ai );
-		virtual ~RL_State();
+		RL_State( AIClasses* ai, int plantCount, int labCount, int solarCount, int mexCount );
+
 		int GetID();
 
 		vector<RL_Action*> GetActions();
-		virtual bool IsTerminal()=0;
-	protected:
+		int LabCount;
+	private:
 
 		AIClasses* ai;
+
+		int PlantCount;
+		int SolarCount;
+		int MexCount;
 		int ID;
 		vector<RL_Action*> Actions;
 
