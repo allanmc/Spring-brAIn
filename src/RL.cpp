@@ -22,11 +22,17 @@ RL::RL( AIClasses* aiClasses)
 	ValueFunction[1] = new RL_Q(ai,RL_LAB_INDEX*RL_PLANT_INDEX/*states*/,2/*actions*/); //Factory
 	ValueFunction[2] = new RL_Q(ai,RL_SOLAR_INDEX*RL_MEX_INDEX/*states*/,2/*actions*/); //Resource
 
+	ParentNode[0] = -1; //no parent
+	ParentNode[1] = 0;
+	ParentNode[2] = 0;
+
 	Epsilon = 9;
 	LoadFromFile();
 
 	totalReward = 0.0;
 	goalAchieved = false;
+
+	loopCounter = 0;
 }
 
 RL::~RL()
@@ -150,12 +156,12 @@ RL_Action *RL::FindNextAction( RL_State* state )
 	if ( r <= Epsilon ) //non-greedy
 	{
 		action = stateActions[rand()%stateActions.size()];
-		ai->utility->Log( ALL, LOG_RL, "Non-greedy: actionID=%d unitdef=%d", action->ID, action->UnitDefID );
+		ai->utility->Log( ALL, LOG_RL, "Non-greedy: actionID=%d unitdef=%d", action->ID, action->Action );
 	}
 	else //greedy
 	{
 		action = FindBestAction(state);
-		ai->utility->Log( ALL, LOG_RL, "Greedy: actionID=%d unitdef=%d", action->ID, action->UnitDefID );
+		ai->utility->Log( ALL, LOG_RL, "Greedy: actionID=%d unitdef=%d", action->ID, action->Action );
 	}
 	return action;
 }
@@ -185,7 +191,7 @@ RL_Action *RL::FindBestAction( RL_State* state )
 RL_Action* RL::SafeNextAction(RL_State *state)
 {
 	RL_State *tmpCurrentState = state;
-	int tmpCurrentNode = CurrentNode;
+	int tmpCurrentNode = currentNode;
 
 	while(state->GetActions().size() > 0)
 	{
@@ -200,13 +206,6 @@ RL_Action* RL::SafeNextAction(RL_State *state)
 			else
 			{
 				return nextAction;
-				/*
-				//all good... go down in the tree!
-				CurrentNode = nextAction->Action();
-				PreviousAction[CurrentNode] = NULL;
-				PreviousFrame = 0;
-				PreviousState = NULL;
-				return TakeAction(tmpCurrentState);*/
 			}
 		}
 		else
@@ -223,14 +222,23 @@ void RL::TakeAction(RL_Action* action)
 	if(!action->Complex)
 		return;
 	
-	CurrentNode = nextAction->Action();
-	PreviousAction[CurrentNode] = NULL;
-	PreviousFrame = 0;
-	PreviousState = NULL;
+	currentNode = action->Action;
+	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:TakeAction() new node:%d", currentNode);
+	//clean the "scope"
+	PreviousAction[currentNode] = NULL;
+	PreviousFrame[currentNode] = 0;
+	PreviousState[currentNode] = NULL;
 }
 
 RL_Action* RL::Update()
 {
+	if(loopCounter++ >= 5000)
+	{
+		return NULL;
+	}
+
+	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() node:%d", currentNode);
+
 	bool terminal = false;
 	RL_State *state = GetState(currentNode);
 	RL_Action *nextAction = SafeNextAction(state);
@@ -252,115 +260,72 @@ RL_Action* RL::Update()
 
 	//Reward
 	float reward = -(ai->frame - PreviousFrame[currentNode])/30;
-	if ( state->IsTerminal() )
-	{
-		if(currentNode == 0)
-			reward += 100;
-		
-		terminal = true;
-	}
-	totalReward += reward;
-
-
-
-}
-
-RL_Action* RL::UpdateBackup()
-{
-	ai->utility->Log( ALL, LOG_RL, "update node:%d", currentNode );
-	/*if(currentNode != 0)
-		return new RL_Action(ai->utility->GetUnitDef("armsolar")->GetUnitDefId(),0, false);*/
-
-	bool terminal = false;
-	RL_State *state = GetState(currentNode);
-	RL_Action *nextAction = FindNextAction( state );
-
-	if ( PreviousState[currentNode] == NULL )
-	{
-		PreviousState[currentNode] = state;
-		PreviousAction[currentNode] = nextAction;
-		PreviousFrame[currentNode] = ai->frame;
-		if(!nextAction->Complex)
-			return nextAction;
-		else
-		{
-			ai->utility->Log( ALL, LOG_RL, "complex action(prev null) node:%d actionId:%d", currentNode, nextAction->ID );
-			currentNode = (currentNode == 0 ? nextAction->ID + 1 : 0 );
-			return Update();//recursive call
-		}
-	}
-
-
-	float reward = -(ai->frame - PreviousFrame[currentNode])/30;
-	if ( state->IsTerminal() )
-	{
-		if(currentNode == 0)
-			reward += 100;
-		
-		terminal = true;
-	}
-	totalReward += reward;
-
 	float bestFutureValue;
-	if(terminal)
-		bestFutureValue = 0;
+	if ( state->IsTerminal() )
+	{
+		if(currentNode == 0)
+			reward += 100;
+		
+		terminal = true;
+		bestFutureValue = 0;//no future actions to take
+	}
 	else
-	{	
+	{
 		RL_Action *bestAction = FindBestAction( state );
 		bestFutureValue = ValueFunction[currentNode]->GetValue(state, bestAction);
 	}
-	if(currentNode == 0)
-	{//Update the subNode's value function
-		int subNode = PreviousAction[currentNode]->ID + 1;
 
+	//if complex then update the childs value funtion
+	if(PreviousAction[currentNode]->Complex)
+	{
+		int subNode = PreviousAction[currentNode]->Action;
 		float subValue = ValueFunction[subNode]->GetValue(PreviousState[subNode],PreviousAction[subNode]) 
-		+ ALPHA*(
-			reward + GAMMA*bestFutureValue 
-			- ValueFunction[subNode]->GetValue(PreviousState[subNode],PreviousAction[subNode]) );
+						+ ALPHA*(
+							reward + GAMMA*bestFutureValue 
+							- ValueFunction[subNode]->GetValue(PreviousState[subNode],PreviousAction[subNode]) );
 
 		ValueFunction[subNode]->SetValue(PreviousState[subNode],PreviousAction[subNode], subValue);
 	}
-	
+
 	//update own value function
 	float value = ValueFunction[currentNode]->GetValue(PreviousState[currentNode],PreviousAction[currentNode]) 
-		+ ALPHA*(
-			reward + GAMMA*bestFutureValue 
-			- ValueFunction[currentNode]->GetValue(PreviousState[currentNode],PreviousAction[currentNode]) );
+				+ ALPHA*(
+					reward + GAMMA*bestFutureValue 
+					- ValueFunction[currentNode]->GetValue(PreviousState[currentNode],PreviousAction[currentNode]) );
 
 	ValueFunction[currentNode]->SetValue(PreviousState[currentNode],PreviousAction[currentNode], value);
 
+
 	delete PreviousState[currentNode];
 	delete PreviousAction[currentNode];
-
 	PreviousState[currentNode] = state;
 	PreviousAction[currentNode] = nextAction;
 	PreviousFrame[currentNode] = ai->frame;
 
-
 	if ( terminal )
 	{
-		if(currentNode == 0)
+		if(ParentNode[currentNode] == -1)//root check
 		{
 			goalAchieved = true;
-			return new RL_Action(-1,-1, false);//MEANS THAT YOU SHOULD STOP NOW!!
+			return NULL;//MEANS THAT YOU SHOULD STOP NOW!!
 		}
 		else
 		{
-			currentNode = 0;//parentNode
+			currentNode = ParentNode[currentNode];//parentNode
 			return Update();//recursive call
 		}
 	}
-
-	if(!nextAction->Complex)
-		return nextAction;
 	else
 	{
-		ai->utility->Log( ALL, LOG_RL, "complex action node:%d actionId:%d", currentNode, nextAction->ID );
-		currentNode = (currentNode == 0 ? nextAction->ID + 1 : 0 );
-		delete PreviousState[currentNode];
-		PreviousState[currentNode] = NULL;
-		delete PreviousAction[currentNode];
-		PreviousAction[currentNode] = NULL;
-		return Update();//recursive call
+		if(nextAction->Complex)
+		{
+			TakeAction(nextAction);
+			return Update();
+		}
+		else
+		{
+			return nextAction;
+		}
 	}
 }
+

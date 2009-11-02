@@ -106,7 +106,7 @@ void Decision::UnitFinished(int unit)
 	if(ai->frame > 0)
 	{
 		RL_Action *action = rl->Update();
-		if ( action->ID != -1 )
+		if ( action != NULL )
 		{
 			SBuildUnitCommand c;
 			c.toBuildUnitDefId = action->Action;
@@ -122,7 +122,7 @@ void Decision::UnitFinished(int unit)
 			ai->utility->ResetGame(&rl);
 			resettingGame = true;
 		}
-		ai->utility->ChatMsg( "RL: Building unit with unitdef: %d", action->UnitDefID );
+		ai->utility->ChatMsg( "RL: Building unit with unitdef: %d", action->Action );
 	}
 	
 
@@ -303,12 +303,12 @@ void Decision::Update(int frame)
 		if ( action->ID != -1 )
 		{
 			SBuildUnitCommand c;
-			c.toBuildUnitDefId = action->UnitDefID;
+			c.toBuildUnitDefId = action->Action;
 			c.timeOut = 10000000;
 			c.facing = 0;
 			c.options = 0;
 			gc->ErectBuilding( c );
-			ai->utility->ChatMsg( "RL: Building unit with unitdef: %d", action->UnitDefID );
+			ai->utility->ChatMsg( "RL: Building unit with unitdef: %d", action->Action );
 		}
 		
 

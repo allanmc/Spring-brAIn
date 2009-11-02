@@ -44,16 +44,20 @@ namespace brainSpace {
 		RL_State* PreviousState[RL_NUM_NODES];
 		RL_Action* PreviousAction[RL_NUM_NODES];
 		int PreviousFrame[RL_NUM_NODES];
+		int ParentNode[RL_NUM_NODES];
 		float totalReward;
 		bool goalAchieved;
 		int Epsilon;
 		RL_State* GetState(int node);
-		RL_Action* SafeNextAction(RL_Action *action);
+		RL_Action* SafeNextAction(RL_State *state);
+		void TakeAction(RL_Action* action);
 		
 		void LoadFromFile();
 		void SaveToFile();
 
 		RL_Q* ValueFunction[RL_NUM_NODES];
+
+		int loopCounter;
 	};
 }
 
