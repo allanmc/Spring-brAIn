@@ -214,6 +214,7 @@ bool ConstructionUnitGroup::IsIdle()
 ///for telling the group that it is now idle
 void ConstructionUnitGroup::SetAvailable()
 {
+	ai->utility->Log(ALL, MISC, "ConstructionUnitGroup::SetAvailable()");
 	Idle = true;
 	if ( BuildQueue.size() > 0 )
 	{
