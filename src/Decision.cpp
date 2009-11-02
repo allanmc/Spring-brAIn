@@ -108,6 +108,11 @@ void Decision::UnitFinished(int unit)
 		ai->knowledge->selfInfo->baseInfo->AddBuilding(u);
 	}
 	
+	UpdateRL();
+}
+
+void Decision::UpdateRL()
+{
 	if(ai->frame > 0)
 	{
 		RL_Action *action = rl->Update();
@@ -318,8 +323,9 @@ void Decision::Update(int frame)
 		ai->knowledge->mapInfo->resourceMap->Update();
 		//ai->knowledge->mapInfo->pathfindingMap->DrawGrid();
 		//ai->knowledge->mapInfo->pathfindingMap->Update();
-		vector<Unit*> units = ai->callback->GetFriendlyUnits();
-		UnitFinished(units[0]->GetUnitId());
+		//vector<Unit*> units = ai->callback->GetFriendlyUnits();
+		//UnitFinished(units[0]->GetUnitId());
+		UpdateRL();
 		/*RL_Action *action = rl->Update();
 		if ( action->ID != -1 )
 		{
