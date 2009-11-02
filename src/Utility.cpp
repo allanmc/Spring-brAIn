@@ -22,9 +22,6 @@ Utility::Utility( AIClasses* aiClasses )
 	
 	InitializeOptions();
 	isMetalMap = false;
-	mexDef = GetUnitDef("armmex");
-	solarDef = GetUnitDef("armsolar");
-	lltDef = GetUnitDef("armllt");
 
 	safePosition = (SAIFloat3){ai->callback->GetMap()->GetWidth()*8/2, 0.0, ai->callback->GetMap()->GetHeight()*8/2};
 }
@@ -48,6 +45,9 @@ bool Utility::IsDebug()
 
 void Utility::LaterInitialization()
 {
+	mexDef = GetUnitDef("armmex");
+	solarDef = GetUnitDef("armsolar");
+	lltDef = GetUnitDef("armllt");
 	Log(ALL, MISC, "LaterInitialization()");
 	isMetalMap = ai->callback->GetMap()->GetResourceMapSpotsPositions(*ai->utility->GetResource("Metal"), NULL).size() > 200;
 }

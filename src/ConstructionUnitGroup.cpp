@@ -82,22 +82,26 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 
 	if ( order.toBuildUnitDefId == ai->utility->GetMexDef()->GetUnitDefId() )
 	{
+		ai->utility->Log(ALL, MISC, "Find extractor build spot" );
 		order.buildPos = FindClosestMetalExtractionSite( buildPos );
 		order.buildPos.y = 30;
 		ai->utility->Log(ALL, MISC, "Metal extractor build position set" );
 	}
 	//Check to see if unit-to-build is LLT, the defense structure, and find good spot
 	else if (order.toBuildUnitDefId == ai->utility->GetLLTDef()->GetUnitDefId()) {
+		ai->utility->Log(ALL, MISC, "Find defense build spot" );
 		order.buildPos = FindBestDefensePosition(ai->utility->GetLLTDef(), buildPos);
 		ai->utility->Log(ALL, MISC, "Defense build position set" );
 	}
 	else if (order.toBuildUnitDefId == ai->utility->GetSolarDef()->GetUnitDefId())
 	{
+		ai->utility->Log(ALL, MISC, "Find solar build spot" );
 		order.buildPos = FindGoodBuildSite(/*this->GetPos()*/buildPos,unitDef, 1024);
 		ai->utility->Log(ALL, MISC, "Solar build position set" );
 	}
 	else
 	{
+		ai->utility->Log(ALL, MISC, "Find lab build spot" );
 		order.buildPos = FindClosestNonConflictingBuildSite(unitDef, buildPos, 1000, 0, 0);
 		ai->utility->Log(ALL, MISC, "Lab build position set" );			
 	}
@@ -125,6 +129,7 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	
 	//TODO: Add the target action directly with HandleCommand, when we can, instead of using out own step-by-step pathfinding
 	//ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &order );
+	
 	ai->utility->GoTo(order.unitId, order.buildPos);
 	order.options = UNIT_COMMAND_OPTION_SHIFT_KEY;
 	ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &order );

@@ -32,4 +32,4 @@ int RL_State::GetID()
 vector<RL_Action*> RL_State::GetActions()
 {
 	return Actions;
-}s
+}

@@ -242,8 +242,8 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 
 		if (current == NULL)
 		{
-			vector<PathfindingNode*> emptyVector;
-			return emptyVector;
+			list<SAIFloat3> emptyResult;
+			return emptyResult;
 		}
 
 		/** CHECK FOR GOAL **/
