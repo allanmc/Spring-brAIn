@@ -272,8 +272,7 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 	}
 	ai->utility->Log(ALL, MISC, "BuildBlocksSelf check 3 done");
 
-	vector<PathfindingNode*> path = ai->knowledge->mapInfo->pathfindingMap->FindPathTo( commander->GetDef(), fromPos, pos );
-	if ( path.size() == 0 )
+	if ( !ai->knowledge->mapInfo->pathfindingMap->PathExists(commander->GetDef(), fromPos, pos) )
 	{
 		ai->utility->Log( ALL, MISC, "BuildBlocksSelf blocked build by reason 4 (No path to buildsite)");
 		return true;

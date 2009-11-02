@@ -56,11 +56,11 @@ namespace brainSpace {
 
 		void RemoveBuilding( springai::Unit* unit );
 
-		std::vector<PathfindingNode*> FindPathTo( springai::UnitDef* pathfinder, SAIFloat3 source, SAIFloat3 destination );
-		
-		std::vector<SAIFloat3> FindPathToSimple( springai::UnitDef* pathfinder, SAIFloat3 start, SAIFloat3 destination );
+		std::list<SAIFloat3> FindPathTo( springai::UnitDef* pathfinder, SAIFloat3 source, SAIFloat3 destination );
 
 		bool IsPossibleToEscapeFrom( springai::UnitDef* pathfinder, springai::UnitDef* building, SAIFloat3 buildPosition, SAIFloat3 escapeFrom, SAIFloat3 escapeTo );
+
+		bool PathExists( springai::UnitDef* pathfinder, SAIFloat3 escapeFrom, SAIFloat3 escapeTo );
 
 	private:
 
@@ -68,13 +68,14 @@ namespace brainSpace {
 
 		void AddHypotheticalBuilding(springai::UnitDef* unit, SAIFloat3 pos);
 
-		std::vector<PathfindingNode*> ReconstructPath( PathfindingNode* currentNode );
+		std::list<SAIFloat3>  ReconstructPath( PathfindingNode* currentNode );
+		std::vector<SAIFloat3>  ReconstructPathVector( PathfindingNode* currentNode );
 
 		void EffectCell(int index, float value);
 
 		void ResetSlope( int xTile, int zTile );
 
-		void DeleteUnusedPathfindingNodes( std::map<int, PathfindingNode*> closedSet, std::map<int, PathfindingNode*> openSet, std::vector<PathfindingNode*> shortestPath );
+		void DeleteNodes( std::map<int, PathfindingNode*> closedSet, std::map<int, PathfindingNode*> openSet );
 
 		std::vector<float> SlopeMap;
 		std::map<int,float> backUp;
