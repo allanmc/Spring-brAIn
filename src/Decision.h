@@ -37,6 +37,7 @@ public:
 	~Decision(void);
 private:
 	void Reset();
+	void UpdateRL();
 	BattlesInfo* BattleInfoInstance;
 	AIClasses* ai;
 	BayesianNetwork *bn;

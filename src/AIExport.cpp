@@ -73,7 +73,9 @@ EXPORT(int) release(int teamId) {
 		myAIs.erase(teamId);
 
 		delete ai;
+		ai = NULL;
 		delete clb;
+		clb = NULL;
 
 		ret = 0;
 	} CATCH_CPP_AI_EXCEPTION(ret);

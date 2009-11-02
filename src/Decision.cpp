@@ -51,10 +51,15 @@ Decision::Decision(AIClasses* aiClasses)
 Decision::~Decision(void)
 {
 	delete gc;
+	gc = NULL;
 	delete bc;
+	bc = NULL;
 	delete rl;
+	rl = NULL;
 	delete BattleInfoInstance;
-	delete bn;
+	BattleInfoInstance = NULL;
+	//delete bn;
+	//bn = NULL;
 }
 
 ///called when a unit enters the world
@@ -103,6 +108,11 @@ void Decision::UnitFinished(int unit)
 		ai->knowledge->selfInfo->baseInfo->AddBuilding(u);
 	}
 	
+	UpdateRL();
+}
+
+void Decision::UpdateRL()
+{
 	if(ai->frame > 0)
 	{
 		RL_Action *action = rl->Update();
@@ -259,15 +269,20 @@ void Decision::Reset()
 {
 	resettingGame = true;
 	ai->utility->ResetGame(&rl);
-	delete(ai->knowledge);
+	delete ai->knowledge;
+	ai->knowledge = NULL;
 	ai->knowledge = new Knowledge( ai );
-	delete(ai->utility);
+	delete ai->utility;
+	ai->utility = NULL;
 	ai->utility = new Utility( ai );
-	delete(ai->math);
+	delete ai->math;
+	ai->math = NULL;
 	ai->math = new BrainMath( ai );
-	delete(gc);
+	delete gc;
+	gc = NULL;
 	gc = new GroupController( ai );
-	delete(bc);
+	delete bc;
+	bc = NULL;
 	bc = new BuildingController( ai );
 }
 
@@ -286,7 +301,10 @@ void Decision::Update(int frame)
 			abs(units[0]->GetPos().z - ai->callback->GetMap()->GetStartPos().z)<50)
 		{
 			resettingGame = false;
+			ai->utility->LaterInitialization();
+			ai->knowledge->mapInfo->resourceMap->Update();
 			UnitFinished(units[0]->GetUnitId());
+			
 		}
 		return;
 	}
@@ -306,7 +324,10 @@ void Decision::Update(int frame)
 		ai->knowledge->mapInfo->resourceMap->Update();
 		//ai->knowledge->mapInfo->pathfindingMap->DrawGrid();
 		//ai->knowledge->mapInfo->pathfindingMap->Update();
-		RL_Action *action = rl->Update();
+		//vector<Unit*> units = ai->callback->GetFriendlyUnits();
+		//UnitFinished(units[0]->GetUnitId());
+		UpdateRL();
+		/*RL_Action *action = rl->Update();
 		if ( action->ID != -1 )
 		{
 			SBuildUnitCommand c;
@@ -316,7 +337,7 @@ void Decision::Update(int frame)
 			c.options = 0;
 			gc->ErectBuilding( c );
 			ai->utility->ChatMsg( "RL: Building unit with unitdef: %d", action->Action );
-		}
+		}*/
 		
 
 		/*
