@@ -1,0 +1,170 @@
+net
+{
+    node_size = (80 40);
+    HR_Desc = "";
+    HR_OOBN_CheckConsistency = "1";
+    HR_OOBN_FitExpand = "1";
+    HR_Zoom_ZoomFactor = "100";
+    HR_Groups_GroupColors = "";
+    HR_Groups_GroupNames = "";
+    HR_Groups_UserGroupsNo = "0";
+    HR_Color_Interface = "21";
+    HR_Color_Instance = "0";
+    HR_Color_Utility = "36";
+    HR_Color_Decision = "17";
+    HR_Color_ContinuousChance = "48";
+    HR_Color_DiscreteChance = "16";
+    HR_Monitor_InitSD = "2";
+    HR_Monitor_Utility_Arrange = "0";
+    HR_Monitor_Chance_Utility = "1";
+    HR_Monitor_InitStates = "5";
+    HR_Monitor_OpenGraph = "0";
+    HR_Monitor_GraphPrecision = "100";
+    HR_Monitor_AutoUpdGraph = "0";
+    HR_Compile_MaxMinimalSeparators = "100000";
+    HR_Compile_ApproxEpsilon = "1.0E-5";
+    HR_Compile_Approximate = "0";
+    HR_Compile_SaveToMemory = "0";
+    HR_Compile_Compress = "0";
+    HR_Compile_TriangMethod = "0";
+    HR_Propagate_AutoNormal = "1";
+    HR_Propagate_AutoSum = "1";
+    HR_Propagate_Auto = "1";
+    HR_Font_Italic = "0";
+    HR_Font_Weight = "400";
+    HR_Font_Size = "-12";
+    HR_Font_Name = "javax.swing.plaf.FontUIResource[family=Tahoma,name=Tahoma,style=plain,size=11]";
+    HR_Grid_GridShow = "0";
+    HR_Grid_GridSnap = "0";
+    HR_Grid_Y = "40";
+    HR_Grid_X = "40";
+}
+
+node attacks
+{
+    label = "";
+    position = (344 122);
+    states = ("0" "1-3" "4-8" "9-");
+    HR_State_3 = "";
+    HR_State_2 = "";
+    HR_Group = "0";
+    HR_Desc = "";
+    HR_State_1 = "";
+    HR_State_0 = "";
+}
+
+node seenResource
+{
+    label = "";
+    position = (683 114);
+    states = ("0" "1-10" "11-20" "21-40");
+    HR_LinkControlPoints = "";
+    HR_State_3 = "";
+    HR_State_2 = "";
+    HR_LinkMode = "[seenRes:0][notSeenRes:0][enemyUnits_2:0]";
+    HR_NodeSize = "(119, 39)";
+    HR_Group = "0";
+    HR_Desc = "";
+    HR_State_1 = "";
+    HR_State_0 = "";
+}
+
+node seenProduction
+{
+    label = "";
+    position = (551 117);
+    states = ("0" "1-2" "3-6" "7-10");
+    HR_LinkControlPoints = "";
+    HR_State_3 = "";
+    HR_State_2 = "";
+    HR_LinkMode = "[seenProd:0][notSeenProd:0][enemyUnits_2:0]";
+    HR_NodeSize = "(127, 36)";
+    HR_Group = "0";
+    HR_Desc = "";
+    HR_State_1 = "";
+    HR_State_0 = "";
+}
+
+node seenDefence
+{
+    label = "";
+    position = (806 114);
+    states = ("0" "1-5" "6-10" "11-20");
+    HR_State_3 = "";
+    HR_State_2 = "";
+    HR_LinkMode = "[seenDef:0][notSeenDef:0]";
+    HR_NodeSize = "(110, 38)";
+    HR_Group = "0";
+    HR_Desc = "";
+    HR_State_1 = "";
+    HR_State_0 = "";
+}
+
+node seenUnits
+{
+    label = "";
+    position = (438 120);
+    states = ("0" "1-10" "11-50" "51-300");
+    HR_LinkControlPoints = "";
+    HR_State_3 = "";
+    HR_State_2 = "";
+    HR_LinkMode = "[C1:0][C2:0][seenUnits:0][notSeenUnits:0]";
+    HR_Group = "0";
+    HR_Desc = "";
+    HR_State_1 = "";
+    HR_State_0 = "";
+}
+
+node enemyStrategy
+{
+    label = "";
+    position = (577 266);
+    states = ("Aggressive" "Defensive");
+    HR_LinkControlPoints = "";
+    HR_NodeSize = "(104, 43)";
+    HR_Group = "0";
+    HR_Desc = "";
+    HR_State_1 = "";
+    HR_State_0 = "";
+    HR_LinkMode = "[C3:0][C4:0][C5:0][C6:0][attacks:0][enemyUnits_2:0][enemyUnits:0][enemyDefence:0][enemyProduction:0][enemyResource:0][seenUnits:0][seenDefence:0][seenProduction:0][seenResource:0]";
+}
+
+potential (attacks | enemyStrategy)
+{
+    data
+     = (( 1 1 1 1 )	%  enemyStrategy=Aggressive
+	( 1 1 1 1 ));	%  enemyStrategy=Defensive
+}
+
+potential (seenResource | enemyStrategy)
+{
+    data
+     = (( 1 1 1 1 )	%  enemyStrategy=Aggressive
+	( 1 1 1 1 ));	%  enemyStrategy=Defensive
+}
+
+potential (seenProduction | enemyStrategy)
+{
+    data
+     = (( 1 1 1 1 )	%  enemyStrategy=Aggressive
+	( 1 1 1 1 ));	%  enemyStrategy=Defensive
+}
+
+potential (seenDefence | enemyStrategy)
+{
+    data
+     = (( 1 1 1 1 )	%  enemyStrategy=Aggressive
+	( 1 1 1 1 ));	%  enemyStrategy=Defensive
+}
+
+potential (seenUnits | enemyStrategy)
+{
+    data
+     = (( 1 1 1 1 )	%  enemyStrategy=Aggressive
+	( 1 1 1 1 ));	%  enemyStrategy=Defensive
+}
+
+potential (enemyStrategy)
+{
+    data = ( 1 1 );
+}
