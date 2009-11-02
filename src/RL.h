@@ -56,8 +56,6 @@ namespace brainSpace {
 		void SaveToFile();
 
 		RL_Q* ValueFunction[RL_NUM_NODES];
-
-		int loopCounter;
 	};
 }
 

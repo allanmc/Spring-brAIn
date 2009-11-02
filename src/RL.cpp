@@ -31,8 +31,6 @@ RL::RL( AIClasses* aiClasses)
 
 	totalReward = 0.0;
 	goalAchieved = false;
-
-	loopCounter = 0;
 }
 
 RL::~RL()
@@ -196,23 +194,29 @@ RL_Action* RL::SafeNextAction(RL_State *state)
 	while(state->GetActions().size() > 0)
 	{
 		RL_Action *nextAction = FindNextAction( state );
+		ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:SafeNextAction action found checking for complexity: %d", nextAction->Complex);
 		if(nextAction->Complex)
 		{
 			tmpCurrentState = GetState(nextAction->Action);
 			if(tmpCurrentState->GetActions().size() == 0)
 			{
 				state->DeleteAction(nextAction);
+				ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:SafeNextAction deleted action");
 			}
 			else
 			{
+				ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:SafeNextAction complex action found");
 				return nextAction;
 			}
 		}
 		else
 		{
+			ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:SafeNextAction non-complex action found");
 			return nextAction;
 		}
 	}
+	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:SafeNextAction ... bad stuff happend!");
+
 	return NULL;
 }
 
@@ -232,20 +236,18 @@ void RL::TakeAction(RL_Action* action)
 
 RL_Action* RL::Update()
 {
-	if(loopCounter++ >= 5000)
-	{
-		return NULL;
-	}
-
 	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() node:%d", currentNode);
 
 	bool terminal = false;
 	RL_State *state = GetState(currentNode);
 	RL_Action *nextAction = SafeNextAction(state);
 	
+	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() nextAction set");
+
 	//Start state
 	if ( PreviousState[currentNode] == NULL )
 	{
+		ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() PreviousState == NULL");
 		PreviousState[currentNode] = state;
 		PreviousAction[currentNode] = nextAction;
 		PreviousFrame[currentNode] = ai->frame;
@@ -258,11 +260,14 @@ RL_Action* RL::Update()
 			return nextAction;
 	}//else
 
+	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() before reward");
+
 	//Reward
 	float reward = -(ai->frame - PreviousFrame[currentNode])/30;
 	float bestFutureValue;
 	if ( state->IsTerminal() )
 	{
+		ai->utility->Log(LOG_DEBUG, LOG_RL, "terminal set");
 		if(currentNode == 0)
 			reward += 100;
 		
@@ -274,6 +279,8 @@ RL_Action* RL::Update()
 		RL_Action *bestAction = FindBestAction( state );
 		bestFutureValue = ValueFunction[currentNode]->GetValue(state, bestAction);
 	}
+
+	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() reward set");
 
 	//if complex then update the childs value funtion
 	if(PreviousAction[currentNode]->Complex)
@@ -296,6 +303,8 @@ RL_Action* RL::Update()
 	ValueFunction[currentNode]->SetValue(PreviousState[currentNode],PreviousAction[currentNode], value);
 
 
+	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() value function updated");
+
 	delete PreviousState[currentNode];
 	delete PreviousAction[currentNode];
 	PreviousState[currentNode] = state;
@@ -311,6 +320,7 @@ RL_Action* RL::Update()
 		}
 		else
 		{
+			ai->utility->Log(LOG_DEBUG, LOG_RL, "changing to parent: %d",ParentNode[currentNode]);
 			currentNode = ParentNode[currentNode];//parentNode
 			return Update();//recursive call
 		}

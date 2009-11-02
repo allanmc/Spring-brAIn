@@ -94,6 +94,7 @@ namespace brainSpace {
 		{
 			Action = action;
 			ID = id;
+			Complex = complex;
 		}
 		
 	};
