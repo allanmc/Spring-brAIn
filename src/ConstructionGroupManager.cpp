@@ -70,6 +70,11 @@ int ConstructionGroupManager::DelegateBuildOrder(SBuildUnitCommand order)
 ///tells the group that a given unit have gone idle
 void ConstructionGroupManager::UnitIdle( Unit* unit )
 {
+	ai->utility->Log(ALL, MISC, "ConstructionGroupManager::UnitIdle()");
+	if (UnitGroups.size()==0)
+	{
+		return;
+	}
 	UnitGroups[0]->SetAvailable();
 }
 

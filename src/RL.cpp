@@ -1,149 +1,51 @@
 #include "RL.h"
 
-
-
 using namespace brainSpace;
 using namespace std;
 using namespace springai;
 
 RL::RL( AIClasses* aiClasses)
-{	
-	ai = aiClasses;
+{
+	vector<float> f;
 	
-	currentNode = 0;
+	ai = aiClasses;
 
-	for(int i = 0; i < RL_NUM_NODES; i++)
-	{
-		PreviousState[i] = NULL;
-		PreviousAction[i] = NULL;
-	}
-
-	ValueFunction[0] = new RL_Q(ai,2*2/*states*/,2/*actions*/); //root
-	ValueFunction[1] = new RL_Q(ai,RL_LAB_INDEX*RL_PLANT_INDEX/*states*/,2/*actions*/); //Factory
-	ValueFunction[2] = new RL_Q(ai,RL_SOLAR_INDEX*RL_MEX_INDEX/*states*/,2/*actions*/); //Resource
+	ValueFunction = new RL_Q(	ai,
+								RL_PLANT_INDEX*RL_LAB_INDEX*RL_MEX_INDEX*RL_SOLAR_INDEX,
+								RL_ACTION_INDEX,
+								DataDirs::GetInstance(ai->callback)->GetWriteableDir());
 
 	ParentNode[0] = -1; //no parent
 	ParentNode[1] = 0;
 	ParentNode[2] = 0;
 
 	Epsilon = 9;
+<<<<<<< HEAD
 	LoadFromFile();
 
 	totalReward = 0.0;
 	goalAchieved = false;
 
 	loopCounter = 0;
+=======
+	PreviousState = NULL;
+	PreviousAction = NULL;
+>>>>>>> 996abe9cf5e17714255e2eb1b4a657304a2fddc9
 }
 
 RL::~RL()
 {
-	SaveToFile();
-	for ( int i = 0 ; i < 3 ; i++ )
-	{
-		delete ValueFunction[i];
-		delete PreviousAction[i];
-		delete PreviousState[i];
-	}
-	if (goalAchieved)
-	{
-		ai->utility->ChatMsg("RL goal achieved with total reward: %f", totalReward);
-	} 
-	else
-	{
-		ai->utility->ChatMsg("RL goal NOT achieved, but total reward is: %f", totalReward);
-	}
 }
 
-void RL::LoadFromFile()
+RL_State* RL::GetState()
 {
-	const char* dir = ai->callback->GetDataDirs()->GetWriteableDir();
+	int solarCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName( "armsolar" );
+	int mexCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName( "armmex" );
+	int labCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName( "armlab" );
+	int plantCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName( "armvp" );
 
-	char *path = new char[200];
-	strcpy(path, dir);
-	strcat(path, "qh.bin");
-
-	FILE* fp = NULL;
-	fp = fopen( path, "rb" );
-	if( fp != NULL )
-	{
-		fclose( fp );
-		//load stuff
-
-		FileHeader fileHeader;
-		ifstream *readFile = new ifstream(path, ios::binary | ios::in);
-		
-		ai->utility->Log(ALL, LOG_RL, "I am going to read RL file!");
-		
-		readFile->read( (char*)&fileHeader, sizeof(FileHeader) );
-		if (fileHeader.header[0]==FILE_HEADER[0] &&
-			fileHeader.header[1]==FILE_HEADER[1] &&
-			fileHeader.type==1)
-		{
-			for(int i = 0 ; i < fileHeader.numQTables; i++)
-			{
-				ValueFunction[i]->LoadFromFile(readFile);
-			}
-		}
-		delete readFile;
-	}
-	else
-	{
-		ValueFunction[0]->Clear();
-		ValueFunction[1]->Clear();
-		ValueFunction[2]->Clear();
-	}
-	delete[] path;
-}
-
-void RL::SaveToFile()
-{
-	const char* dir = ai->callback->GetDataDirs()->GetWriteableDir();
-
-	char *path = new char[200];
-	strcpy(path, dir);
-	strcat(path, "qh.bin");
-
-	ofstream *file = new ofstream(path, ios::binary | ios::out);
-
-	FileHeader fileHeader;
-
-	fileHeader.header[0] = FILE_HEADER[0];
-	fileHeader.header[1] = FILE_HEADER[1];
-	fileHeader.numQTables = 3;
-	fileHeader.type = 1;
-
-
-	file->write( (char*)&fileHeader, sizeof(fileHeader) );
-
-	for(int i = 0; i< fileHeader.numQTables; i++)
-	{
-		ValueFunction[i]->SaveToFile(file);
-	}
-
-	file->flush();
-	file->close();
-	delete[] path;
-	delete file;
-}
-
-RL_State* RL::GetState(int node)
-{
-	RL_State* state;
-	switch(node)
-	{
-	case 0:
-		state = new RL_State_Root(ai);
-		break;
-	case 1:
-		state = new RL_State_Factory(ai);
-		break;
-	case 2:
-		state = new RL_State_Resource(ai);
-		break;
-	default:
-		state = NULL;
-	}
-
+	RL_State *state = new RL_State( ai, plantCount, labCount,solarCount,mexCount);
+	ai->utility->Log( ALL, LOG_RL, "Solar: %d. Lab: %d. Mex: %d. Plant: %d. State: %d", solarCount, labCount, mexCount, plantCount, state->GetID() );
 	return state;
 }
 
@@ -172,15 +74,15 @@ RL_Action *RL::FindBestAction( RL_State* state )
 
 	RL_Action *action = stateActions[0]; //unitdefID
 
-	float bestValue = ValueFunction[currentNode]->GetValue(state, action);
+	float bestValue = ValueFunction->GetValue(state, action);
 
 	vector<RL_Action*>::iterator it;
 	for ( it = stateActions.begin()+1 ; it != stateActions.end() ; it++ )
 	{
 		RL_Action *tempAction = (RL_Action*)(*it);
-		if ( ValueFunction[currentNode]->GetValue(state, tempAction) > bestValue )
+		if ( ValueFunction->GetValue(state, tempAction) > bestValue )
 		{
-			bestValue = ValueFunction[currentNode]->GetValue(state, tempAction);
+			bestValue = ValueFunction->GetValue(state, tempAction);
 			action = tempAction;
 		}
 	}
@@ -188,6 +90,7 @@ RL_Action *RL::FindBestAction( RL_State* state )
 	return action;
 }
 
+<<<<<<< HEAD
 RL_Action* RL::SafeNextAction(RL_State *state)
 {
 	RL_State *tmpCurrentState = state;
@@ -262,13 +165,31 @@ RL_Action* RL::Update()
 	float reward = -(ai->frame - PreviousFrame[currentNode])/30;
 	float bestFutureValue;
 	if ( state->IsTerminal() )
+=======
+RL_Action *RL::Update( )
+{
+	bool terminal = false;
+	RL_State *state = GetState();
+	RL_Action *nextAction = FindNextAction( state );
+	RL_Action *bestAction = FindBestAction( state );
+
+	if ( PreviousState == NULL )
 	{
-		if(currentNode == 0)
-			reward += 100;
-		
+		PreviousState = state;
+		PreviousAction = nextAction;
+		PreviousFrame = ai->frame;
+		return nextAction;
+	}
+
+	int reward = -(ai->frame - PreviousFrame)/30;
+	if ( state->LabCount == 4 )
+>>>>>>> 996abe9cf5e17714255e2eb1b4a657304a2fddc9
+	{
+		reward += 100;
 		terminal = true;
 		bestFutureValue = 0;//no future actions to take
 	}
+<<<<<<< HEAD
 	else
 	{
 		RL_Action *bestAction = FindBestAction( state );
@@ -329,3 +250,24 @@ RL_Action* RL::Update()
 	}
 }
 
+=======
+
+	float value = ValueFunction->GetValue(PreviousState,PreviousAction) 
+		+ ALPHA*(
+			reward + GAMMA*ValueFunction->GetValue(state, bestAction) 
+			- ValueFunction->GetValue(PreviousState,PreviousAction) );
+
+	ValueFunction->SetValue(PreviousState,PreviousAction, value);
+	PreviousState = state;
+	PreviousAction = nextAction;
+	PreviousFrame = ai->frame;
+
+	ValueFunction->SaveToFile();//move to terminal later
+	if ( terminal )
+	{
+		return new RL_Action(-1,-1);//MEANS THAT YOU SHOULD STOP NOW!!
+	}
+	return nextAction;
+	
+}
+>>>>>>> 996abe9cf5e17714255e2eb1b4a657304a2fddc9

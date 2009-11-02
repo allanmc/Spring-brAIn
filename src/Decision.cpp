@@ -77,7 +77,7 @@ void Decision::UnitFinished(int unit)
 {
 	Unit * u = Unit::GetInstance(ai->callback,unit);
 	
-	ai->utility->Log(LOG_DEBUG, EVENT, "Unit finished, \"%s\", pos:%f,%f", u->GetDef()->GetName(), u->GetPos().x, u->GetPos().z);
+	ai->utility->ChatMsg("Unit finished, \"%s\", pos:%f,%f", u->GetDef()->GetName(), u->GetPos().x, u->GetPos().z);
 	UnitDef * ud = u->GetDef();
 	if(ud->GetSpeed() > 0)
 	{
@@ -114,18 +114,16 @@ void Decision::UnitFinished(int unit)
 			c.facing = 0;
 			c.options = 0;
 			gc->ErectBuilding( c );
+			ai->utility->ChatMsg( "RL: Building unit with unitdef: %d", action->UnitDefID );
 		}
 		else 
 		{
 			ai->utility->ChatMsg( "we have reached our goal!!" );
 			//ai->utility->Suicide();
-			ai->utility->ResetGame(&rl);
-			resettingGame = true;
+			Reset();
 		}
 		ai->utility->ChatMsg( "RL: Building unit with unitdef: %d", action->Action );
 	}
-	
-
 }
 
 ///called when one of our units are destoyed
@@ -257,29 +255,37 @@ void Decision::UpdateFrindlyPositions()
 	}
 }
 
+void Decision::Reset()
+{
+	resettingGame = true;
+	ai->utility->ResetGame(&rl);
+	delete(ai->knowledge);
+	ai->knowledge = new Knowledge( ai );
+	delete(ai->utility);
+	ai->utility = new Utility( ai );
+	delete(ai->math);
+	ai->math = new BrainMath( ai );
+	delete(gc);
+	gc = new GroupController( ai );
+	delete(bc);
+	bc = new BuildingController( ai );
+}
+
 void Decision::Update(int frame)
 {
 	//ai->utility->Log(ALL, MISC, "Currentframe: %i", frame);
 	
 	if (resettingGame) 
 	{
+		ai->utility->Log(ALL, MISC, "Hmmm1");
 		vector<Unit*> units = ai->callback->GetFriendlyUnits();
-		ai->utility->Log(ALL, MISC, "Checking if new commander is in position X:(%f == %f), Z:(%f == %f)", units[0]->GetPos().x, ai->callback->GetMap()->GetStartPos().x, units[0]->GetPos().z, ai->callback->GetMap()->GetStartPos().z);
+		ai->utility->Log(ALL, MISC, "Hmmm2");
+		ai->utility->Log(ALL, MISC, "Checking if new commander is in position X:(%f == %f), Z:(%f == %f), units: %i", units[0]->GetPos().x, ai->callback->GetMap()->GetStartPos().x, units[0]->GetPos().z, ai->callback->GetMap()->GetStartPos().z, units.size());
 		if (units.size()==1 &&
 			abs(units[0]->GetPos().x - ai->callback->GetMap()->GetStartPos().x)<50 &&
 			abs(units[0]->GetPos().z - ai->callback->GetMap()->GetStartPos().z)<50)
 		{
 			resettingGame = false;
-			delete(ai->knowledge);
-			ai->knowledge = new Knowledge( ai );
-			delete(ai->utility);
-			ai->utility = new Utility( ai );
-			delete(ai->math);
-			ai->math = new BrainMath( ai );
-			delete(gc);
-			gc = new GroupController( ai );
-			delete(bc);
-			bc = new BuildingController( ai );
 			UnitFinished(units[0]->GetUnitId());
 		}
 		return;
@@ -293,6 +299,7 @@ void Decision::Update(int frame)
 	}
 	if(frame == 1)
 	{	
+		ai->utility->ChatMsg( "I am now in frame 1!" );
 		ai->utility->LaterInitialization();
 		//ai->knowledge->mapInfo->scoutMap->DrawGrid();
 
@@ -550,6 +557,7 @@ void Decision::Update(int frame)
 
 void Decision::UnitIdle( int id )
 {
+	ai->utility->Log(ALL, MISC, "Decision::UnitIdle()");
 	Unit* u = Unit::GetInstance( ai->callback, id );
 	gc->UnitIdle( u );
 	//BuildSomethingUsefull();

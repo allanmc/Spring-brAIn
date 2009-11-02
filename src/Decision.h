@@ -36,7 +36,7 @@ public:
 	Decision(AIClasses* aiClasses);
 	~Decision(void);
 private:
-
+	void Reset();
 	BattlesInfo* BattleInfoInstance;
 	AIClasses* ai;
 	BayesianNetwork *bn;

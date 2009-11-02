@@ -22,9 +22,6 @@ Utility::Utility( AIClasses* aiClasses )
 	
 	InitializeOptions();
 	isMetalMap = false;
-	mexDef = GetUnitDef("armmex");
-	solarDef = GetUnitDef("armsolar");
-	lltDef = GetUnitDef("armllt");
 
 	safePosition = (SAIFloat3){ai->callback->GetMap()->GetWidth()*8/2, 0.0, ai->callback->GetMap()->GetHeight()*8/2};
 }
@@ -48,6 +45,9 @@ bool Utility::IsDebug()
 
 void Utility::LaterInitialization()
 {
+	mexDef = GetUnitDef("armmex");
+	solarDef = GetUnitDef("armsolar");
+	lltDef = GetUnitDef("armllt");
 	Log(ALL, MISC, "LaterInitialization()");
 	isMetalMap = ai->callback->GetMap()->GetResourceMapSpotsPositions(*ai->utility->GetResource("Metal"), NULL).size() > 200;
 }
@@ -180,18 +180,18 @@ void Utility::GoTo(int unitId, SAIFloat3 pos)
 {
 	ai->utility->Log(ALL, MISC, "GoTo: I am now going to find a path..");
 	Unit* unit = Unit::GetInstance(ai->callback, unitId);
-	vector<SAIFloat3> wayPoints;
+	list<SAIFloat3> wayPoints;
 	bool goToward = true;
 	if (ai->utility->EuclideanDistance(unit->GetPos(), pos)<50)
 	{
 		//wayPoints.push_back(pos);
-		wayPoints = ai->knowledge->mapInfo->pathfindingMap->FindPathToSimple(unit->GetDef(), unit->GetPos(), GetSafePosition());
+		wayPoints = ai->knowledge->mapInfo->pathfindingMap->FindPathTo(unit->GetDef(), unit->GetPos(), GetSafePosition());
 		ai->utility->Log(ALL, MISC, "GoTo: I am going backwards!");
 		goToward = false;
 	}
 	else
 	{
-		wayPoints = ai->knowledge->mapInfo->pathfindingMap->FindPathToSimple(unit->GetDef(), unit->GetPos(), pos);
+		wayPoints = ai->knowledge->mapInfo->pathfindingMap->FindPathTo(unit->GetDef(), unit->GetPos(), pos);
 		ai->utility->Log(ALL, MISC, "GoTo: I am going towards buildlocation!");
 	}
 
@@ -200,14 +200,15 @@ void Utility::GoTo(int unitId, SAIFloat3 pos)
 	moveCommand.options = 0;
 	moveCommand.unitId = unitId;
 	int toWalk = 0;
-	for (int i = 0; i < wayPoints.size(); i++)
+	//for (int i = 0; i < wayPoints.size(); i++)
+	for (list<SAIFloat3>::const_iterator it = wayPoints.begin(); it != wayPoints.end(); ++it)
 	{
 		
-		if ( (goToward && (unit->GetDef()->GetBuildDistance() > ai->utility->EuclideanDistance(wayPoints[i], pos))) ||
-			 (!goToward && (unit->GetDef()->GetBuildDistance() < ai->utility->EuclideanDistance(wayPoints[i], pos))) )
+		if ( (goToward && (unit->GetDef()->GetBuildDistance() > ai->utility->EuclideanDistance(*it, pos))) ||
+			 (!goToward && (unit->GetDef()->GetBuildDistance() < ai->utility->EuclideanDistance(*it, pos))) )
 			break; //Ignore moves that goes unnecesarry close to the building-spot
 		toWalk++;
-		moveCommand.toPos = wayPoints[i];
+		moveCommand.toPos = *it;
 		moveCommand.options = UNIT_COMMAND_OPTION_SHIFT_KEY;
 		ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &moveCommand);
 	}
