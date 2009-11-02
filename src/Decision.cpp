@@ -58,8 +58,8 @@ Decision::~Decision(void)
 	rl = NULL;
 	delete BattleInfoInstance;
 	BattleInfoInstance = NULL;
-	delete bn;
-	bn = NULL;
+	//delete bn;
+	//bn = NULL;
 }
 
 ///called when a unit enters the world
