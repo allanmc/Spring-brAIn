@@ -27,3 +27,15 @@ vector<RL_Action*> RL_State::GetActions()
 {
 	return Actions;
 }
+
+void RL_State::DeleteAction(RL_Action* action)
+{
+	for (int i = 0; i < Actions.size(); i++)
+	{
+		if(Actions[i]->ID == action->ID)
+		{
+			delete(Actions[i]);
+			Actions.erase(Actions.begin()+i);
+		}
+	}
+}

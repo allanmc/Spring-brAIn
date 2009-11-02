@@ -16,6 +16,7 @@ namespace brainSpace {
 		int GetID();
 
 		vector<RL_Action*> GetActions();
+		void DeleteAction(RL_Action* action);
 		virtual bool IsTerminal()=0;
 	protected:
 

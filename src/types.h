@@ -87,12 +87,12 @@ namespace brainSpace {
 	class RL;
 	struct RL_Action
 	{
-		int UnitDefID;
+		int Action;
 		int ID;
 		bool Complex;
-		RL_Action( int unitDefID, int id, bool complex)
+		RL_Action( int action, int id, bool complex)
 		{
-			UnitDefID = unitDefID;
+			Action = action;
 			ID = id;
 			Complex = complex;
 		}

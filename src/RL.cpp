@@ -182,7 +182,90 @@ RL_Action *RL::FindBestAction( RL_State* state )
 	return action;
 }
 
+RL_Action* RL::SafeNextAction(RL_State *state)
+{
+	RL_State *tmpCurrentState = state;
+	int tmpCurrentNode = CurrentNode;
+
+	while(state->GetActions().size() > 0)
+	{
+		RL_Action *nextAction = FindNextAction( state );
+		if(nextAction->Complex)
+		{
+			tmpCurrentState = GetState(nextAction->Action);
+			if(tmpCurrentState->GetActions().size() == 0)
+			{
+				state->DeleteAction(nextAction);
+			}
+			else
+			{
+				return nextAction;
+				/*
+				//all good... go down in the tree!
+				CurrentNode = nextAction->Action();
+				PreviousAction[CurrentNode] = NULL;
+				PreviousFrame = 0;
+				PreviousState = NULL;
+				return TakeAction(tmpCurrentState);*/
+			}
+		}
+		else
+		{
+			return nextAction;
+		}
+	}
+	return NULL;
+}
+
+void RL::TakeAction(RL_Action* action)
+{
+	//should only be called with complex actions!
+	if(!action->Complex)
+		return;
+	
+	CurrentNode = nextAction->Action();
+	PreviousAction[CurrentNode] = NULL;
+	PreviousFrame = 0;
+	PreviousState = NULL;
+}
+
 RL_Action* RL::Update()
+{
+	bool terminal = false;
+	RL_State *state = GetState(currentNode);
+	RL_Action *nextAction = SafeNextAction(state);
+	
+	//Start state
+	if ( PreviousState[currentNode] == NULL )
+	{
+		PreviousState[currentNode] = state;
+		PreviousAction[currentNode] = nextAction;
+		PreviousFrame[currentNode] = ai->frame;
+		if(nextAction->Complex)
+		{
+			TakeAction(nextAction);
+			return Update();
+		}
+		else
+			return nextAction;
+	}//else
+
+	//Reward
+	float reward = -(ai->frame - PreviousFrame[currentNode])/30;
+	if ( state->IsTerminal() )
+	{
+		if(currentNode == 0)
+			reward += 100;
+		
+		terminal = true;
+	}
+	totalReward += reward;
+
+
+
+}
+
+RL_Action* RL::UpdateBackup()
 {
 	ai->utility->Log( ALL, LOG_RL, "update node:%d", currentNode );
 	/*if(currentNode != 0)
@@ -208,7 +291,7 @@ RL_Action* RL::Update()
 	}
 
 
-	int reward = -(ai->frame - PreviousFrame[currentNode])/30;
+	float reward = -(ai->frame - PreviousFrame[currentNode])/30;
 	if ( state->IsTerminal() )
 	{
 		if(currentNode == 0)

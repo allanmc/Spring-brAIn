@@ -48,6 +48,7 @@ namespace brainSpace {
 		bool goalAchieved;
 		int Epsilon;
 		RL_State* GetState(int node);
+		RL_Action* SafeNextAction(RL_Action *action);
 		
 		void LoadFromFile();
 		void SaveToFile();

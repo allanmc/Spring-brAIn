@@ -107,7 +107,7 @@ void Decision::UnitFinished(int unit)
 	if ( action->ID != -1 )
 	{
 		SBuildUnitCommand c;
-		c.toBuildUnitDefId = action->UnitDefID;
+		c.toBuildUnitDefId = action->Action;
 		c.timeOut = 10000000;
 		c.facing = 0;
 		c.options = 0;
