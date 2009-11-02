@@ -114,7 +114,7 @@ void Decision::UnitFinished(int unit)
 			c.facing = 0;
 			c.options = 0;
 			gc->ErectBuilding( c );
-			ai->utility->ChatMsg( "RL: Building unit with unitdef: %d", action->UnitDefID );
+			ai->utility->ChatMsg( "RL: Building unit with unitdef: %d", action->Action );
 		}
 		else 
 		{
