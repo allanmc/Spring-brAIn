@@ -21,7 +21,8 @@ ArmyInfo::ArmyInfo( AIClasses* aiClasses )
 
 ArmyInfo::~ArmyInfo()
 {
-	delete(quadTree);
+	delete quadTree;
+	quadTree = NULL;
 }
 
 void ArmyInfo::Print()

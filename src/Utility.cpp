@@ -377,7 +377,8 @@ void Utility::ResetGame(RL **rl)
 	Log(IMPORTANT, MISC, "brAIn is now resetting..."); 
 
 	Log(IMPORTANT, MISC, "Resetting RL...");
-	delete(*rl);
+	delete *rl;
+	*rl = NULL;
 	*rl = new RL( ai );//FY!
 
 	Log(IMPORTANT, MISC, "Creating new commander..."); 

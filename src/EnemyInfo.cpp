@@ -14,6 +14,8 @@ EnemyInfo::EnemyInfo( AIClasses* aiClasses )
 
 EnemyInfo::~EnemyInfo()
 {
-	delete(armyInfo);
-	delete(baseInfo);
+	delete armyInfo;
+	armyInfo = NULL;
+	delete baseInfo;
+	baseInfo = NULL;
 }

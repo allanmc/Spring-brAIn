@@ -191,10 +191,14 @@ bool QuadTreeNode::TryToMergeToLeaf()
 	if (childCount<=BUCKET_SIZE/2)
 	{
 		UnitsContained = innerNodes;
-		delete(Children[0]);
-		delete(Children[1]);
-		delete(Children[2]);
-		delete(Children[3]);
+		delete Children[0];
+		Children[0] = NULL;
+		delete Children[1];
+		Children[1] = NULL;
+		delete Children[2];
+		Children[2] = NULL;
+		delete Children[3];
+		Children[3] = NULL;
 		IsLeaf = true;
 		return true;
 	}

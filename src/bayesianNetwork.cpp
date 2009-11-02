@@ -21,7 +21,8 @@ BayesianNetwork::BayesianNetwork( AIClasses *aiClasses )
 
 BayesianNetwork::~BayesianNetwork()
 {
-	delete(solution);
+	delete solution;
+	solution = NULL;
 }
 
 void BayesianNetwork::Propagate()

@@ -25,8 +25,10 @@ BrainMap::BrainMap( AIClasses* aiClasses, int resolution )
 
 BrainMap::~BrainMap()
 {
-	delete[](MapArray);
-	delete(mapData);
+	delete[] MapArray;
+	MapArray = NULL;
+	delete mapData;
+	mapData = NULL;
 }
 
 ///Should be overwrited in sub-classes and be used for keeping the map up to date.
