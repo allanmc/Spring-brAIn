@@ -277,6 +277,7 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 		return true;
 	}
 	ai->utility->Log(ALL, MISC, "BuildBlocksSelf check 3 done");
+	ai->utility->Log(ALL, MISC, "Commander: %s", commander->GetDef()->GetName());
 
 	if ( !ai->knowledge->mapInfo->pathfindingMap->PathExists(commander->GetDef(), fromPos, pos) )
 	{
