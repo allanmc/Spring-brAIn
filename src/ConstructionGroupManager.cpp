@@ -62,6 +62,12 @@ int ConstructionGroupManager::DelegateBuildOrder(SBuildUnitCommand order)
 	}
 	//No groups were idle so queue the build order.
 	//TODO: do this smarter -- check which group becomes idle soonest (aggregated remaining build time something something)
+	
+	if (UnitGroups.size()==0)
+	{
+		ai->utility->ChatMsg( "Could not queue order, no group " );
+		return 0;
+	}
 	ai->utility->ChatMsg( "Quing order, no idle group " );
 	UnitGroups[0]->QueueBuildOrder( order );
 	
@@ -74,6 +80,7 @@ void ConstructionGroupManager::UnitIdle( Unit* unit )
 	ai->utility->Log(ALL, MISC, "ConstructionGroupManager::UnitIdle()");
 	if (UnitGroups.size()==0)
 	{
+		ai->utility->ChatMsg( "Could not set unit idle, no group " );
 		return;
 	}
 	UnitGroups[0]->SetAvailable();
@@ -82,5 +89,10 @@ void ConstructionGroupManager::UnitIdle( Unit* unit )
 ///
 bool ConstructionGroupManager::IsIdle()
 {
+	if (UnitGroups.size()==0)
+	{
+		ai->utility->ChatMsg( "Could not chekc IsIdle(), no group " );
+		return false;
+	}
 	return UnitGroups[0]->IsIdle();
 }
