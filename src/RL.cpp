@@ -240,6 +240,7 @@ RL_Action* RL::Update()
 
 	bool terminal = false;
 	RL_State *state = GetState(currentNode);
+	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() fail? state found");
 	RL_Action *nextAction = SafeNextAction(state);
 	
 	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() nextAction set");

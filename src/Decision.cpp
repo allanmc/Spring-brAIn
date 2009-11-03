@@ -132,7 +132,6 @@ void Decision::UpdateRL()
 			//ai->utility->Suicide();
 			Reset();
 		}
-		ai->utility->ChatMsg( "RL: Building unit with unitdef: %d", action->Action );
 	}
 }
 
