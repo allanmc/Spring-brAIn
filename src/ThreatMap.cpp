@@ -19,7 +19,7 @@ ThreatMap::~ThreatMap()
 ///updates the map depending on all friendly units DPS and range, also draws the content od the cells
 void ThreatMap::Update()
 {
-	ai->callback->GetMap()->GetSlopeMap();
+	//ai->callback->GetMap()->GetSlopeMap();
 	bool printArray = false;
 	map<int, struct UnitInformationContainer> enemyUnits = ai->knowledge->enemyInfo->armyInfo->GetUnits();
 	Reset();
