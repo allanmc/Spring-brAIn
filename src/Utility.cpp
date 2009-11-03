@@ -45,6 +45,9 @@ bool Utility::IsDebug()
 
 void Utility::LaterInitialization()
 {
+	ai->utility->Log(ALL, MISC, "Calling GetUnitDefs");
+	defs = ai->callback->GetUnitDefs();
+	ai->utility->Log(ALL, MISC, "Done calling GetUnitDefs");
 	mexDef = GetUnitDef("armmex");
 	solarDef = GetUnitDef("armsolar");
 	lltDef = GetUnitDef("armllt");
@@ -147,8 +150,6 @@ UnitDef* Utility::GetUnitDef(const char* unitDefName)
 {
 	if(ai->frame > 0)
 	{
-		vector<UnitDef*> defs = ai->callback->GetUnitDefs();
-
 		for ( int i = 0 ; i < (int)defs.size() ; i++ )
 		{
 			if ( strcmp( defs[i]->GetName(), unitDefName ) == 0 )
@@ -156,6 +157,10 @@ UnitDef* Utility::GetUnitDef(const char* unitDefName)
 				return defs[i];
 			}
 		}
+	}
+	else
+	{
+		Log(ALL, MISC, "Could not GetUnitDef, because frame==0, CRITICAL ERROR!");
 	}
 	return NULL;
 }
