@@ -166,7 +166,9 @@ RL_Action *RL::FindNextAction( RL_State* state )
 
 RL_Action *RL::FindBestAction( RL_State* state )
 {
+	ai->utility->Log(ALL, MISC, "I am now going to die...");
 	vector<RL_Action*> stateActions = state->GetActions();
+	ai->utility->Log(ALL, MISC, "Didn't i die!?!?");
 
 	RL_Action *action = stateActions[0]; //unitdefID
 
