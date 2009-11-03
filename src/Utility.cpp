@@ -428,5 +428,7 @@ void Utility::Suicide()
 		command.unitId = (*it)->GetUnitId();
 		command.timeOut = 99999;
 		ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_UNIT_SELF_DESTROY, &command);
+		command.options = UNIT_COMMAND_OPTION_SHIFT_KEY;
+		ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_UNIT_SELF_DESTROY, &command);
 	}
 }
