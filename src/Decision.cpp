@@ -67,6 +67,11 @@ Decision::~Decision(void)
 ///@warning the builderID may not corrospond to a unit
 void Decision::UnitCreated(int unitID, int builderID)
 {
+	if (resettingGame)
+	{
+		return;
+	}
+
 	Unit * u = Unit::GetInstance(ai->callback,unitID);
 	Unit * builder = ( builderID ? Unit::GetInstance(ai->callback,builderID) : NULL);
 	
@@ -80,6 +85,11 @@ void Decision::UnitCreated(int unitID, int builderID)
 ///@param unit the ID of the unit
 void Decision::UnitFinished(int unit)
 {
+	if (resettingGame)
+	{
+		return;
+	}
+
 	Unit * u = Unit::GetInstance(ai->callback,unit);
 	
 	ai->utility->ChatMsg("Unit finished, \"%s\", pos:%f,%f", u->GetDef()->GetName(), u->GetPos().x, u->GetPos().z);
@@ -198,6 +208,11 @@ void Decision::UnitDestroyed(int unit, int attacker)
 ///called when we can see an enemy unit that we could not see before.
 void Decision::EnemyEnterLOS(int enemy)
 {
+	if (resettingGame)
+	{
+		return;
+	}
+
 	gc->AttackWithGroup(enemy);
 
 	Unit * unit = Unit::GetInstance(ai->callback,enemy);
@@ -221,6 +236,10 @@ void Decision::EnemyEnterLOS(int enemy)
 ///called when an enemy have been destroyed
 void Decision::EnemyDestroyed(int enemy, int attacker)
 {
+	if (resettingGame)
+	{
+		return;
+	}
 	//good job!
 	Unit* unit = Unit::GetInstance(ai->callback, enemy);
 	Unit* attackerUnit = Unit::GetInstance( ai->callback, attacker );
@@ -619,6 +638,10 @@ void Decision::Update(int frame)
 
 void Decision::UnitIdle( int id )
 {
+	if (resettingGame)
+	{
+		return;
+	}
 	ai->utility->Log(ALL, MISC, "Decision::UnitIdle()");
 	Unit* u = Unit::GetInstance( ai->callback, id );
 	gc->UnitIdle( u );
@@ -693,6 +716,10 @@ void Decision::BuildAttackUnit() {
 
 void Decision::UnitDamaged( int unitID, int attacker )
 {
+	if (resettingGame)
+	{
+		return;
+	}
 	Unit* u1 = Unit::GetInstance( ai->callback, unitID );
 	Unit* u2 = Unit::GetInstance( ai->callback, unitID );
 	BattleInfoInstance->UnitDamaged( u1, u2 );
@@ -700,6 +727,10 @@ void Decision::UnitDamaged( int unitID, int attacker )
 
 void Decision::EnemyDamaged( int attacker, int enemy )
 {
+	if (resettingGame)
+	{
+		return;
+	}
 	Unit* attackerUnit = Unit::GetInstance( ai->callback, attacker );
 	Unit* enemyUnit = Unit::GetInstance( ai->callback, enemy );
 	BattleInfoInstance->EnemyDamaged( attackerUnit, enemyUnit );

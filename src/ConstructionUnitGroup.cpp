@@ -116,7 +116,7 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	}
 
 	if (figureId == 0)
-		figureId = ai->utility->DrawCircle(order.buildPos, 75, figureId);
+		figureId = ai->utility->DrawCircle(order.buildPos, 50, figureId);
 	else
 		ai->utility->DrawCircle(order.buildPos, 50, figureId);
 
