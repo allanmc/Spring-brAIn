@@ -303,6 +303,7 @@ void Decision::Reset()
 {
 	resettingGame = true;
 	waitingForCommander = false;
+	extraMoveSent = false;
 	vector<Unit*> units = ai->callback->GetFriendlyUnits();
 	remainingUnits = units.size();
 	ai->utility->ResetGame(&rl);
@@ -343,6 +344,18 @@ void Decision::Update(int frame)
 				ai->utility->LaterInitialization();
 				ai->knowledge->mapInfo->resourceMap->Update();
 				UnitFinished(ai->commander->GetUnitId());
+			}
+			else if (	!extraMoveSent &&
+						ai->commander->GetPos().x == 10 &&
+						ai->commander->GetPos().z == 10 ) //If we are waiting for the commander, but he hasn't move, then ask him again
+			{
+				SMoveUnitCommand moveCommand;
+				moveCommand.toPos = ai->callback->GetMap()->GetStartPos();
+				moveCommand.timeOut = 100000000;
+				moveCommand.options = 0;
+				moveCommand.unitId = ai->commander->GetUnitId();
+				ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &moveCommand);
+				extraMoveSent = true;
 			}
 		}
 		/*ai->utility->ChatMsg("Hmm1");

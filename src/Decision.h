@@ -44,6 +44,7 @@ private:
 	RL* rl;
 	bool resettingGame;
 	bool waitingForCommander;
+	bool extraMoveSent;
 	int remainingUnits;
 };
 
