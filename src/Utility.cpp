@@ -383,13 +383,13 @@ void Utility::ResetGame(RL **rl)
 
 	Log(IMPORTANT, MISC, "Creating new commander..."); 
 	//Give me a new commander
-	int newCommanderId = 0;
+	//int newCommanderId = 0;
 	ai->callback->GetCheats()->SetEnabled(true);
 	SGiveMeNewUnitCheatCommand giveUnitOrder;
 	giveUnitOrder.pos = (SAIFloat3){10,ai->callback->GetMap()->GetStartPos().y, 10};
 	giveUnitOrder.unitDefId = ai->utility->GetUnitDef("armcom")->GetUnitDefId();
 	ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_CHEATS_GIVE_ME_NEW_UNIT, &giveUnitOrder);
-	newCommanderId = giveUnitOrder.ret_newUnitId;
+	ai->commander = Unit::GetInstance(ai->callback, giveUnitOrder.ret_newUnitId);
 	ai->callback->GetCheats()->SetEnabled(false);
 	
 	Log(IMPORTANT, MISC, "Telling the new commander to move to startPos");
@@ -397,26 +397,18 @@ void Utility::ResetGame(RL **rl)
 	moveCommand.toPos = ai->callback->GetMap()->GetStartPos();
 	moveCommand.timeOut = 100000000;
 	moveCommand.options = 0;
-	moveCommand.unitId = newCommanderId;
+	moveCommand.unitId = ai->commander->GetUnitId();
 	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &moveCommand);
 
 	Log(IMPORTANT, MISC, "Killing all units besides the commander..."); 
 	//Delete all units besides out new commander
-	vector<Unit*> units = ai->callback->GetFriendlyUnits();
-	vector<Unit*>::iterator it;
-	for(it = units.begin(); it != units.end(); it++)
-	{
-		SSelfDestroyUnitCommand command;
-		command.unitId = (*it)->GetUnitId();
-		if (command.unitId == newCommanderId) continue; //Don't kill out new commander
-		command.timeOut = 99999;
-		ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_UNIT_SELF_DESTROY, &command);
-	}
+	
+	Suicide(ai->commander->GetUnitId(), true);
 
 	Log(IMPORTANT, MISC, "brAIn has been reset!"); 
 }
 
-void Utility::Suicide()
+void Utility::Suicide(int unitToSurvive, bool stopAll)
 {
 	Log(IMPORTANT, MISC, "Bye Cruel world!!...."); 
 	vector<Unit*> units = ai->callback->GetFriendlyUnits();
@@ -424,9 +416,19 @@ void Utility::Suicide()
 	vector<Unit*>::iterator it;
 	for(it = units.begin(); it != units.end(); it++)
 	{
+		if ((*it)->GetUnitId() == unitToSurvive) continue; //Don't kill our new commander
+		/*if (stopAll)
+		{
+			SStopUnitCommand stopCommand;
+			stopCommand.timeOut = 99999;
+			stopCommand.unitId = (*it)->GetUnitId();
+			ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_UNIT_STOP, &stopCommand);
+		}*/
+		
 		SSelfDestroyUnitCommand command;
 		command.unitId = (*it)->GetUnitId();
 		command.timeOut = 99999;
+		command.options = ( stopAll ? 0 : UNIT_COMMAND_OPTION_SHIFT_KEY );
 		ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_UNIT_SELF_DESTROY, &command);
 	}
 }

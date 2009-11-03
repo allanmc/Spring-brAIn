@@ -40,9 +40,6 @@ namespace brainSpace
 		///Is the group idle?
 		bool Idle;
 
-		///The commander unit, if it has been added
-		Unit *commander;
-
 		///Svend!
 		AIClasses* ai;
 

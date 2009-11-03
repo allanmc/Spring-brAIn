@@ -79,8 +79,13 @@ namespace brainSpace {
 		Utility *utility;
 		BrainMath* math;
 		int frame;
+		springai::Unit *commander;
+		AIClasses()
+		{
+			commander = NULL;
+		}
 	};
-
+	
 	struct CBoundingBox;
 	class QuadTreeNode;
 	class QuadTree;

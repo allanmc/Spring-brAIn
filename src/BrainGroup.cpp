@@ -10,7 +10,6 @@ BrainGroup::BrainGroup( AIClasses* aiClasses, int groupID )
 	Idle = true;
 	ai = aiClasses;
 	GroupID = groupID;
-	commander = NULL;
 }
 
 BrainGroup::~BrainGroup()
@@ -19,9 +18,9 @@ BrainGroup::~BrainGroup()
 
 void BrainGroup::AddUnit( Unit *unit)
 {
-	if (commander==NULL && unit->GetDef()->IsCommander())
+	if (ai->commander==NULL && unit->GetDef()->IsCommander())
 	{
-		commander = unit;
+		ai->commander = unit;
 	}
 	Units[unit] = true;
 }
