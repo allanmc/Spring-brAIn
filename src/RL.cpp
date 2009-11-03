@@ -189,7 +189,7 @@ RL_Action *RL::FindBestAction( RL_State* state )
 RL_Action* RL::SafeNextAction(RL_State *state)
 {
 	RL_State *tmpCurrentState = state;
-	int tmpCurrentNode = currentNode;
+	//int tmpCurrentNode = currentNode;
 
 	while(state->GetActions().size() > 0)
 	{

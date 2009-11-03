@@ -386,7 +386,7 @@ void Utility::ResetGame(RL **rl)
 	int newCommanderId = 0;
 	ai->callback->GetCheats()->SetEnabled(true);
 	SGiveMeNewUnitCheatCommand giveUnitOrder;
-	giveUnitOrder.pos = (SAIFloat3){10,ai->callback->GetMap()->GetStartPos().y, 10};
+	giveUnitOrder.pos = (SAIFloat3){10,200, 10};
 	giveUnitOrder.unitDefId = ai->utility->GetUnitDef("armcom")->GetUnitDefId();
 	ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_CHEATS_GIVE_ME_NEW_UNIT, &giveUnitOrder);
 	newCommanderId = giveUnitOrder.ret_newUnitId;

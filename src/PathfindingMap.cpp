@@ -141,7 +141,7 @@ void PathfindingMap::RemoveBuilding(Unit* unit)
 
 
 	vector<Unit*> unitsInRange = ai->knowledge->selfInfo->baseInfo->GetUnitsInRange( pos, max( xSize, zSize ) + Resolution );
-	for ( int i = 0 ; i < unitsInRange.size() ; i++ )
+	for ( int i = 0 ; i < (int)unitsInRange.size() ; i++ )
 	{
 		SAIFloat3 unitPos = unitsInRange[i]->GetPos();
 		int unitXsize = unitsInRange[i]->GetDef()->GetXSize()*8;
@@ -161,7 +161,7 @@ void PathfindingMap::RemoveBuilding(Unit* unit)
 			{
 				if ( k > MapHeight || k < 0 || j > MapWidth || j < 0 )
 					continue;
-				for ( int h = 0 ; h < deadBuildingTiles.size() ; h++ )
+				for ( int h = 0 ; h < (int)deadBuildingTiles.size() ; h++ )
 				{
 					if ( deadBuildingTiles[h] == k*MapWidth+j )
 					{
@@ -173,7 +173,7 @@ void PathfindingMap::RemoveBuilding(Unit* unit)
 			}
 		}
 
-		for ( int k = 0 ; k < indicesToDelete.size() ; k++ )
+		for ( int k = 0 ; k < (int)indicesToDelete.size() ; k++ )
 		{
 			//Erase all the selected indices
 			//The index value must be decremented as we iterate through this vector
@@ -181,7 +181,7 @@ void PathfindingMap::RemoveBuilding(Unit* unit)
 		}	
 	}
 
-	for ( int k = 0 ; k < deadBuildingTiles.size() ; k++ )
+	for ( int k = 0 ; k < (int)deadBuildingTiles.size() ; k++ )
 	{
 		int xTile = deadBuildingTiles[k]%MapWidth;
 		int zTile = deadBuildingTiles[k]/MapWidth;

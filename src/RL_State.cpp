@@ -11,7 +11,7 @@ RL_State::RL_State( AIClasses* aiClasses)
 
 RL_State::~RL_State()
 {
-	for (int i = 0; i < Actions.size(); i++)
+	for (int i = 0; i < (int)Actions.size(); i++)
 	{
 		delete(Actions[i]);
 	}
@@ -30,7 +30,7 @@ vector<RL_Action*> RL_State::GetActions()
 
 void RL_State::DeleteAction(RL_Action* action)
 {
-	for (int i = 0; i < Actions.size(); i++)
+	for (int i = 0; i < (int)Actions.size(); i++)
 	{
 		if(Actions[i]->ID == action->ID)
 		{

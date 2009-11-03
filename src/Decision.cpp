@@ -590,11 +590,11 @@ void Decision::BuildSomethingUsefull()
 	{
 		ai->utility->Log(ALL, MISC, "I have absolutely nothing to do now!");
 		UnitDef *armsolar = ai->utility->GetSolarDef();
-		UnitDef *armmex = ai->utility->GetMexDef();
-		UnitDef *armlab = ai->utility->GetUnitDef("armlab");
-		UnitDef *armcom = ai->utility->GetUnitDef("armcom");
-		int isAffordable = 0;
-		ResourceInfo *ri = ai->knowledge->selfInfo->resourceInfo;
+		//UnitDef *armmex = ai->utility->GetMexDef();
+		//UnitDef *armlab = ai->utility->GetUnitDef("armlab");
+		//UnitDef *armcom = ai->utility->GetUnitDef("armcom");
+		//int isAffordable = 0;
+		//ResourceInfo *ri = ai->knowledge->selfInfo->resourceInfo;
 		SBuildUnitCommand buildOrder;
 		buildOrder.timeOut = 10000000;
 		buildOrder.facing = 0;
