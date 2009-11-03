@@ -81,8 +81,23 @@ RL_Action *RL::Update( )
 {
 	bool terminal = false;
 	RL_State *state = GetState();
-	RL_Action *nextAction = FindNextAction( state );
-	RL_Action *bestAction = FindBestAction( state );
+	RL_Action *nextAction = NULL;
+	RL_Action *bestAction = NULL;
+	float bestValue;
+
+	int reward = -(ai->frame - PreviousFrame)/30;
+	if ( state->LabCount == 4 )
+	{
+		reward += 100;
+		terminal = true;
+		bestValue = 0; //no further actions to take
+	}
+	else
+	{
+		nextAction = FindNextAction( state );
+		bestAction = FindBestAction( state );
+		bestValue = ValueFunction->GetValue(state, bestAction);
+	}
 
 	if ( PreviousState == NULL )
 	{
@@ -92,16 +107,9 @@ RL_Action *RL::Update( )
 		return nextAction;
 	}
 
-	int reward = -(ai->frame - PreviousFrame)/30;
-	if ( state->LabCount == 4 )
-	{
-		reward += 100;
-		terminal = true;
-	}
-
 	float value = ValueFunction->GetValue(PreviousState,PreviousAction) 
 		+ ALPHA*(
-			reward + GAMMA*ValueFunction->GetValue(state, bestAction) 
+			reward + GAMMA * bestValue
 			- ValueFunction->GetValue(PreviousState,PreviousAction) );
 
 	ValueFunction->SetValue(PreviousState,PreviousAction, value);
