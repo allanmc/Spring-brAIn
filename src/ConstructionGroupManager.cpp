@@ -11,7 +11,7 @@ ConstructionGroupManager::ConstructionGroupManager( AIClasses* aiClasses )
 
 ConstructionGroupManager::~ConstructionGroupManager()
 {
-	for (int i = 0; i < UnitGroups.size(); i++)
+	for (int i = 0; i < (int)UnitGroups.size(); i++)
 	{
 		delete UnitGroups[i];
 		UnitGroups[i] = NULL;
