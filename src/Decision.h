@@ -43,6 +43,8 @@ private:
 	BayesianNetwork *bn;
 	RL* rl;
 	bool resettingGame;
+	bool waitingForCommander;
+	int remainingUnits;
 };
 
 }

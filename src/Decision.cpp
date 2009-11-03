@@ -138,6 +138,21 @@ void Decision::UpdateRL()
 ///called when one of our units are destoyed
 void Decision::UnitDestroyed(int unit, int attacker)
 {
+	if (resettingGame)
+	{
+		remainingUnits--;
+		//vector<Unit*> units = ai->callback->GetFriendlyUnits();
+		ai->utility->ChatMsg("Units in resetting game check: %i", remainingUnits);
+		if (remainingUnits==0)//Are all old units destroyed now?
+		{
+			waitingForCommander = true;
+		}
+		/*else
+		{
+			ai->utility->Suicide(ai->commander->GetUnitId());
+		}*/
+		return;
+	}
 
 	Unit* destroyee = Unit::GetInstance( ai->callback, unit );
 	Unit* destroyer = Unit::GetInstance( ai->callback, attacker );
@@ -267,6 +282,9 @@ void Decision::UpdateFrindlyPositions()
 void Decision::Reset()
 {
 	resettingGame = true;
+	waitingForCommander = false;
+	vector<Unit*> units = ai->callback->GetFriendlyUnits();
+	remainingUnits = units.size();
 	ai->utility->ResetGame(&rl);
 	delete ai->knowledge;
 	ai->knowledge = NULL;
@@ -275,14 +293,18 @@ void Decision::Reset()
 	ai->utility = NULL;
 	ai->utility = new Utility( ai );
 	delete ai->math;
+	ai->utility->ChatMsg("Deleted ai->math");
 	ai->math = NULL;
 	ai->math = new BrainMath( ai );
 	delete gc;
+	ai->utility->ChatMsg("Deleted gc");
 	gc = NULL;
 	gc = new GroupController( ai );
 	delete bc;
+	ai->utility->ChatMsg("Deleted bc");
 	bc = NULL;
 	bc = new BuildingController( ai );
+	ai->utility->ChatMsg("Reset() done");
 }
 
 void Decision::Update(int frame)
@@ -291,20 +313,39 @@ void Decision::Update(int frame)
 	
 	if (resettingGame) 
 	{
-		ai->utility->Log(ALL, MISC, "Hmmm1");
-		vector<Unit*> units = ai->callback->GetFriendlyUnits();
-		ai->utility->Log(ALL, MISC, "Hmmm2");
-		ai->utility->Log(ALL, MISC, "Checking if new commander is in position X:(%f == %f), Z:(%f == %f), units: %i", units[0]->GetPos().x, ai->callback->GetMap()->GetStartPos().x, units[0]->GetPos().z, ai->callback->GetMap()->GetStartPos().z, units.size());
-		if (units.size()==1 &&
-			abs(units[0]->GetPos().x - ai->callback->GetMap()->GetStartPos().x)<50 &&
-			abs(units[0]->GetPos().z - ai->callback->GetMap()->GetStartPos().z)<50)
+		if (waitingForCommander)
 		{
-			resettingGame = false;
-			ai->utility->LaterInitialization();
-			ai->knowledge->mapInfo->resourceMap->Update();
-			UnitFinished(units[0]->GetUnitId());
-			
+			ai->utility->Log(ALL, MISC, "Checking if new commander is in position X:(%f == %f), Z:(%f == %f)", ai->commander->GetPos().x, ai->callback->GetMap()->GetStartPos().x, ai->commander->GetPos().z, ai->callback->GetMap()->GetStartPos().z);
+			if (abs(ai->commander->GetPos().x - ai->callback->GetMap()->GetStartPos().x)<50 &&
+				abs(ai->commander->GetPos().z - ai->callback->GetMap()->GetStartPos().z)<50)
+			{
+				resettingGame = false;
+				ai->utility->LaterInitialization();
+				ai->knowledge->mapInfo->resourceMap->Update();
+				UnitFinished(ai->commander->GetUnitId());
+			}
 		}
+		/*ai->utility->ChatMsg("Hmm1");
+		vector<Unit*> units = ai->callback->GetFriendlyUnits();
+		ai->utility->ChatMsg("Hmm2");
+		ai->utility->ChatMsg("Hmm3: %i", units.size());
+		if (units.size()==1)
+		{
+
+			ai->utility->Log(ALL, MISC, "Checking if new commander is in position X:(%f == %f), Z:(%f == %f), units: %i", units[0]->GetPos().x, ai->callback->GetMap()->GetStartPos().x, units[0]->GetPos().z, ai->callback->GetMap()->GetStartPos().z, units.size());
+			if (abs(units[0]->GetPos().x - ai->callback->GetMap()->GetStartPos().x)<50 &&
+				abs(units[0]->GetPos().z - ai->callback->GetMap()->GetStartPos().z)<50)
+			{
+				resettingGame = false;
+				ai->utility->LaterInitialization();
+				ai->knowledge->mapInfo->resourceMap->Update();
+				UnitFinished(units[0]->GetUnitId());
+			}
+		}
+		else
+		{
+			//ai->utility->Suicide(ai->commander->GetUnitId());
+		}*/
 		return;
 	}
 

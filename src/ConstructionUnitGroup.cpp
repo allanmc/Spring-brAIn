@@ -61,7 +61,7 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 {
 	//SAIFloat3 buildPos = Units[0]->GetPos();
 	//SAIFloat3 buildPos = Units.begin()->first->GetPos(); //ai->callback->GetMap()->GetStartPos();
-	SAIFloat3 buildPos = commander->GetPos();
+	SAIFloat3 buildPos = ai->commander->GetPos();
 	/*buildPos = ai->callback->GetMap()->GetStartPos();
 	buildPos.z += (ai->utility->GetUnitDef("armlab")->GetZSize() * 8)/2
 				+ (ai->utility->GetSolarDef()->GetZSize()*8)/2;*/
@@ -75,7 +75,7 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	
 	Idle = false;
 	
-	order.unitId = commander->GetUnitId();
+	order.unitId = ai->commander->GetUnitId();
 	ai->utility->Log(ALL, MISC, "order builder id: %d", order.unitId );
 	order.timeOut = 40000;
 
@@ -269,16 +269,16 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 	}
 	ai->utility->Log(ALL, MISC, "BuildBlocksSelf check 2 done");
 	//If we build this new building, does the commander have a path out of the base?
-	fromPos = commander->GetPos();
+	fromPos = ai->commander->GetPos();
 	///TODO: Maybe ensure that the commander does not walk into a building-block "trap" :)
-	if (!ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom(commander->GetDef(), toBuildUnitDef, pos, fromPos, ai->utility->GetSafePosition()))
+	if (!ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom(ai->commander->GetDef(), toBuildUnitDef, pos, fromPos, ai->utility->GetSafePosition()))
 	{
 		ai->utility->Log(ALL, MISC, "BuildBlocksSelf blocked build by reason 3 (No path for commander)");
 		return true;
 	}
 	ai->utility->Log(ALL, MISC, "BuildBlocksSelf check 3 done");
 
-	if ( !ai->knowledge->mapInfo->pathfindingMap->PathExists(commander->GetDef(), fromPos, pos) )
+	if ( !ai->knowledge->mapInfo->pathfindingMap->PathExists(ai->commander->GetDef(), fromPos, pos) )
 	{
 		ai->utility->Log( ALL, MISC, "BuildBlocksSelf blocked build by reason 4 (No path to buildsite)");
 		return true;

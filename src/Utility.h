@@ -48,7 +48,7 @@ namespace brainSpace
 		bool FileExists( const char* FileName );
 		bool IsMetalMap();
 		void LaterInitialization();
-		void Suicide();
+		void Suicide(int unitToSurvive=0, bool stopAll=false);
 		void ResetGame(RL **rl);
 		void GoTo(int unitId, SAIFloat3 pos);
 		SAIFloat3 GetSafePosition();
