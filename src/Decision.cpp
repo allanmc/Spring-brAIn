@@ -138,7 +138,7 @@ void Decision::UpdateRL()
 ///called when one of our units are destoyed
 void Decision::UnitDestroyed(int unit, int attacker)
 {
-	ai->utility->Log( LOG_DEBUG, MISC, "UnitDestroyed id = %i, name = %s", unit, Unit::GetInstance(ai->callback,unit)->GetDef()->GetName() );
+	ai->utility->ChatMsg( "UnitDestroyed id = %i, name = %s", unit, Unit::GetInstance(ai->callback,unit)->GetDef()->GetName() );
 	if (resettingGame)
 	{
 		remainingUnits--;
