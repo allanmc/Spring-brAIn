@@ -26,7 +26,7 @@ RL::RL( AIClasses* aiClasses)
 	ParentNode[1] = 0;
 	ParentNode[2] = 0;
 
-	Epsilon = 9;
+	Epsilon = -1;
 	LoadFromFile();
 
 	totalReward = 0.0;
@@ -174,20 +174,36 @@ RL_Action *RL::FindBestAction( RL_State* state )
 	ai->utility->Log(ALL, MISC, "Done calling GetActions.size = %i", stateActions.size());
 
 	RL_Action *action = stateActions[0]; //unitdefID
+	ai->utility->Log(ALL, MISC, "-Hax action: action->ID = %i, action->Action = %i", stateActions[0]->ID, stateActions[0]->Action);
+	ai->utility->Log(ALL, MISC, "-Current action: action->ID = %i, action->Action = %i", action->ID, action->Action);
+	
 
 	float bestValue = ValueFunction[currentNode]->GetValue(state, action);
 
-	vector<RL_Action*>::iterator it;
-	for ( it = stateActions.begin()+1 ; it != stateActions.end() ; it++ )
+	ai->utility->Log(ALL, MISC, "Hax action: action->ID = %i, action->Action = %i", stateActions[0]->ID, stateActions[0]->Action);
+
+	//vector<RL_Action*>::iterator it;
+	//for ( it = stateActions.begin()+1 ; it != stateActions.end() ; it++ )
+	for ( int i = 1 ; i < stateActions.size() ; i++ )
 	{
-		RL_Action *tempAction = (RL_Action*)(*it);
-		if ( ValueFunction[currentNode]->GetValue(state, tempAction) > bestValue )
+		//RL_Action *tempAction = (RL_Action*)(*it);
+		RL_Action *tempAction = stateActions[i];
+		ai->utility->Log(ALL, MISC, "Current action: action->ID = %i, action->Action = %i", tempAction->ID, tempAction->Action);
+		ai->utility->Log(ALL, MISC, "Hax action: action->ID = %i, action->Action = %i", stateActions[0]->ID, stateActions[0]->Action);
+		float tempValue = ValueFunction[currentNode]->GetValue(state, tempAction);
+		ai->utility->Log(ALL, MISC, "Current action: action->ID = %i, action->Action = %i", tempAction->ID, tempAction->Action);
+		ai->utility->Log(ALL, MISC, "Hax action: action->ID = %i, action->Action = %i", stateActions[0]->ID, stateActions[0]->Action);
+		
+		if ( tempValue > bestValue )
 		{
-			bestValue = ValueFunction[currentNode]->GetValue(state, tempAction);
+			bestValue = tempValue;
 			action = tempAction;
 		}
 	}
-
+	ai->utility->Log(ALL, MISC, "Hax action: action->ID = %i, action->Action = %i", stateActions[0]->ID, stateActions[0]->Action);
+	ai->utility->Log(ALL, MISC, "Reutning from GetAction, with action->ID = %i, action->Action = %i", action->ID, action->Action);
+	if (action->ID < 0 || action->ID > 2)
+		exit(0);
 	return action;
 }
 
@@ -297,7 +313,7 @@ RL_Action* RL::Update()
 	{
 		ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() complex Previousaction 1");
 		int subNode = PreviousAction[currentNode]->Action;
-		ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() complex Previousaction 2, currentNode = %i, subnode = %i", currentNode, subNode);
+		ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() complex Previousaction 2, currentNode = %i, previousaction->action = %i, previousaction-id = %i", currentNode, subNode, PreviousAction[currentNode]->ID);
 		float subValue = ValueFunction[subNode]->GetValue(PreviousState[subNode],PreviousAction[subNode]) 
 						+ ALPHA*(
 							reward + GAMMA*bestFutureValue 
@@ -319,10 +335,10 @@ RL_Action* RL::Update()
 
 	delete PreviousState[currentNode];
 	PreviousState[currentNode] = NULL;
-	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() deleted PreviousState");
+	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() deleted PreviousState for node %i", currentNode);
 	delete PreviousAction[currentNode];
 	PreviousAction[currentNode] = NULL;
-	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() deleted PreviousAction");
+	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() deleted PreviousAction for node %i", currentNode);
 	PreviousState[currentNode] = state;
 	PreviousAction[currentNode] = nextAction;
 	PreviousFrame[currentNode] = ai->frame;

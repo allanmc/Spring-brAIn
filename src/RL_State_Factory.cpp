@@ -5,6 +5,7 @@ using namespace brainSpace;
 
 RL_State_Factory::RL_State_Factory(AIClasses *aiClasses, int labCount, int plantCount ): RL_State(aiClasses)
 {
+	terminal = true;
 	LabCount = labCount;
 	PlantCount = plantCount;
 	ID = PlantCount * 5 + LabCount;
@@ -16,6 +17,7 @@ RL_State_Factory::RL_State_Factory(AIClasses *aiClasses, int labCount, int plant
 
 RL_State_Factory::RL_State_Factory(AIClasses *aiClasses ): RL_State(aiClasses)
 {
+	terminal = true;
 	LabCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armlab");
 	PlantCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armvp");
 	ID = PlantCount * 5 + LabCount;
@@ -27,9 +29,4 @@ RL_State_Factory::RL_State_Factory(AIClasses *aiClasses ): RL_State(aiClasses)
 
 RL_State_Factory::~RL_State_Factory()
 {
-}
-
-bool RL_State_Factory::IsTerminal()
-{
-	return true; // is this correct?
 }

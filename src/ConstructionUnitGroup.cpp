@@ -204,6 +204,7 @@ void ConstructionUnitGroup::QueueBuildOrder( SBuildUnitCommand order )
 {
 	ai->utility->ChatMsg( "Placing in queue" );
 	BuildQueue.push( order );
+	ai->utility->ChatMsg( "Placing in queue done" );
 	ai->utility->ChatMsg( "Size of build queue: %d", BuildQueue.size() );
 }
 

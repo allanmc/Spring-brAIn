@@ -63,7 +63,18 @@ void RL_Q::SaveToFile(ofstream *file )
 
 float RL_Q::GetValue( RL_State* state, RL_Action* action )
 {
-	return actionValueFunction[ state->GetID()*(numActions)+ action->ID ];
+	ai->utility->ChatMsg("1 - RL_Q::GetValue(), acitonId = %i, stateID = %i", action->ID, state->GetID());
+	ai->utility->ChatMsg("2 - RL_Q::GetValue(), acitonId = %i, stateID = %i, isterminal = %i", action->ID, state->GetID(), state->IsTerminal());
+	ai->utility->ChatMsg("3 - RL_Q::GetValue(), acitonId = %i, stateID = %i", action->ID, state->GetID());
+	int stateID = state->GetID();
+	ai->utility->ChatMsg("4 - RL_Q::GetValue(), acitonId = %i, stateID = %i", action->ID, state->GetID());
+	int actionID = action->ID;
+	ai->utility->ChatMsg("5 - RL_Q::GetValue(), acitonId = %i, stateID = %i", action->ID, state->GetID());
+	int index = stateID * numActions + actionID;
+	ai->utility->ChatMsg("6 - RL_Q::GetValue(), acitonId = %i, stateID = %i, index = %i", action->ID, state->GetID(), index);
+	float retVal = actionValueFunction[ index ];
+	ai->utility->ChatMsg("7 - RL_Q::GetValue(), acitonId = %i, stateID = %i", action->ID, state->GetID());
+	return retVal;
 }
 
 void RL_Q::SetValue( RL_State* state, RL_Action* action, float value )

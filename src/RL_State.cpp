@@ -26,6 +26,7 @@ int RL_State::GetID()
 
 vector<RL_Action*> RL_State::GetActions()
 {
+	ai->utility->Log(ALL, MISC, "RL_State::GetActions.size = %i", Actions.size());
 	return Actions;
 }
 
@@ -41,4 +42,9 @@ void RL_State::DeleteAction(RL_Action* action)
 			return;
 		}
 	}
+}
+
+bool RL_State::IsTerminal()
+{
+	return terminal;
 }

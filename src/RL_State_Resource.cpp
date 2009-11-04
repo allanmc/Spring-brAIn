@@ -4,6 +4,7 @@ using namespace brainSpace;
 
 RL_State_Resource::RL_State_Resource(AIClasses *aiClasses, int mexCount, int solarCount ): RL_State(aiClasses)
 {
+	terminal = true;
 	MexCount = mexCount;
 	SolarCount = solarCount;
 	ID = MexCount * 20 + SolarCount;
@@ -15,6 +16,7 @@ RL_State_Resource::RL_State_Resource(AIClasses *aiClasses, int mexCount, int sol
 
 RL_State_Resource::RL_State_Resource(AIClasses *aiClasses ): RL_State(aiClasses)
 {
+	terminal = true;
 	MexCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armmex");
 	SolarCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armsolar");
 	ID = MexCount * 20 + SolarCount;
@@ -26,9 +28,4 @@ RL_State_Resource::RL_State_Resource(AIClasses *aiClasses ): RL_State(aiClasses)
 
 RL_State_Resource::~RL_State_Resource()
 {
-}
-
-bool RL_State_Resource::IsTerminal()
-{
-	return true; // is this correct?
 }
