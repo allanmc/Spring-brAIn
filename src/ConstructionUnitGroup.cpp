@@ -202,8 +202,9 @@ SAIFloat3 ConstructionUnitGroup::FindBestDefensePosition(UnitDef *unitDef, SAIFl
 ///puts an order into a queue to be done later (when the group goes idle)
 void ConstructionUnitGroup::QueueBuildOrder( SBuildUnitCommand order )
 {
+	ai->utility->ChatMsg( "Placing in queue" );
 	BuildQueue.push( order );
-	//u->ChatMsg( "Size of build queue: %d", BuildQueue.size() );
+	ai->utility->ChatMsg( "Size of build queue: %d", BuildQueue.size() );
 }
 
 ///Is the group idle, and has nothing in its queue?

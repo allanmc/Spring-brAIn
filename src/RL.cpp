@@ -166,9 +166,9 @@ RL_Action *RL::FindNextAction( RL_State* state )
 
 RL_Action *RL::FindBestAction( RL_State* state )
 {
-	ai->utility->Log(ALL, MISC, "I am now going to die...");
+	ai->utility->Log(ALL, MISC, "Calling GetActions");
 	vector<RL_Action*> stateActions = state->GetActions();
-	ai->utility->Log(ALL, MISC, "Didn't i die!?!?");
+	ai->utility->Log(ALL, MISC, "Done calling GetActions.size = %i", stateActions.size());
 
 	RL_Action *action = stateActions[0]; //unitdefID
 
@@ -224,6 +224,9 @@ RL_Action* RL::SafeNextAction(RL_State *state)
 
 void RL::TakeAction(RL_Action* action)
 {
+	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:TakeAction() action->Compelx:%i", action->Complex);
+	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:TakeAction() action->Action:%i", action->Action);
+	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:TakeAction() action->ID:%i", action->ID);
 	//should only be called with complex actions!
 	if(!action->Complex)
 		return;
@@ -250,13 +253,14 @@ RL_Action* RL::Update()
 	//Start state
 	if ( PreviousState[currentNode] == NULL )
 	{
-		ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() PreviousState == NULL");
+		ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() PreviousState == NULL, currentNode = %i, nextAction->Action = %i, nextAction->Complex = %i", currentNode, nextAction->Action, nextAction->Complex);
 		PreviousState[currentNode] = state;
 		PreviousAction[currentNode] = nextAction;
 		PreviousFrame[currentNode] = ai->frame;
 		if(nextAction->Complex)
 		{
 			TakeAction(nextAction);
+			ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() doing recursive call 1");
 			return Update();
 		}
 		else
@@ -288,34 +292,39 @@ RL_Action* RL::Update()
 	//if complex then update the childs value funtion
 	if(PreviousAction[currentNode]->Complex)
 	{
+		ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() complex Previousaction 1");
 		int subNode = PreviousAction[currentNode]->Action;
+		ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() complex Previousaction 2, currentNode = %i, subnode = %i", currentNode, subNode);
 		float subValue = ValueFunction[subNode]->GetValue(PreviousState[subNode],PreviousAction[subNode]) 
 						+ ALPHA*(
 							reward + GAMMA*bestFutureValue 
 							- ValueFunction[subNode]->GetValue(PreviousState[subNode],PreviousAction[subNode]) );
-
+		ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() complex Previousaction 3");
 		ValueFunction[subNode]->SetValue(PreviousState[subNode],PreviousAction[subNode], subValue);
 	}
-
+	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() complex Previousaction done");
 	//update own value function
 	float value = ValueFunction[currentNode]->GetValue(PreviousState[currentNode],PreviousAction[currentNode]) 
 				+ ALPHA*(
 					reward + GAMMA*bestFutureValue 
 					- ValueFunction[currentNode]->GetValue(PreviousState[currentNode],PreviousAction[currentNode]) );
-
+	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() calcualted value");
 	ValueFunction[currentNode]->SetValue(PreviousState[currentNode],PreviousAction[currentNode], value);
 
 
 	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() value function updated");
 
 	delete PreviousState[currentNode];
+	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() deleted PreviousState");
 	delete PreviousAction[currentNode];
+	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() deleted PreviousAction");
 	PreviousState[currentNode] = state;
 	PreviousAction[currentNode] = nextAction;
 	PreviousFrame[currentNode] = ai->frame;
-
+	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() done setting stuff");
 	if ( terminal )
 	{
+		ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() terminal");
 		if(ParentNode[currentNode] == -1)//root check
 		{
 			goalAchieved = true;
@@ -325,18 +334,23 @@ RL_Action* RL::Update()
 		{
 			ai->utility->Log(LOG_DEBUG, LOG_RL, "changing to parent: %d",ParentNode[currentNode]);
 			currentNode = ParentNode[currentNode];//parentNode
+			ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() doing recursive call 2");
 			return Update();//recursive call
 		}
 	}
 	else
 	{
+		ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() non terminal");
 		if(nextAction->Complex)
 		{
+			ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() complex");
 			TakeAction(nextAction);
+			ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() doing recursive call 3");
 			return Update();
 		}
 		else
 		{
+			ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() non complex");
 			return nextAction;
 		}
 	}

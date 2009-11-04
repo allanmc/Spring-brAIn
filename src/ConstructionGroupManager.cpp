@@ -11,6 +11,7 @@ ConstructionGroupManager::ConstructionGroupManager( AIClasses* aiClasses )
 
 ConstructionGroupManager::~ConstructionGroupManager()
 {
+	ai->utility->ChatMsg("Deconstructing ConstructionGroupManager");
 	for (int i = 0; i < (int)UnitGroups.size(); i++)
 	{
 		delete UnitGroups[i];
@@ -23,12 +24,15 @@ void ConstructionGroupManager::AddUnit( Unit* unit )
 {
 	if ( UnitGroups.size() == 0 )
 	{
+		ai->utility->ChatMsg("I am now adding a unit to a new group");
 		UnitGroups.push_back( new ConstructionUnitGroup( ai, 0 ) );
 		UnitGroups[0]->AddUnit( unit );
+		ai->utility->ChatMsg("Done adding");
 		return;
 	}
 
 	BrainGroup* smallestSet = (*UnitGroups.begin());
+	ai->utility->ChatMsg("I am now adding a unit to an old group");
 	for ( int i = 0 ; i < (int)UnitGroups.size() ; i++ )
 	{
 		if ( UnitGroups[i]->GetSize() < smallestSet->GetSize() )
@@ -36,7 +40,7 @@ void ConstructionGroupManager::AddUnit( Unit* unit )
 			smallestSet = UnitGroups[i];
 		}
 	}
-
+	ai->utility->ChatMsg("Done adding");
 	smallestSet->AddUnit( unit );
 }
 
@@ -69,6 +73,7 @@ int ConstructionGroupManager::DelegateBuildOrder(SBuildUnitCommand order)
 		return 0;
 	}
 	ai->utility->ChatMsg( "Quing order, no idle group " );
+	ai->utility->ChatMsg( "Quing order, UnitGroups[0] = %i", UnitGroups[0]);
 	UnitGroups[0]->QueueBuildOrder( order );
 	
 	return 0;

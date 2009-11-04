@@ -21,6 +21,8 @@ RL_State_Root::RL_State_Root( AIClasses *aiClasses ): RL_State(aiClasses)
 	ID = (CanBuildLab ? 2 : 0) + (EnoughLabs ? 1 : 0);
 	Actions.push_back(new RL_Action(1,0,true));
 	Actions.push_back(new RL_Action(2,1,true));
+	ai->utility->Log(ALL, LOG_RL, "Action 1 action = %i", Actions[0]->Action);
+	ai->utility->Log(ALL, LOG_RL, "Action 2 action = %i", Actions[1]->Action);
 }
 
 RL_State_Root::~RL_State_Root()

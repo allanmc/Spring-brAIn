@@ -100,6 +100,31 @@ void Utility::Log(int logLevel, int logType, const char* msg, ...)
 	}
 }
 
+///Prints a line in the log file - no new line
+///@param logLevel the minimum LOGLEVEL that this should be logged at
+///@param logType the type of information being logged, used to filter logging
+///@param msg the text to be printed in printf-syntax
+void Utility::LogNN(int logLevel, int logType, const char* msg, ...)
+{		
+	if (!IsDebug() || LOG_LEVEL < logLevel)
+	{
+		return;
+	}
+	else if (((LOG_TYPE) & logType) == 0)
+	{
+		return;
+	}
+	
+	if (fp)
+	{
+		va_list list;
+		va_start(list, msg);
+		vfprintf(fp, msg, list);
+		va_end(list);
+		fflush(fp);
+	}
+}
+
 ///prints a line to the chat
 void Utility::ChatMsg(const char* msg, ...)
 {
@@ -114,6 +139,9 @@ void Utility::ChatMsg(const char* msg, ...)
 	cmd.text = c;
 	cmd.zone = 0;
 	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_SEND_TEXT_MESSAGE, &cmd);
+
+	LogNN(ALL, MISC, "Chat: ");
+	Log(ALL, MISC, c);
 }
 
 ///prints a line to the chat

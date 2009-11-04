@@ -94,8 +94,10 @@ void Decision::UnitFinished(int unit)
 	
 	ai->utility->ChatMsg("Unit finished, \"%s\", pos:%f,%f", u->GetDef()->GetName(), u->GetPos().x, u->GetPos().z);
 	UnitDef * ud = u->GetDef();
+	ai->utility->ChatMsg("Ud set");
 	if(ud->GetSpeed() > 0)
 	{
+		ai->utility->ChatMsg("Finished with a non-building");
 		//add to groupController
 		gc->AddUnit(u);
 		if (!ud->IsBuilder())
@@ -103,10 +105,13 @@ void Decision::UnitFinished(int unit)
 			//BuildAttackUnit();
 		}
 	}else{
+		ai->utility->ChatMsg("Finished with a building");
 		//add to BuildingController
 		bc->AddBuilding(u);
+		ai->utility->ChatMsg("Added building");
 		//BuildAttackUnit();
 		ai->knowledge->selfInfo->resourceInfo->RemoveChangeToCome(u);
+		ai->utility->ChatMsg("Removed change to come");
 	}
 
 	if (ud->GetWeaponMounts().size()>0) 
@@ -119,6 +124,7 @@ void Decision::UnitFinished(int unit)
 	}
 	
 	UpdateRL();
+	ai->utility->Log(LOG_DEBUG, LOG_RL, "UnitFinished() returned");
 }
 
 void Decision::UpdateRL()
@@ -126,10 +132,14 @@ void Decision::UpdateRL()
 	if(ai->frame > 0)
 	{
 		RL_Action *action = rl->Update();
+		ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() returned");
 		if ( action != NULL )
 		{
+			ai->utility->Log(LOG_DEBUG, LOG_RL, "UpdateRL() anot null action");
 			SBuildUnitCommand c;
+			ai->utility->Log(LOG_DEBUG, LOG_RL, "UpdateRL() action->Action = %i", action->Action);
 			c.toBuildUnitDefId = action->Action;
+			ai->utility->Log(LOG_DEBUG, LOG_RL, "UpdateRL() continuing");
 			c.timeOut = 10000000;
 			c.facing = 0;
 			c.options = 0;
@@ -143,6 +153,7 @@ void Decision::UpdateRL()
 			Reset();
 		}
 	}
+	ai->utility->Log(LOG_DEBUG, LOG_RL, "UpdateRL() done");
 }
 
 ///called when one of our units are destoyed

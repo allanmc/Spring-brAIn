@@ -38,6 +38,7 @@ namespace brainSpace
 
 		double EuclideanDistance( SAIFloat3 pos1, SAIFloat3 pos2 );
 		void Log(int logLevel, int logType, const char* msg, ...);
+		void LogNN(int logLevel, int logType, const char* msg, ...);
 		void ChatMsg(const char* msg, ...);
 		void ChatMsg(std::string msg);
 		springai::UnitDef* GetUnitDef(const char* unitDefName);
