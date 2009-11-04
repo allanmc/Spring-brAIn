@@ -129,23 +129,7 @@ void RL::SaveToFile()
 
 RL_State* RL::GetState(int node)
 {
-	RL_State* state;
-	switch(node)
-	{
-	case 0:
-		state = new RL_State_Root(ai);
-		break;
-	case 1:
-		state = new RL_State_Factory(ai);
-		break;
-	case 2:
-		state = new RL_State_Resource(ai);
-		break;
-	default:
-		state = NULL;
-	}
-
-	return state;
+	return new RL_State(ai, node);
 }
 
 RL_Action *RL::FindNextAction( RL_State* state )

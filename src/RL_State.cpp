@@ -3,8 +3,48 @@
 
 using namespace brainSpace;
 
-RL_State::RL_State( AIClasses* aiClasses)
+RL_State::RL_State( AIClasses* aiClasses, int node)
 {
+	Node = node;
+	switch(node)
+	{
+	case 0://root
+		{
+			int labCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armlab");
+			int EnoughLabs = (labCount >= 4);
+			terminal = 	(EnoughLabs ? true : false);
+			int affordable = ai->knowledge->selfInfo->resourceInfo->IsAffordableToBuild(ai->utility->GetUnitDef("armcom"),
+				ai->utility->GetUnitDef("armlab"));
+			bool CanBuildLab = (affordable == 0);
+			ID = (CanBuildLab ? 2 : 0) + (EnoughLabs ? 1 : 0);
+			Actions.push_back(new RL_Action(1,0,true));
+			Actions.push_back(new RL_Action(2,1,true));
+		}break;
+	case 1://factory
+		{
+			terminal = true;
+			int LabCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armlab");
+			int PlantCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armvp");
+			ID = PlantCount * 5 + LabCount;
+			if(PlantCount < 4)
+				Actions.push_back(new RL_Action(ai->utility->GetUnitDef("armvp")->GetUnitDefId(),0,false));
+			if(LabCount < 4)
+				Actions.push_back(new RL_Action(ai->utility->GetUnitDef("armlab")->GetUnitDefId(),1,false));
+		}break;
+	case 2://resource
+		{
+			terminal = true;
+			int MexCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armmex");
+			int SolarCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armsolar");
+			ID = MexCount * 20 + SolarCount;
+			if(MexCount < 19)
+				Actions.push_back(new RL_Action(ai->utility->GetUnitDef("armmex")->GetUnitDefId(),0,false));
+			if(SolarCount < 19)
+				Actions.push_back(new RL_Action(ai->utility->GetUnitDef("armsolar")->GetUnitDefId(),1,false));
+		}break;
+	default://error
+		Node = -1;
+	}
 	ai = aiClasses;
     ID = 0;//should be over written by the specific constructor
 }
@@ -47,4 +87,9 @@ void RL_State::DeleteAction(RL_Action* action)
 bool RL_State::IsTerminal()
 {
 	return terminal;
+}
+
+int RL_State::GetNode()
+{
+	return Node;
 }

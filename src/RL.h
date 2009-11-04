@@ -17,9 +17,6 @@
 #include "global.h"
 #include "RL_State.h"
 #include "RL_Q.h"
-#include "RL_State_Root.h"
-#include "RL_State_Factory.h"
-#include "RL_State_Resource.h"
 
 using namespace springai;
 
