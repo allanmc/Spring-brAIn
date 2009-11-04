@@ -31,6 +31,7 @@ RL_Q::RL_Q( AIClasses *aiClasses, int numStates, int numActions )
 RL_Q::~RL_Q()
 {
 	delete[] actionValueFunction;
+	actionValueFunction = NULL;
 }
 
 void RL_Q::Clear()

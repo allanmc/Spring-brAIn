@@ -39,8 +39,11 @@ RL::~RL()
 	for ( int i = 0 ; i < 3 ; i++ )
 	{
 		delete ValueFunction[i];
+		ValueFunction[i] = NULL;
 		delete PreviousAction[i];
+		PreviousAction[i] = NULL;
 		delete PreviousState[i];
+		PreviousState[i] = NULL;
 	}
 	if (goalAchieved)
 	{
@@ -315,8 +318,10 @@ RL_Action* RL::Update()
 	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() value function updated");
 
 	delete PreviousState[currentNode];
+	PreviousState[currentNode] = NULL;
 	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() deleted PreviousState");
 	delete PreviousAction[currentNode];
+	PreviousAction[currentNode] = NULL;
 	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() deleted PreviousAction");
 	PreviousState[currentNode] = state;
 	PreviousAction[currentNode] = nextAction;

@@ -13,7 +13,8 @@ RL_State::~RL_State()
 {
 	for (int i = 0; i < (int)Actions.size(); i++)
 	{
-		delete(Actions[i]);
+		delete Actions[i];
+		Actions[i] = NULL;
 	}
 	Actions.clear();
 }
@@ -34,8 +35,10 @@ void RL_State::DeleteAction(RL_Action* action)
 	{
 		if(Actions[i]->ID == action->ID)
 		{
-			delete(Actions[i]);
+			delete Actions[i];
+			Actions[i] = NULL;
 			Actions.erase(Actions.begin()+i);
+			return;
 		}
 	}
 }
