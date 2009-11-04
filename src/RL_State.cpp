@@ -6,6 +6,7 @@ using namespace brainSpace;
 RL_State::RL_State( AIClasses* aiClasses, int node)
 {
 	Node = node;
+	ai = aiClasses;
 	switch(node)
 	{
 	case 0://root
@@ -45,8 +46,6 @@ RL_State::RL_State( AIClasses* aiClasses, int node)
 	default://error
 		Node = -1;
 	}
-	ai = aiClasses;
-    ID = 0;//should be over written by the specific constructor
 }
 
 RL_State::~RL_State()
