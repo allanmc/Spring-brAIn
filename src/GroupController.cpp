@@ -49,7 +49,7 @@ void GroupController::RemoveUnit(Unit *unit)
 ///@return 1 if an idle group was found, or 0 if the order was queued
 int GroupController::ErectBuilding(SBuildUnitCommand order)
 {
-	ai->utility->ChatMsg("ErectBuilding()...");
+	ai->utility->Log(ALL, MISC, "ErectBuilding()...");
 	return ConstructionGroupMgr->DelegateBuildOrder( order );
 }
 

@@ -62,6 +62,8 @@ namespace brainSpace {
 
 		bool PathExists( springai::UnitDef* pathfinder, SAIFloat3 escapeFrom, SAIFloat3 escapeTo );
 
+		void PrintSection(SAIFloat3 pos);
+
 	private:
 
 		void RemoveHypotheticalBuilding(springai::UnitDef* unit, SAIFloat3 pos);
