@@ -39,7 +39,6 @@ RL::RL( AIClasses* aiClasses)
 RL::~RL()
 {
 	SaveToFile();
-	ai->utility->ChatMsg("done saving to file");
 	for ( int i = 0 ; i < RL_NUM_NODES ; i++ )
 	{
 		delete ValueFunction[i];
@@ -49,13 +48,6 @@ RL::~RL()
 		//delete PreviousState[i];
 		//PreviousState[i] = NULL;
 	}
-	ai->utility->ChatMsg("deleted all valuefunctions");
-	delete[] ValueFunction;
-	ai->utility->ChatMsg("deleted valuefunctions array");
-	delete[] PreviousAction;
-	ai->utility->ChatMsg("deleted prev actions array");
-	delete[] PreviousState;
-	ai->utility->ChatMsg("deleted prev state array");
 	if (goalAchieved)
 	{
 		ai->utility->ChatMsg("RL goal achieved with total reward: %f", totalReward);
