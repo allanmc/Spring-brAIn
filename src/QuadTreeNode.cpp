@@ -11,11 +11,18 @@ QuadTreeNode::QuadTreeNode( AIClasses* aiClasses, CBoundingBox box, int level, Q
 	IsLeaf = true;
 	Level = level;
 	parent = parentNode;
+	for(int i = 0; i<4; i++)
+	{
+		Children[i] = NULL;
+	}
 }
 
 QuadTreeNode::~QuadTreeNode()
 {
-	///TODO: Cleanup!
+	for(int i = 0; i<4; i++)
+	{
+		delete Children[i];
+	}
 }
 
 QuadTreeNode* QuadTreeNode::GetParentNode()
