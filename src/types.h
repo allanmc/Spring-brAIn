@@ -101,7 +101,12 @@ namespace brainSpace {
 			ID = id;
 			Complex = complex;
 		}
+		RL_Action() {}
 		
+		bool operator==(const RL_Action &other) const {
+			return (ID == other.ID);
+		}
+
 	};
 
 }

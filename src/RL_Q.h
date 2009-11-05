@@ -62,8 +62,8 @@ namespace brainSpace
 		void SaveToFile(ofstream *readFile);
 		void LoadFromFile(ifstream *readFile);
 		void Clear();
-		float GetValue( RL_State* state, RL_Action* action );
-		void SetValue( RL_State* state, RL_Action* action, float value );
+		float GetValue( RL_State &state, RL_Action &action );
+		void SetValue( RL_State &state, RL_Action &action, float value );
 
 	};
 

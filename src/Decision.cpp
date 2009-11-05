@@ -131,20 +131,20 @@ void Decision::UpdateRL()
 {
 	if(ai->frame > 0)
 	{
-		RL_Action *action = rl->Update();
+		RL_Action action = rl->Update();
 		ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() returned");
-		if ( action != NULL )
+		if ( action.ID != -1)
 		{
 			ai->utility->Log(LOG_DEBUG, LOG_RL, "UpdateRL() anot null action");
 			SBuildUnitCommand c;
-			ai->utility->Log(LOG_DEBUG, LOG_RL, "UpdateRL() action->Action = %i", action->Action);
-			c.toBuildUnitDefId = action->Action;
+			ai->utility->Log(LOG_DEBUG, LOG_RL, "UpdateRL() action->Action = %i", action.Action);
+			c.toBuildUnitDefId = action.Action;
 			ai->utility->Log(LOG_DEBUG, LOG_RL, "UpdateRL() continuing");
 			c.timeOut = 10000000;
 			c.facing = 0;
 			c.options = 0;
 			gc->ErectBuilding( c );
-			ai->utility->ChatMsg( "RL: Building unit with unitdef: %d", action->Action );
+			ai->utility->ChatMsg( "RL: Building unit with unitdef: %d", action.Action );
 		}
 		else 
 		{

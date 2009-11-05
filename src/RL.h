@@ -29,25 +29,28 @@ namespace brainSpace {
 		virtual ~RL();
 
 
-		RL_Action *Update();
+		RL_Action Update();
 	private:
 		AIClasses* ai;
 
+		RL_State nullState;
+		RL_Action nullAction;
+
 		bool FileExists( const char* name );
-		RL_Action *FindNextAction( RL_State* state );
-		RL_Action *FindBestAction( RL_State* state );
+		RL_Action FindNextAction( RL_State &state );
+		RL_Action FindBestAction( RL_State &state );
 
 		int currentNode;
-		RL_State* PreviousState[RL_NUM_NODES];
-		RL_Action* PreviousAction[RL_NUM_NODES];
+		RL_State PreviousState[RL_NUM_NODES];
+		RL_Action PreviousAction[RL_NUM_NODES];
 		int PreviousFrame[RL_NUM_NODES];
 		int ParentNode[RL_NUM_NODES];
 		float totalReward;
 		bool goalAchieved;
 		int Epsilon;
-		RL_State* GetState(int node);
-		RL_Action* SafeNextAction(RL_State *state);
-		void TakeAction(RL_Action* action);
+		RL_State GetState(int node);
+		RL_Action SafeNextAction(RL_State &state);
+		void TakeAction(RL_Action &action);
 		
 		void LoadFromFile();
 		void SaveToFile();

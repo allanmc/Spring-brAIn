@@ -12,19 +12,21 @@ namespace brainSpace {
 	{
 	public:
 		RL_State( AIClasses* ai, int node );
+		RL_State();
 		virtual ~RL_State();
 		int GetID();
-
-		vector<RL_Action*> GetActions();
-		void DeleteAction(RL_Action* action);
+		vector<RL_Action> GetActions();
+		void DeleteAction(int actionID);
 		bool IsTerminal();
 		int GetNode();
+		bool operator==(const RL_State &other) const;
+		RL_State & operator=(const RL_State &rhs);
 	protected:
 		bool terminal;
 		AIClasses* ai;
 		int ID;
 		int Node;
-		vector<RL_Action*> Actions;
+		vector<RL_Action> Actions;
 
 	};
 }
