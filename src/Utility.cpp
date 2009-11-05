@@ -255,6 +255,9 @@ SAIFloat3 Utility::GoTo(int unitId, SAIFloat3 pos, bool simulate)
 		}
 	}
 	ai->utility->Log(ALL, MISC, "GoTo: I am done! I want to walk %i out of %i waypoints", toWalk, wayPoints.size());
+	int res = ai->knowledge->mapInfo->pathfindingMap->GetMapData()->MapResolution;
+	ai->utility->Log(ALL, MISC, "GoTo: Final pathfinding INDEX: %d, %d", (int)retPos.x/res, (int)retPos.z/res);
+
 
 	return retPos;
 }

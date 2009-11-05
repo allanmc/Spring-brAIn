@@ -67,11 +67,18 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 				+ (ai->utility->GetSolarDef()->GetZSize()*8)/2;*/
 	
 	UnitDef *unitDef = UnitDef::GetInstance(ai->callback, order.toBuildUnitDefId);
+	ai->utility->RemoveGraphics(figureId);
 
 	ai->utility->Log(ALL, MISC, "order tobuild id: %d", order.toBuildUnitDefId );
 	ai->utility->Log(ALL, MISC, "order options : %d", order.options );
 	ai->utility->Log(ALL, MISC, "order timeout : %d", order.timeOut );
 	ai->utility->Log(ALL, MISC, "order facing: %d", order.facing );
+	bool hest = ai->knowledge->mapInfo->pathfindingMap->PathExists(ai->commander->GetDef(), buildPos, ai->utility->GetSafePosition());
+	ai->utility->Log(ALL, MISC, "Is commander built in? %d", hest);
+	if(!hest)
+	{
+		ai->knowledge->mapInfo->pathfindingMap->PrintSection(buildPos);
+	}
 	
 	Idle = false;
 	
@@ -111,14 +118,14 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	//Did we get an errones buildPos`?
 	if (order.buildPos.y == -1)
 	{
-		ai->utility->Log(ALL, MISC, "Could not get a build position in AssignBuildOrder()...");
+		ai->utility->Log(ALL, PATHFIND, "Could not get a build position in AssignBuildOrder()...");
 		return;
 	}
 
-	if (figureId == 0)
-		figureId = ai->utility->DrawCircle(order.buildPos, 50, figureId);
-	else
-		ai->utility->DrawCircle(order.buildPos, 50, figureId);
+	//if (figureId == 0)
+	//	figureId = ai->utility->DrawCircle(order.buildPos, 50, figureId);
+	//else
+	//	ai->utility->DrawCircle(order.buildPos, 50, figureId);
 
 	/*//Can we build here without blocking ourself?
 	if (BuildBlocksSelf(unitDef, order.buildPos, order.facing))
@@ -232,6 +239,10 @@ void ConstructionUnitGroup::SetAvailable()
 bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 pos, int facing)
 {
 	ai->utility->Log(ALL, MISC, "BuildBlocksSelf check position (%f,%f)...", pos.x, pos.z);
+	if(figureId == 0)
+		figureId = ai->utility->DrawCircle(pos, 50);
+	else
+		ai->utility->DrawCircle(pos, 50, figureId);
 	
 	vector<Unit*> units = ai->callback->GetFriendlyUnits();
 	SAIFloat3 fromPos;

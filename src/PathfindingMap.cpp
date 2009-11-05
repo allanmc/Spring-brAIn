@@ -217,9 +217,9 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 	ai->utility->Log(ALL, PATHFIND,  "FindPathTo destination is good" );
 	map<int, PathfindingNode*> closedSet;
 	map<int, PathfindingNode*> openSet;
-	start.x += 0.5*Resolution;
-	start.z += 0.5*Resolution;
-	PathfindingNode* startNode = new PathfindingNode( start, start.x/Resolution, start.z/Resolution, 0, ai->utility->EuclideanDistance( start, destination ), ai->utility->EuclideanDistance( start, destination ), MapArray[ (int)start.z/Resolution*MapWidth + (int)start.x/Resolution]  );
+	//start.x += 0.5*Resolution;
+	//start.z += 0.5*Resolution;
+	PathfindingNode* startNode = new PathfindingNode( start, start.x/Resolution, start.z/Resolution, 0, 0 /*ai->utility->EuclideanDistance( start, destination )*/, 0 /*ai->utility->EuclideanDistance( start, destination )*/, MapArray[ (int)start.z/Resolution*MapWidth + (int)start.x/Resolution]  );
 	
 	openSet.insert( make_pair((int)start.z/Resolution*MapWidth + (int)start.x/Resolution, startNode ) );
 	ai->utility->Log(ALL, PATHFIND,  "FindPathTo inserted first node in openset" );
@@ -319,37 +319,43 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 					neighbour->Slope = MapArray[ z*MapWidth + x ];
 					ai->utility->Log( ALL, PATHFIND, "New neighbour initialised" );
 					bool suckyNeighbour = false;
-					if(current->Pos.x > neighbour->Pos.x)
+					if(current->ZIndex > neighbour->ZIndex || current->ZIndex < neighbour->ZIndex)
 					{
-						int tmpX = x + 1;
-						if( tmpX >= 0 && tmpX < MapWidth && MapArray[ z*MapWidth + tmpX ] > pathfinder->GetMoveData()->GetMaxSlope())
+						if(current->XIndex > neighbour->XIndex)
 						{
-							suckyNeighbour = true;
+							int tmpX = x + 1;
+							if( tmpX >= 0 && tmpX < MapWidth && MapArray[ z*MapWidth + tmpX ] > pathfinder->GetMoveData()->GetMaxSlope())
+							{
+								suckyNeighbour = true;
+							}
 						}
-					}
-					else if(current->Pos.x < neighbour->Pos.x)
-					{
-						int tmpX = x - 1;
-						if( tmpX >= 0 && tmpX < MapWidth && MapArray[ z*MapWidth + tmpX ] > pathfinder->GetMoveData()->GetMaxSlope())
+						else if(current->XIndex < neighbour->XIndex)
 						{
-							suckyNeighbour = true;
+							int tmpX = x - 1;
+							if( tmpX >= 0 && tmpX < MapWidth && MapArray[ z*MapWidth + tmpX ] > pathfinder->GetMoveData()->GetMaxSlope())
+							{
+								suckyNeighbour = true;
+							}
 						}
 					}
 					ai->utility->Log( ALL, PATHFIND, "X check done.. %d", suckyNeighbour );
-					if(current->Pos.z > neighbour->Pos.z)
+					if(current->XIndex > neighbour->XIndex || current->XIndex < neighbour->XIndex)
 					{
-						int tmpZ = z + 1;
-						if( tmpZ >= 0 && tmpZ < MapHeight && MapArray[ tmpZ*MapWidth + x ] > pathfinder->GetMoveData()->GetMaxSlope())
+						if(current->ZIndex > neighbour->ZIndex)
 						{
-							suckyNeighbour = true;
+							int tmpZ = z + 1;
+							if( tmpZ >= 0 && tmpZ < MapHeight && MapArray[ tmpZ*MapWidth + x ] > pathfinder->GetMoveData()->GetMaxSlope())
+							{
+								suckyNeighbour = true;
+							}
 						}
-					}
-					else if(current->Pos.z < neighbour->Pos.z)
-					{
-						int tmpZ = z - 1;
-						if( tmpZ >= 0 && tmpZ < MapHeight && MapArray[ tmpZ*MapWidth + x ] > pathfinder->GetMoveData()->GetMaxSlope())
+						else if(current->ZIndex < neighbour->ZIndex)
 						{
-							suckyNeighbour = true;
+							int tmpZ = z - 1;
+							if( tmpZ >= 0 && tmpZ < MapHeight && MapArray[ tmpZ*MapWidth + x ] > pathfinder->GetMoveData()->GetMaxSlope())
+							{
+								suckyNeighbour = true;
+							}
 						}
 					}
 					ai->utility->Log( ALL, PATHFIND, "Z check done.. %d", suckyNeighbour );
@@ -425,6 +431,7 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 			}
 		}
 	}
+	ai->utility->Log(ALL, PATHFIND, "Openset is empty without finding result");
 	list<SAIFloat3> emptyResult;
 	return emptyResult;
 }
@@ -505,4 +512,24 @@ void PathfindingMap::DeleteNodes( map<int, PathfindingNode*> closedSet, map<int,
 		it->second = NULL;
 	}
 	closedSet.clear();
+}
+
+void PathfindingMap::PrintSection(SAIFloat3 pos)
+{
+	int x = pos.x/Resolution;
+	int z = pos.z/Resolution;
+
+	for(int i = z - 5; i <= z + 5; i++)
+	{
+		for(int j = x - 5; j <= x + 5; j++)
+		{
+			bool walkable = MapArray[i*MapWidth + j] < ai->commander->GetDef()->GetMoveData()->GetMaxSlope();
+			if(x == j && z == i)
+				ai->utility->LogNN(ALL, MISC, (walkable ? "X":"Q"));
+			else
+				ai->utility->LogNN(ALL, MISC, "%d", walkable);
+		}
+		ai->utility->Log(ALL, MISC, "");
+	}
+	
 }
