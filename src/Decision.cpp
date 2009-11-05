@@ -94,10 +94,10 @@ void Decision::UnitFinished(int unit)
 	
 	ai->utility->Log(ALL, MISC, "Unit finished, \"%s\", pos:%f,%f", u->GetDef()->GetName(), u->GetPos().x, u->GetPos().z);
 	UnitDef * ud = u->GetDef();
-	ai->utility->ChatMsg("Ud set");
+	ai->utility->Log(ALL, MISC, "Ud set");
 	if(ud->GetSpeed() > 0)
 	{
-		ai->utility->ChatMsg("Finished with a non-building");
+		ai->utility->Log(ALL, MISC, "Finished with a non-building");
 		//add to groupController
 		gc->AddUnit(u);
 		if (!ud->IsBuilder())
@@ -105,13 +105,13 @@ void Decision::UnitFinished(int unit)
 			//BuildAttackUnit();
 		}
 	}else{
-		ai->utility->ChatMsg("Finished with a building");
+		ai->utility->Log(ALL, MISC, "Finished with a building");
 		//add to BuildingController
 		bc->AddBuilding(u);
-		ai->utility->ChatMsg("Added building");
+		ai->utility->Log(ALL, MISC, "Added building");
 		//BuildAttackUnit();
 		ai->knowledge->selfInfo->resourceInfo->RemoveChangeToCome(u);
-		ai->utility->ChatMsg("Removed change to come");
+		ai->utility->Log(ALL, MISC, "Removed change to come");
 	}
 
 	if (ud->GetWeaponMounts().size()>0) 
