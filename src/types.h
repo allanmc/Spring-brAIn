@@ -42,7 +42,8 @@ enum LogTypes {
 	GROUPING	= 1<<9,
 	MISC		= 1<<10,
 	SLOPEMAP	= 1<<11,
-	LOG_RL		= 1<<12
+	LOG_RL		= 1<<12,
+	PATHFIND	= 1<<13
 };
 
 
