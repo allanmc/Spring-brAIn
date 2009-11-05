@@ -111,7 +111,7 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	//Did we get an errones buildPos`?
 	if (order.buildPos.y == -1)
 	{
-		ai->utility->Log(ALL, MISC, "Could not get a build position in AssignBuildOrder()...");
+		ai->utility->Log(ALL, PATHFIND, "Could not get a build position in AssignBuildOrder()...");
 		return;
 	}
 
