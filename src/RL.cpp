@@ -50,11 +50,11 @@ RL::~RL()
 	}
 	if (goalAchieved)
 	{
-		ai->utility->Log(ALL, MISC, "RL goal achieved with total reward: %f", totalReward);
+		ai->utility->ChatMsg("RL goal achieved with total reward: %f", totalReward);
 	} 
 	else
 	{
-		ai->utility->Log(ALL, MISC, "RL goal NOT achieved, but total reward is: %f", totalReward);
+		ai->utility->ChatMsg("RL goal NOT achieved, but total reward is: %f", totalReward);
 	}
 }
 
