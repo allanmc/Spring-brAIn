@@ -46,6 +46,7 @@ private:
 	bool waitingForCommander;
 	bool extraMoveSent;
 	int remainingUnits;
+	int gameCounter;
 };
 
 }

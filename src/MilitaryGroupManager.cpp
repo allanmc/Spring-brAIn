@@ -76,7 +76,7 @@ vector<MilitaryUnitGroup*> MilitaryGroupManager::GetIdleGroups()
 	{
 		if(UnitGroups[i]->GetStatus() == MilitaryUnitGroup::MILI_UNIT_GRP_IDLE)
 		{
-			//ai->utility->ChatMsg("Adding an idle group to vector");
+			//ai->utility->Log(ALL, MISC, "Adding an idle group to vector");
 			result.push_back(UnitGroups[i]);
 		}
 	}
@@ -155,9 +155,9 @@ void MilitaryGroupManager::GiveScoutOrder(brainSpace::MilitaryUnitGroup* group)
 		}
 	}
 	ai->utility->Log( ALL, SCOUTING, "------" );
-	//ai->utility->ChatMsg("newHeight:%f", pos.x);
-	//ai->utility->ChatMsg("newWidth:%f", pos.z);
-	//ai->utility->ChatMsg("random generation scout position done");
+	//ai->utility->Log(ALL, MISC, "newHeight:%f", pos.x);
+	//ai->utility->Log(ALL, MISC, "newWidth:%f", pos.z);
+	//ai->utility->Log(ALL, MISC, "random generation scout position done");
 	group->Scout(bestScoutingPos);
 }
 

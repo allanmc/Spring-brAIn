@@ -168,7 +168,7 @@ bool QuadTreeNode::TryToMergeToLeaf()
 
 	if (IsLeaf) //Already a leaf?
 	{
-		ai->utility->ChatMsg("QuadTree error: Can't merge a node which already is a leaf.");
+		ai->utility->Log(ALL, MISC, "QuadTree error: Can't merge a node which already is a leaf.");
 		return false;
 	}
 
@@ -177,7 +177,7 @@ bool QuadTreeNode::TryToMergeToLeaf()
 	{
 		if (!Children[i]->IsLeaf) //If this isn't a leafnode, we shouldn't be here.
 		{
-			//ai->utility->ChatMsg("QuadTree error: Only merge from bottom up!");
+			//ai->utility->Log(ALL, MISC, "QuadTree error: Only merge from bottom up!");
 			return false;
 		}
 		map<int, struct UnitInformationContainer>::iterator iter;

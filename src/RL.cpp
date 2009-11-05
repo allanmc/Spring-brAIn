@@ -11,7 +11,7 @@ RL::RL( AIClasses* aiClasses)
 	ai = aiClasses;
 	
 	currentNode = 0;
-
+	totalReward = 0;
 	nullState = RL_State( ai, -1 );
 	nullAction = RL_Action( -1, -1, false );
 
@@ -276,7 +276,7 @@ RL_Action RL::Update()
 	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() before reward");
 
 	//Reward
-	float reward = -(ai->frame - PreviousFrame[currentNode])/30;
+	float reward = -(ai->frame - PreviousFrame[currentNode]) / 30.0;
 	float bestFutureValue;
 	if ( state.IsTerminal() )
 	{

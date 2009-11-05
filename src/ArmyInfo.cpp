@@ -47,7 +47,7 @@ vector<Unit*> ArmyInfo::RangeQuery(CBoundingBox bbox)
 
 void ArmyInfo::AddUnit(Unit* unit)
 {
-	ai->utility->ChatMsg("Adding army unit...%s - %d", unit->GetDef()->GetHumanName(), unit->GetUnitId() );
+	ai->utility->Log(ALL, MISC, "Adding army unit...%s - %d", unit->GetDef()->GetHumanName(), unit->GetUnitId() );
 	quadTree->InsertUnit(unit->GetUnitId(), unit->GetPos());
 
 	unitCount++;

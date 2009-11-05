@@ -1,7 +1,7 @@
 <?php
 
 
-if (!file_exists($argv[1]) || !file_exists($argv[2]) || !file_exists($argv[3])) {
+if (!file_exists($argv[1])) {
 	die("net2dlib error:
 First argument needs to be location to hugin .net file!
 Second argument needs to be code.h

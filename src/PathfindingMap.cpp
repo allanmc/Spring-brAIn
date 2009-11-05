@@ -209,7 +209,7 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 		/*||
 		 MapArray[ (int)(start.z/Resolution)*MapWidth + (int)start.x/Resolution] > pathfinder->GetMoveData()->GetMaxSlope()*/ )
 	{
-		ai->utility->ChatMsg( "Svend: I cannot reach the destination!!" );
+		ai->utility->Log(ALL, MISC,  "Svend: I cannot reach the destination!!" );
 		list<SAIFloat3> emptyResult;
 		return emptyResult;
 	}
@@ -307,9 +307,38 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 					neighbour->XIndex = x;
 					neighbour->ZIndex = z;
 					neighbour->Slope = MapArray[ z*MapWidth + x ];
-					
+					bool suckyNeighbour = false;
+					if(current->Pos.x > neighbour->Pos.x && current->Pos.y > neighbour->Pos.y)
+					{
+						float slope1 = MapArray[ z*MapWidth + x+1 ];
+						float slope2 = MapArray[ (z-1)*MapWidth + x ];
+						if(slope1 > pathfinder->GetMoveData()->GetMaxSlope() || slope2 > pathfinder->GetMoveData()->GetMaxSlope())
+							suckyNeighbour = true;
+					}
+					else if(current->Pos.x < neighbour->Pos.x && current->Pos.y > neighbour->Pos.y)
+					{
+						float slope1 = MapArray[ z*MapWidth + x-1 ];
+						float slope2 = MapArray[ (z-1)*MapWidth + x ];
+						if(slope1 > pathfinder->GetMoveData()->GetMaxSlope() || slope2 > pathfinder->GetMoveData()->GetMaxSlope())
+							suckyNeighbour = true;
+					}
+					else if(current->Pos.x > neighbour->Pos.x && current->Pos.y < neighbour->Pos.y)
+					{
+						float slope1 = MapArray[ z*MapWidth + x+1 ];
+						float slope2 = MapArray[ (z+1)*MapWidth + x ];
+						if(slope1 > pathfinder->GetMoveData()->GetMaxSlope() || slope2 > pathfinder->GetMoveData()->GetMaxSlope())
+							suckyNeighbour = true;
+					}
+					else if(current->Pos.x < neighbour->Pos.x && current->Pos.y < neighbour->Pos.y)
+					{
+						float slope1 = MapArray[ z*MapWidth + x-1 ];
+						float slope2 = MapArray[ (z+1)*MapWidth + x ];
+						if(slope1 > pathfinder->GetMoveData()->GetMaxSlope() || slope2 > pathfinder->GetMoveData()->GetMaxSlope())
+							suckyNeighbour = true;
+					}					
+
 					//ai->utility->Log( ALL, SLOPEMAP, "(%d, %d) not in openset", neighbour->XIndex, neighbour->ZIndex );
-					if ( neighbour->Slope > pathfinder->GetMoveData()->GetMaxSlope() )
+					if ( neighbour->Slope > pathfinder->GetMoveData()->GetMaxSlope() || suckyNeighbour)
 					{
 						closedSet.insert( make_pair( z*MapWidth + x, neighbour ) );
 						tentativeIsBetter = false;

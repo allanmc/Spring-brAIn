@@ -137,7 +137,7 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 
 SAIFloat3 ConstructionUnitGroup::FindBestDefensePosition(UnitDef *unitDef, SAIFloat3 buildPos)
 {
-	ai->utility->ChatMsg("We are now building a Defense structure: %s", unitDef->GetName());
+	ai->utility->Log(ALL, MISC, "We are now building a Defense structure: %s", unitDef->GetName());
 	//Divide map into quads, and find corner which buildPos is within
 	int mapSplitX = (ai->callback->GetMap()->GetWidth() / 2) * 8;
 	int mapSplitZ = (ai->callback->GetMap()->GetHeight() / 2) * 8;
@@ -153,30 +153,30 @@ SAIFloat3 ConstructionUnitGroup::FindBestDefensePosition(UnitDef *unitDef, SAIFl
 	*/
 	if ( baseX <= mapSplitX && baseZ <= mapSplitZ ) //Quad 1
 	{
-		//ai->utility->ChatMsg("Quad 1");
+		//ai->utility->Log(ALL, MISC, "Quad 1");
 		deltaX = weaponRange - ( BaseDefenseCounter%2==0 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2)*(weaponRange/defenseDensity) : 0 );
 		deltaZ = weaponRange - ( BaseDefenseCounter%2==1 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2+1)*(weaponRange/defenseDensity) : 0 );
 	}
 	else if ( baseX > mapSplitX && baseZ <= mapSplitZ ) //Quad 2
 	{
-		//ai->utility->ChatMsg("Quad 2");
+		//ai->utility->Log(ALL, MISC, "Quad 2");
 		deltaX = -weaponRange + ( BaseDefenseCounter%2==0 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2)*(weaponRange/defenseDensity) : 0 );
 		deltaZ = weaponRange - ( BaseDefenseCounter%2==1 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2+1)*(weaponRange/defenseDensity) : 0 );
 	}
 	else if ( baseX <= mapSplitX && baseZ > mapSplitZ ) //Quad 3
 	{
-		//ai->utility->ChatMsg("Quad 3");
+		//ai->utility->Log(ALL, MISC, "Quad 3");
 		deltaX = weaponRange - ( BaseDefenseCounter%2==0 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2)*(weaponRange/defenseDensity) : 0 );
 		deltaZ = -weaponRange + ( BaseDefenseCounter%2==1 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2+1)*(weaponRange/defenseDensity) : 0 );
 	}
 	else //Quad 4
 	{
-		//ai->utility->ChatMsg("Quad 4");
+		//ai->utility->Log(ALL, MISC, "Quad 4");
 		deltaX = -weaponRange + ( BaseDefenseCounter%2==0 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2)*(weaponRange/defenseDensity) : 0 );
 		deltaZ = -weaponRange + ( BaseDefenseCounter%2==1 ? ((BaseDefenseCounterStart+BaseDefenseCounter)/2+1)*(weaponRange/defenseDensity) : 0 );
 	}
-	//ai->utility->ChatMsg("WeaponRange: %f", weaponRange);
-	//ai->utility->ChatMsg("deltX: %f", deltaX);
+	//ai->utility->Log(ALL, MISC, "WeaponRange: %f", weaponRange);
+	//ai->utility->Log(ALL, MISC, "deltX: %f", deltaX);
 	buildPos.x += deltaX;
 	buildPos.z += deltaZ;
 
@@ -222,7 +222,7 @@ void ConstructionUnitGroup::SetAvailable()
 	{
 		const SBuildUnitCommand next = BuildQueue.front();
 		BuildQueue.pop();
-		ai->utility->ChatMsg( "Queue is now: %d units long", BuildQueue.size() );
+		ai->utility->Log(ALL, MISC,  "Queue is now: %d units long", BuildQueue.size() );
 		AssignBuildOrder( next );
 	}
 	
@@ -287,6 +287,14 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 		return true;
 	}
 	ai->utility->Log(ALL, MISC, "BuildBlocksSelf check 4 done");
+
+	fromPos = ai->utility->GoTo(ai->commander->GetUnitId(), pos, true);
+	if ( !ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom(ai->commander->GetDef(), toBuildUnitDef, pos, fromPos, ai->utility->GetSafePosition()) )
+	{
+		ai->utility->Log( ALL, MISC, "BuildBlocksSelf blocked build by reason 5 (No path from builder position to safe position)");
+		return true;
+	}
+	ai->utility->Log(ALL, MISC, "BuildBlocksSelf check 5 done");
 	return false;
 }
 
@@ -357,7 +365,7 @@ SAIFloat3 ConstructionUnitGroup::FindClosestNonConflictingBuildSite(UnitDef *uni
 
 	ai->utility->Log(ALL, MISC, "FindClosestNonConflictingBuildSite... %d",unitDef->GetUnitDefId());
 
-	ai->utility->ChatMsg("FindClosestNonConflictingBuildSite started");
+	ai->utility->Log(ALL, MISC, "FindClosestNonConflictingBuildSite started");
 
 	do
 	{
@@ -404,7 +412,7 @@ SAIFloat3 ConstructionUnitGroup::FindClosestNonConflictingBuildSite(UnitDef *uni
 			  ||
 			  BuildBlocksSelf(unitDef, pos, facing) );
 	
-	ai->utility->ChatMsg("FindClosestNonConflictingBuildSite ended");
+	ai->utility->Log(ALL, MISC, "FindClosestNonConflictingBuildSite ended");
 
 	if (ai->utility->EuclideanDistance(pos, buildPos) > searchRadius)
 	{

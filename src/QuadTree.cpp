@@ -198,12 +198,12 @@ void QuadTree::Print()
 void QuadTree::Print( QuadTreeNode* iter)
 {
 	CBoundingBox box = iter->GetBoundingBox();
-	ai->utility->ChatMsg("Level: %d", iter->GetLevel());
-	ai->utility->ChatMsg("BBox topleft: ( %f, %f )", box.topLeft.x, box.topLeft.z);
-	ai->utility->ChatMsg("BBox bottomright: ( %f, %f )", box.bottomRight.x, box.bottomRight.z);
-	ai->utility->ChatMsg("Units contained: %d", iter->GetNumberOfUnits());
+	ai->utility->Log(ALL, MISC, "Level: %d", iter->GetLevel());
+	ai->utility->Log(ALL, MISC, "BBox topleft: ( %f, %f )", box.topLeft.x, box.topLeft.z);
+	ai->utility->Log(ALL, MISC, "BBox bottomright: ( %f, %f )", box.bottomRight.x, box.bottomRight.z);
+	ai->utility->Log(ALL, MISC, "Units contained: %d", iter->GetNumberOfUnits());
 	if ( iter->IsLeafNode() )
-		ai->utility->ChatMsg("Current node is leaf");
+		ai->utility->Log(ALL, MISC, "Current node is leaf");
 	else
 	{
 		for ( int i = 0 ; i < 4 ; i++ )
