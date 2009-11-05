@@ -15,16 +15,31 @@ void RL_Q::LoadFromFile(ifstream *readFile)
 		ai->utility->Log(ALL, LOG_RL, "Loading qAction[%i]", i);
 		qAction[i].LoadFromFile(ai, readFile);
 	}
+	FileHeaderQStateVar qStateVars[qTable.numStateVars];
+	for(int i = 0; i < qTable.numStateVars; i++)
+	{
+		ai->utility->Log(ALL, LOG_RL, "Loading qStateVar[%i]", i);
+		qStateVars[i].LoadFromFile(ai, readFile);
+	}
 	ai->utility->Log(ALL, LOG_RL, "Done reading qActions");
 	readFile->read( (char*)actionValueFunction, sizeof(float)*qTable.numActions*qTable.numStates );
 }
 
-RL_Q::RL_Q( AIClasses *aiClasses, int numStates, int numActions )
+RL_Q::RL_Q( AIClasses *aiClasses, vector<QAction> actions, vector<QStateVar> stateVars )
 {
 	ai = aiClasses;
-	this->numActions = numActions;
-	this->numStates = numStates;
-	size = numStates*numActions;
+
+	this->numActions = actions.size();
+	int states = 1;
+	for (int i = 0; i < stateVars.size(); i++)
+	{
+		states *= stateVars[i].numStates;
+	}
+	this->numStates =  states;
+	this->actions = actions;
+	this->stateVars = stateVars;
+	
+	size = this->numStates*this->numActions;
 	actionValueFunction = new float[size];
 }
 
@@ -45,19 +60,24 @@ void RL_Q::SaveToFile(ofstream *file )
 {
 	FileHeaderQTable qTable;
 	FileHeaderQAction qAction[numActions];
-	
+	FileHeaderQStateVar fileQStateVar[stateVars.size()];
 	qTable.numActions = numActions;
 	qTable.numStates = numStates;
-	for(int i = 0; i< numActions; i++)
-	{
-		qAction[i].id = i;
-		qAction[i].name = "p00p";
-	}
+	qTable.numStateVars = stateVars.size();
 
 	file->write( (char*)&qTable, sizeof(FileHeaderQTable) );
-	//file.write( (char*)&qAction, sizeof(FileHeaderQAction)*numActions );
-	for(int i = 0; i < numActions; i++)
+	for(int i = 0; i < actions.size(); i++)
+	{
+		qAction[i].qAction = actions[i];
+		//qAction[i].qAction.id = i;
+		//qAction[i].qAction.name = "action";
 		qAction[i].SaveToFile(file);
+	}
+	for(int i = 0; i < stateVars.size(); i++)
+	{
+		fileQStateVar[i].qStateVar = stateVars[i];
+		fileQStateVar[i].SaveToFile(file);
+	}
 	file->write( (char*)actionValueFunction, sizeof(float)*size );
 
 }

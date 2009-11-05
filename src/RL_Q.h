@@ -9,27 +9,60 @@
 namespace brainSpace
 {
 
+	struct QStateVar
+	{
+		const char *name;
+		short unsigned int numStates;
+	};
+	struct QAction
+	{
+		const char *name;
+		short unsigned int id;
+	};
+
 	struct FileHeaderQAction
 	{
-		short unsigned int id;
 		short unsigned int nameSize;
-		const char *name;
+		QAction qAction;
 
 		void LoadFromFile(AIClasses *ai, ifstream *file) 
 		{
-			file->read( (char*)&id, sizeof(short unsigned int) );
 			file->read( (char*)&nameSize, sizeof(short unsigned int) );
-			name = new char[nameSize];
-			file->read( (char*)name, sizeof(char)*nameSize );
-			
+			qAction.name = new char[nameSize];
+			file->read( (char*)(qAction.name), sizeof(char)*nameSize );
+			file->read( (char*)&(qAction.id), sizeof(short unsigned int) );
 		}
 
 		void SaveToFile(ofstream *file)
 		{
-			nameSize = strlen(name)+1;
-			file->write( (char*)&id, sizeof(short unsigned int) );
+			nameSize = strlen(qAction.name)+1;
 			file->write( (char*)&nameSize, sizeof(short unsigned int) );
-			file->write( (char*)name, sizeof(char)*nameSize );
+			file->write( (char*)(qAction.name), sizeof(char)*nameSize );
+			file->write( (char*)&(qAction.id), sizeof(short unsigned int) );
+		}
+	};
+
+	struct FileHeaderQStateVar
+	{
+		short unsigned int nameSize;
+		QStateVar qStateVar;
+		
+		
+
+		void LoadFromFile(AIClasses *ai, ifstream *file) 
+		{
+			file->read( (char*)&nameSize, sizeof(short unsigned int) );
+			qStateVar.name = new char[nameSize];
+			file->read( (char*)(qStateVar.name), sizeof(char)*nameSize );
+			file->read( (char*)&(qStateVar.numStates), sizeof(short unsigned int) );
+		}
+
+		void SaveToFile(ofstream *file)
+		{
+			nameSize = strlen(qStateVar.name)+1;
+			file->write( (char*)&nameSize, sizeof(short unsigned int) );
+			file->write( (char*)(qStateVar.name), sizeof(char)*nameSize );
+			file->write( (char*)&(qStateVar.numStates), sizeof(short unsigned int) );
 		}
 	};
 
@@ -37,6 +70,7 @@ namespace brainSpace
 	{
 		short unsigned int numStates;
 		short unsigned int numActions;
+		short unsigned int numStateVars;
 	};
 
 	struct FileHeader
@@ -53,10 +87,12 @@ namespace brainSpace
 		int size;
 		int numStates;
 		int numActions;
+		std::vector<QAction> actions;
+		std::vector<QStateVar> stateVars;
 		AIClasses *ai;
 
 	public:
-		RL_Q( AIClasses *aiClasses, int numStates, int numActions);
+		RL_Q( AIClasses *aiClasses, vector<QAction> actions, vector<QStateVar> stateVars );
 		~RL_Q();
 
 		void SaveToFile(ofstream *readFile);

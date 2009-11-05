@@ -20,10 +20,24 @@ RL::RL( AIClasses* aiClasses)
 		PreviousState[i] = nullState;
 		PreviousAction[i] = nullAction;
 	}
-
-	ValueFunction[0] = new RL_Q(ai,2*2/*states*/,2/*actions*/); //root
-	ValueFunction[1] = new RL_Q(ai,RL_LAB_INDEX*RL_PLANT_INDEX/*states*/,2/*actions*/); //Factory
-	ValueFunction[2] = new RL_Q(ai,RL_SOLAR_INDEX*RL_MEX_INDEX/*states*/,2/*actions*/); //Resource
+	
+	vector<QStateVar> stateVars (2);
+	vector<QAction> actions (2);
+	stateVars[0] = (QStateVar){"EL", 2};
+	stateVars[1] = (QStateVar){"CBL", 2};
+	actions[0] = (QAction){"Production", 0};
+	actions[1] = (QAction){"Resource", 1};
+	ValueFunction[0] = new RL_Q(ai, actions, stateVars); //root
+	stateVars[0] = (QStateVar){"Plant", RL_PLANT_INDEX};
+	stateVars[1] = (QStateVar){"Lab", RL_LAB_INDEX};
+	actions[0] = (QAction){"Plant", 0};
+	actions[1] = (QAction){"Lab", 1};
+	ValueFunction[1] = new RL_Q(ai, actions, stateVars); //Factory
+	stateVars[0] = (QStateVar){"Mex", RL_MEX_INDEX};
+	stateVars[1] = (QStateVar){"Solar", RL_SOLAR_INDEX};
+	actions[0] = (QAction){"Mex", 0};
+	actions[1] = (QAction){"Solar", 1};
+	ValueFunction[2] = new RL_Q(ai, actions, stateVars); //Resource
 
 	ParentNode[0] = -1; //no parent
 	ParentNode[1] = 0;

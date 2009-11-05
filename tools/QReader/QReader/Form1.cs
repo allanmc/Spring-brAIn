@@ -26,7 +26,6 @@ namespace QReader
 
         private void richTextBox1_TextChanged(object sender, EventArgs e)
         {
-
         }
 
         public void setText(string str)
