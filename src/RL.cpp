@@ -39,7 +39,8 @@ RL::RL( AIClasses* aiClasses)
 RL::~RL()
 {
 	SaveToFile();
-	for ( int i = 0 ; i < 3 ; i++ )
+	ai->utility->ChatMsg("done saving to file");
+	for ( int i = 0 ; i < RL_NUM_NODES ; i++ )
 	{
 		delete ValueFunction[i];
 		ValueFunction[i] = NULL;
@@ -48,9 +49,13 @@ RL::~RL()
 		//delete PreviousState[i];
 		//PreviousState[i] = NULL;
 	}
+	ai->utility->ChatMsg("deleted all valuefunctions");
 	delete[] ValueFunction;
+	ai->utility->ChatMsg("deleted valuefunctions array");
 	delete[] PreviousAction;
+	ai->utility->ChatMsg("deleted prev actions array");
 	delete[] PreviousState;
+	ai->utility->ChatMsg("deleted prev state array");
 	if (goalAchieved)
 	{
 		ai->utility->ChatMsg("RL goal achieved with total reward: %f", totalReward);
@@ -294,6 +299,10 @@ RL_Action RL::Update()
 	{
 		RL_Action bestAction = FindBestAction( state );
 		bestFutureValue = ValueFunction[currentNode]->GetValue(state, bestAction);
+	}
+	if(currentNode == 0)
+	{
+		totalReward += reward;
 	}
 
 	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() reward set");

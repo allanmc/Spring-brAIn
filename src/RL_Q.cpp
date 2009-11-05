@@ -32,6 +32,7 @@ RL_Q::~RL_Q()
 {
 	delete[] actionValueFunction;
 	actionValueFunction = NULL;
+	ai->utility->Log(ALL, LOG_RL, "Done deleting RL_Q");
 }
 
 void RL_Q::Clear()
