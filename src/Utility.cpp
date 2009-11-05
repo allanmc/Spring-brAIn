@@ -433,10 +433,19 @@ void Utility::ResetGame(RL **rl)
 	moveCommand.unitId = ai->commander->GetUnitId();
 	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &moveCommand);
 
+	Log(IMPORTANT, MISC, "Giving us start resources");
+	SGiveMeResourceCheatCommand resourceCommand;
+	resourceCommand.amount = 1000;
+	resourceCommand.resourceId = GetResource("Metal")->GetResourceId();
+	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_CHEATS_GIVE_ME_RESOURCE, &resourceCommand);
+	resourceCommand.resourceId = GetResource("Energy")->GetResourceId();
+	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_CHEATS_GIVE_ME_RESOURCE, &resourceCommand);
+
 	Log(IMPORTANT, MISC, "Killing all units besides the commander..."); 
 	//Delete all units besides out new commander
 	
 	Suicide(ai->commander->GetUnitId(), true);
+
 
 	Log(IMPORTANT, MISC, "brAIn has been reset!"); 
 }
