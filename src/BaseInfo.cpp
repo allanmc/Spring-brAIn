@@ -30,7 +30,7 @@ void BaseInfo::AddBuilding(Unit* building)
 	//check for builder units
 	if(building->GetDef()->GetSpeed() > 0) return;
 
-	//ai->utility->ChatMsg("Adding base unit...");
+	//ai->utility->Log(ALL, MISC, "Adding base unit...");
 	quadTree->InsertUnit(building->GetUnitId(), building->GetPos());
 
 	buildingCount++;

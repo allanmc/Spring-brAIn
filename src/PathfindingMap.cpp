@@ -209,7 +209,7 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 		/*||
 		 MapArray[ (int)(start.z/Resolution)*MapWidth + (int)start.x/Resolution] > pathfinder->GetMoveData()->GetMaxSlope()*/ )
 	{
-		ai->utility->ChatMsg( "Svend: I cannot reach the destination!!" );
+		ai->utility->Log(ALL, MISC,  "Svend: I cannot reach the destination!!" );
 		list<SAIFloat3> emptyResult;
 		return emptyResult;
 	}

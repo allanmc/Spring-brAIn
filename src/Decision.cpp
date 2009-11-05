@@ -11,7 +11,7 @@ int COMMANDERID = -1;
 Decision::Decision(AIClasses* aiClasses)
 {
 	ai = aiClasses;
-	
+	gameCounter = 0;
 	gc = new GroupController( ai );
 	ai->utility->Log(ALL, MISC, "GroupController loaded...");
 	bc = new BuildingController( ai );
@@ -45,7 +45,7 @@ Decision::Decision(AIClasses* aiClasses)
 	huginTest->setEvidence("attacks", "0");
 	huginTest->Propagate();
 	*/
-
+	ai->utility->ChatMsg("Starting game #%i", gameCounter++);
 }
 
 Decision::~Decision(void)
@@ -92,7 +92,7 @@ void Decision::UnitFinished(int unit)
 
 	Unit * u = Unit::GetInstance(ai->callback,unit);
 	
-	ai->utility->ChatMsg("Unit finished, \"%s\", pos:%f,%f", u->GetDef()->GetName(), u->GetPos().x, u->GetPos().z);
+	ai->utility->Log(ALL, MISC, "Unit finished, \"%s\", pos:%f,%f", u->GetDef()->GetName(), u->GetPos().x, u->GetPos().z);
 	UnitDef * ud = u->GetDef();
 	if(ud->GetSpeed() > 0)
 	{
@@ -134,11 +134,11 @@ void Decision::UpdateRL()
 			c.facing = 0;
 			c.options = 0;
 			gc->ErectBuilding( c );
-			ai->utility->ChatMsg( "RL: Building unit with unitdef: %d", action->UnitDefID );
+			ai->utility->Log(ALL, MISC,  "RL: Building unit with unitdef: %d", action->UnitDefID );
 		}
 		else 
 		{
-			ai->utility->ChatMsg( "we have reached our goal!!" );
+			ai->utility->Log(ALL, MISC,  "we have reached our goal!!" );
 			//ai->utility->Suicide();
 			Reset();
 		}
@@ -148,12 +148,12 @@ void Decision::UpdateRL()
 ///called when one of our units are destoyed
 void Decision::UnitDestroyed(int unit, int attacker)
 {
-	ai->utility->ChatMsg( "UnitDestroyed id = %i, name = %s", unit, Unit::GetInstance(ai->callback,unit)->GetDef()->GetName() );
+	ai->utility->Log(ALL, MISC,  "UnitDestroyed id = %i, name = %s", unit, Unit::GetInstance(ai->callback,unit)->GetDef()->GetName() );
 	if (resettingGame)
 	{
 		remainingUnits--;
 		//vector<Unit*> units = ai->callback->GetFriendlyUnits();
-		ai->utility->ChatMsg("Units in resetting game check: %i", remainingUnits);
+		ai->utility->Log(ALL, MISC, "Units in resetting game check: %i", remainingUnits);
 		if (remainingUnits==0)//Are all old units destroyed now?
 		{
 			waitingForCommander = true;
@@ -184,7 +184,7 @@ void Decision::UnitDestroyed(int unit, int attacker)
 	}
 	else 
 	{	
-		ai->utility->ChatMsg( "Unit destroyed: %s", destroyee->GetDef()->GetHumanName() );
+		ai->utility->Log(ALL, MISC,  "Unit destroyed: %s", destroyee->GetDef()->GetHumanName() );
 		ai->knowledge->selfInfo->baseInfo->RemoveBuilding(destroyee);
 	}
 
@@ -307,6 +307,7 @@ void Decision::Reset()
 	vector<Unit*> units = ai->callback->GetFriendlyUnits();
 	remainingUnits = units.size();
 	ai->utility->ResetGame(&rl);
+	ai->utility->ChatMsg("Starting game #%i", gameCounter++);
 	delete ai->knowledge;
 	ai->knowledge = NULL;
 	ai->knowledge = new Knowledge( ai );
@@ -314,18 +315,18 @@ void Decision::Reset()
 	ai->utility = NULL;
 	ai->utility = new Utility( ai );
 	delete ai->math;
-	ai->utility->ChatMsg("Deleted ai->math");
+	ai->utility->Log(ALL, MISC, "Deleted ai->math");
 	ai->math = NULL;
 	ai->math = new BrainMath( ai );
 	delete gc;
-	ai->utility->ChatMsg("Deleted gc");
+	ai->utility->Log(ALL, MISC, "Deleted gc");
 	gc = NULL;
 	gc = new GroupController( ai );
 	delete bc;
-	ai->utility->ChatMsg("Deleted bc");
+	ai->utility->Log(ALL, MISC, "Deleted bc");
 	bc = NULL;
 	bc = new BuildingController( ai );
-	ai->utility->ChatMsg("Reset() done");
+	ai->utility->Log(ALL, MISC, "Reset() done");
 }
 
 void Decision::Update(int frame)
@@ -358,10 +359,10 @@ void Decision::Update(int frame)
 				extraMoveSent = true;
 			}
 		}
-		/*ai->utility->ChatMsg("Hmm1");
+		/*ai->utility->Log(ALL, MISC, "Hmm1");
 		vector<Unit*> units = ai->callback->GetFriendlyUnits();
-		ai->utility->ChatMsg("Hmm2");
-		ai->utility->ChatMsg("Hmm3: %i", units.size());
+		ai->utility->Log(ALL, MISC, "Hmm2");
+		ai->utility->Log(ALL, MISC, "Hmm3: %i", units.size());
 		if (units.size()==1)
 		{
 
@@ -390,7 +391,7 @@ void Decision::Update(int frame)
 	}
 	if(frame == 1)
 	{	
-		ai->utility->ChatMsg( "I am now in frame 1!" );
+		ai->utility->Log(ALL, MISC,  "I am now in frame 1!" );
 		ai->utility->LaterInitialization();
 		//ai->knowledge->mapInfo->scoutMap->DrawGrid();
 
@@ -409,7 +410,7 @@ void Decision::Update(int frame)
 			c.facing = 0;
 			c.options = 0;
 			gc->ErectBuilding( c );
-			ai->utility->ChatMsg( "RL: Building unit with unitdef: %d", action->UnitDefID );
+			ai->utility->Log(ALL, MISC,  "RL: Building unit with unitdef: %d", action->UnitDefID );
 		}*/
 		
 
@@ -524,7 +525,7 @@ void Decision::Update(int frame)
 		//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "Number of battles close to our base within the last 6000 frames: %d. Current frame %d", BattleInfoInstance->NumberOfBattlesInArea( 6000, box ), ai->frame);
 		int battles = BattleInfoInstance->NumberOfBattlesInArea( 9000, box );
 		ai->utility->Log( LOG_DEBUG, DECISION, "Number of battles close to our base within the last 9000 frames: %d", battles);
-		//ai->utility->ChatMsg("Number of battles close to our base within the last 9000 frames: %d", battles);
+		//ai->utility->Log(ALL, MISC, "Number of battles close to our base within the last 9000 frames: %d", battles);
 		int b_range;
 		if(battles == 0)
 		{

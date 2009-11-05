@@ -19,7 +19,7 @@ brainSpace::BrAIn::BrAIn(springai::AICallback* cb)
 	decision = new Decision(ai);
 	ai->utility->Log(ALL, MISC, "Decision loaded...");
 	ai->frame = 0;
-	//ai->utility->ChatMsg("Hello world i am team: %d",teamId);
+	//ai->utility->Log(ALL, MISC, "Hello world i am team: %d",teamId);
 	srand(0);
 }
 brainSpace::BrAIn::~BrAIn() 
@@ -46,7 +46,7 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 	//if(topic > 50) ai->utility->Log(ALL,EVENT,"wierd crap");
 	switch (topic) {
 		case EVENT_INIT:
-			//ai->utility->ChatMsg("THE BEGINNING! LOG_LEVEL: %i, LOG_TYPE: %i, EVENT: %i", LOG_LEVEL, LOG_TYPE);
+			//ai->utility->Log(ALL, MISC, "THE BEGINNING! LOG_LEVEL: %i, LOG_TYPE: %i, EVENT: %i", LOG_LEVEL, LOG_TYPE);
 			ai->utility->Log(ALL, CHAT|DECISION, "Logging started...");
 			//do i really need to do anything here? (i allready have a teamId and a callback)
 			break;
@@ -84,7 +84,7 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 
 				//std::string unitDefName = ai->callback->GetFriendlyUnits()[0]->GetDef()->GetName();
 
-				//ai->utility->ChatMsg("Hello Engine (from brAIn), first friendly untis def name is: " + unitDefName);
+				//ai->utility->Log(ALL, MISC, "Hello Engine (from brAIn), first friendly untis def name is: " + unitDefName);
 
 				break;
 			}

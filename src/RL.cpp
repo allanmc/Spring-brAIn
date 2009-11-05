@@ -9,7 +9,8 @@ RL::RL( AIClasses* aiClasses)
 	vector<float> f;
 	
 	ai = aiClasses;
-
+	goalReached = false;
+	totalReward = 0;
 	ValueFunction = new RL_Q(	ai,
 								RL_PLANT_INDEX*RL_LAB_INDEX*RL_MEX_INDEX*RL_SOLAR_INDEX,
 								RL_ACTION_INDEX,
@@ -22,6 +23,14 @@ RL::RL( AIClasses* aiClasses)
 
 RL::~RL()
 {
+	if (goalReached)
+	{
+		ai->utility->ChatMsg("RL-done - reached goal with reward %i", totalReward);
+	} 
+	else
+	{
+		ai->utility->ChatMsg("RL-done - did NOT reach goal with reward %i", totalReward);
+	}
 }
 
 RL_State* RL::GetState()
@@ -98,6 +107,7 @@ RL_Action *RL::Update( )
 		bestAction = FindBestAction( state );
 		bestValue = ValueFunction->GetValue(state, bestAction);
 	}
+	totalReward += reward;
 
 	if ( PreviousState == NULL )
 	{
@@ -120,6 +130,7 @@ RL_Action *RL::Update( )
 	ValueFunction->SaveToFile();//move to terminal later
 	if ( terminal )
 	{
+		goalReached = true;
 		return new RL_Action(-1,-1);//MEANS THAT YOU SHOULD STOP NOW!!
 	}
 	return nextAction;
