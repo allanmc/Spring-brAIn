@@ -1,7 +1,7 @@
 #ifndef _BRAIN_GLOBAL_H
 #define _BRAIN_GLOBAL_H
 
-#define LOG_TYPE (PATHFIND)
+#define LOG_TYPE (PATHFIND | MISC)
 #define LOG_LEVEL ALL
 
 #include "types.h"

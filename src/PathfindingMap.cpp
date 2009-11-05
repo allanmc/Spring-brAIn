@@ -425,6 +425,7 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 			}
 		}
 	}
+	ai->utility->Log(ALL, PATHFIND, "Openset is empty without finding result");
 	list<SAIFloat3> emptyResult;
 	return emptyResult;
 }
