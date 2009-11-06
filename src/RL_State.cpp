@@ -21,7 +21,12 @@ RL_State::RL_State( AIClasses* aiClasses, int node)
 			int affordable = ai->knowledge->selfInfo->resourceInfo->IsAffordableToBuild(ai->utility->GetUnitDef("armcom"),
 				ai->utility->GetUnitDef("armlab"));
 			bool CanBuildLab = (affordable == 0);
+			
 			ID = (CanBuildLab ? 2 : 0) + (EnoughLabs ? 1 : 0);
+			ai->utility->Log(ALL, LOG_RL, "RL_State, affordable = %i", affordable);
+			ai->utility->Log(ALL, LOG_RL, "RL_State, CanBuildLab = %i", CanBuildLab);
+			ai->utility->Log(ALL, LOG_RL, "RL_State, EnoughLabs = %i", EnoughLabs);
+			ai->utility->Log(ALL, LOG_RL, "RL_State, ID = %i", ID);
 			Actions.push_back(RL_Action(1,0,true));
 			Actions.push_back(RL_Action(2,1,true));
 		}break;

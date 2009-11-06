@@ -11,7 +11,7 @@
 #define RL_NUM_NODES 3
 
 #define GAMMA 0.9
-#define ALPHA 1
+#define ALPHA 0.1
 
 #define FILE_HEADER "QB"
 
