@@ -1,6 +1,7 @@
 #include "Utility.h"
 #include "global.h"
 #include <stdio.h>
+#include <sstream>
 
 using namespace std;
 using namespace springai;
@@ -91,12 +92,14 @@ void Utility::Log(int logLevel, int logType, const char* msg, ...)
 	
 	if (fp)
 	{
+		fprintf(fp, "Frame %d: ", ai->frame);
+
 		va_list list;
 		va_start(list, msg);
 		vfprintf(fp, msg, list);
 		va_end(list);
 		fputc('\n', fp);
-		fflush(fp);
+		//fflush(fp);
 	}
 }
 
