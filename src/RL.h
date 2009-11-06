@@ -6,6 +6,8 @@
 #define RL_LAB_INDEX 5
 #define RL_PLANT_INDEX 5
 
+#define QBFILE_VERSION 2
+
 #define GAMMA 0.9
 #define ALPHA 1
 #define FILE_HEADER "QB"
@@ -96,19 +98,25 @@ namespace brainSpace {
 		std::vector<QAction> actions;
 		std::vector<QStateVar> stateVars;
 
-		void LoadFromFile()
+		bool LoadFromFile()
 		{
 			ifstream readFile;
 			FileHeader fileHeader;
 			FileHeaderQTable qTable;
 			
 			ai->utility->Log(ALL, LOG_RL, "I am going to read RL file!");
+			
+			FILE* fp = NULL;
+			fp = fopen( File, "rb" );
+			if (fp == NULL)
+				return false;
+			fclose( fp );
 
 			readFile.open( File, ios::binary | ios::in );
 			readFile.read( (char*)&fileHeader, sizeof(FileHeader) );
 			if (fileHeader.header[0]==FILE_HEADER[0] &&
 				fileHeader.header[1]==FILE_HEADER[1] &&
-				fileHeader.type==1)
+				fileHeader.type==QBFILE_VERSION)
 			{
 				readFile.read( (char*)&qTable, sizeof(FileHeaderQTable) );//Only 1 in this flat q
 				ai->utility->Log(ALL, LOG_RL, "FileHeaderQTable, numStates: %i", qTable.numStates);
@@ -127,6 +135,12 @@ namespace brainSpace {
 				}
 				ai->utility->Log(ALL, LOG_RL, "Done reading qActions");
 				readFile.read( (char*)actionValueFunction, sizeof(float)*qTable.numActions*qTable.numStates );
+				return true;
+			}
+			else
+			{
+				ai->utility->Log(ALL, LOG_RL, "Wrong/outdated RL file - creating new!");
+				return false;
 			}
 
 			readFile.close();
@@ -139,7 +153,6 @@ namespace brainSpace {
 
 			const char* dir = ai->callback->GetDataDirs()->GetWriteableDir();
 			
-			ai->utility->Log(ALL, MISC, "RL_Q 1");
 			this->numActions = actions.size();
 			int states = 1;
 			for (int i = 0; i < stateVars.size(); i++)
@@ -150,29 +163,23 @@ namespace brainSpace {
 			this->actions = actions;
 			this->stateVars = stateVars;
 			size = this->numStates*this->numActions;
-			ai->utility->Log(ALL, MISC, "RL_Q 2");
+			
 			actionValueFunction = new float[size];
-			ai->utility->Log(ALL, MISC, "RL_Q 3");
+			
 			char filename[200];
 			char *path = new char[200];
 			strcpy(path, dir);
 			SNPRINTF( filename, 200, "q.bin");
 			strcat(path, filename);
 			File = path;
-			ai->utility->Log(ALL, MISC, "RL_Q 4");
-			FILE* fp = NULL;
-			fp = fopen( File, "rb" );
-			if( fp != NULL )
-			{
-				fclose( fp );
-				LoadFromFile();
-			}
-			else
+			
+			if( !LoadFromFile() )
 			{
 				for ( int i = 0 ; i < size ; i++ )
+				{
 					actionValueFunction[i] = 0;
+				}
 			}
-			ai->utility->Log(ALL, MISC, "RL_Q 5");
 		}
 
 		~RL_Q()
@@ -187,7 +194,7 @@ namespace brainSpace {
 			fileHeader.header[0] = FILE_HEADER[0];
 			fileHeader.header[1] = FILE_HEADER[1];
 			fileHeader.numQTables = 1;
-			fileHeader.type = 1;
+			fileHeader.type = QBFILE_VERSION;
 			
 			FileHeaderQTable qTable;
 			FileHeaderQAction qAction[numActions];
