@@ -17,8 +17,8 @@ RL::RL( AIClasses* aiClasses)
 
 	vector<QStateVar> stateVars (2);
 	vector<QAction> actions (2);
-	stateVars[0] = (QStateVar){"EL", 2};
-	stateVars[1] = (QStateVar){"CBL", 2};
+	stateVars[0] = (QStateVar){"CBL", 2};
+	stateVars[1] = (QStateVar){"EL", 2};
 	actions[0] = (QAction){"Production", 0};
 	actions[1] = (QAction){"Resource", 1};
 	ValueFunction[0] = new RL_Q(ai, actions, stateVars); //root
