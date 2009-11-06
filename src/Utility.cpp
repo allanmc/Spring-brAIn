@@ -99,7 +99,7 @@ void Utility::Log(int logLevel, int logType, const char* msg, ...)
 		vfprintf(fp, msg, list);
 		va_end(list);
 		fputc('\n', fp);
-		//fflush(fp);
+		fflush(fp);
 	}
 }
 
