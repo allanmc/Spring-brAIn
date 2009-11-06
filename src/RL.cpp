@@ -39,7 +39,7 @@ RL::RL( AIClasses* aiClasses)
 	ParentNode[1] = 0;
 	ParentNode[2] = 0;
 
-	Epsilon = -1;
+	Epsilon = 9;
 	LoadFromFile();
 
 	totalReward = 0.0;
@@ -348,10 +348,7 @@ RL_Action RL::Update()
 	//delete PreviousAction[currentNode];
 	PreviousAction[currentNode] = nullAction;
 	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() deleted PreviousAction for node %i", currentNode);
-	PreviousState[currentNode] = state;
-	PreviousAction[currentNode] = nextAction;
-	PreviousFrame[currentNode] = ai->frame;
-	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() done setting stuff");
+	
 	if ( terminal )
 	{
 		ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() terminal");
@@ -371,6 +368,11 @@ RL_Action RL::Update()
 	else
 	{
 		ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() non terminal");
+		PreviousState[currentNode] = state;
+		PreviousAction[currentNode] = nextAction;
+		PreviousFrame[currentNode] = ai->frame;
+		ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() done setting stuff");
+		
 		if(nextAction.Complex)
 		{
 			ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() complex");
