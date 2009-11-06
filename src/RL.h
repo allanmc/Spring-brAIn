@@ -119,6 +119,12 @@ namespace brainSpace {
 					ai->utility->Log(ALL, LOG_RL, "Loading qAction[%i]", i);
 					qAction[i].LoadFromFile(ai, &readFile);
 				}
+				FileHeaderQStateVar qStateVars[qTable.numStateVars];
+				for(int i = 0; i < qTable.numStateVars; i++)
+				{
+					ai->utility->Log(ALL, LOG_RL, "Loading qStateVar[%i]", i);
+					qStateVars[i].LoadFromFile(ai, &readFile);
+				}
 				ai->utility->Log(ALL, LOG_RL, "Done reading qActions");
 				readFile.read( (char*)actionValueFunction, sizeof(float)*qTable.numActions*qTable.numStates );
 			}
