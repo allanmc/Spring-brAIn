@@ -180,7 +180,7 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 			//WTH was that?
 			break;
 		case EVENT_COMMAND_FINISHED:
-			ai->utility->Log(LOG_DEBUG,EVENT,"command finished");
+			ai->utility->Log(ALL,MISC,"command finished");
 			break;
 		case EVENT_LOAD:
 			ai->utility->Log(LOG_DEBUG,EVENT,"load");

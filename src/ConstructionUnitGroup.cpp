@@ -78,6 +78,7 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	if(!hest)
 	{
 		ai->knowledge->mapInfo->pathfindingMap->PrintSection(buildPos);
+		ai->knowledge->mapInfo->pathfindingMap->PathExists(ai->commander->GetDef(), buildPos, ai->utility->GetSafePosition(), true);
 	}
 	
 	Idle = false;
@@ -91,7 +92,8 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	{
 		ai->utility->Log(ALL, MISC, "Find extractor build spot" );
 		order.buildPos = FindClosestMetalExtractionSite( buildPos );
-		order.buildPos.y = 30;
+		if(order.buildPos.y != -1)
+			order.buildPos.y = 30;
 		ai->utility->Log(ALL, MISC, "Metal extractor build position set" );
 	}
 	//Check to see if unit-to-build is LLT, the defense structure, and find good spot
@@ -480,6 +482,11 @@ SAIFloat3 ConstructionUnitGroup::FindClosestMetalExtractionSite(SAIFloat3 pos, b
 		}
 	}
 	///TODO: What if we didn't find an accaptable spot? (lowestIdx=-1)
+	if(lowestIdx == -1)
+	{
+		// we didnt find a spot
+		return (SAIFloat3) {0,-1,0};
+	}
 	pos = spots[lowestIdx];
 	
 	return pos;
