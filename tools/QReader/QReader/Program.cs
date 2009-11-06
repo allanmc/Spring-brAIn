@@ -15,6 +15,8 @@ namespace QReader
         [STAThread]
         static void Main()
         {
+            ushort validVersion = 2;
+            
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Form1 form = new Form1();
@@ -26,12 +28,18 @@ namespace QReader
             Stream s =  op.OpenFile();
             System.IO.BinaryReader br = new BinaryReader(s);
             byte[] header = br.ReadBytes(2);
-            if ( !(header[0]=='Q' && header[1]=='B') )
+            if (!(header[0] == 'Q' && header[1] == 'B'))
+            {
+                MessageBox.Show("Wrong file type!");
                 return;
+            }
 
             ushort type = br.ReadUInt16();
-            if (type != 1)
+            if (type != validVersion)
+            {
+                MessageBox.Show("Wrong QB file version! Expected version " + validVersion + ", but this file is version " + type);
                 return;
+            }
 
             ushort numQTables = br.ReadUInt16();
 
