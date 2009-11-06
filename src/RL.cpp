@@ -308,7 +308,9 @@ RL_Action RL::Update()
 	else
 	{
 		RL_Action bestAction = FindBestAction( state );
+		ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() before getvalue");
 		bestFutureValue = ValueFunction[currentNode]->GetValue(state, bestAction);
+		ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() after getvalue");
 	}
 	if(currentNode == 0)
 	{
