@@ -11,11 +11,21 @@ RL::RL( AIClasses* aiClasses)
 	ai = aiClasses;
 	goalReached = false;
 	totalReward = 0;
-	ValueFunction = new RL_Q(	ai,
-								RL_PLANT_INDEX*RL_LAB_INDEX*RL_MEX_INDEX*RL_SOLAR_INDEX,
-								RL_ACTION_INDEX,
-								DataDirs::GetInstance(ai->callback)->GetWriteableDir());
 
+	vector<QStateVar> stateVars (4);
+	vector<QAction> actions (4);
+	ai->utility->Log(ALL, MISC, "Starting new RL");
+	stateVars[0] = (QStateVar){"Solar", RL_SOLAR_INDEX};
+	stateVars[1] = (QStateVar){"Mex", RL_MEX_INDEX};
+	stateVars[2] = (QStateVar){"Labs", RL_LAB_INDEX};
+	stateVars[3] = (QStateVar){"Plants", RL_PLANT_INDEX};
+	actions[0] = (QAction){"Solar", 0};
+	actions[1] = (QAction){"Mex", 1};
+	actions[2] = (QAction){"Labs", 2};
+	actions[3] = (QAction){"Plants", 3};
+	ai->utility->Log(ALL, MISC, "Ended new RL");
+	ValueFunction = new RL_Q(ai, actions, stateVars);
+	ai->utility->Log(ALL, MISC, "RL_Q constructed");
 	Epsilon = 9;
 	PreviousState = NULL;
 	PreviousAction = NULL;
