@@ -239,6 +239,8 @@ void ConstructionUnitGroup::SetAvailable()
 bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 pos, int facing)
 {
 	ai->utility->Log(ALL, MISC, "BuildBlocksSelf check position (%f,%f)...", pos.x, pos.z);
+	if(pos.y > 200)
+		pos.y = 200;
 	if(figureId == 0)
 		figureId = ai->utility->DrawCircle(pos, 50);
 	else

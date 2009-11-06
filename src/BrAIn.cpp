@@ -66,8 +66,9 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 			}
 		case EVENT_MESSAGE:
 			{
-				ai->utility->Log(LOG_DEBUG,EVENT,"message");
-				//struct SMessageEvent* evt = (struct SMessageEvent*) data;
+				ai->utility->Log(ALL,MISC,"message");
+				struct SMessageEvent* evt = (struct SMessageEvent*) data;
+				ai->utility->Log(ALL,MISC,evt->message);
 				//why are you talking to me? im a bot!
 				break;
 			}
