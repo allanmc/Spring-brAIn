@@ -215,7 +215,7 @@ SAIFloat3 Utility::GoTo(int unitId, SAIFloat3 pos, bool simulate)
 	Unit* unit = Unit::GetInstance(ai->callback, unitId);
 	list<SAIFloat3> wayPoints;
 	bool goToward = true;
-	if (ai->utility->EuclideanDistance(unit->GetPos(), pos)<50)
+	if (ai->utility->EuclideanDistance(unit->GetPos(), pos)<unit->GetDef()->GetBuildDistance())
 	{
 		//wayPoints.push_back(pos);
 		wayPoints = ai->knowledge->mapInfo->pathfindingMap->FindPathTo(unit->GetDef(), unit->GetPos(), GetSafePosition());
@@ -227,6 +227,8 @@ SAIFloat3 Utility::GoTo(int unitId, SAIFloat3 pos, bool simulate)
 		wayPoints = ai->knowledge->mapInfo->pathfindingMap->FindPathTo(unit->GetDef(), unit->GetPos(), pos);
 		ai->utility->Log(ALL, MISC, "GoTo: I am going towards buildlocation!");
 	}
+	if(wayPoints.size() == 0)
+		return (SAIFloat3) {0,-1,0};
 
 	SMoveUnitCommand moveCommand;
 	

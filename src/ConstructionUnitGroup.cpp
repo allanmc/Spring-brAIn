@@ -300,12 +300,20 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 	ai->utility->Log(ALL, MISC, "BuildBlocksSelf check 4 done");
 
 	fromPos = ai->utility->GoTo(ai->commander->GetUnitId(), pos, true);
-	if ( !ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom(ai->commander->GetDef(), toBuildUnitDef, pos, fromPos, ai->utility->GetSafePosition()) )
+	if(fromPos.y != -1)
 	{
-		ai->utility->Log( ALL, MISC, "BuildBlocksSelf blocked build by reason 5 (No path from builder position to safe position)");
+		if ( !ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom(ai->commander->GetDef(), toBuildUnitDef, pos, fromPos, ai->utility->GetSafePosition()) )
+		{
+			ai->utility->Log( ALL, MISC, "BuildBlocksSelf blocked build by reason 5 (No path from builder position to safe position)");
+			return true;
+		}
+	}
+	else
+	{
+		ai->utility->Log( ALL, MISC, "BuildBlocksSelf blocked build by reason 6 (No path from builder to build position)");
 		return true;
 	}
-	ai->utility->Log(ALL, MISC, "BuildBlocksSelf check 5 done");
+	ai->utility->Log(ALL, MISC, "BuildBlocksSelf check 5+6 done");
 	return false;
 }
 
