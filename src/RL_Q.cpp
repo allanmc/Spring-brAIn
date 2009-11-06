@@ -69,8 +69,6 @@ void RL_Q::SaveToFile(ofstream *file )
 	for(int i = 0; i < actions.size(); i++)
 	{
 		qAction[i].qAction = actions[i];
-		//qAction[i].qAction.id = i;
-		//qAction[i].qAction.name = "action";
 		qAction[i].SaveToFile(file);
 	}
 	for(int i = 0; i < stateVars.size(); i++)
@@ -84,17 +82,10 @@ void RL_Q::SaveToFile(ofstream *file )
 
 float RL_Q::GetValue( RL_State &state, RL_Action &action )
 {
-	ai->utility->Log(ALL, MISC, "1 - RL_Q::GetValue(), acitonId = %i, stateID = %i", action.ID, state.GetID());
-	ai->utility->Log(ALL, MISC, "2 - RL_Q::GetValue(), acitonId = %i, stateID = %i, isterminal = %i", action.ID, state.GetID(), state.IsTerminal());
-	ai->utility->Log(ALL, MISC, "3 - RL_Q::GetValue(), acitonId = %i, stateID = %i", action.ID, state.GetID());
 	int stateID = state.GetID();
-	ai->utility->Log(ALL, MISC, "4 - RL_Q::GetValue(), acitonId = %i, stateID = %i", action.ID, state.GetID());
 	int actionID = action.ID;
-	ai->utility->Log(ALL, MISC, "5 - RL_Q::GetValue(), acitonId = %i, stateID = %i", action.ID, state.GetID());
 	int index = stateID * numActions + actionID;
-	ai->utility->Log(ALL, MISC, "6 - RL_Q::GetValue(), acitonId = %i, stateID = %i, index = %i", action.ID, state.GetID(), index);
 	float retVal = actionValueFunction[ index ];
-	ai->utility->Log(ALL, MISC, "7 - RL_Q::GetValue(), acitonId = %i, stateID = %i", action.ID, state.GetID());
 	return retVal;
 }
 

@@ -5,7 +5,8 @@
 #define RL_MEX_INDEX 20
 #define RL_LAB_INDEX 5
 #define RL_PLANT_INDEX 5
-#define RL_ACTION_INDEX 4
+
+#define QBFILE_VERSION 2
 
 #define RL_NUM_NODES 3
 
@@ -20,7 +21,7 @@
 
 using namespace springai;
 
-namespace brainSpace {
+namespace brainSpace {	
 
 	class RL
 	{
@@ -51,7 +52,7 @@ namespace brainSpace {
 		RL_State GetState(int node);
 		RL_Action SafeNextAction(RL_State &state);
 		void TakeAction(RL_Action &action);
-		
+		void ClearAllNodes();
 		void LoadFromFile();
 		void SaveToFile();
 

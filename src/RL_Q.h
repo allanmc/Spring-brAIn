@@ -46,8 +46,6 @@ namespace brainSpace
 	{
 		short unsigned int nameSize;
 		QStateVar qStateVar;
-		
-		
 
 		void LoadFromFile(AIClasses *ai, ifstream *file) 
 		{
@@ -76,7 +74,7 @@ namespace brainSpace
 	struct FileHeader
 	{
 		char header[2];
-		short unsigned int type; //1==flat, 2==hierarchical
+		short unsigned int type;
 		short unsigned int numQTables;
 	};
 	

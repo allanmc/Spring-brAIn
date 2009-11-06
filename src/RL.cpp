@@ -15,12 +15,6 @@ RL::RL( AIClasses* aiClasses)
 	nullState = RL_State( ai, -1 );
 	nullAction = RL_Action( -1, -1, false );
 
-	for(int i = 0; i < RL_NUM_NODES; i++)
-	{
-		PreviousState[i] = nullState;
-		PreviousAction[i] = nullAction;
-	}
-	
 	vector<QStateVar> stateVars (2);
 	vector<QAction> actions (2);
 	stateVars[0] = (QStateVar){"EL", 2};
@@ -38,6 +32,8 @@ RL::RL( AIClasses* aiClasses)
 	actions[0] = (QAction){"Mex", 0};
 	actions[1] = (QAction){"Solar", 1};
 	ValueFunction[2] = new RL_Q(ai, actions, stateVars); //Resource
+
+	ClearAllNodes();
 
 	ParentNode[0] = -1; //no parent
 	ParentNode[1] = 0;
@@ -72,6 +68,16 @@ RL::~RL()
 	}
 }
 
+void RL::ClearAllNodes()
+{
+	for(int i = 0; i < RL_NUM_NODES; i++)
+	{
+		PreviousState[i] = nullState;
+		PreviousAction[i] = nullAction;
+		ValueFunction[i]->Clear();
+	}
+}
+
 void RL::LoadFromFile()
 {
 	const char* dir = ai->callback->GetDataDirs()->GetWriteableDir();
@@ -95,20 +101,18 @@ void RL::LoadFromFile()
 		readFile->read( (char*)&fileHeader, sizeof(FileHeader) );
 		if (fileHeader.header[0]==FILE_HEADER[0] &&
 			fileHeader.header[1]==FILE_HEADER[1] &&
-			fileHeader.type==1)
+			fileHeader.type==QBFILE_VERSION)
 		{
 			for(int i = 0 ; i < fileHeader.numQTables; i++)
 			{
 				ValueFunction[i]->LoadFromFile(readFile);
 			}
 		}
+		else
+		{
+			ai->utility->Log(ALL, LOG_RL, "Wrong/outdated RL file - so creating new!");
+		}
 		delete readFile;
-	}
-	else
-	{
-		ValueFunction[0]->Clear();
-		ValueFunction[1]->Clear();
-		ValueFunction[2]->Clear();
 	}
 	delete[] path;
 }
@@ -128,7 +132,7 @@ void RL::SaveToFile()
 	fileHeader.header[0] = FILE_HEADER[0];
 	fileHeader.header[1] = FILE_HEADER[1];
 	fileHeader.numQTables = 3;
-	fileHeader.type = 1;
+	fileHeader.type = QBFILE_VERSION;
 
 
 	file->write( (char*)&fileHeader, sizeof(fileHeader) );
