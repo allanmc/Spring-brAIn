@@ -527,9 +527,9 @@ void PathfindingMap::PrintSection(SAIFloat3 pos)
 	int x = pos.x/Resolution;
 	int z = pos.z/Resolution;
 
-	for(int i = z - 5; i <= z + 5; i++)
+	for(int i = max(0,z - 50); i <= min(MapHeight-1, z + 50); i++)
 	{
-		for(int j = x - 5; j <= x + 5; j++)
+		for(int j = max(0,x - 50); j <= min(MapWidth-1, x + 50); j++)
 		{
 			bool walkable = MapArray[i*MapWidth + j] < ai->commander->GetDef()->GetMoveData()->GetMaxSlope();
 			if(x == j && z == i)
@@ -537,7 +537,7 @@ void PathfindingMap::PrintSection(SAIFloat3 pos)
 			else
 				ai->utility->LogNN(ALL, MISC, "%d", walkable);
 		}
-		ai->utility->Log(ALL, MISC, "");
+		ai->utility->LogNN(ALL, MISC, "\n");
 	}
 	
 }
