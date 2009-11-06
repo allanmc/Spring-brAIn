@@ -294,7 +294,7 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 				if ( it == openSet.end() )
 				{
 					neighbourInOpenSet = false;
-					if (debug) ai->utility->Log( ALL, PATHFIND, "(%d, %d) was NOT in openset", it->second->XIndex, it->second->ZIndex );
+					if (debug) ai->utility->Log( ALL, PATHFIND, "(%d, %d) was NOT in openset", x, z );
 				}
 
 				SAIFloat3 pos;
@@ -368,7 +368,13 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 					if (debug) ai->utility->Log( ALL, PATHFIND, "Z check done.. %d", suckyNeighbour );			
 
 					
-					if ( neighbour->Slope > pathfinder->GetMoveData()->GetMaxSlope() || suckyNeighbour)
+					if ( suckyNeighbour )
+					{
+						delete neighbour;
+						continue;
+					}
+
+					if ( neighbour->Slope > pathfinder->GetMoveData()->GetMaxSlope())
 					{
 						if (debug) ai->utility->Log( ALL, PATHFIND, "Bad neighbour..");
 						closedSet.insert( make_pair( z*MapWidth + x, neighbour ) );
