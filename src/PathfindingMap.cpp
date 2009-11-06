@@ -202,7 +202,7 @@ void PathfindingMap::ResetSlope( int xTile, int zTile )
 
 list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start, SAIFloat3 destination, bool debug )
 {
-	ai->utility->Log(ALL, PATHFIND,  "FindPathTo start" );
+	if (debug) ai->utility->Log(ALL, PATHFIND,  "FindPathTo start" );
 	int goalXIndex = destination.x/Resolution;
 	int goalZIndex = destination.z/Resolution;
 	
@@ -214,7 +214,7 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 		list<SAIFloat3> emptyResult;
 		return emptyResult;
 	}
-	ai->utility->Log(ALL, PATHFIND,  "FindPathTo destination is good" );
+	if (debug) ai->utility->Log(ALL, PATHFIND,  "FindPathTo destination is good" );
 	map<int, PathfindingNode*> closedSet;
 	map<int, PathfindingNode*> openSet;
 	//start.x += 0.5*Resolution;
@@ -222,11 +222,11 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 	PathfindingNode* startNode = new PathfindingNode( start, start.x/Resolution, start.z/Resolution, 0, ai->utility->EuclideanDistance( start, destination ), ai->utility->EuclideanDistance( start, destination ), MapArray[ (int)start.z/Resolution*MapWidth + (int)start.x/Resolution]  );
 	
 	openSet.insert( make_pair((int)start.z/Resolution*MapWidth + (int)start.x/Resolution, startNode ) );
-	ai->utility->Log(ALL, PATHFIND,  "FindPathTo inserted first node in openset" );
-	if (debug) ai->utility->Log( ALL, SLOPEMAP, "Starting at tile(%d, %d)", startNode->XIndex, startNode->ZIndex );
+	if (debug) ai->utility->Log(ALL, PATHFIND,  "FindPathTo inserted first node in openset" );
+	if (debug) ai->utility->Log( ALL, PATHFIND, "Starting at tile(%d, %d)", startNode->XIndex, startNode->ZIndex );
 	while (!openSet.empty() )
 	{
-		if (debug) ai->utility->Log( ALL, SLOPEMAP, "Openset is not empty" );
+		if (debug) ai->utility->Log( ALL, PATHFIND, "Openset is not empty" );
 		PathfindingNode* current = NULL;
 		int currentIndex = -1;
 		float lowestF = 90000000.0f;
@@ -244,11 +244,11 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 
 		if (current == NULL)
 		{
-			ai->utility->Log(ALL, PATHFIND,  "FindPathTo Current node is null" );
+			if (debug) ai->utility->Log(ALL, PATHFIND,  "FindPathTo Current node is null" );
 			list<SAIFloat3> emptyResult;
 			return emptyResult;
 		}
-		ai->utility->Log(ALL, PATHFIND,  "FindPathTo Current node is NOT null" );
+		if (debug) ai->utility->Log(ALL, PATHFIND,  "FindPathTo Current node is NOT null" );
 
 		/** CHECK FOR GOAL **/
 		if (debug) ai->utility->Log( ALL, SLOPEMAP, "\nCurr(%d, %d)G: %f. H = %f. F = %f", current->XIndex, current->ZIndex, current->Gscore, current->Hscore, current->Fscore );
