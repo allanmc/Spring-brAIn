@@ -318,13 +318,13 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 					//ai->utility->Log( ALL, PATHFIND, "neighbour x: %d", x);
 					neighbour->ZIndex = z;
 					//ai->utility->Log( ALL, PATHFIND, "neighbour z: %d", z);
-					ai->utility->Log( ALL, PATHFIND, "neighbour x: %d, z: %d", x, z );
+					if(debug)  ai->utility->Log( ALL, PATHFIND, "neighbour x: %d, z: %d", x, z );
 					if ( ( z*MapWidth + x ) >= MapWidth*MapHeight )
 						ai->utility->Log( ALL, PATHFIND, "Fuck dig!! %d. MapWidth: %d. MapHeight: %d", z*MapWidth+x, MapWidth, MapHeight );
 					
 					//ai->utility->Log( ALL, PATHFIND, "mapwidth: %d, mapheight: %d", MapWidth, MapHeight);
 					neighbour->Slope = MapArray[ z*MapWidth + x ];
-					ai->utility->Log( ALL, PATHFIND, "New neighbour initialised, slope: %f ", neighbour->Slope );
+					if(debug) ai->utility->Log( ALL, PATHFIND, "New neighbour initialised, slope: %f ", neighbour->Slope );
 					bool suckyNeighbour = false;
 					if(current->ZIndex > neighbour->ZIndex || current->ZIndex < neighbour->ZIndex)
 					{
