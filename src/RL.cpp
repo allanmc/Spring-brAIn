@@ -15,10 +15,10 @@ RL::RL( AIClasses* aiClasses)
 	vector<QStateVar> stateVars (4);
 	vector<QAction> actions (4);
 	
-	stateVars[0] = (QStateVar){"Solar", RL_SOLAR_INDEX};
-	stateVars[1] = (QStateVar){"Mex", RL_MEX_INDEX};
-	stateVars[2] = (QStateVar){"Labs", RL_LAB_INDEX};
-	stateVars[3] = (QStateVar){"Plants", RL_PLANT_INDEX};
+	stateVars[0] = (QStateVar){"Plants", RL_PLANT_INDEX};
+	stateVars[1] = (QStateVar){"Labs", RL_LAB_INDEX};
+	stateVars[2] = (QStateVar){"Mex", RL_MEX_INDEX};
+	stateVars[3] = (QStateVar){"Solar", RL_SOLAR_INDEX};
 	actions[0] = (QAction){"Solar", 0};
 	actions[1] = (QAction){"Mex", 1};
 	actions[2] = (QAction){"Labs", 2};
