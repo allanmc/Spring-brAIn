@@ -270,7 +270,7 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 		{
 			for ( int x = current->XIndex-1 ; x <= current->XIndex+1 ; x++ )
 			{
-				if ( z < 0 || z > MapHeight-1 || x < 0 || x > MapHeight-1 ) 
+				if ( z < 0 || z > MapHeight-1 || x < 0 || x > MapWidth-1 ) 
 				{
 					//out of bounds check
 					if (debug) ai->utility->Log( ALL, PATHFIND, "Neighbour out of bounds" );

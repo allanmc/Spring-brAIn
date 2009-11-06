@@ -343,13 +343,6 @@ RL_Action RL::Update()
 
 
 	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() value function updated");
-
-	//delete PreviousState[currentNode];
-	PreviousState[currentNode] = nullState;
-	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() deleted PreviousState for node %i", currentNode);
-	//delete PreviousAction[currentNode];
-	PreviousAction[currentNode] = nullAction;
-	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() deleted PreviousAction for node %i", currentNode);
 	
 	if ( terminal )
 	{
