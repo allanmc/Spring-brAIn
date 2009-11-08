@@ -78,7 +78,7 @@ void Decision::UnitCreated(int unitID, int builderID)
 	UnitDef *bDef = NULL;
 	if(builder != NULL)
 	{
-		UnitDef *bDef = builder->GetDef();
+		bDef = builder->GetDef();
 	}
 	
 	if(uDef->GetSpeed() == 0){//building
