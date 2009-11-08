@@ -237,8 +237,9 @@ SAIFloat3 Utility::GoTo(int unitId, SAIFloat3 pos, bool simulate)
 		wayPoints = ai->knowledge->mapInfo->pathfindingMap->FindPathTo(unit->GetDef(), unit->GetPos(), pos);
 		ai->utility->Log(ALL, MISC, "GoTo: I am going towards buildlocation!");
 	}
+	SAIFloat3 retPos = (SAIFloat3){0,-1,0};
 	if(wayPoints.size() == 0)
-		return (SAIFloat3) {0,-1,0};
+		return retPos;
 
 	SMoveUnitCommand moveCommand;
 	
@@ -249,13 +250,13 @@ SAIFloat3 Utility::GoTo(int unitId, SAIFloat3 pos, bool simulate)
 		moveCommand.unitId = unitId;
 	}
 	int toWalk = 0;
-	SAIFloat3 retPos;
+	UnitDef *def = unit->GetDef();
 	//for (int i = 0; i < wayPoints.size(); i++)
 	for (list<SAIFloat3>::const_iterator it = wayPoints.begin(); it != wayPoints.end(); ++it)
 	{
 		
-		if ( (goToward && (unit->GetDef()->GetBuildDistance() > ai->utility->EuclideanDistance(*it, pos))) ||
-			 (!goToward && (unit->GetDef()->GetBuildDistance() < ai->utility->EuclideanDistance(*it, pos))) )
+		if ( (goToward && (def->GetBuildDistance() > ai->utility->EuclideanDistance(*it, pos))) ||
+			 (!goToward && (def->GetBuildDistance() < ai->utility->EuclideanDistance(*it, pos))) )
 			break; //Ignore moves that goes unnecesarry close to the building-spot
 		toWalk++;
 		retPos = *it;
@@ -266,6 +267,7 @@ SAIFloat3 Utility::GoTo(int unitId, SAIFloat3 pos, bool simulate)
 			engine->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &moveCommand);
 		}
 	}
+	delete def;
 	ai->utility->Log(ALL, MISC, "GoTo: I am done! I want to walk %i out of %i waypoints", toWalk, wayPoints.size());
 	int res = ai->knowledge->mapInfo->pathfindingMap->GetMapData()->MapResolution;
 	ai->utility->Log(ALL, MISC, "GoTo: Final pathfinding INDEX: %d, %d", (int)retPos.x/res, (int)retPos.z/res);
