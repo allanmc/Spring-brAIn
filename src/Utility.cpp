@@ -68,7 +68,8 @@ bool Utility::IsMetalMap()
 ///Load the options set for the AI
 void Utility::InitializeOptions()
 {
-	const char* optionStr = OptionValues::GetInstance(ai->callback)->GetValueByKey("debug");
+	OptionValues *opt = OptionValues::GetInstance(ai->callback);
+	const char* optionStr = opt->GetValueByKey("debug");
 	if (optionStr == NULL
 		||
 		strcmp(optionStr,"true")==0
@@ -78,7 +79,7 @@ void Utility::InitializeOptions()
 		debug = true;
 	}
 	else debug = false;
-	delete optionStr;
+	delete opt;
 }
 
 ///Prints a line in the log file
