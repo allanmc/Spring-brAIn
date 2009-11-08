@@ -19,7 +19,6 @@ void ScoutMap::Update()
 {
 	map<int, struct UnitInformationContainer> units = ai->knowledge->selfInfo->armyInfo->GetUnits();
 	map<int, struct UnitInformationContainer>::iterator it;
-	ai->utility->Log( ALL, MISC, "getunits done, size: %i",units.size());
 	for(it = units.begin();it != units.end(); it++)
 	{
 		UnitDef *def = it->second.def;
