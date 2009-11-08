@@ -496,7 +496,8 @@ SAIFloat3 ConstructionUnitGroup::FindClosestMetalExtractionSite(SAIFloat3 pos, b
 	}
 	
 	vector<SAIFloat3> spots;
-	spots = ai->callback->GetMap()->GetResourceMapSpotsPositions( *(ai->utility->GetResource("Metal")), &pos );
+	Map *map = ai->callback->GetMap();
+	spots = map->GetResourceMapSpotsPositions( *(ai->utility->GetResource("Metal")), &pos );
 	
 	int numSpots = spots.size();
 	int lowestIdx = -1;
@@ -509,13 +510,14 @@ SAIFloat3 ConstructionUnitGroup::FindClosestMetalExtractionSite(SAIFloat3 pos, b
 		//u->ChatMsg( "Distance: %f", distance );
 
 		if ( distance < closest
-			&& ai->callback->GetMap()->IsPossibleToBuildAt( *(ai->utility->GetMexDef()), spots[i], 0 )
+			&& map->IsPossibleToBuildAt( *(ai->utility->GetMexDef()), spots[i], 0 )
 			 && (!checkIfItBlocks || !BuildBlocksSelf(mexDef, spots[i], 0)) )
 		{
 			closest = distance;
 			lowestIdx = i;
 		}
 	}
+	delete map;
 	///TODO: What if we didn't find an accaptable spot? (lowestIdx=-1)
 	if(lowestIdx == -1)
 	{

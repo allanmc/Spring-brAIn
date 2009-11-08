@@ -73,12 +73,18 @@ void Decision::UnitCreated(int unitID, int builderID)
 	}
 
 	Unit * u = Unit::GetInstance(ai->callback,unitID);
+	UnitDef *uDef = u->GetDef();
 	Unit * builder = ( builderID ? Unit::GetInstance(ai->callback,builderID) : NULL);
+	UnitDef *bDef = builder->GetDef();
 	
 	if(u->GetDef()->GetSpeed() == 0){//building
-		float ETA = u->GetDef()->GetBuildTime() / builder->GetDef()->GetBuildSpeed();
+		float ETA = uDef->GetBuildTime() / bDef->GetBuildSpeed();
 		ai->knowledge->selfInfo->resourceInfo->AddChangeToCome(u,ETA);
 	}
+	delete u;
+	delete uDef;
+	delete builder;
+	delete bDef;
 }
 
 ///Called when a unit is fully constructed

@@ -211,18 +211,19 @@ Resource* Utility::GetResource(const char* resourceName)
 {
 	vector<Resource*> resources = ai->callback->GetResources();
 	Resource* retval = NULL;
-
 	for ( int i = 0 ; i < (int)resources.size() ; i++ )
 	{
 		if ( strcmp( resources[i]->GetName(), resourceName ) == 0 )
 		{
-			retval = resources[i];
+			retval = resources[i];			
 		}
 		else
 		{
 			delete resources[i];
 		}
 	}
+	resources.clear();
+	
 	return retval;
 }
 
