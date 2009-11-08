@@ -65,8 +65,9 @@ void Utility::LaterInitialization()
 	solarDef = GetUnitDef("armsolar");
 	lltDef = GetUnitDef("armllt");
 	Log(ALL, MISC, "LaterInitialization()");
-	isMetalMap = map->GetResourceMapSpotsPositions(*ai->utility->GetResource("Metal"), NULL).size() > 200;
 	resources = ai->callback->GetResources();
+	isMetalMap = map->GetResourceMapSpotsPositions(*ai->utility->GetResource("Metal"), NULL).size() > 200;
+	
 }
 
 bool Utility::IsMetalMap()
