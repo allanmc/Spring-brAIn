@@ -197,7 +197,9 @@ void PathfindingMap::RemoveBuilding(Unit* unit)
 
 void PathfindingMap::ResetSlope( int xTile, int zTile )
 {
-	int width = ai->callback->GetMap()->GetWidth()/2;
+	Map *map = ai->callback->GetMap();
+	int width = map->GetWidth()/2;
+	delete map;
 	float slope1 = SlopeMap[xTile*2+width*2*zTile];
 	float slope2 = SlopeMap[((xTile*2)+1)+width*2*zTile];
 	float slope3 = SlopeMap[(xTile*2)+width*2*zTile+width];
@@ -213,6 +215,7 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 	int goalZIndex = destination.z/Resolution;
 	springai::MoveData *move = pathfinder->GetMoveData();
 	float maxSlope = move->GetMaxSlope();
+	delete move;
 	
 	if ( MapArray[ goalZIndex*MapWidth + goalXIndex] > maxSlope)
 	{
@@ -252,6 +255,7 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 		{
 			if (debug) ai->utility->Log(ALL, PATHFIND,  "FindPathTo Current node is null" );
 			list<SAIFloat3> emptyResult;
+			DeleteNodes( closedSet, openSet );
 			return emptyResult;
 		}
 		if (debug) ai->utility->Log(ALL, PATHFIND,  "FindPathTo Current node is NOT null" );
@@ -264,7 +268,6 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 			list<SAIFloat3> shortestPath = ReconstructPath( current );
 
 			DeleteNodes( closedSet, openSet );
-
 			return shortestPath;
 		}
 

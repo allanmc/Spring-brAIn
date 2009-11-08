@@ -34,6 +34,10 @@ Utility::~Utility()
 	fclose(fp);	
 	delete map;
 	delete engine;
+	for(int i = 0; i < (int)defs.size(); i++)
+	{
+		delete defs[i];
+	}
 }
 
 ///@return the safe position whether a building blocks the exit of out base
@@ -212,6 +216,10 @@ Resource* Utility::GetResource(const char* resourceName)
 		if ( strcmp( resources[i]->GetName(), resourceName ) == 0 )
 		{
 			return resources[i];
+		}
+		else
+		{
+			delete resources[i];
 		}
 	}
 	return NULL;
@@ -449,15 +457,14 @@ void Utility::ResetGame(RL **rl)
 	//Give me a new commander
 	//int newCommanderId = 0;
 	Cheats *c = ai->callback->GetCheats();
-	c->SetEnabled(true);
-	delete c;
+	c->SetEnabled(true);	
 	SGiveMeNewUnitCheatCommand giveUnitOrder;
 	giveUnitOrder.pos = (SAIFloat3){10,200, 10};
 	giveUnitOrder.unitDefId = ai->utility->GetUnitDef("armcom")->GetUnitDefId();
 	engine->HandleCommand(0,-1, COMMAND_CHEATS_GIVE_ME_NEW_UNIT, &giveUnitOrder);
 	delete ai->commander;
 	ai->commander = Unit::GetInstance(ai->callback, giveUnitOrder.ret_newUnitId);
-	ai->callback->GetCheats()->SetEnabled(false);
+	
 	
 	Log(IMPORTANT, MISC, "Telling the new commander to move to startPos");
 	SMoveUnitCommand moveCommand;
@@ -478,7 +485,8 @@ void Utility::ResetGame(RL **rl)
 	//Delete all units besides out new commander
 	
 	Suicide(ai->commander->GetUnitId(), true);
-
+	c->SetEnabled(false);
+	delete c;
 
 	Log(IMPORTANT, MISC, "brAIn has been reset!"); 
 }

@@ -67,18 +67,19 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 				+ (ai->utility->GetSolarDef()->GetZSize()*8)/2;*/
 	
 	UnitDef *unitDef = UnitDef::GetInstance(ai->callback, order.toBuildUnitDefId);
+	UnitDef *commanderDef = ai->commander->GetDef();
 	ai->utility->RemoveGraphics(figureId);
 
 	ai->utility->Log(ALL, MISC, "order tobuild id: %d", order.toBuildUnitDefId );
 	ai->utility->Log(ALL, MISC, "order options : %d", order.options );
 	ai->utility->Log(ALL, MISC, "order timeout : %d", order.timeOut );
 	ai->utility->Log(ALL, MISC, "order facing: %d", order.facing );
-	bool hest = ai->knowledge->mapInfo->pathfindingMap->PathExists(ai->commander->GetDef(), buildPos, ai->utility->GetSafePosition());
+	bool hest = ai->knowledge->mapInfo->pathfindingMap->PathExists(commanderDef, buildPos, ai->utility->GetSafePosition());
 	ai->utility->Log(ALL, MISC, "Is commander built in? %d", hest);
 	if(!hest)
 	{
 		ai->knowledge->mapInfo->pathfindingMap->PrintSection(buildPos);
-		ai->knowledge->mapInfo->pathfindingMap->PathExists(ai->commander->GetDef(), buildPos, ai->utility->GetSafePosition(), true);
+		ai->knowledge->mapInfo->pathfindingMap->PathExists(commanderDef, buildPos, ai->utility->GetSafePosition(), true);
 	}
 	
 	Idle = false;
@@ -121,6 +122,8 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	if (order.buildPos.y == -1)
 	{
 		ai->utility->Log(ALL, PATHFIND, "Could not get a build position in AssignBuildOrder()...");
+		delete unitDef;
+		delete commanderDef;
 		return;
 	}
 
@@ -141,7 +144,11 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	
 	ai->utility->GoTo(order.unitId, order.buildPos);
 	order.options = UNIT_COMMAND_OPTION_SHIFT_KEY;
-	ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &order );
+	Engine *e = ai->callback->GetEngine();
+	e->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &order );
+	delete unitDef;
+	delete commanderDef;
+	delete e;
 }
 
 SAIFloat3 ConstructionUnitGroup::FindBestDefensePosition(UnitDef *unitDef, SAIFloat3 buildPos)

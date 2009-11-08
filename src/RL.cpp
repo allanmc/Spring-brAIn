@@ -121,8 +121,9 @@ void RL::LoadFromFile()
 
 void RL::SaveToFile()
 {
-	const char* dir = ai->callback->GetDataDirs()->GetWriteableDir();
-
+	DataDirs *dirs = ai->callback->GetDataDirs();
+	const char* dir = dirs->GetWriteableDir();
+	
 	char *path = new char[200];
 	strcpy(path, dir);
 	strcat(path, "qh.bin");
@@ -146,6 +147,7 @@ void RL::SaveToFile()
 
 	file->flush();
 	file->close();
+	delete dirs;
 	delete[] path;
 	delete file;
 }

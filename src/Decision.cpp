@@ -90,11 +90,11 @@ void Decision::UnitFinished(int unit)
 		return;
 	}
 
-	Unit * u = Unit::GetInstance(ai->callback,unit);
+	Unit *u = Unit::GetInstance(ai->callback,unit);
 	
-	ai->utility->Log(ALL, MISC, "Unit finished, \"%s\", pos:%f,%f", u->GetDef()->GetName(), u->GetPos().x, u->GetPos().z);
 	UnitDef * ud = u->GetDef();
-	ai->utility->Log(ALL, MISC, "Ud set");
+	vector<WeaponMount*> wpmt = ud->GetWeaponMounts();
+	ai->utility->Log(ALL, MISC, "Unit finished, \"%s\", pos:%f,%f", ud->GetName(), u->GetPos().x, u->GetPos().z);
 	if(ud->GetSpeed() > 0)
 	{
 		ai->utility->Log(ALL, MISC, "Finished with a non-building");
@@ -114,7 +114,7 @@ void Decision::UnitFinished(int unit)
 		ai->utility->Log(ALL, MISC, "Removed change to come");
 	}
 
-	if (ud->GetWeaponMounts().size()>0) 
+	if (wpmt.size()>0) 
 	{
 		ai->knowledge->selfInfo->armyInfo->AddUnit(u);
 	}
@@ -125,6 +125,11 @@ void Decision::UnitFinished(int unit)
 	
 	UpdateRL();
 	ai->utility->Log(LOG_DEBUG, LOG_RL, "UnitFinished() returned");
+	delete ud;
+	for(int i = 0; i < (int)wpmt.size(); i++)
+	{
+		delete wpmt[i];
+	}
 }
 
 void Decision::UpdateRL()
@@ -307,6 +312,7 @@ void Decision::UpdateFrindlyPositions()
 		{
 			armyUnits->UpdateUnit( units[i] );
 		}
+		delete units[i];
 	}
 }
 
