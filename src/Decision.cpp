@@ -75,6 +75,7 @@ void Decision::UnitCreated(int unitID, int builderID)
 	Unit * u = Unit::GetInstance(ai->callback,unitID);
 	UnitDef *uDef = u->GetDef();
 	Unit * builder = ( builderID ? Unit::GetInstance(ai->callback,builderID) : NULL);
+	UnitDef *bDef = NULL;
 	if(builder != NULL)
 	{
 		UnitDef *bDef = builder->GetDef();
