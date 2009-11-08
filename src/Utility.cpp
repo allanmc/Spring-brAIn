@@ -13,7 +13,8 @@ Utility::Utility( AIClasses* aiClasses )
 	ai = aiClasses;
 	char filename[200];
 	char path[200];
-	const char *dir = DataDirs::GetInstance(ai->callback)->GetWriteableDir();
+	DataDirs *dirs = DataDirs::GetInstance(ai->callback);
+	const char *dir = dirs->GetWriteableDir();
 	strcpy(path, dir);
 	SNPRINTF( filename, 200, "Brain-log-team%d.txt", aiClasses->callback->GetTeamId() );
 	strcat(path, filename);
@@ -21,13 +22,11 @@ Utility::Utility( AIClasses* aiClasses )
 	Log(ALL, MISC, "Initialized Utility-class...");
 	engine = ai->callback->GetEngine();
 	map = ai->callback->GetMap();
-
-	
 	InitializeOptions();
 	isMetalMap = false;
 
 	safePosition = (SAIFloat3){map->GetWidth()*8/2, 0.0, map->GetHeight()*8/2};
-	delete dir;
+	delete dirs;
 }
 
 Utility::~Utility()
