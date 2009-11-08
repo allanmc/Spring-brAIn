@@ -9,11 +9,13 @@ PathfindingMap::PathfindingMap( AIClasses* aiClasses ) : BrainMap( aiClasses, 4 
 {
 
 	//Slopemap has Resolution = 2, where PFmap has Resolution = 4.
-	vector<float> slopeMap = ai->callback->GetMap()->GetSlopeMap();
-	SlopeMap = slopeMap;
+	Map *map = ai->callback->GetMap();
+	//vector<float> slopeMap = map->GetSlopeMap();
+	SlopeMap = map->GetSlopeMap();
 	for ( int z = 0 ; z < MapHeight ; z++ )
 		for ( int x = 0 ; x < MapWidth ; x++ )
 			ResetSlope( x, z );
+	delete map;
 }
 
 
@@ -58,12 +60,14 @@ void PathfindingMap::Update()
 void PathfindingMap::AddBuilding(Unit* unit)
 {
 	SAIFloat3 pos = unit->GetPos();
-	int xSize = unit->GetDef()->GetXSize()*8;
-	int zSize = unit->GetDef()->GetZSize()*8;
+	UnitDef *def = unit->GetDef();
+	int xSize = def->GetXSize()*8;
+	int zSize = def->GetZSize()*8;
 	int topCell = (pos.z-zSize/2)/Resolution;
 	int bottomCell = (pos.z+zSize/2)/Resolution;
 	int leftCell = (pos.x-xSize/2)/Resolution;
 	int rightCell = (pos.x+xSize/2)/Resolution;
+	delete def;
 
 
 	for ( int i = topCell ; i <= bottomCell ; i++ )
@@ -123,8 +127,10 @@ void PathfindingMap::RemoveHypotheticalBuilding(UnitDef* unit, SAIFloat3 pos)
 void PathfindingMap::RemoveBuilding(Unit* unit)
 {
 	SAIFloat3 pos = unit->GetPos();
-	int xSize = unit->GetDef()->GetXSize()*8;
-	int zSize = unit->GetDef()->GetZSize()*8;
+	UnitDef *def = unit->GetDef();
+	int xSize = def->GetXSize()*8;
+	int zSize = def->GetZSize()*8;
+	delete def;
 	int topCell = (pos.z-zSize/2)/Resolution;
 	int bottomCell = (pos.z+zSize/2)/Resolution;
 	int leftCell = (pos.x-xSize/2)/Resolution;
@@ -205,10 +211,10 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 	if (debug) ai->utility->Log(ALL, PATHFIND,  "FindPathTo start" );
 	int goalXIndex = destination.x/Resolution;
 	int goalZIndex = destination.z/Resolution;
+	springai::MoveData *move = pathfinder->GetMoveData();
+	float maxSlope = move->GetMaxSlope();
 	
-	if ( MapArray[ goalZIndex*MapWidth + goalXIndex] > pathfinder->GetMoveData()->GetMaxSlope()
-		/*||
-		 MapArray[ (int)(start.z/Resolution)*MapWidth + (int)start.x/Resolution] > pathfinder->GetMoveData()->GetMaxSlope()*/ )
+	if ( MapArray[ goalZIndex*MapWidth + goalXIndex] > maxSlope)
 	{
 		ai->utility->Log(ALL, PATHFIND,  "Svend: I cannot reach the destination!!" );
 		list<SAIFloat3> emptyResult;
@@ -331,7 +337,7 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 						if(current->XIndex > neighbour->XIndex)
 						{
 							int tmpX = x + 1;
-							if( tmpX >= 0 && tmpX < MapWidth && MapArray[ z*MapWidth + tmpX ] > pathfinder->GetMoveData()->GetMaxSlope())
+							if( tmpX >= 0 && tmpX < MapWidth && MapArray[ z*MapWidth + tmpX ] > maxSlope)
 							{
 								suckyNeighbour = true;
 							}
@@ -339,7 +345,7 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 						else if(current->XIndex < neighbour->XIndex)
 						{
 							int tmpX = x - 1;
-							if( tmpX >= 0 && tmpX < MapWidth && MapArray[ z*MapWidth + tmpX ] > pathfinder->GetMoveData()->GetMaxSlope())
+							if( tmpX >= 0 && tmpX < MapWidth && MapArray[ z*MapWidth + tmpX ] > maxSlope)
 							{
 								suckyNeighbour = true;
 							}
@@ -351,7 +357,7 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 						if(current->ZIndex > neighbour->ZIndex)
 						{
 							int tmpZ = z + 1;
-							if( tmpZ >= 0 && tmpZ < MapHeight && MapArray[ tmpZ*MapWidth + x ] > pathfinder->GetMoveData()->GetMaxSlope())
+							if( tmpZ >= 0 && tmpZ < MapHeight && MapArray[ tmpZ*MapWidth + x ] > maxSlope)
 							{
 								suckyNeighbour = true;
 							}
@@ -359,7 +365,7 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 						else if(current->ZIndex < neighbour->ZIndex)
 						{
 							int tmpZ = z - 1;
-							if( tmpZ >= 0 && tmpZ < MapHeight && MapArray[ tmpZ*MapWidth + x ] > pathfinder->GetMoveData()->GetMaxSlope())
+							if( tmpZ >= 0 && tmpZ < MapHeight && MapArray[ tmpZ*MapWidth + x ] > maxSlope)
 							{
 								suckyNeighbour = true;
 							}
@@ -374,7 +380,7 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 						continue;
 					}
 
-					if ( neighbour->Slope > pathfinder->GetMoveData()->GetMaxSlope())
+					if ( neighbour->Slope > maxSlope)
 					{
 						if (debug) ai->utility->Log( ALL, PATHFIND, "Bad neighbour..");
 						closedSet.insert( make_pair( z*MapWidth + x, neighbour ) );

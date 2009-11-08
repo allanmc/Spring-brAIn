@@ -31,6 +31,8 @@ namespace brainSpace
 		springai::UnitDef *lltDef;
 		SAIFloat3 safePosition;
 		std::vector<springai::UnitDef*> defs;
+		springai::Engine *engine;
+		springai::Map *map;
 
 	public:
 		Utility( AIClasses* aiClasses );

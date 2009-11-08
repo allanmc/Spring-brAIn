@@ -19,17 +19,22 @@ Utility::Utility( AIClasses* aiClasses )
 	strcat(path, filename);
 	fp = FOPEN(path, "w");
 	Log(ALL, MISC, "Initialized Utility-class...");
+	engine = ai->callback->GetEngine();
+	map = ai->callback->GetMap();
 
 	
 	InitializeOptions();
 	isMetalMap = false;
 
-	safePosition = (SAIFloat3){ai->callback->GetMap()->GetWidth()*8/2, 0.0, ai->callback->GetMap()->GetHeight()*8/2};
+	safePosition = (SAIFloat3){map->GetWidth()*8/2, 0.0, map->GetHeight()*8/2};
+	delete dir;
 }
 
 Utility::~Utility()
 {
-	fclose(fp);
+	fclose(fp);	
+	delete map;
+	delete engine;
 }
 
 ///@return the safe position whether a building blocks the exit of out base
@@ -53,7 +58,7 @@ void Utility::LaterInitialization()
 	solarDef = GetUnitDef("armsolar");
 	lltDef = GetUnitDef("armllt");
 	Log(ALL, MISC, "LaterInitialization()");
-	isMetalMap = ai->callback->GetMap()->GetResourceMapSpotsPositions(*ai->utility->GetResource("Metal"), NULL).size() > 200;
+	isMetalMap = map->GetResourceMapSpotsPositions(*ai->utility->GetResource("Metal"), NULL).size() > 200;
 }
 
 bool Utility::IsMetalMap()
@@ -73,6 +78,7 @@ void Utility::InitializeOptions()
 		debug = true;
 	}
 	else debug = false;
+	delete optionStr;
 }
 
 ///Prints a line in the log file
@@ -141,7 +147,7 @@ void Utility::ChatMsg(const char* msg, ...)
 	SSendTextMessageCommand cmd;
 	cmd.text = c;
 	cmd.zone = 0;
-	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_SEND_TEXT_MESSAGE, &cmd);
+	engine->HandleCommand(0, -1, COMMAND_SEND_TEXT_MESSAGE, &cmd);
 
 	LogNN(ALL, MISC, "Chat: ");
 	Log(ALL, MISC, c);
@@ -158,7 +164,7 @@ void Utility::ChatMsg(std::string msg)
 	SSendTextMessageCommand cmd;
 	cmd.text = msg.c_str();
 	cmd.zone = 0;
-	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_SEND_TEXT_MESSAGE, &cmd);
+	engine->HandleCommand(0, -1, COMMAND_SEND_TEXT_MESSAGE, &cmd);
 }
 
 UnitDef* Utility::GetMexDef()
@@ -256,7 +262,7 @@ SAIFloat3 Utility::GoTo(int unitId, SAIFloat3 pos, bool simulate)
 		{
 			moveCommand.toPos = retPos;
 			moveCommand.options = UNIT_COMMAND_OPTION_SHIFT_KEY;
-			ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &moveCommand);
+			engine->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &moveCommand);
 		}
 	}
 	ai->utility->Log(ALL, MISC, "GoTo: I am done! I want to walk %i out of %i waypoints", toWalk, wayPoints.size());
@@ -292,7 +298,7 @@ int Utility::DrawCircle(SAIFloat3 pos, float radius, int figureId)
 	circle.pos3 = circle.pos4;
 	circle.pos2.x += MAGIC_CIRCLE_NUMBER*radius;
 	circle.pos3.z += MAGIC_CIRCLE_NUMBER*radius;
-	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_DRAWER_FIGURE_CREATE_SPLINE, &circle);
+	engine->HandleCommand(0, -1, COMMAND_DRAWER_FIGURE_CREATE_SPLINE, &circle);
 	circle.figureGroupId = circle.ret_newFigureGroupId;
 
 	circle.pos1 = circle.pos4;
@@ -302,7 +308,7 @@ int Utility::DrawCircle(SAIFloat3 pos, float radius, int figureId)
 	circle.pos3 = circle.pos4;
 	circle.pos2.z -= MAGIC_CIRCLE_NUMBER*radius;
 	circle.pos3.x += MAGIC_CIRCLE_NUMBER*radius;
-	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_DRAWER_FIGURE_CREATE_SPLINE, &circle);
+	engine->HandleCommand(0, -1, COMMAND_DRAWER_FIGURE_CREATE_SPLINE, &circle);
 
 	circle.pos1 = circle.pos4;
 	circle.pos4 = pos;
@@ -311,7 +317,7 @@ int Utility::DrawCircle(SAIFloat3 pos, float radius, int figureId)
 	circle.pos3 = circle.pos4;
 	circle.pos2.x -= MAGIC_CIRCLE_NUMBER*radius;
 	circle.pos3.z -= MAGIC_CIRCLE_NUMBER*radius;
-	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_DRAWER_FIGURE_CREATE_SPLINE, &circle);
+	engine->HandleCommand(0, -1, COMMAND_DRAWER_FIGURE_CREATE_SPLINE, &circle);
 
 	circle.pos1 = circle.pos4;
 	circle.pos4 = pos;
@@ -320,7 +326,7 @@ int Utility::DrawCircle(SAIFloat3 pos, float radius, int figureId)
 	circle.pos3 = circle.pos4;
 	circle.pos2.z += MAGIC_CIRCLE_NUMBER*radius;
 	circle.pos3.x -= MAGIC_CIRCLE_NUMBER*radius;
-	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_DRAWER_FIGURE_CREATE_SPLINE, &circle);
+	engine->HandleCommand(0, -1, COMMAND_DRAWER_FIGURE_CREATE_SPLINE, &circle);
 
 	AssignColorToGraphics( circle.figureGroupId );
 
@@ -338,7 +344,7 @@ int Utility::DrawLine(SAIFloat3 start, SAIFloat3 end, bool arrow, float width, i
 	line.pos2 = end;
 	line.figureGroupId = figureId;
 	
-	ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_DRAWER_FIGURE_CREATE_LINE, &line);
+	engine->HandleCommand(0,-1, COMMAND_DRAWER_FIGURE_CREATE_LINE, &line);
 
 	AssignColorToGraphics( line.ret_newFigureGroupId );
 	return line.ret_newFigureGroupId;
@@ -349,7 +355,7 @@ void Utility::RemoveGraphics(int figureId)
 {
 	SDeleteFigureDrawerCommand removeCmd;
 	removeCmd.figureGroupId = figureId;
-	ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_DRAWER_FIGURE_DELETE, &removeCmd);
+	engine->HandleCommand(0,-1, COMMAND_DRAWER_FIGURE_DELETE, &removeCmd);
 }
 
 ///@return the direct distance bestween two points(2D)
@@ -407,7 +413,7 @@ void Utility::AssignColorToGraphics( int figureGroupID )
 		color.color.z = TEAM_7_COLOR.z;
 		break;
 	}
-	ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_DRAWER_FIGURE_SET_COLOR, &color);
+	engine->HandleCommand(0,-1, COMMAND_DRAWER_FIGURE_SET_COLOR, &color);
 }
 
 bool Utility::FileExists( const char* FileName )
@@ -436,30 +442,32 @@ void Utility::ResetGame(RL **rl)
 	Log(IMPORTANT, MISC, "Creating new commander..."); 
 	//Give me a new commander
 	//int newCommanderId = 0;
-	ai->callback->GetCheats()->SetEnabled(true);
+	Cheats *c = ai->callback->GetCheats();
+	c->SetEnabled(true);
+	delete c;
 	SGiveMeNewUnitCheatCommand giveUnitOrder;
 	giveUnitOrder.pos = (SAIFloat3){10,200, 10};
 	giveUnitOrder.unitDefId = ai->utility->GetUnitDef("armcom")->GetUnitDefId();
-	ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_CHEATS_GIVE_ME_NEW_UNIT, &giveUnitOrder);
+	engine->HandleCommand(0,-1, COMMAND_CHEATS_GIVE_ME_NEW_UNIT, &giveUnitOrder);
+	delete ai->commander;
 	ai->commander = Unit::GetInstance(ai->callback, giveUnitOrder.ret_newUnitId);
 	ai->callback->GetCheats()->SetEnabled(false);
 	
 	Log(IMPORTANT, MISC, "Telling the new commander to move to startPos");
 	SMoveUnitCommand moveCommand;
-	moveCommand.toPos = ai->callback->GetMap()->GetStartPos();
+	moveCommand.toPos = map->GetStartPos();
 	moveCommand.timeOut = 100000000;
 	moveCommand.options = 0;
 	moveCommand.unitId = ai->commander->GetUnitId();
-	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &moveCommand);
+	engine->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &moveCommand);
 
 	Log(IMPORTANT, MISC, "Giving us start resources");
 	SGiveMeResourceCheatCommand resourceCommand;
 	resourceCommand.amount = 1000;
 	resourceCommand.resourceId = GetResource("Metal")->GetResourceId();
-	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_CHEATS_GIVE_ME_RESOURCE, &resourceCommand);
+	engine->HandleCommand(0, -1, COMMAND_CHEATS_GIVE_ME_RESOURCE, &resourceCommand);
 	resourceCommand.resourceId = GetResource("Energy")->GetResourceId();
-	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_CHEATS_GIVE_ME_RESOURCE, &resourceCommand);
-
+	engine->HandleCommand(0, -1, COMMAND_CHEATS_GIVE_ME_RESOURCE, &resourceCommand);
 	Log(IMPORTANT, MISC, "Killing all units besides the commander..."); 
 	//Delete all units besides out new commander
 	
@@ -483,13 +491,13 @@ void Utility::Suicide(int unitToSurvive, bool stopAll)
 			SStopUnitCommand stopCommand;
 			stopCommand.timeOut = 99999;
 			stopCommand.unitId = (*it)->GetUnitId();
-			ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_UNIT_STOP, &stopCommand);
+			engine->HandleCommand(0,-1, COMMAND_UNIT_STOP, &stopCommand);
 		}*/
 		
 		SSelfDestroyUnitCommand command;
 		command.unitId = (*it)->GetUnitId();
 		command.timeOut = 99999;
 		command.options = ( stopAll ? 0 : UNIT_COMMAND_OPTION_SHIFT_KEY );
-		ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_UNIT_SELF_DESTROY, &command);
+		engine->HandleCommand(0,-1, COMMAND_UNIT_SELF_DESTROY, &command);
 	}
 }

@@ -14,6 +14,7 @@ ResourceInfo::ResourceInfo(AIClasses* ai)
 
 ResourceInfo::~ResourceInfo()
 {
+	delete this->economy;
 }
 
 float ResourceInfo::GetCurrentConsumption(Resource *res)
