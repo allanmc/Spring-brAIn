@@ -18,7 +18,6 @@ ConstructionGroupManager::~ConstructionGroupManager()
 		UnitGroups[i] = NULL;
 	}
 	UnitGroups.clear();
-	delete &UnitGroups;
 }
 
 void ConstructionGroupManager::AddUnit( Unit* unit )

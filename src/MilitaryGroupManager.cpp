@@ -25,7 +25,6 @@ brainSpace::MilitaryGroupManager::~MilitaryGroupManager()
 		UnitGroups[i] = NULL;
 	}
 	UnitGroups.clear();
-	delete &UnitGroups;
 }
 
 void brainSpace::MilitaryGroupManager::AddUnit( Unit* unit )
