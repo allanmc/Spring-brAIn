@@ -202,9 +202,9 @@ void Decision::UnitDestroyed(int unit, int attacker)
 		ai->utility->Log( LOG_DEBUG, DECISION, "UnitDestroyed: UnitDef was null" );
 	else if ( d->GetUnitDefId() == -1 )
 		ai->utility->Log( LOG_DEBUG, DECISION, "UnitDestroyed: Unitdef was -1" );
+	vector<WeaponMount*> wpmt = d->GetWeaponMounts();
 
-
-	if (destroyee->GetDef()->GetWeaponMounts().size()>0) 
+	if (wpmt.size()>0) 
 	{
 		ai->knowledge->selfInfo->armyInfo->RemoveUnit(destroyee);
 	}
@@ -215,7 +215,7 @@ void Decision::UnitDestroyed(int unit, int attacker)
 	}
 
 
-	if(destroyee->GetDef()->GetSpeed() > 0)
+	if(d->GetSpeed() > 0)
 	{
 		//remove from groupController
 		gc->RemoveUnit(destroyee);
@@ -227,6 +227,14 @@ void Decision::UnitDestroyed(int unit, int attacker)
 			ai->knowledge->selfInfo->resourceInfo->RemoveChangeToCome(destroyee);
 		}
 	}
+	delete d;
+	delete destroyee;
+	delete destroyer;
+	for(int i = 0; i < (int)wpmt.size(); i++)
+	{
+		delete wpmt[i];
+	}
+	wpmt.clear();
 
 	//build a repacement?
 }

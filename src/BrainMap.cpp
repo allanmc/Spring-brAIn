@@ -9,9 +9,10 @@ BrainMap::BrainMap( AIClasses* aiClasses, int resolution )
 {
 	ai = aiClasses;
 	Resolution = resolution*8; //real world size of a map tile
+	Map *map = ai->callback->GetMap();
 
-	MapWidth = (ai->callback->GetMap()->GetWidth()*8)/Resolution;
-	MapHeight = (ai->callback->GetMap()->GetHeight()*8)/Resolution;
+	MapWidth = (map->GetWidth()*8)/Resolution;
+	MapHeight = (map->GetHeight()*8)/Resolution;
 
 	MapArray = new float[MapWidth*MapHeight];
 	mapData = new MapData(MapArray, MapWidth, MapHeight, Resolution);
@@ -20,6 +21,7 @@ BrainMap::BrainMap( AIClasses* aiClasses, int resolution )
 
 	//DrawGrid();
 	Reset();
+	delete map;
 }
 
 

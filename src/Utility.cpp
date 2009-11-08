@@ -38,6 +38,10 @@ Utility::~Utility()
 	{
 		delete defs[i];
 	}
+	for(int i = 0; i < (int)resources.size(); i++)
+	{
+		delete resources[i];
+	}
 }
 
 ///@return the safe position whether a building blocks the exit of out base
@@ -62,6 +66,7 @@ void Utility::LaterInitialization()
 	lltDef = GetUnitDef("armllt");
 	Log(ALL, MISC, "LaterInitialization()");
 	isMetalMap = map->GetResourceMapSpotsPositions(*ai->utility->GetResource("Metal"), NULL).size() > 200;
+	resources = ai->callback->GetResources();
 }
 
 bool Utility::IsMetalMap()
@@ -209,7 +214,6 @@ UnitDef* Utility::GetUnitDef(const char* unitDefName)
 ///@return the Resource with the given name, or NULL if the Resource does not exists
 Resource* Utility::GetResource(const char* resourceName)
 {
-	vector<Resource*> resources = ai->callback->GetResources();
 	Resource* retval = NULL;
 	for ( int i = 0 ; i < (int)resources.size() ; i++ )
 	{
@@ -217,12 +221,7 @@ Resource* Utility::GetResource(const char* resourceName)
 		{
 			retval = resources[i];			
 		}
-		else
-		{
-			delete resources[i];
-		}
 	}
-	resources.clear();
 	
 	return retval;
 }
@@ -515,5 +514,6 @@ void Utility::Suicide(int unitToSurvive, bool stopAll)
 		command.timeOut = 99999;
 		command.options = ( stopAll ? 0 : UNIT_COMMAND_OPTION_SHIFT_KEY );
 		engine->HandleCommand(0,-1, COMMAND_UNIT_SELF_DESTROY, &command);
+		delete (*it);
 	}
 }

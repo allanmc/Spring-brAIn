@@ -33,6 +33,8 @@ namespace brainSpace
 		std::vector<springai::UnitDef*> defs;
 		springai::Engine *engine;
 		springai::Map *map;
+		std::vector<springai::Resource*> resources;
+
 
 	public:
 		Utility( AIClasses* aiClasses );
