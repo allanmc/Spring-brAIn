@@ -222,23 +222,28 @@ SAIFloat3 Utility::GoTo(int unitId, SAIFloat3 pos, bool simulate)
 {
 	ai->utility->Log(ALL, MISC, "GoTo: I am now going to find a path..");
 	Unit* unit = Unit::GetInstance(ai->callback, unitId);
+	UnitDef *def = unit->GetDef();
 	list<SAIFloat3> wayPoints;
 	bool goToward = true;
-	if (ai->utility->EuclideanDistance(unit->GetPos(), pos) < unit->GetDef()->GetBuildDistance())
+	if (ai->utility->EuclideanDistance(unit->GetPos(), pos) < def->GetBuildDistance())
 	{
 		//wayPoints.push_back(pos);
-		wayPoints = ai->knowledge->mapInfo->pathfindingMap->FindPathTo(unit->GetDef(), unit->GetPos(), GetSafePosition());
+		wayPoints = ai->knowledge->mapInfo->pathfindingMap->FindPathTo(def, unit->GetPos(), GetSafePosition());
 		ai->utility->Log(ALL, MISC, "GoTo: I am going backwards!");
 		goToward = false;
 	}
 	else
 	{
-		wayPoints = ai->knowledge->mapInfo->pathfindingMap->FindPathTo(unit->GetDef(), unit->GetPos(), pos);
+		wayPoints = ai->knowledge->mapInfo->pathfindingMap->FindPathTo(def, unit->GetPos(), pos);
 		ai->utility->Log(ALL, MISC, "GoTo: I am going towards buildlocation!");
 	}
 	SAIFloat3 retPos = (SAIFloat3){0,-1,0};
 	if(wayPoints.size() == 0)
+	{
+		delete def;
+		delete unit;
 		return retPos;
+	}
 
 	SMoveUnitCommand moveCommand;
 	
@@ -249,7 +254,6 @@ SAIFloat3 Utility::GoTo(int unitId, SAIFloat3 pos, bool simulate)
 		moveCommand.unitId = unitId;
 	}
 	int toWalk = 0;
-	UnitDef *def = unit->GetDef();
 	//for (int i = 0; i < wayPoints.size(); i++)
 	for (list<SAIFloat3>::const_iterator it = wayPoints.begin(); it != wayPoints.end(); ++it)
 	{
@@ -266,12 +270,12 @@ SAIFloat3 Utility::GoTo(int unitId, SAIFloat3 pos, bool simulate)
 			engine->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &moveCommand);
 		}
 	}
-	delete def;
 	ai->utility->Log(ALL, MISC, "GoTo: I am done! I want to walk %i out of %i waypoints", toWalk, wayPoints.size());
 	int res = ai->knowledge->mapInfo->pathfindingMap->GetMapData()->MapResolution;
 	ai->utility->Log(ALL, MISC, "GoTo: Final pathfinding INDEX: %d, %d", (int)retPos.x/res, (int)retPos.z/res);
 
-
+	delete def;
+	delete unit;
 	return retPos;
 }
 

@@ -80,7 +80,9 @@ void RL::ClearAllNodes()
 
 void RL::LoadFromFile()
 {
-	const char* dir = ai->callback->GetDataDirs()->GetWriteableDir();
+	DataDirs *dirs = ai->callback->GetDataDirs();
+	const char* dir = dirs->GetWriteableDir();
+	delete dirs;
 
 	char *path = new char[200];
 	strcpy(path, dir);
@@ -189,7 +191,7 @@ RL_Action RL::FindBestAction( RL_State &state )
 
 	//vector<RL_Action*>::iterator it;
 	//for ( it = stateActions.begin()+1 ; it != stateActions.end() ; it++ )
-	for ( int i = 1 ; i < stateActions.size() ; i++ )
+	for ( int i = 1 ; i < (int)stateActions.size() ; i++ )
 	{
 		//RL_Action *tempAction = (RL_Action*)(*it);
 		RL_Action tempAction = stateActions[i];
