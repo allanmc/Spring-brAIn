@@ -259,6 +259,7 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 	SAIFloat3 fromPos;
 	UnitDef *unitDef;
 	UnitDef *commanderdef =  ai->commander->GetDef();
+	bool blocks = false;
 	//Check if the new building at the selected location would block any exsisting labs
 	for (int i = 0; i < (int)units.size(); i++) 
 	{
@@ -282,18 +283,16 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 			{
 				//There is a blocking problem with that build
 				ai->utility->Log(ALL, MISC, "BuildBlocksSelf blocked build by reason 1 (No path from exit of an old %s)", unitDef->GetName());
-				delete firstunit;
-				delete commanderdef;
-				delete unitDef;
-				for (int z = 0; z < (int)units.size(); z++) 
-					delete units[z];
-				return true;
+				blocks = true;
 			}
 			delete firstunit;
 		}
 		delete unitDef;
-		delete units[i];
 	}
+	for(int i = 0; i < (int)units.size(); i++)
+		delete units[i];
+	if(blocks)
+		return true;
 	ai->utility->Log(ALL, MISC, "BuildBlocksSelf check 1 done");
 	//If what we want to build is a lab, check that this position allows its units a path out of the base
 	//without using the locaion of the new building
