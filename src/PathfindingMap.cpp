@@ -213,7 +213,7 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 	if (debug) ai->utility->Log(ALL, PATHFIND,  "FindPathTo start" );
 	int goalXIndex = destination.x/Resolution;
 	int goalZIndex = destination.z/Resolution;
-	springai::MoveData *move = pathfinder->GetMoveData();
+	MoveData *move = pathfinder->GetMoveData();
 	float maxSlope = move->GetMaxSlope();
 	delete move;
 	
@@ -425,6 +425,7 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 	}
 	if (debug) ai->utility->Log(ALL, PATHFIND, "Openset is empty without finding result");
 	list<SAIFloat3> emptyResult;
+	DeleteNodes(closedSet, openSet);
 	return emptyResult;
 }
 
@@ -512,12 +513,14 @@ void PathfindingMap::PrintSection(SAIFloat3 pos)
 {
 	int x = pos.x/Resolution;
 	int z = pos.z/Resolution;
+	UnitDef *commanderDef = ai->commander->GetDef();
+	MoveData *move = commanderDef->GetMoveData();
 
 	for(int i = max(0,z - 50); i <= min(MapHeight-1, z + 50); i++)
 	{
 		for(int j = max(0,x - 50); j <= min(MapWidth-1, x + 50); j++)
 		{
-			bool walkable = MapArray[i*MapWidth + j] < ai->commander->GetDef()->GetMoveData()->GetMaxSlope();
+			bool walkable = MapArray[i*MapWidth + j] < move->GetMaxSlope();
 			if(x == j && z == i)
 				ai->utility->LogNN(ALL, MISC, (walkable ? "X":"Q"));
 			else
@@ -525,5 +528,7 @@ void PathfindingMap::PrintSection(SAIFloat3 pos)
 		}
 		ai->utility->LogNN(ALL, MISC, "\n");
 	}
+	delete commanderDef;
+	delete move;
 	
 }

@@ -210,19 +210,20 @@ UnitDef* Utility::GetUnitDef(const char* unitDefName)
 Resource* Utility::GetResource(const char* resourceName)
 {
 	vector<Resource*> resources = ai->callback->GetResources();
+	Resource* retval = NULL;
 
 	for ( int i = 0 ; i < (int)resources.size() ; i++ )
 	{
 		if ( strcmp( resources[i]->GetName(), resourceName ) == 0 )
 		{
-			return resources[i];
+			retval = resources[i];
 		}
 		else
 		{
 			delete resources[i];
 		}
 	}
-	return NULL;
+	return retval;
 }
 
 ///Order the unit to goto a specific location using our own pathfinding

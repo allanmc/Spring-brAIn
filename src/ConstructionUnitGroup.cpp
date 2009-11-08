@@ -289,6 +289,7 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 			delete firstunit;
 		}
 		delete unitDef;
+		delete units[i];
 	}
 	ai->utility->Log(ALL, MISC, "BuildBlocksSelf check 1 done");
 	//If what we want to build is a lab, check that this position allows its units a path out of the base
@@ -421,7 +422,7 @@ SAIFloat3 ConstructionUnitGroup::FindClosestNonConflictingBuildSite(UnitDef *uni
 	ai->utility->Log(ALL, MISC, "FindClosestNonConflictingBuildSite... %d",unitDef->GetUnitDefId());
 
 	ai->utility->Log(ALL, MISC, "FindClosestNonConflictingBuildSite started");
-
+	Map *map = ai->callback->GetMap();
 	do
 	{
 		if (!firstRun) {
@@ -452,7 +453,8 @@ SAIFloat3 ConstructionUnitGroup::FindClosestNonConflictingBuildSite(UnitDef *uni
 				break;
 		}
 		corner++;
-		pos = ai->callback->GetMap()->FindClosestBuildSite( *unitDef , searchPos, searchRadius, minDist, facing);
+		
+		pos = map->FindClosestBuildSite( *unitDef , searchPos, searchRadius, minDist, facing);
 		
 		if (!ai->utility->IsMetalMap()) {
 			closestMexSite = FindClosestMetalExtractionSite(pos, false);
@@ -474,8 +476,9 @@ SAIFloat3 ConstructionUnitGroup::FindClosestNonConflictingBuildSite(UnitDef *uni
 		pos = buildPos; //We did not find a good place to build... Return orginal buildPos,
 		pos.y = -1;		//and set y=-1 to indicate error
 	}
+	delete map;
 	
-	return pos;
+	return pos;	
 }
 
 ///Maybe we should look into Voronoi diagrams to optimize this :P
@@ -530,6 +533,7 @@ SAIFloat3 ConstructionUnitGroup::FindGoodBuildSite(SAIFloat3 builderPos, UnitDef
 	SAIFloat3 bestBuildSpot=builderPos;
 	float bestDistance = radius*radius+1;
 	bool foundBuildSite = false;
+	Map *map = ai->callback->GetMap();
 	
 	vector<Unit*> nearByBuildings = ai->knowledge->selfInfo->baseInfo->GetUnitsInRange(builderPos, radius);
 	vector<Unit*>::iterator it;
@@ -548,7 +552,7 @@ SAIFloat3 ConstructionUnitGroup::FindGoodBuildSite(SAIFloat3 builderPos, UnitDef
 				float newDist = ai->utility->EuclideanDistance(builderPos,newPos);
 				
 				if(newDist < bestDistance
-					&&  ai->callback->GetMap()->IsPossibleToBuildAt(*building, newPos, 0)
+					&&  map->IsPossibleToBuildAt(*building, newPos, 0)
 					&& !IsMetalExtracitonSite(building, newPos)
 					&& !BuildBlocksSelf(building, newPos, 0) )
 				{
@@ -559,8 +563,10 @@ SAIFloat3 ConstructionUnitGroup::FindGoodBuildSite(SAIFloat3 builderPos, UnitDef
 				}
 			}
 		}
+		delete (*it);
+		delete ud;
 	}
-
+	delete map;
 	if (!foundBuildSite)
 	{
 		//We didn't find a good BuildSite (e.g. no non-builder buildings)
