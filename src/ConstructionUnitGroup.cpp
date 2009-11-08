@@ -147,6 +147,7 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	order.options = UNIT_COMMAND_OPTION_SHIFT_KEY;
 	Engine *e = ai->callback->GetEngine();
 	e->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &order );
+	ai->utility->Log(ALL, PATHFIND, "Building order position: %f,%f", order.buildPos.x, order.buildPos.z);
 	delete unitDef;
 	delete commanderDef;
 	delete e;

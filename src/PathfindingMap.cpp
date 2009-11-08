@@ -210,7 +210,7 @@ void PathfindingMap::ResetSlope( int xTile, int zTile )
 
 list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start, SAIFloat3 destination, bool debug )
 {
-	if (debug) ai->utility->Log(ALL, PATHFIND,  "FindPathTo start" );
+	if (debug) ai->utility->Log(ALL, PATHFIND,  "FindPathTo start, resolution: %d",Resolution );
 	int goalXIndex = destination.x/Resolution;
 	int goalZIndex = destination.z/Resolution;
 	MoveData *move = pathfinder->GetMoveData();
