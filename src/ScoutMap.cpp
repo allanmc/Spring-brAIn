@@ -19,9 +19,11 @@ void ScoutMap::Update()
 {
 	map<int, struct UnitInformationContainer> units = ai->knowledge->selfInfo->armyInfo->GetUnits();
 	map<int, struct UnitInformationContainer>::iterator it;
+	ai->utility->Log( ALL, MISC, "getunits done, size: %i",units.size());
 	for(it = units.begin();it != units.end(); it++)
 	{
 		UnitDef *def = it->second.def;
+		ai->utility->Log( ALL, MISC, "getdef done");
 		float radius;
 		if(def && def->GetUnitDefId() != -1)
 		{
@@ -32,7 +34,11 @@ void ScoutMap::Update()
 			continue;//can not use this unit for any thing!
 		}
 		SAIFloat3 pos = it->second.pos;
+
 		EffectCircle(pos, radius, ai->frame);
+		ai->utility->Log( ALL, MISC, "effectcircle %i done");
+		delete def;
+		ai->utility->Log( ALL, MISC, "delete def done");
 	}
 }
 
