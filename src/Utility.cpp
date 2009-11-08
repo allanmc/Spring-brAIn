@@ -9,6 +9,7 @@ using namespace brainSpace;
 
 Utility::Utility( AIClasses* aiClasses )
 {
+	;
 	debug = true;
 	ai = aiClasses;
 	char filename[200];
@@ -22,6 +23,7 @@ Utility::Utility( AIClasses* aiClasses )
 	Log(ALL, MISC, "Initialized Utility-class...");
 	engine = ai->callback->GetEngine();
 	map = ai->callback->GetMap();
+	resources = ai->callback->GetResources();
 	InitializeOptions();
 	isMetalMap = false;
 
@@ -65,7 +67,6 @@ void Utility::LaterInitialization()
 	solarDef = GetUnitDef("armsolar");
 	lltDef = GetUnitDef("armllt");
 	Log(ALL, MISC, "LaterInitialization()");
-	resources = ai->callback->GetResources();
 	isMetalMap = map->GetResourceMapSpotsPositions(*ai->utility->GetResource("Metal"), NULL).size() > 200;
 	
 }
