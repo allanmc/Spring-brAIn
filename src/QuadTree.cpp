@@ -108,7 +108,6 @@ void QuadTree::InsertUnit( int unitID, SAIFloat3 pos )
 			}
 			units[unitID].pos = pos;
 			delete u;
-			delete def;
 			break;
 		}
 		//The current node was full, so split it.

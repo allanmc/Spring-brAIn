@@ -23,7 +23,6 @@ void ScoutMap::Update()
 	for(it = units.begin();it != units.end(); it++)
 	{
 		UnitDef *def = it->second.def;
-		ai->utility->Log( ALL, MISC, "getdef done");
 		float radius;
 		if(def && def->GetUnitDefId() != -1)
 		{
@@ -36,9 +35,6 @@ void ScoutMap::Update()
 		SAIFloat3 pos = it->second.pos;
 
 		EffectCircle(pos, radius, ai->frame);
-		ai->utility->Log( ALL, MISC, "effectcircle %i done");
-		delete def;
-		ai->utility->Log( ALL, MISC, "delete def done");
 	}
 }
 
