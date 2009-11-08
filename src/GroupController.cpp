@@ -61,7 +61,8 @@ bool GroupController::ConstructionGroupIsIdle()
 void GroupController::UnitIdle( Unit* unit )
 {
 	ai->utility->Log(ALL, MISC, "GroupController::UnitIdle()");
-	if ( unit->GetDef()->IsBuilder() )
+	UnitDef *def = unit->GetDef();
+	if ( def->IsBuilder() )
 	{
 		ConstructionGroupMgr->UnitIdle( unit );
 	}
@@ -69,6 +70,7 @@ void GroupController::UnitIdle( Unit* unit )
 	{
 		MilitaryGroupMgr->UnitIdle(unit);
 	}
+	delete def;
 }
 
 ///finds an idle group to attack the target.

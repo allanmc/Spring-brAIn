@@ -274,9 +274,9 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 			//ai->utility->DrawLine(fromPos, GetSafePosition(), true);
 			vector<UnitDef*> buildableUnits = unitDef->GetBuildOptions();
 			UnitDef *firstunit = buildableUnits[0];
-			for(int i = 1; i < (int)buildableUnits.size(); i++)
+			for(int j = 1; j < (int)buildableUnits.size(); j++)
 			{
-				delete buildableUnits[i];
+				delete buildableUnits[j];
 			}
 			if (!ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom(firstunit, toBuildUnitDef, pos, fromPos, ai->utility->GetSafePosition())) 
 			{
@@ -284,6 +284,9 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 				ai->utility->Log(ALL, MISC, "BuildBlocksSelf blocked build by reason 1 (No path from exit of an old %s)", unitDef->GetName());
 				delete firstunit;
 				delete commanderdef;
+				delete unitDef;
+				for (int z = 0; z < (int)units.size(); z++) 
+					delete units[z];
 				return true;
 			}
 			delete firstunit;
@@ -299,9 +302,9 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 		fromPos = GetUnitExitOfLab(pos, toBuildUnitDef, facing);
 		vector<UnitDef*> buildableUnits = toBuildUnitDef->GetBuildOptions();
 		UnitDef *firstunit = buildableUnits[0];
-		for(int i = 1; i < (int)buildableUnits.size(); i++)
+		for(int k = 1; k < (int)buildableUnits.size(); k++)
 		{
-			delete buildableUnits[i];
+			delete buildableUnits[k];
 		}
 		if (!ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom(firstunit, toBuildUnitDef, pos, fromPos, ai->utility->GetSafePosition()))
 		{

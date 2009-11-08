@@ -364,9 +364,10 @@ void Decision::Update(int frame)
 	{
 		if (waitingForCommander)
 		{
+			Map *map = ai->callback->GetMap();
 			ai->utility->Log(ALL, MISC, "Checking if new commander is in position X:(%f == %f), Z:(%f == %f)", ai->commander->GetPos().x, ai->callback->GetMap()->GetStartPos().x, ai->commander->GetPos().z, ai->callback->GetMap()->GetStartPos().z);
-			if (abs(ai->commander->GetPos().x - ai->callback->GetMap()->GetStartPos().x)<50 &&
-				abs(ai->commander->GetPos().z - ai->callback->GetMap()->GetStartPos().z)<50)
+			if (abs(ai->commander->GetPos().x - map->GetStartPos().x)<50 &&
+				abs(ai->commander->GetPos().z - map->GetStartPos().z)<50)
 			{
 				resettingGame = false;
 				ai->utility->LaterInitialization();
@@ -382,9 +383,12 @@ void Decision::Update(int frame)
 				moveCommand.timeOut = 100000000;
 				moveCommand.options = 0;
 				moveCommand.unitId = ai->commander->GetUnitId();
-				ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &moveCommand);
+				Engine *engine = ai->callback->GetEngine();
+				engine->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &moveCommand);
 				extraMoveSent = true;
+				delete engine;
 			}
+			delete map;
 		}
 		/*ai->utility->Log(ALL, MISC, "Hmm1");
 		vector<Unit*> units = ai->callback->GetFriendlyUnits();
@@ -543,11 +547,13 @@ void Decision::Update(int frame)
 	if ( frame % 120 ==0 )
 	{
 		UpdateFrindlyPositions();
+		Map *map = ai->callback->GetMap();
 		CBoundingBox box;
-		box.topLeft.x = ai->callback->GetMap()->GetStartPos().x - 1000;
-		box.topLeft.z = ai->callback->GetMap()->GetStartPos().z - 1000;
-		box.bottomRight.x = ai->callback->GetMap()->GetStartPos().x + 1000;
-		box.bottomRight.z = ai->callback->GetMap()->GetStartPos().z + 1000;
+		box.topLeft.x = map->GetStartPos().x - 1000;
+		box.topLeft.z = map->GetStartPos().z - 1000;
+		box.bottomRight.x = map->GetStartPos().x + 1000;
+		box.bottomRight.z = map->GetStartPos().z + 1000;
+		delete map;
 		//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "Start position (%f, %f)", ai->callback->GetMap()->GetStartPos().x, ai->callback->GetMap()->GetStartPos().z );
 		//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "Number of battles close to our base within the last 6000 frames: %d. Current frame %d", BattleInfoInstance->NumberOfBattlesInArea( 6000, box ), ai->frame);
 		int battles = BattleInfoInstance->NumberOfBattlesInArea( 9000, box );
@@ -686,8 +692,10 @@ void Decision::UnitIdle( int id )
 	ai->utility->Log(ALL, MISC, "Decision::UnitIdle()");
 	Unit* u = Unit::GetInstance( ai->callback, id );
 	gc->UnitIdle( u );
+	
 	//BuildSomethingUsefull();
 	//Construction groups has nothing to do... So build something we need!
+	delete u;
 }
 
 void Decision::BuildSomethingUsefull()
