@@ -274,7 +274,7 @@ SAIFloat3 Utility::GoTo(int unitId, SAIFloat3 pos, bool simulate)
 			break; //Ignore moves that goes unnecesarry close to the building-spot
 		toWalk++;
 		retPos = *it;
-		if (!simulate)
+		if (!simulate && retPos.x != ai->commander->GetPos().x && retPos.z != ai->commander->GetPos().z)
 		{
 			moveCommand.toPos = retPos;
 			moveCommand.options = UNIT_COMMAND_OPTION_SHIFT_KEY;
@@ -469,7 +469,7 @@ void Utility::ResetGame(RL **rl)
 	ai->commander = Unit::GetInstance(ai->callback, giveUnitOrder.ret_newUnitId);
 	
 	
-	Log(IMPORTANT, MISC, "Telling the new commander to move to startPos");
+	Log(ALL, MISC, "Telling the new commander to move to startPos, commanderid: %d", ai->commander->GetUnitId());
 	SMoveUnitCommand moveCommand;
 	moveCommand.toPos = map->GetStartPos();
 	moveCommand.timeOut = 100000000;

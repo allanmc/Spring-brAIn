@@ -693,11 +693,12 @@ void Decision::Update(int frame)
 
 void Decision::UnitIdle( int id )
 {
+	ai->utility->Log(ALL, MISC, "Decision::UnitIdle(), reset?: %d", resettingGame);
 	if (resettingGame)
 	{
 		return;
 	}
-	ai->utility->Log(ALL, MISC, "Decision::UnitIdle()");
+	
 	Unit* u = Unit::GetInstance( ai->callback, id );
 	gc->UnitIdle( u );
 	
