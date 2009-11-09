@@ -16,41 +16,18 @@ RL_State::RL_State( AIClasses* aiClasses, int node)
 	case 0://root
 		{
 			int labCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armlab");
-			int EnoughLabs = (labCount >= 4);
-			terminal = 	(EnoughLabs ? true : false);
-			int affordable = ai->knowledge->selfInfo->resourceInfo->IsAffordableToBuild(ai->utility->GetUnitDef("armcom"),
-				ai->utility->GetUnitDef("armlab"));
-			bool CanBuildLab = (affordable == 0);
-			
-			ID = (CanBuildLab ? 2 : 0) + (EnoughLabs ? 1 : 0);
-			ai->utility->Log(ALL, LOG_RL, "RL_State, affordable = %i", affordable);
-			ai->utility->Log(ALL, LOG_RL, "RL_State, CanBuildLab = %i", CanBuildLab);
-			ai->utility->Log(ALL, LOG_RL, "RL_State, EnoughLabs = %i", EnoughLabs);
-			ai->utility->Log(ALL, LOG_RL, "RL_State, ID = %i", ID);
-			Actions.push_back(RL_Action(1,0,true));
-			Actions.push_back(RL_Action(2,1,true));
-		}break;
-	case 1://factory
-		{
-			terminal = true;
-			int LabCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armlab");
-			int PlantCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armvp");
-			ID = PlantCount * 5 + LabCount;
-			if(PlantCount < 4)
-				Actions.push_back(RL_Action(ai->utility->GetUnitDef("armvp")->GetUnitDefId(),0,false));
-			if(LabCount < 4)
-				Actions.push_back(RL_Action(ai->utility->GetUnitDef("armlab")->GetUnitDefId(),1,false));
-		}break;
-	case 2://resource
-		{
-			terminal = true;
-			int MexCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armmex");
-			int SolarCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armsolar");
-			ID = MexCount * 20 + SolarCount;
-			if(MexCount < 19)
-				Actions.push_back(RL_Action(ai->utility->GetUnitDef("armmex")->GetUnitDefId(),0,false));
-			if(SolarCount < 19)
+			int solarCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armsolar");
+			int mexCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armmex");
+			terminal = (labCount==4);
+			ID = labCount*RL_MEX_INDEX*RL_SOLAR_INDEX + solarCount*RL_MEX_INDEX + mexCount;
+			if(labCount < 4)
+				Actions.push_back(RL_Action(ai->utility->GetUnitDef("armlab")->GetUnitDefId(),0,false));
+			if(solarCount < 19)
 				Actions.push_back(RL_Action(ai->utility->GetUnitDef("armsolar")->GetUnitDefId(),1,false));
+			if(mexCount < 19)
+				Actions.push_back(RL_Action(ai->utility->GetUnitDef("armmex")->GetUnitDefId(),2,false));
+			
+			
 		}break;
 	default://error
 		Node = -1;
@@ -59,11 +36,6 @@ RL_State::RL_State( AIClasses* aiClasses, int node)
 
 RL_State::~RL_State()
 {
-	/*for (int i = 0; i < (int)Actions.size(); i++)
-	{
-		delete Actions[i];
-		Actions[i] = NULL;
-	}*/
 	Actions.clear();
 }
 

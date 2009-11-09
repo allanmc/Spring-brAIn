@@ -8,7 +8,7 @@
 
 #define QBFILE_VERSION 2
 
-#define RL_NUM_NODES 3
+#define RL_NUM_NODES 1
 
 #define GAMMA 0.9
 #define ALPHA 0.1
