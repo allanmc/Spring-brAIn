@@ -73,12 +73,22 @@ void Decision::UnitCreated(int unitID, int builderID)
 	}
 
 	Unit * u = Unit::GetInstance(ai->callback,unitID);
+	UnitDef *uDef = u->GetDef();
 	Unit * builder = ( builderID ? Unit::GetInstance(ai->callback,builderID) : NULL);
+	UnitDef *bDef = NULL;
+	if(builder != NULL)
+	{
+		bDef = builder->GetDef();
+	}
 	
-	if(u->GetDef()->GetSpeed() == 0){//building
-		float ETA = u->GetDef()->GetBuildTime() / builder->GetDef()->GetBuildSpeed();
+	if(uDef->GetSpeed() == 0){//building
+		float ETA = uDef->GetBuildTime() / bDef->GetBuildSpeed();
 		ai->knowledge->selfInfo->resourceInfo->AddChangeToCome(u,ETA);
 	}
+	delete u;
+	delete uDef;
+	delete builder;
+	delete bDef;
 }
 
 ///Called when a unit is fully constructed
@@ -90,11 +100,11 @@ void Decision::UnitFinished(int unit)
 		return;
 	}
 
-	Unit * u = Unit::GetInstance(ai->callback,unit);
+	Unit *u = Unit::GetInstance(ai->callback,unit);
 	
-	ai->utility->Log(ALL, MISC, "Unit finished, \"%s\", pos:%f,%f", u->GetDef()->GetName(), u->GetPos().x, u->GetPos().z);
 	UnitDef * ud = u->GetDef();
-	ai->utility->Log(ALL, MISC, "Ud set");
+	vector<WeaponMount*> wpmt = ud->GetWeaponMounts();
+	ai->utility->Log(ALL, MISC, "Unit finished, \"%s\", pos:%f,%f", ud->GetName(), u->GetPos().x, u->GetPos().z);
 	if(ud->GetSpeed() > 0)
 	{
 		ai->utility->Log(ALL, MISC, "Finished with a non-building");
@@ -114,7 +124,7 @@ void Decision::UnitFinished(int unit)
 		ai->utility->Log(ALL, MISC, "Removed change to come");
 	}
 
-	if (ud->GetWeaponMounts().size()>0) 
+	if (wpmt.size()>0) 
 	{
 		ai->knowledge->selfInfo->armyInfo->AddUnit(u);
 	}
@@ -125,6 +135,11 @@ void Decision::UnitFinished(int unit)
 	
 	UpdateRL();
 	ai->utility->Log(LOG_DEBUG, LOG_RL, "UnitFinished() returned");
+	delete ud;
+	for(int i = 0; i < (int)wpmt.size(); i++)
+	{
+		delete wpmt[i];
+	}
 }
 
 void Decision::UpdateRL()
@@ -187,9 +202,9 @@ void Decision::UnitDestroyed(int unit, int attacker)
 		ai->utility->Log( LOG_DEBUG, DECISION, "UnitDestroyed: UnitDef was null" );
 	else if ( d->GetUnitDefId() == -1 )
 		ai->utility->Log( LOG_DEBUG, DECISION, "UnitDestroyed: Unitdef was -1" );
+	vector<WeaponMount*> wpmt = d->GetWeaponMounts();
 
-
-	if (destroyee->GetDef()->GetWeaponMounts().size()>0) 
+	if (wpmt.size()>0) 
 	{
 		ai->knowledge->selfInfo->armyInfo->RemoveUnit(destroyee);
 	}
@@ -200,7 +215,7 @@ void Decision::UnitDestroyed(int unit, int attacker)
 	}
 
 
-	if(destroyee->GetDef()->GetSpeed() > 0)
+	if(d->GetSpeed() > 0)
 	{
 		//remove from groupController
 		gc->RemoveUnit(destroyee);
@@ -212,6 +227,14 @@ void Decision::UnitDestroyed(int unit, int attacker)
 			ai->knowledge->selfInfo->resourceInfo->RemoveChangeToCome(destroyee);
 		}
 	}
+	delete d;
+	delete destroyee;
+	delete destroyer;
+	for(int i = 0; i < (int)wpmt.size(); i++)
+	{
+		delete wpmt[i];
+	}
+	wpmt.clear();
 
 	//build a repacement?
 }
@@ -307,6 +330,7 @@ void Decision::UpdateFrindlyPositions()
 		{
 			armyUnits->UpdateUnit( units[i] );
 		}
+		delete units[i];
 	}
 }
 
@@ -348,9 +372,10 @@ void Decision::Update(int frame)
 	{
 		if (waitingForCommander)
 		{
+			Map *map = ai->callback->GetMap();
 			ai->utility->Log(ALL, MISC, "Checking if new commander is in position X:(%f == %f), Z:(%f == %f)", ai->commander->GetPos().x, ai->callback->GetMap()->GetStartPos().x, ai->commander->GetPos().z, ai->callback->GetMap()->GetStartPos().z);
-			if (abs(ai->commander->GetPos().x - ai->callback->GetMap()->GetStartPos().x)<50 &&
-				abs(ai->commander->GetPos().z - ai->callback->GetMap()->GetStartPos().z)<50)
+			if (abs(ai->commander->GetPos().x - map->GetStartPos().x)<50 &&
+				abs(ai->commander->GetPos().z - map->GetStartPos().z)<50)
 			{
 				resettingGame = false;
 				ai->utility->LaterInitialization();
@@ -366,9 +391,12 @@ void Decision::Update(int frame)
 				moveCommand.timeOut = 100000000;
 				moveCommand.options = 0;
 				moveCommand.unitId = ai->commander->GetUnitId();
-				ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &moveCommand);
+				Engine *engine = ai->callback->GetEngine();
+				engine->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &moveCommand);
 				extraMoveSent = true;
+				delete engine;
 			}
+			delete map;
 		}
 		/*ai->utility->Log(ALL, MISC, "Hmm1");
 		vector<Unit*> units = ai->callback->GetFriendlyUnits();
@@ -527,11 +555,13 @@ void Decision::Update(int frame)
 	if ( frame % 120 ==0 )
 	{
 		UpdateFrindlyPositions();
+		Map *map = ai->callback->GetMap();
 		CBoundingBox box;
-		box.topLeft.x = ai->callback->GetMap()->GetStartPos().x - 1000;
-		box.topLeft.z = ai->callback->GetMap()->GetStartPos().z - 1000;
-		box.bottomRight.x = ai->callback->GetMap()->GetStartPos().x + 1000;
-		box.bottomRight.z = ai->callback->GetMap()->GetStartPos().z + 1000;
+		box.topLeft.x = map->GetStartPos().x - 1000;
+		box.topLeft.z = map->GetStartPos().z - 1000;
+		box.bottomRight.x = map->GetStartPos().x + 1000;
+		box.bottomRight.z = map->GetStartPos().z + 1000;
+		delete map;
 		//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "Start position (%f, %f)", ai->callback->GetMap()->GetStartPos().x, ai->callback->GetMap()->GetStartPos().z );
 		//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "Number of battles close to our base within the last 6000 frames: %d. Current frame %d", BattleInfoInstance->NumberOfBattlesInArea( 6000, box ), ai->frame);
 		int battles = BattleInfoInstance->NumberOfBattlesInArea( 9000, box );
@@ -663,15 +693,18 @@ void Decision::Update(int frame)
 
 void Decision::UnitIdle( int id )
 {
+	ai->utility->Log(ALL, MISC, "Decision::UnitIdle(), reset?: %d", resettingGame);
 	if (resettingGame)
 	{
 		return;
 	}
-	ai->utility->Log(ALL, MISC, "Decision::UnitIdle()");
+	
 	Unit* u = Unit::GetInstance( ai->callback, id );
 	gc->UnitIdle( u );
+	
 	//BuildSomethingUsefull();
 	//Construction groups has nothing to do... So build something we need!
+	delete u;
 }
 
 void Decision::BuildSomethingUsefull()

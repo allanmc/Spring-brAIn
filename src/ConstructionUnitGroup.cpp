@@ -67,17 +67,20 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 				+ (ai->utility->GetSolarDef()->GetZSize()*8)/2;*/
 	
 	UnitDef *unitDef = UnitDef::GetInstance(ai->callback, order.toBuildUnitDefId);
+	UnitDef *commanderDef = ai->commander->GetDef();
 	ai->utility->RemoveGraphics(figureId);
 
 	ai->utility->Log(ALL, MISC, "order tobuild id: %d", order.toBuildUnitDefId );
 	ai->utility->Log(ALL, MISC, "order options : %d", order.options );
 	ai->utility->Log(ALL, MISC, "order timeout : %d", order.timeOut );
 	ai->utility->Log(ALL, MISC, "order facing: %d", order.facing );
-	bool hest = ai->knowledge->mapInfo->pathfindingMap->PathExists(ai->commander->GetDef(), buildPos, ai->utility->GetSafePosition());
+	bool hest = ai->knowledge->mapInfo->pathfindingMap->PathExists(commanderDef, buildPos, ai->utility->GetSafePosition());
 	ai->utility->Log(ALL, MISC, "Is commander built in? %d", hest);
 	if(!hest)
 	{
 		ai->knowledge->mapInfo->pathfindingMap->PrintSection(buildPos);
+		ai->knowledge->mapInfo->pathfindingMap->PathExists(commanderDef, buildPos, ai->utility->GetSafePosition(), true);
+		exit(0);
 	}
 	
 	Idle = false;
@@ -91,7 +94,8 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	{
 		ai->utility->Log(ALL, MISC, "Find extractor build spot" );
 		order.buildPos = FindClosestMetalExtractionSite( buildPos );
-		order.buildPos.y = 30;
+		if(order.buildPos.y != -1)
+			order.buildPos.y = 30;
 		ai->utility->Log(ALL, MISC, "Metal extractor build position set" );
 	}
 	//Check to see if unit-to-build is LLT, the defense structure, and find good spot
@@ -119,6 +123,8 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	if (order.buildPos.y == -1)
 	{
 		ai->utility->Log(ALL, PATHFIND, "Could not get a build position in AssignBuildOrder()...");
+		delete unitDef;
+		delete commanderDef;
 		return;
 	}
 
@@ -139,7 +145,12 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	
 	ai->utility->GoTo(order.unitId, order.buildPos);
 	order.options = UNIT_COMMAND_OPTION_SHIFT_KEY;
-	ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &order );
+	Engine *e = ai->callback->GetEngine();
+	e->HandleCommand( 0, -1, COMMAND_UNIT_BUILD, &order );
+	ai->utility->Log(ALL, PATHFIND, "Building order position: %f,%f", order.buildPos.x, order.buildPos.z);
+	delete unitDef;
+	delete commanderDef;
+	delete e;
 }
 
 SAIFloat3 ConstructionUnitGroup::FindBestDefensePosition(UnitDef *unitDef, SAIFloat3 buildPos)
@@ -249,6 +260,8 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 	vector<Unit*> units = ai->callback->GetFriendlyUnits();
 	SAIFloat3 fromPos;
 	UnitDef *unitDef;
+	UnitDef *commanderdef =  ai->commander->GetDef();
+	bool blocks = false;
 	//Check if the new building at the selected location would block any exsisting labs
 	for (int i = 0; i < (int)units.size(); i++) 
 	{
@@ -262,41 +275,65 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 			//pos.y = 50.0;
 			//ai->utility->DrawLine(pos, fromPos, true);
 			//ai->utility->DrawLine(fromPos, GetSafePosition(), true);
-			if (!ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom(unitDef->GetBuildOptions()[0], toBuildUnitDef, pos, fromPos, ai->utility->GetSafePosition())) 
+			vector<UnitDef*> buildableUnits = unitDef->GetBuildOptions();
+			UnitDef *firstunit = buildableUnits[0];
+			for(int j = 1; j < (int)buildableUnits.size(); j++)
+			{
+				delete buildableUnits[j];
+			}
+			if (!ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom(firstunit, toBuildUnitDef, pos, fromPos, ai->utility->GetSafePosition())) 
 			{
 				//There is a blocking problem with that build
 				ai->utility->Log(ALL, MISC, "BuildBlocksSelf blocked build by reason 1 (No path from exit of an old %s)", unitDef->GetName());
-				return true;
+				blocks = true;
 			}
+			delete firstunit;
 		}
+		delete unitDef;
 	}
+	for(int i = 0; i < (int)units.size(); i++)
+		delete units[i];
+	if(blocks)
+		return true;
 	ai->utility->Log(ALL, MISC, "BuildBlocksSelf check 1 done");
 	//If what we want to build is a lab, check that this position allows its units a path out of the base
 	//without using the locaion of the new building
 	if ( strcmp(toBuildUnitDef->GetName(), "armlab")==0) 
 	{
 		fromPos = GetUnitExitOfLab(pos, toBuildUnitDef, facing);
-		if (!ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom(toBuildUnitDef->GetBuildOptions()[0], toBuildUnitDef, pos, fromPos, ai->utility->GetSafePosition()))
+		vector<UnitDef*> buildableUnits = toBuildUnitDef->GetBuildOptions();
+		UnitDef *firstunit = buildableUnits[0];
+		for(int k = 1; k < (int)buildableUnits.size(); k++)
+		{
+			delete buildableUnits[k];
+		}
+		if (!ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom(firstunit, toBuildUnitDef, pos, fromPos, ai->utility->GetSafePosition()))
 		{
 			ai->utility->Log(ALL, MISC, "BuildBlocksSelf blocked build by reason 2 (No path from exit of this new %s)", toBuildUnitDef->GetName());
+			delete firstunit;
+			delete commanderdef;
 			return true;
 		}
+		delete firstunit;
 	}
 	ai->utility->Log(ALL, MISC, "BuildBlocksSelf check 2 done");
 	//If we build this new building, does the commander have a path out of the base?
 	fromPos = ai->commander->GetPos();
 	///TODO: Maybe ensure that the commander does not walk into a building-block "trap" :)
-	if (!ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom(ai->commander->GetDef(), toBuildUnitDef, pos, fromPos, ai->utility->GetSafePosition()))
+	
+	if (!ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom(commanderdef, toBuildUnitDef, pos, fromPos, ai->utility->GetSafePosition()))
 	{
 		ai->utility->Log(ALL, MISC, "BuildBlocksSelf blocked build by reason 3 (No path for commander)");
+		delete commanderdef;
 		return true;
 	}
 	ai->utility->Log(ALL, MISC, "BuildBlocksSelf check 3 done");
 	//ai->utility->Log(ALL, MISC, "Commander: %s", commander->GetDef()->GetName());
 
-	if ( !ai->knowledge->mapInfo->pathfindingMap->PathExists(ai->commander->GetDef(), fromPos, pos) )
+	if ( !ai->knowledge->mapInfo->pathfindingMap->PathExists(commanderdef, fromPos, pos) )
 	{
 		ai->utility->Log( ALL, MISC, "BuildBlocksSelf blocked build by reason 4 (No path to buildsite)");
+		delete commanderdef;
 		return true;
 	}
 	ai->utility->Log(ALL, MISC, "BuildBlocksSelf check 4 done");
@@ -304,9 +341,10 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 	fromPos = ai->utility->GoTo(ai->commander->GetUnitId(), pos, true);
 	if(fromPos.y != -1)
 	{
-		if ( !ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom(ai->commander->GetDef(), toBuildUnitDef, pos, fromPos, ai->utility->GetSafePosition()) )
+		if ( !ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom(commanderdef, toBuildUnitDef, pos, fromPos, ai->utility->GetSafePosition()) )
 		{
 			ai->utility->Log( ALL, MISC, "BuildBlocksSelf blocked build by reason 5 (No path from builder position to safe position)");
+			delete commanderdef;
 			return true;
 		}
 	}
@@ -316,6 +354,7 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 		return true;
 	}
 	ai->utility->Log(ALL, MISC, "BuildBlocksSelf check 5+6 done");
+	delete commanderdef;
 	return false;
 }
 
@@ -387,7 +426,7 @@ SAIFloat3 ConstructionUnitGroup::FindClosestNonConflictingBuildSite(UnitDef *uni
 	ai->utility->Log(ALL, MISC, "FindClosestNonConflictingBuildSite... %d",unitDef->GetUnitDefId());
 
 	ai->utility->Log(ALL, MISC, "FindClosestNonConflictingBuildSite started");
-
+	Map *map = ai->callback->GetMap();
 	do
 	{
 		if (!firstRun) {
@@ -418,7 +457,8 @@ SAIFloat3 ConstructionUnitGroup::FindClosestNonConflictingBuildSite(UnitDef *uni
 				break;
 		}
 		corner++;
-		pos = ai->callback->GetMap()->FindClosestBuildSite( *unitDef , searchPos, searchRadius, minDist, facing);
+		
+		pos = map->FindClosestBuildSite( *unitDef , searchPos, searchRadius, minDist, facing);
 		
 		if (!ai->utility->IsMetalMap()) {
 			closestMexSite = FindClosestMetalExtractionSite(pos, false);
@@ -440,8 +480,9 @@ SAIFloat3 ConstructionUnitGroup::FindClosestNonConflictingBuildSite(UnitDef *uni
 		pos = buildPos; //We did not find a good place to build... Return orginal buildPos,
 		pos.y = -1;		//and set y=-1 to indicate error
 	}
+	delete map;
 	
-	return pos;
+	return pos;	
 }
 
 ///Maybe we should look into Voronoi diagrams to optimize this :P
@@ -459,7 +500,8 @@ SAIFloat3 ConstructionUnitGroup::FindClosestMetalExtractionSite(SAIFloat3 pos, b
 	}
 	
 	vector<SAIFloat3> spots;
-	spots = ai->callback->GetMap()->GetResourceMapSpotsPositions( *(ai->utility->GetResource("Metal")), &pos );
+	Map *map = ai->callback->GetMap();
+	spots = map->GetResourceMapSpotsPositions( *(ai->utility->GetResource("Metal")), &pos );
 	
 	int numSpots = spots.size();
 	int lowestIdx = -1;
@@ -472,14 +514,20 @@ SAIFloat3 ConstructionUnitGroup::FindClosestMetalExtractionSite(SAIFloat3 pos, b
 		//u->ChatMsg( "Distance: %f", distance );
 
 		if ( distance < closest
-			&& ai->callback->GetMap()->IsPossibleToBuildAt( *(ai->utility->GetMexDef()), spots[i], 0 )
+			&& map->IsPossibleToBuildAt( *(ai->utility->GetMexDef()), spots[i], 0 )
 			 && (!checkIfItBlocks || !BuildBlocksSelf(mexDef, spots[i], 0)) )
 		{
 			closest = distance;
 			lowestIdx = i;
 		}
 	}
+	delete map;
 	///TODO: What if we didn't find an accaptable spot? (lowestIdx=-1)
+	if(lowestIdx == -1)
+	{
+		// we didnt find a spot
+		return (SAIFloat3) {0,-1,0};
+	}
 	pos = spots[lowestIdx];
 	
 	return pos;
@@ -491,6 +539,7 @@ SAIFloat3 ConstructionUnitGroup::FindGoodBuildSite(SAIFloat3 builderPos, UnitDef
 	SAIFloat3 bestBuildSpot=builderPos;
 	float bestDistance = radius*radius+1;
 	bool foundBuildSite = false;
+	Map *map = ai->callback->GetMap();
 	
 	vector<Unit*> nearByBuildings = ai->knowledge->selfInfo->baseInfo->GetUnitsInRange(builderPos, radius);
 	vector<Unit*>::iterator it;
@@ -509,7 +558,7 @@ SAIFloat3 ConstructionUnitGroup::FindGoodBuildSite(SAIFloat3 builderPos, UnitDef
 				float newDist = ai->utility->EuclideanDistance(builderPos,newPos);
 				
 				if(newDist < bestDistance
-					&&  ai->callback->GetMap()->IsPossibleToBuildAt(*building, newPos, 0)
+					&&  map->IsPossibleToBuildAt(*building, newPos, 0)
 					&& !IsMetalExtracitonSite(building, newPos)
 					&& !BuildBlocksSelf(building, newPos, 0) )
 				{
@@ -520,8 +569,10 @@ SAIFloat3 ConstructionUnitGroup::FindGoodBuildSite(SAIFloat3 builderPos, UnitDef
 				}
 			}
 		}
+		delete (*it);
+		delete ud;
 	}
-
+	delete map;
 	if (!foundBuildSite)
 	{
 		//We didn't find a good BuildSite (e.g. no non-builder buildings)

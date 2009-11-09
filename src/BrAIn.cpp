@@ -106,9 +106,13 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 				break;
 			}
 		case EVENT_UNIT_MOVE_FAILED:
-			ai->utility->Log(ALL,MISC,"I GOT A MOVE FAILED!!!!! WARNING, THIS SHALL NEVER HAPPEN!!!!!");
-			ai->utility->Log(IMPORTANT,EVENT,"I GOT A MOVE FAILED!!!!! WARNING, THIS SHALL NEVER HAPPEN!!!!!");
-			break;
+			{
+				ai->utility->Log(IMPORTANT,EVENT,"I GOT A MOVE FAILED!!!!! WARNING, THIS SHALL NEVER HAPPEN!!!!!");
+				struct SUnitMoveFailedEvent* evt = (struct SUnitMoveFailedEvent*)data;
+				ai->utility->Log(ALL,MISC,"I GOT A MOVE FAILED! Unit id: %d",evt->unit);
+				ai->utility->ChatMsg("I GOT A MOVE FAILED! Unit id: %d",evt->unit);
+				break;
+			}
 		case EVENT_UNIT_DAMAGED:
 			{
 				ai->utility->Log(LOG_DEBUG,EVENT,"unit damaged");
@@ -180,8 +184,11 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 			//WTH was that?
 			break;
 		case EVENT_COMMAND_FINISHED:
-			ai->utility->Log(LOG_DEBUG,EVENT,"command finished");
-			break;
+			{
+				struct SCommandFinishedEvent* evt = (struct SCommandFinishedEvent*)data;
+				ai->utility->Log(ALL,MISC,"command finished, id: %d, unit: %d",  evt->commandTopicId, evt->unitId);
+				break;
+			}
 		case EVENT_LOAD:
 			ai->utility->Log(LOG_DEBUG,EVENT,"load");
 			break;

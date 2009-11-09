@@ -31,7 +31,7 @@ RL_Q::RL_Q( AIClasses *aiClasses, vector<QAction> actions, vector<QStateVar> sta
 
 	this->numActions = actions.size();
 	int states = 1;
-	for (int i = 0; i < stateVars.size(); i++)
+	for (int i = 0; i < (int)stateVars.size(); i++)
 	{
 		states *= stateVars[i].numStates;
 	}
@@ -45,6 +45,7 @@ RL_Q::RL_Q( AIClasses *aiClasses, vector<QAction> actions, vector<QStateVar> sta
 
 RL_Q::~RL_Q()
 {
+
 	delete[] actionValueFunction;
 	actionValueFunction = NULL;
 	ai->utility->Log(ALL, LOG_RL, "Done deleting RL_Q");
@@ -66,12 +67,12 @@ void RL_Q::SaveToFile(ofstream *file )
 	qTable.numStateVars = stateVars.size();
 
 	file->write( (char*)&qTable, sizeof(FileHeaderQTable) );
-	for(int i = 0; i < actions.size(); i++)
+	for(int i = 0; i < (int)actions.size(); i++)
 	{
 		qAction[i].qAction = actions[i];
 		qAction[i].SaveToFile(file);
 	}
-	for(int i = 0; i < stateVars.size(); i++)
+	for(int i = 0; i < (int)stateVars.size(); i++)
 	{
 		fileQStateVar[i].qStateVar = stateVars[i];
 		fileQStateVar[i].SaveToFile(file);

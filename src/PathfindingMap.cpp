@@ -9,11 +9,13 @@ PathfindingMap::PathfindingMap( AIClasses* aiClasses ) : BrainMap( aiClasses, 4 
 {
 
 	//Slopemap has Resolution = 2, where PFmap has Resolution = 4.
-	vector<float> slopeMap = ai->callback->GetMap()->GetSlopeMap();
-	SlopeMap = slopeMap;
+	Map *map = ai->callback->GetMap();
+	//vector<float> slopeMap = map->GetSlopeMap();
+	SlopeMap = map->GetSlopeMap();
 	for ( int z = 0 ; z < MapHeight ; z++ )
 		for ( int x = 0 ; x < MapWidth ; x++ )
 			ResetSlope( x, z );
+	delete map;
 }
 
 
@@ -58,12 +60,14 @@ void PathfindingMap::Update()
 void PathfindingMap::AddBuilding(Unit* unit)
 {
 	SAIFloat3 pos = unit->GetPos();
-	int xSize = unit->GetDef()->GetXSize()*8;
-	int zSize = unit->GetDef()->GetZSize()*8;
+	UnitDef *def = unit->GetDef();
+	int xSize = def->GetXSize()*8;
+	int zSize = def->GetZSize()*8;
 	int topCell = (pos.z-zSize/2)/Resolution;
 	int bottomCell = (pos.z+zSize/2)/Resolution;
 	int leftCell = (pos.x-xSize/2)/Resolution;
 	int rightCell = (pos.x+xSize/2)/Resolution;
+	delete def;
 
 
 	for ( int i = topCell ; i <= bottomCell ; i++ )
@@ -123,8 +127,10 @@ void PathfindingMap::RemoveHypotheticalBuilding(UnitDef* unit, SAIFloat3 pos)
 void PathfindingMap::RemoveBuilding(Unit* unit)
 {
 	SAIFloat3 pos = unit->GetPos();
-	int xSize = unit->GetDef()->GetXSize()*8;
-	int zSize = unit->GetDef()->GetZSize()*8;
+	UnitDef *def = unit->GetDef();
+	int xSize = def->GetXSize()*8;
+	int zSize = def->GetZSize()*8;
+	delete def;
 	int topCell = (pos.z-zSize/2)/Resolution;
 	int bottomCell = (pos.z+zSize/2)/Resolution;
 	int leftCell = (pos.x-xSize/2)/Resolution;
@@ -191,7 +197,9 @@ void PathfindingMap::RemoveBuilding(Unit* unit)
 
 void PathfindingMap::ResetSlope( int xTile, int zTile )
 {
-	int width = ai->callback->GetMap()->GetWidth()/2;
+	Map *map = ai->callback->GetMap();
+	int width = map->GetWidth()/2;
+	delete map;
 	float slope1 = SlopeMap[xTile*2+width*2*zTile];
 	float slope2 = SlopeMap[((xTile*2)+1)+width*2*zTile];
 	float slope3 = SlopeMap[(xTile*2)+width*2*zTile+width];
@@ -200,33 +208,34 @@ void PathfindingMap::ResetSlope( int xTile, int zTile )
 	MapArray[zTile*MapWidth + xTile] = maxSlope;
 }
 
-list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start, SAIFloat3 destination )
+list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start, SAIFloat3 destination, bool debug )
 {
-	ai->utility->Log(ALL, PATHFIND,  "FindPathTo start" );
+	if (debug) ai->utility->Log(ALL, PATHFIND,  "FindPathTo start, resolution: %d",Resolution );
 	int goalXIndex = destination.x/Resolution;
 	int goalZIndex = destination.z/Resolution;
+	MoveData *move = pathfinder->GetMoveData();
+	float maxSlope = move->GetMaxSlope();
+	delete move;
 	
-	if ( MapArray[ goalZIndex*MapWidth + goalXIndex] > pathfinder->GetMoveData()->GetMaxSlope()
-		/*||
-		 MapArray[ (int)(start.z/Resolution)*MapWidth + (int)start.x/Resolution] > pathfinder->GetMoveData()->GetMaxSlope()*/ )
+	if ( MapArray[ goalZIndex*MapWidth + goalXIndex] > maxSlope)
 	{
 		ai->utility->Log(ALL, PATHFIND,  "Svend: I cannot reach the destination!!" );
 		list<SAIFloat3> emptyResult;
 		return emptyResult;
 	}
-	ai->utility->Log(ALL, PATHFIND,  "FindPathTo destination is good" );
+	if (debug) ai->utility->Log(ALL, PATHFIND,  "FindPathTo destination is good" );
 	map<int, PathfindingNode*> closedSet;
 	map<int, PathfindingNode*> openSet;
 	//start.x += 0.5*Resolution;
 	//start.z += 0.5*Resolution;
-	PathfindingNode* startNode = new PathfindingNode( start, start.x/Resolution, start.z/Resolution, 0, 0 /*ai->utility->EuclideanDistance( start, destination )*/, 0 /*ai->utility->EuclideanDistance( start, destination )*/, MapArray[ (int)start.z/Resolution*MapWidth + (int)start.x/Resolution]  );
+	PathfindingNode* startNode = new PathfindingNode( start, start.x/Resolution, start.z/Resolution, 0, ai->utility->EuclideanDistance( start, destination ), ai->utility->EuclideanDistance( start, destination ), MapArray[ (int)start.z/Resolution*MapWidth + (int)start.x/Resolution]  );
 	
 	openSet.insert( make_pair((int)start.z/Resolution*MapWidth + (int)start.x/Resolution, startNode ) );
-	ai->utility->Log(ALL, PATHFIND,  "FindPathTo inserted first node in openset" );
-	//ai->utility->Log( ALL, SLOPEMAP, "Starting at tile(%d, %d)", startNode->XIndex, startNode->ZIndex );
+	if (debug) ai->utility->Log(ALL, PATHFIND,  "FindPathTo inserted first node in openset" );
+	if (debug) ai->utility->Log( ALL, PATHFIND, "Starting at tile(%d, %d)", startNode->XIndex, startNode->ZIndex );
 	while (!openSet.empty() )
 	{
-		//ai->utility->Log( ALL, SLOPEMAP, "Openset is not empty" );
+		if (debug) ai->utility->Log( ALL, PATHFIND, "Openset is not empty" );
 		PathfindingNode* current = NULL;
 		int currentIndex = -1;
 		float lowestF = 90000000.0f;
@@ -244,41 +253,41 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 
 		if (current == NULL)
 		{
-			ai->utility->Log(ALL, PATHFIND,  "FindPathTo Current node is null" );
+			if (debug) ai->utility->Log(ALL, PATHFIND,  "FindPathTo Current node is null" );
 			list<SAIFloat3> emptyResult;
+			DeleteNodes( closedSet, openSet );
 			return emptyResult;
 		}
-		ai->utility->Log(ALL, PATHFIND,  "FindPathTo Current node is NOT null" );
+		if (debug) ai->utility->Log(ALL, PATHFIND,  "FindPathTo Current node is NOT null" );
 
 		/** CHECK FOR GOAL **/
-		//ai->utility->Log( ALL, SLOPEMAP, "\nCurr(%d, %d)G: %f. H = %f. F = %f", current->XIndex, current->ZIndex, current->Gscore, current->Hscore, current->Fscore );
+		if (debug) ai->utility->Log( ALL, SLOPEMAP, "\nCurr(%d, %d)G: %f. H = %f. F = %f", current->XIndex, current->ZIndex, current->Gscore, current->Hscore, current->Fscore );
 		if ( current->XIndex == goalXIndex && current->ZIndex == goalZIndex )
 		{
-			//ai->utility->Log( ALL, PATHFIND, "We have found the goal node" );
+			if (debug) ai->utility->Log( ALL, PATHFIND, "We have found the goal node" );
 			list<SAIFloat3> shortestPath = ReconstructPath( current );
 
 			DeleteNodes( closedSet, openSet );
-
 			return shortestPath;
 		}
 
 		openSet.erase( currentIndex );
 		closedSet.insert( make_pair( current->ZIndex*MapWidth + current->XIndex, current ) );
-		//ai->utility->Log( ALL, PATHFIND, "Current moved to closed set" );
+		if (debug) ai->utility->Log( ALL, PATHFIND, "Current moved to closed set" );
 
 		for ( int z = current->ZIndex-1 ; z <= current->ZIndex+1 ; z++ ) //for each neighbour of current node...
 		{
 			for ( int x = current->XIndex-1 ; x <= current->XIndex+1 ; x++ )
 			{
-				if ( z < 0 || z > MapHeight-1 || x < 0 || x > MapHeight-1 ) 
+				if ( z < 0 || z > MapHeight-1 || x < 0 || x > MapWidth-1 ) 
 				{
 					//out of bounds check
-					//ai->utility->Log( ALL, PATHFIND, "Neighbour out of bounds" );
+					if (debug) ai->utility->Log( ALL, PATHFIND, "Neighbour out of bounds" );
 					continue;
 				}
 				if ( z == current->ZIndex && x == current->XIndex ) //skip the current node
 				{
-					//ai->utility->Log( ALL, PATHFIND, "Skipping the current node, we are twins" );
+					if (debug) ai->utility->Log( ALL, PATHFIND, "Skipping the current node, we are twins" );
 					continue;
 				}
 
@@ -286,7 +295,7 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 				map<int, PathfindingNode*>::iterator it = closedSet.find( z*MapWidth + x );
 				if ( it != closedSet.end() )
 				{
-					//ai->utility->Log( ALL, PATHFIND, "(%d, %d) was in closedset", it->second->XIndex, it->second->ZIndex );
+					if (debug) ai->utility->Log( ALL, PATHFIND, "(%d, %d) was in closedset", it->second->XIndex, it->second->ZIndex );
 					continue;
 				}
 				bool neighbourInOpenSet = true;
@@ -294,7 +303,7 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 				if ( it == openSet.end() )
 				{
 					neighbourInOpenSet = false;
-					//ai->utility->Log( ALL, PATHFIND, "Neighbour was not in openset" );
+					if (debug) ai->utility->Log( ALL, PATHFIND, "(%d, %d) was NOT in openset", x, z );
 				}
 
 				SAIFloat3 pos;
@@ -303,8 +312,7 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 				pos.y = 50;
 
 				float tentativeGScore = current->Gscore + ai->utility->EuclideanDistance( current->Pos, pos );
-				//ai->utility->Log( ALL, PATHFIND, "Tentative g score %f for neighbour (%d, %d)", tentativeGScore, x, z );
-				//ai->utility->Log( ALL, SLOPEMAP, "Neighbour pos: (%f, %f) tile:(%d, %d)", neighbour.Pos.x, neighbour.Pos.z, neighbour.XIndex, neighbour.ZIndex );
+				if (debug) ai->utility->Log( ALL, PATHFIND, "Tentative g score %f for neighbour (%d, %d)", tentativeGScore, x, z );
 				bool tentativeIsBetter = true;
 				
 
@@ -319,20 +327,20 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 					//ai->utility->Log( ALL, PATHFIND, "neighbour x: %d", x);
 					neighbour->ZIndex = z;
 					//ai->utility->Log( ALL, PATHFIND, "neighbour z: %d", z);
-					ai->utility->Log( ALL, PATHFIND, "neighbour x: %d, z: %d", x, z );
+					if(debug)  ai->utility->Log( ALL, PATHFIND, "neighbour x: %d, z: %d", x, z );
 					if ( ( z*MapWidth + x ) >= MapWidth*MapHeight )
 						ai->utility->Log( ALL, PATHFIND, "Fuck dig!! %d. MapWidth: %d. MapHeight: %d", z*MapWidth+x, MapWidth, MapHeight );
 					
 					//ai->utility->Log( ALL, PATHFIND, "mapwidth: %d, mapheight: %d", MapWidth, MapHeight);
 					neighbour->Slope = MapArray[ z*MapWidth + x ];
-					ai->utility->Log( ALL, PATHFIND, "New neighbour initialised, slope: %f ", neighbour->Slope );
+					if(debug) ai->utility->Log( ALL, PATHFIND, "New neighbour initialised, slope: %f ", neighbour->Slope );
 					bool suckyNeighbour = false;
 					if(current->ZIndex > neighbour->ZIndex || current->ZIndex < neighbour->ZIndex)
 					{
 						if(current->XIndex > neighbour->XIndex)
 						{
 							int tmpX = x + 1;
-							if( tmpX >= 0 && tmpX < MapWidth && MapArray[ z*MapWidth + tmpX ] > pathfinder->GetMoveData()->GetMaxSlope())
+							if( tmpX >= 0 && tmpX < MapWidth && MapArray[ z*MapWidth + tmpX ] > maxSlope)
 							{
 								suckyNeighbour = true;
 							}
@@ -340,19 +348,19 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 						else if(current->XIndex < neighbour->XIndex)
 						{
 							int tmpX = x - 1;
-							if( tmpX >= 0 && tmpX < MapWidth && MapArray[ z*MapWidth + tmpX ] > pathfinder->GetMoveData()->GetMaxSlope())
+							if( tmpX >= 0 && tmpX < MapWidth && MapArray[ z*MapWidth + tmpX ] > maxSlope)
 							{
 								suckyNeighbour = true;
 							}
 						}
 					}
-					//ai->utility->Log( ALL, PATHFIND, "X check done.. %d", suckyNeighbour );
+					if (debug) ai->utility->Log( ALL, PATHFIND, "X check done.. %d", suckyNeighbour );
 					if(current->XIndex > neighbour->XIndex || current->XIndex < neighbour->XIndex)
 					{
 						if(current->ZIndex > neighbour->ZIndex)
 						{
 							int tmpZ = z + 1;
-							if( tmpZ >= 0 && tmpZ < MapHeight && MapArray[ tmpZ*MapWidth + x ] > pathfinder->GetMoveData()->GetMaxSlope())
+							if( tmpZ >= 0 && tmpZ < MapHeight && MapArray[ tmpZ*MapWidth + x ] > maxSlope)
 							{
 								suckyNeighbour = true;
 							}
@@ -360,70 +368,46 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 						else if(current->ZIndex < neighbour->ZIndex)
 						{
 							int tmpZ = z - 1;
-							if( tmpZ >= 0 && tmpZ < MapHeight && MapArray[ tmpZ*MapWidth + x ] > pathfinder->GetMoveData()->GetMaxSlope())
+							if( tmpZ >= 0 && tmpZ < MapHeight && MapArray[ tmpZ*MapWidth + x ] > maxSlope)
 							{
 								suckyNeighbour = true;
 							}
 						}
 					}
-					//ai->utility->Log( ALL, PATHFIND, "Z check done.. %d", suckyNeighbour );
+					if (debug) ai->utility->Log( ALL, PATHFIND, "Z check done.. %d", suckyNeighbour );			
 
+					
+					if ( suckyNeighbour )
+					{
+						delete neighbour;
+						continue;
+					}
 
-					/*if(current->Pos.x > neighbour->Pos.x && current->Pos.y > neighbour->Pos.y)
+					if ( neighbour->Slope > maxSlope)
 					{
-						float slope1 = MapArray[ z*MapWidth + x+1 ];
-						float slope2 = MapArray[ (z-1)*MapWidth + x ];
-						if(slope1 > pathfinder->GetMoveData()->GetMaxSlope() || slope2 > pathfinder->GetMoveData()->GetMaxSlope())
-							suckyNeighbour = true;
-					}
-					else if(current->Pos.x < neighbour->Pos.x && current->Pos.y > neighbour->Pos.y)
-					{
-						float slope1 = MapArray[ z*MapWidth + x-1 ];
-						float slope2 = MapArray[ (z-1)*MapWidth + x ];
-						if(slope1 > pathfinder->GetMoveData()->GetMaxSlope() || slope2 > pathfinder->GetMoveData()->GetMaxSlope())
-							suckyNeighbour = true;
-					}
-					else if(current->Pos.x > neighbour->Pos.x && current->Pos.y < neighbour->Pos.y)
-					{
-						float slope1 = MapArray[ z*MapWidth + x+1 ];
-						float slope2 = MapArray[ (z+1)*MapWidth + x ];
-						if(slope1 > pathfinder->GetMoveData()->GetMaxSlope() || slope2 > pathfinder->GetMoveData()->GetMaxSlope())
-							suckyNeighbour = true;
-					}
-					else if(current->Pos.x < neighbour->Pos.x && current->Pos.y < neighbour->Pos.y)
-					{
-						float slope1 = MapArray[ z*MapWidth + x-1 ];
-						float slope2 = MapArray[ (z+1)*MapWidth + x ];
-						if(slope1 > pathfinder->GetMoveData()->GetMaxSlope() || slope2 > pathfinder->GetMoveData()->GetMaxSlope())
-							suckyNeighbour = true;
-					}		*/			
-
-					//ai->utility->Log( ALL, SLOPEMAP, "(%d, %d) not in openset", neighbour->XIndex, neighbour->ZIndex );
-					if ( neighbour->Slope > pathfinder->GetMoveData()->GetMaxSlope() || suckyNeighbour)
-					{
-						//ai->utility->Log( ALL, PATHFIND, "Bad neighbour..");
+						if (debug) ai->utility->Log( ALL, PATHFIND, "Bad neighbour..");
 						closedSet.insert( make_pair( z*MapWidth + x, neighbour ) );
 						tentativeIsBetter = false;
 					}
 					else
 					{
-						//ai->utility->Log( ALL, PATHFIND, "Good neighbour..");
+						if (debug) ai->utility->Log( ALL, PATHFIND, "Good neighbour..");
 						openSet.insert( make_pair( z*MapWidth + x, neighbour ) );
 					}
 				}
 				else
 				{
-					//ai->utility->Log( ALL, PATHFIND, "Already in openset");
+					if (debug) ai->utility->Log( ALL, PATHFIND, "Already in openset");
 					neighbour = it->second;
 					if ( tentativeGScore < neighbour->Gscore )
 					{
-						//ai->utility->Log( ALL, PATHFIND, "Tentative was better: %f. Neighbour: %f", tentativeGScore, neighbour->Gscore );
+						if (debug) ai->utility->Log( ALL, PATHFIND, "Tentative was better: %f. Neighbour: %f", tentativeGScore, neighbour->Gscore );
 						tentativeIsBetter = true;
 					}
 					else
 					{
 						tentativeIsBetter = false;
-						//ai->utility->Log( ALL, PATHFIND, "Tentative is worse" );
+						if (debug) ai->utility->Log( ALL, PATHFIND, "Tentative is worse" );
 					}
 				}
 
@@ -434,21 +418,24 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 					neighbour->Gscore = tentativeGScore;
 					neighbour->Hscore = ai->utility->EuclideanDistance( neighbour->Pos, destination );
 					neighbour->Fscore = neighbour->Gscore + neighbour->Hscore;
-					//ai->utility->Log( ALL, PATHFIND, "New connection - Current(%d,%d) to Neighbour(%d, %d) G = %f. H = %f. F= %f", neighbour->CameFrom->XIndex, neighbour->CameFrom->ZIndex, neighbour->XIndex, neighbour->ZIndex, neighbour->Gscore, neighbour->Hscore, neighbour->Fscore );	
+					if (debug) ai->utility->Log( ALL, PATHFIND, "New connection - Current(%d,%d) to Neighbour(%d, %d) G = %f. H = %f. F= %f", neighbour->CameFrom->XIndex, neighbour->CameFrom->ZIndex, neighbour->XIndex, neighbour->ZIndex, neighbour->Gscore, neighbour->Hscore, neighbour->Fscore );	
 				}
 			}
 		}
 	}
-	//ai->utility->Log(ALL, PATHFIND, "Openset is empty without finding result");
+	if (debug) ai->utility->Log(ALL, PATHFIND, "Openset is empty without finding result");
 	list<SAIFloat3> emptyResult;
+	DeleteNodes(closedSet, openSet);
 	return emptyResult;
 }
 
-bool PathfindingMap::PathExists( UnitDef* pathfinder, SAIFloat3 escapeFrom, SAIFloat3 escapeTo )
+bool PathfindingMap::PathExists( UnitDef* pathfinder, SAIFloat3 escapeFrom, SAIFloat3 escapeTo, bool debug )
 {
 	ai->utility->Log(ALL, MISC, "Trying to escape...");
-	list<SAIFloat3> path = FindPathTo( pathfinder, escapeFrom, escapeTo );
-	return ( path.size() > 0 );
+	list<SAIFloat3> path = FindPathTo( pathfinder, escapeFrom, escapeTo, debug );
+	bool retVal = ( path.size() > 0 );
+	path.clear();
+	return retVal;
 }
 
 bool PathfindingMap::IsPossibleToEscapeFrom( UnitDef* pathfinder, springai::UnitDef* building, SAIFloat3 buildPosition, SAIFloat3 escapeFrom, SAIFloat3 escapeTo )
@@ -526,12 +513,14 @@ void PathfindingMap::PrintSection(SAIFloat3 pos)
 {
 	int x = pos.x/Resolution;
 	int z = pos.z/Resolution;
+	UnitDef *commanderDef = ai->commander->GetDef();
+	MoveData *move = commanderDef->GetMoveData();
 
 	for(int i = max(0,z - 50); i <= min(MapHeight-1, z + 50); i++)
 	{
 		for(int j = max(0,x - 50); j <= min(MapWidth-1, x + 50); j++)
 		{
-			bool walkable = MapArray[i*MapWidth + j] < ai->commander->GetDef()->GetMoveData()->GetMaxSlope();
+			bool walkable = MapArray[i*MapWidth + j] < move->GetMaxSlope();
 			if(x == j && z == i)
 				ai->utility->LogNN(ALL, MISC, (walkable ? "X":"Q"));
 			else
@@ -539,5 +528,7 @@ void PathfindingMap::PrintSection(SAIFloat3 pos)
 		}
 		ai->utility->LogNN(ALL, MISC, "\n");
 	}
+	delete commanderDef;
+	delete move;
 	
 }

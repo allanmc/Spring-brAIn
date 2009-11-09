@@ -47,7 +47,7 @@ void BuildingController::AddBuilding(springai::Unit *unit)
 		ConstructionBuildings.push_back(unit);
 		//ai->utility->Log(ALL, MISC, "Construction building built and added to manager");
 	}
-
+	delete def;
 }
 
 void BuildingController::RemoveBuilding(springai::Unit *unit)

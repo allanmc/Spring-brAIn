@@ -15,8 +15,8 @@ BrainResourceMap::~BrainResourceMap()
 void BrainResourceMap::Update()
 {
 	SAIFloat3 dummy;
-
-	vector<SAIFloat3> spots = ai->callback->GetMap()->GetResourceMapSpotsPositions( *(ai->utility->GetResource("Metal")), &dummy );
+	springai::Map *map = ai->callback->GetMap();
+	vector<SAIFloat3> spots = map->GetResourceMapSpotsPositions( *(ai->utility->GetResource("Metal")), &dummy );
 	for ( int i = 0 ; i < (int)spots.size() ; i++ )
 	{
 		int MapX, MapZ;
@@ -24,6 +24,7 @@ void BrainResourceMap::Update()
 		MapZ = (int)floorf(spots[i].z/Resolution);
 		MapArray[MapZ*MapWidth + MapX ] += 1;
 	}
+	delete map;
 }
 
 void BrainResourceMap::EffectCell( int index, float value )

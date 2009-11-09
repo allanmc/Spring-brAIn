@@ -9,27 +9,41 @@ using namespace brainSpace;
 
 Utility::Utility( AIClasses* aiClasses )
 {
+	;
 	debug = true;
 	ai = aiClasses;
 	char filename[200];
 	char path[200];
-	const char *dir = DataDirs::GetInstance(ai->callback)->GetWriteableDir();
+	DataDirs *dirs = DataDirs::GetInstance(ai->callback);
+	const char *dir = dirs->GetWriteableDir();
 	strcpy(path, dir);
 	SNPRINTF( filename, 200, "Brain-log-team%d.txt", aiClasses->callback->GetTeamId() );
 	strcat(path, filename);
 	fp = FOPEN(path, "w");
 	Log(ALL, MISC, "Initialized Utility-class...");
-
-	
+	engine = ai->callback->GetEngine();
+	map = ai->callback->GetMap();
+	resources = ai->callback->GetResources();
 	InitializeOptions();
 	isMetalMap = false;
 
-	safePosition = (SAIFloat3){ai->callback->GetMap()->GetWidth()*8/2, 0.0, ai->callback->GetMap()->GetHeight()*8/2};
+	safePosition = (SAIFloat3){map->GetWidth()*8/2, 0.0, map->GetHeight()*8/2};
+	delete dirs;
 }
 
 Utility::~Utility()
 {
-	fclose(fp);
+	fclose(fp);	
+	delete map;
+	delete engine;
+	for(int i = 0; i < (int)defs.size(); i++)
+	{
+		delete defs[i];
+	}
+	for(int i = 0; i < (int)resources.size(); i++)
+	{
+		delete resources[i];
+	}
 }
 
 ///@return the safe position whether a building blocks the exit of out base
@@ -53,7 +67,8 @@ void Utility::LaterInitialization()
 	solarDef = GetUnitDef("armsolar");
 	lltDef = GetUnitDef("armllt");
 	Log(ALL, MISC, "LaterInitialization()");
-	isMetalMap = ai->callback->GetMap()->GetResourceMapSpotsPositions(*ai->utility->GetResource("Metal"), NULL).size() > 200;
+	isMetalMap = map->GetResourceMapSpotsPositions(*ai->utility->GetResource("Metal"), NULL).size() > 200;
+	
 }
 
 bool Utility::IsMetalMap()
@@ -63,7 +78,8 @@ bool Utility::IsMetalMap()
 ///Load the options set for the AI
 void Utility::InitializeOptions()
 {
-	const char* optionStr = OptionValues::GetInstance(ai->callback)->GetValueByKey("debug");
+	OptionValues *opt = OptionValues::GetInstance(ai->callback);
+	const char* optionStr = opt->GetValueByKey("debug");
 	if (optionStr == NULL
 		||
 		strcmp(optionStr,"true")==0
@@ -73,6 +89,7 @@ void Utility::InitializeOptions()
 		debug = true;
 	}
 	else debug = false;
+	delete opt;
 }
 
 ///Prints a line in the log file
@@ -141,7 +158,7 @@ void Utility::ChatMsg(const char* msg, ...)
 	SSendTextMessageCommand cmd;
 	cmd.text = c;
 	cmd.zone = 0;
-	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_SEND_TEXT_MESSAGE, &cmd);
+	engine->HandleCommand(0, -1, COMMAND_SEND_TEXT_MESSAGE, &cmd);
 
 	LogNN(ALL, MISC, "Chat: ");
 	Log(ALL, MISC, c);
@@ -158,7 +175,7 @@ void Utility::ChatMsg(std::string msg)
 	SSendTextMessageCommand cmd;
 	cmd.text = msg.c_str();
 	cmd.zone = 0;
-	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_SEND_TEXT_MESSAGE, &cmd);
+	engine->HandleCommand(0, -1, COMMAND_SEND_TEXT_MESSAGE, &cmd);
 }
 
 UnitDef* Utility::GetMexDef()
@@ -199,16 +216,16 @@ UnitDef* Utility::GetUnitDef(const char* unitDefName)
 ///@return the Resource with the given name, or NULL if the Resource does not exists
 Resource* Utility::GetResource(const char* resourceName)
 {
-	vector<Resource*> resources = ai->callback->GetResources();
-
+	Resource* retval = NULL;
 	for ( int i = 0 ; i < (int)resources.size() ; i++ )
 	{
 		if ( strcmp( resources[i]->GetName(), resourceName ) == 0 )
 		{
-			return resources[i];
+			retval = resources[i];			
 		}
 	}
-	return NULL;
+	
+	return retval;
 }
 
 ///Order the unit to goto a specific location using our own pathfinding
@@ -216,22 +233,28 @@ SAIFloat3 Utility::GoTo(int unitId, SAIFloat3 pos, bool simulate)
 {
 	ai->utility->Log(ALL, MISC, "GoTo: I am now going to find a path..");
 	Unit* unit = Unit::GetInstance(ai->callback, unitId);
+	UnitDef *def = unit->GetDef();
 	list<SAIFloat3> wayPoints;
 	bool goToward = true;
-	if (ai->utility->EuclideanDistance(unit->GetPos(), pos) < unit->GetDef()->GetBuildDistance())
+	if (ai->utility->EuclideanDistance(unit->GetPos(), pos) < def->GetBuildDistance())
 	{
 		//wayPoints.push_back(pos);
-		wayPoints = ai->knowledge->mapInfo->pathfindingMap->FindPathTo(unit->GetDef(), unit->GetPos(), GetSafePosition());
+		wayPoints = ai->knowledge->mapInfo->pathfindingMap->FindPathTo(def, unit->GetPos(), GetSafePosition());
 		ai->utility->Log(ALL, MISC, "GoTo: I am going backwards!");
 		goToward = false;
 	}
 	else
 	{
-		wayPoints = ai->knowledge->mapInfo->pathfindingMap->FindPathTo(unit->GetDef(), unit->GetPos(), pos);
+		wayPoints = ai->knowledge->mapInfo->pathfindingMap->FindPathTo(def, unit->GetPos(), pos);
 		ai->utility->Log(ALL, MISC, "GoTo: I am going towards buildlocation!");
 	}
+	SAIFloat3 retPos = (SAIFloat3){0,-1,0};
 	if(wayPoints.size() == 0)
-		return (SAIFloat3) {0,-1,0};
+	{
+		delete def;
+		delete unit;
+		return retPos;
+	}
 
 	SMoveUnitCommand moveCommand;
 	
@@ -242,28 +265,28 @@ SAIFloat3 Utility::GoTo(int unitId, SAIFloat3 pos, bool simulate)
 		moveCommand.unitId = unitId;
 	}
 	int toWalk = 0;
-	SAIFloat3 retPos;
 	//for (int i = 0; i < wayPoints.size(); i++)
 	for (list<SAIFloat3>::const_iterator it = wayPoints.begin(); it != wayPoints.end(); ++it)
 	{
 		
-		if ( (goToward && (unit->GetDef()->GetBuildDistance() > ai->utility->EuclideanDistance(*it, pos))) ||
-			 (!goToward && (unit->GetDef()->GetBuildDistance() < ai->utility->EuclideanDistance(*it, pos))) )
+		if ( (goToward && (def->GetBuildDistance() > ai->utility->EuclideanDistance(*it, pos))) ||
+			 (!goToward && (def->GetBuildDistance() < ai->utility->EuclideanDistance(*it, pos))) )
 			break; //Ignore moves that goes unnecesarry close to the building-spot
 		toWalk++;
 		retPos = *it;
-		if (!simulate)
+		if (!simulate && retPos.x != ai->commander->GetPos().x && retPos.z != ai->commander->GetPos().z)
 		{
 			moveCommand.toPos = retPos;
 			moveCommand.options = UNIT_COMMAND_OPTION_SHIFT_KEY;
-			ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &moveCommand);
+			engine->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &moveCommand);
 		}
 	}
 	ai->utility->Log(ALL, MISC, "GoTo: I am done! I want to walk %i out of %i waypoints", toWalk, wayPoints.size());
 	int res = ai->knowledge->mapInfo->pathfindingMap->GetMapData()->MapResolution;
 	ai->utility->Log(ALL, MISC, "GoTo: Final pathfinding INDEX: %d, %d", (int)retPos.x/res, (int)retPos.z/res);
 
-
+	delete def;
+	delete unit;
 	return retPos;
 }
 
@@ -292,7 +315,7 @@ int Utility::DrawCircle(SAIFloat3 pos, float radius, int figureId)
 	circle.pos3 = circle.pos4;
 	circle.pos2.x += MAGIC_CIRCLE_NUMBER*radius;
 	circle.pos3.z += MAGIC_CIRCLE_NUMBER*radius;
-	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_DRAWER_FIGURE_CREATE_SPLINE, &circle);
+	engine->HandleCommand(0, -1, COMMAND_DRAWER_FIGURE_CREATE_SPLINE, &circle);
 	circle.figureGroupId = circle.ret_newFigureGroupId;
 
 	circle.pos1 = circle.pos4;
@@ -302,7 +325,7 @@ int Utility::DrawCircle(SAIFloat3 pos, float radius, int figureId)
 	circle.pos3 = circle.pos4;
 	circle.pos2.z -= MAGIC_CIRCLE_NUMBER*radius;
 	circle.pos3.x += MAGIC_CIRCLE_NUMBER*radius;
-	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_DRAWER_FIGURE_CREATE_SPLINE, &circle);
+	engine->HandleCommand(0, -1, COMMAND_DRAWER_FIGURE_CREATE_SPLINE, &circle);
 
 	circle.pos1 = circle.pos4;
 	circle.pos4 = pos;
@@ -311,7 +334,7 @@ int Utility::DrawCircle(SAIFloat3 pos, float radius, int figureId)
 	circle.pos3 = circle.pos4;
 	circle.pos2.x -= MAGIC_CIRCLE_NUMBER*radius;
 	circle.pos3.z -= MAGIC_CIRCLE_NUMBER*radius;
-	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_DRAWER_FIGURE_CREATE_SPLINE, &circle);
+	engine->HandleCommand(0, -1, COMMAND_DRAWER_FIGURE_CREATE_SPLINE, &circle);
 
 	circle.pos1 = circle.pos4;
 	circle.pos4 = pos;
@@ -320,7 +343,7 @@ int Utility::DrawCircle(SAIFloat3 pos, float radius, int figureId)
 	circle.pos3 = circle.pos4;
 	circle.pos2.z += MAGIC_CIRCLE_NUMBER*radius;
 	circle.pos3.x -= MAGIC_CIRCLE_NUMBER*radius;
-	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_DRAWER_FIGURE_CREATE_SPLINE, &circle);
+	engine->HandleCommand(0, -1, COMMAND_DRAWER_FIGURE_CREATE_SPLINE, &circle);
 
 	AssignColorToGraphics( circle.figureGroupId );
 
@@ -338,7 +361,7 @@ int Utility::DrawLine(SAIFloat3 start, SAIFloat3 end, bool arrow, float width, i
 	line.pos2 = end;
 	line.figureGroupId = figureId;
 	
-	ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_DRAWER_FIGURE_CREATE_LINE, &line);
+	engine->HandleCommand(0,-1, COMMAND_DRAWER_FIGURE_CREATE_LINE, &line);
 
 	AssignColorToGraphics( line.ret_newFigureGroupId );
 	return line.ret_newFigureGroupId;
@@ -349,7 +372,7 @@ void Utility::RemoveGraphics(int figureId)
 {
 	SDeleteFigureDrawerCommand removeCmd;
 	removeCmd.figureGroupId = figureId;
-	ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_DRAWER_FIGURE_DELETE, &removeCmd);
+	engine->HandleCommand(0,-1, COMMAND_DRAWER_FIGURE_DELETE, &removeCmd);
 }
 
 ///@return the direct distance bestween two points(2D)
@@ -407,7 +430,7 @@ void Utility::AssignColorToGraphics( int figureGroupID )
 		color.color.z = TEAM_7_COLOR.z;
 		break;
 	}
-	ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_DRAWER_FIGURE_SET_COLOR, &color);
+	engine->HandleCommand(0,-1, COMMAND_DRAWER_FIGURE_SET_COLOR, &color);
 }
 
 bool Utility::FileExists( const char* FileName )
@@ -436,35 +459,37 @@ void Utility::ResetGame(RL **rl)
 	Log(IMPORTANT, MISC, "Creating new commander..."); 
 	//Give me a new commander
 	//int newCommanderId = 0;
-	ai->callback->GetCheats()->SetEnabled(true);
+	Cheats *c = ai->callback->GetCheats();
+	c->SetEnabled(true);	
 	SGiveMeNewUnitCheatCommand giveUnitOrder;
 	giveUnitOrder.pos = (SAIFloat3){10,200, 10};
 	giveUnitOrder.unitDefId = ai->utility->GetUnitDef("armcom")->GetUnitDefId();
-	ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_CHEATS_GIVE_ME_NEW_UNIT, &giveUnitOrder);
+	engine->HandleCommand(0,-1, COMMAND_CHEATS_GIVE_ME_NEW_UNIT, &giveUnitOrder);
+	delete ai->commander;
 	ai->commander = Unit::GetInstance(ai->callback, giveUnitOrder.ret_newUnitId);
-	ai->callback->GetCheats()->SetEnabled(false);
 	
-	Log(IMPORTANT, MISC, "Telling the new commander to move to startPos");
+	
+	Log(ALL, MISC, "Telling the new commander to move to startPos, commanderid: %d", ai->commander->GetUnitId());
 	SMoveUnitCommand moveCommand;
-	moveCommand.toPos = ai->callback->GetMap()->GetStartPos();
+	moveCommand.toPos = map->GetStartPos();
 	moveCommand.timeOut = 100000000;
 	moveCommand.options = 0;
 	moveCommand.unitId = ai->commander->GetUnitId();
-	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &moveCommand);
+	engine->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &moveCommand);
 
 	Log(IMPORTANT, MISC, "Giving us start resources");
 	SGiveMeResourceCheatCommand resourceCommand;
 	resourceCommand.amount = 1000;
 	resourceCommand.resourceId = GetResource("Metal")->GetResourceId();
-	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_CHEATS_GIVE_ME_RESOURCE, &resourceCommand);
+	engine->HandleCommand(0, -1, COMMAND_CHEATS_GIVE_ME_RESOURCE, &resourceCommand);
 	resourceCommand.resourceId = GetResource("Energy")->GetResourceId();
-	ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_CHEATS_GIVE_ME_RESOURCE, &resourceCommand);
-
+	engine->HandleCommand(0, -1, COMMAND_CHEATS_GIVE_ME_RESOURCE, &resourceCommand);
 	Log(IMPORTANT, MISC, "Killing all units besides the commander..."); 
 	//Delete all units besides out new commander
 	
 	Suicide(ai->commander->GetUnitId(), true);
-
+	c->SetEnabled(false);
+	delete c;
 
 	Log(IMPORTANT, MISC, "brAIn has been reset!"); 
 }
@@ -483,13 +508,14 @@ void Utility::Suicide(int unitToSurvive, bool stopAll)
 			SStopUnitCommand stopCommand;
 			stopCommand.timeOut = 99999;
 			stopCommand.unitId = (*it)->GetUnitId();
-			ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_UNIT_STOP, &stopCommand);
+			engine->HandleCommand(0,-1, COMMAND_UNIT_STOP, &stopCommand);
 		}*/
 		
 		SSelfDestroyUnitCommand command;
 		command.unitId = (*it)->GetUnitId();
 		command.timeOut = 99999;
 		command.options = ( stopAll ? 0 : UNIT_COMMAND_OPTION_SHIFT_KEY );
-		ai->callback->GetEngine()->HandleCommand(0,-1, COMMAND_UNIT_SELF_DESTROY, &command);
+		engine->HandleCommand(0,-1, COMMAND_UNIT_SELF_DESTROY, &command);
+		delete (*it);
 	}
 }

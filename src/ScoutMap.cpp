@@ -32,6 +32,7 @@ void ScoutMap::Update()
 			continue;//can not use this unit for any thing!
 		}
 		SAIFloat3 pos = it->second.pos;
+
 		EffectCircle(pos, radius, ai->frame);
 	}
 }

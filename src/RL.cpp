@@ -74,7 +74,9 @@ void RL::ClearAllNodes()
 
 void RL::LoadFromFile()
 {
-	const char* dir = ai->callback->GetDataDirs()->GetWriteableDir();
+	DataDirs *dirs = ai->callback->GetDataDirs();
+	const char* dir = dirs->GetWriteableDir();
+	delete dirs;
 
 	char *path = new char[200];
 	strcpy(path, dir);
@@ -113,8 +115,9 @@ void RL::LoadFromFile()
 
 void RL::SaveToFile()
 {
-	const char* dir = ai->callback->GetDataDirs()->GetWriteableDir();
-
+	DataDirs *dirs = ai->callback->GetDataDirs();
+	const char* dir = dirs->GetWriteableDir();
+	
 	char *path = new char[200];
 	strcpy(path, dir);
 	strcat(path, "qn.bin");
@@ -138,6 +141,7 @@ void RL::SaveToFile()
 
 	file->flush();
 	file->close();
+	delete dirs;
 	delete[] path;
 	delete file;
 }
@@ -183,7 +187,7 @@ RL_Action RL::FindBestAction( RL_State &state )
 
 	//vector<RL_Action*>::iterator it;
 	//for ( it = stateActions.begin()+1 ; it != stateActions.end() ; it++ )
-	for ( int i = 1 ; i < stateActions.size() ; i++ )
+	for ( int i = 1 ; i < (int)stateActions.size() ; i++ )
 	{
 		//RL_Action *tempAction = (RL_Action*)(*it);
 		RL_Action tempAction = stateActions[i];
@@ -302,7 +306,9 @@ RL_Action RL::Update()
 	else
 	{
 		RL_Action bestAction = FindBestAction( state );
+		ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() before getvalue");
 		bestFutureValue = ValueFunction[currentNode]->GetValue(state, bestAction);
+		ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() after getvalue");
 	}
 	if(currentNode == 0)
 	{
@@ -335,13 +341,6 @@ RL_Action RL::Update()
 
 
 	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() value function updated");
-
-	//delete PreviousState[currentNode];
-	PreviousState[currentNode] = nullState;
-	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() deleted PreviousState for node %i", currentNode);
-	//delete PreviousAction[currentNode];
-	PreviousAction[currentNode] = nullAction;
-	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() deleted PreviousAction for node %i", currentNode);
 	
 	if ( terminal )
 	{
