@@ -29,7 +29,7 @@ RL::RL( AIClasses* aiClasses)
 
 	ParentNode[0] = -1; //no parent
 
-	Epsilon = 9;
+	//Epsilon = 9;
 	LoadFromFile();
 
 	totalReward = 0.0;
@@ -157,7 +157,7 @@ RL_Action RL::FindNextAction( RL_State &state )
 	RL_Action action = stateActions[0]; //unitdefID
 	
 	int r = rand()%100;
-	if ( r <= Epsilon ) //non-greedy
+	if ( r <= EPSILON ) //non-greedy
 	{
 		action = stateActions[rand()%stateActions.size()];
 		ai->utility->Log( ALL, LOG_RL, "Non-greedy: actionID=%d unitdef=%d", action.ID, action.Action );

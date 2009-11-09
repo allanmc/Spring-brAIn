@@ -12,6 +12,7 @@
 
 #define GAMMA 0.9
 #define ALPHA 0.1
+#define EPSILON 9
 
 #define FILE_HEADER "QB"
 
