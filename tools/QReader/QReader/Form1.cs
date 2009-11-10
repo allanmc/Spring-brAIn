@@ -13,7 +13,7 @@ namespace QReader
 {
     public partial class Form1 : Form
     {
-        private OpenFileDialog op;
+        private Stream file;
         public ushort validVersion;
 
         public Form1()
@@ -38,7 +38,8 @@ namespace QReader
 
         private void reLoadFile()
         {
-            Stream s = op.OpenFile();
+
+            Stream s = file;
             System.IO.BinaryReader br = new BinaryReader(s);
             byte[] header = br.ReadBytes(2);
             if (!(header[0] == 'Q' && header[1] == 'B'))
@@ -133,10 +134,25 @@ namespace QReader
         {
             this.Focus();
             richTextBox1.Font = new Font("Courier New", 12);
+            OpenFileDialog op;
             op = new OpenFileDialog();
-            DialogResult res = op.ShowDialog();
-            if (DialogResult.OK != res)
-                return;
+            StringBuilder sb = new StringBuilder();
+            sb.Append("C:\\Program Files\\Spring\\AI\\Skirmish\\brAIn\\0.1");
+            
+            sb.Append("\\qh.bin");
+            System.Console.WriteLine(sb);
+            Boolean b = File.Exists(sb.ToString());
+            if (b)
+            {
+                file = File.OpenRead(sb.ToString());
+            }
+            else
+            {                
+                DialogResult res = op.ShowDialog();
+                if (DialogResult.OK != res)
+                    return;
+                file = op.OpenFile();
+            }
             
             this.Focus();
             reLoadFile();
@@ -145,6 +161,18 @@ namespace QReader
 
         private void update_btn_Click(object sender, EventArgs e)
         {
+            reLoadFile();
+        }
+
+        private void button_load_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog op;
+            op = new OpenFileDialog();
+            DialogResult res = op.ShowDialog();
+            if (DialogResult.OK != res)
+                return;
+            this.Focus();
+            file = op.OpenFile();
             reLoadFile();
         }
     }
