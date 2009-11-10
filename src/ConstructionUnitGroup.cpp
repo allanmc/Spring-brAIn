@@ -78,6 +78,7 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	ai->utility->Log(ALL, MISC, "Is commander built in? %d", hest);
 	if(!hest)
 	{
+		ai->knowledge->mapInfo->pathfindingMap->PrintOldSection( buildPos );
 		ai->knowledge->mapInfo->pathfindingMap->PrintSection(buildPos);
 		ai->knowledge->mapInfo->pathfindingMap->PathExists(commanderDef, buildPos, ai->utility->GetSafePosition(), true);
 		exit(0);
