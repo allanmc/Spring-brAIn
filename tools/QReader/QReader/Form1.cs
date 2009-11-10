@@ -13,7 +13,8 @@ namespace QReader
 {
     public partial class Form1 : Form
     {
-        private Stream file;
+        //private Stream file;
+        private string filePath;
         public ushort validVersion;
 
         public Form1()
@@ -39,7 +40,7 @@ namespace QReader
         private void reLoadFile()
         {
 
-            Stream s = file;
+            Stream s = File.OpenRead(filePath);
             System.IO.BinaryReader br = new BinaryReader(s);
             byte[] header = br.ReadBytes(2);
             if (!(header[0] == 'Q' && header[1] == 'B'))
@@ -140,18 +141,14 @@ namespace QReader
             sb.Append("C:\\Program Files\\Spring\\AI\\Skirmish\\brAIn\\0.1");
             
             sb.Append("\\qh.bin");
-            System.Console.WriteLine(sb);
-            Boolean b = File.Exists(sb.ToString());
-            if (b)
-            {
-                file = File.OpenRead(sb.ToString());
-            }
-            else
-            {                
+            filePath = sb.ToString();
+            Boolean b = File.Exists(filePath);
+            if (!b)
+            {         
                 DialogResult res = op.ShowDialog();
                 if (DialogResult.OK != res)
                     return;
-                file = op.OpenFile();
+                filePath = op.FileName;                
             }
             
             this.Focus();
@@ -172,7 +169,7 @@ namespace QReader
             if (DialogResult.OK != res)
                 return;
             this.Focus();
-            file = op.OpenFile();
+            filePath = op.FileName;
             reLoadFile();
         }
     }
