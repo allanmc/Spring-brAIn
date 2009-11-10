@@ -44,6 +44,9 @@ RL::RL( AIClasses* aiClasses)
 
 	totalReward = 0.0;
 	goalAchieved = false;
+
+	NumNonGreedyActions = 0;
+	NumGreedyActions = 0;
 }
 
 RL::~RL()
@@ -66,6 +69,7 @@ RL::~RL()
 	{
 		ai->utility->ChatMsg("RL goal NOT achieved, but total reward is: %f", totalReward);
 	}
+	ai->utility->ChatMsg("GreedyActions: %d. NonGreedyActions: %d", NumGreedyActions, NumNonGreedyActions );
 }
 
 void RL::ClearAllNodes()
@@ -165,11 +169,13 @@ RL_Action RL::FindNextAction( RL_State &state )
 	float r = rand()/(float)RAND_MAX;
 	if ( r <= Epsilon ) //non-greedy
 	{
+		NumNonGreedyActions++;
 		action = stateActions[rand()%stateActions.size()];
 		ai->utility->Log( ALL, LOG_RL, "Non-greedy: actionID=%d unitdef=%d", action.ID, action.Action );
 	}
 	else //greedy
 	{
+		NumGreedyActions++;
 		action = FindBestAction(state);
 		ai->utility->Log( ALL, LOG_RL, "Greedy: actionID=%d unitdef=%d", action.ID, action.Action );
 	}
