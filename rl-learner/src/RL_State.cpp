@@ -1,3 +1,4 @@
+/*
 #include "RL_State.h"
 #include "RL.h"
 
@@ -91,3 +92,5 @@ RL_State & RL_State::operator=(const RL_State &rhs)
 	ai = rhs.ai;
 	return *this;
 }
+
+*/

@@ -1,3 +1,4 @@
+/*
 #include "RL_Q.h"
 #include "RL.h"
 
@@ -94,3 +95,4 @@ void RL_Q::SetValue( RL_State &state, RL_Action &action, float value )
 {
 	actionValueFunction[ (state.GetID()) * numActions + (action.ID) ] = value;
 }
+*/
