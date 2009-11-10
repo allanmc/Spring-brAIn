@@ -16,12 +16,16 @@ PathfindingMap::PathfindingMap( AIClasses* aiClasses ) : BrainMap( aiClasses, 4 
 		for ( int x = 0 ; x < MapWidth ; x++ )
 			ResetSlope( x, z );
 	delete map;
+
+	MapArrayBackup.push_back( new float[MapWidth*MapHeight] );
+	memcpy( MapArrayBackup.at(0), MapArray, sizeof(float)*(MapWidth*MapHeight));
 }
 
 
 PathfindingMap::~PathfindingMap()
 {
-	
+	for ( int i = 0 ; i < MapArrayBackup.size() ; i++ )
+		delete[] MapArrayBackup.at(i);
 }
 
 
@@ -69,6 +73,10 @@ void PathfindingMap::AddBuilding(Unit* unit)
 	int rightCell = (pos.x+xSize/2)/Resolution;
 	delete def;
 
+	MapArrayBackup.push_back( new float[MapWidth*MapHeight] );
+	memcpy( MapArrayBackup.at(MapArrayBackup.size()-1) , MapArray, sizeof(float)*(MapWidth*MapHeight));
+	SAIFloat3 cpos = ai->commander->GetPos();
+	MapArrayBackup.at(MapArrayBackup.size()-1)[ (int)cpos.z/Resolution*MapWidth + (int)cpos.x/Resolution ] += 666;
 
 	for ( int i = topCell ; i <= bottomCell ; i++ )
 		for ( int j = leftCell ; j <= rightCell ; j++ )
@@ -431,7 +439,7 @@ list<SAIFloat3> PathfindingMap::FindPathTo( UnitDef* pathfinder, SAIFloat3 start
 
 bool PathfindingMap::PathExists( UnitDef* pathfinder, SAIFloat3 escapeFrom, SAIFloat3 escapeTo, bool debug )
 {
-	ai->utility->Log(ALL, MISC, "Trying to escape...");
+	ai->utility->Log(ALL, PATHFIND, "Trying to escape...");
 	list<SAIFloat3> path = FindPathTo( pathfinder, escapeFrom, escapeTo, debug );
 	bool retVal = ( path.size() > 0 );
 	path.clear();
@@ -441,7 +449,7 @@ bool PathfindingMap::PathExists( UnitDef* pathfinder, SAIFloat3 escapeFrom, SAIF
 bool PathfindingMap::IsPossibleToEscapeFrom( UnitDef* pathfinder, springai::UnitDef* building, SAIFloat3 buildPosition, SAIFloat3 escapeFrom, SAIFloat3 escapeTo )
 {
 	
-	ai->utility->Log(ALL, MISC, "Trying to escape...");
+	ai->utility->Log(ALL, PATHFIND, "Trying to escape...");
 	AddHypotheticalBuilding( building, buildPosition );
 	bool retVal = PathExists(pathfinder, escapeFrom, escapeTo);
 	RemoveHypotheticalBuilding( building, buildPosition );
@@ -509,24 +517,62 @@ void PathfindingMap::DeleteNodes( map<int, PathfindingNode*> closedSet, map<int,
 	closedSet.clear();
 }
 
-void PathfindingMap::PrintSection(SAIFloat3 pos)
+void PathfindingMap::PrintOldSection( SAIFloat3 pos )
 {
 	int x = pos.x/Resolution;
 	int z = pos.z/Resolution;
 	UnitDef *commanderDef = ai->commander->GetDef();
 	MoveData *move = commanderDef->GetMoveData();
 
+	for ( int k = 0 ; k < MapArrayBackup.size() ; k++ )
+	{
+		ai->utility->Log( ALL, MISC, "Pathfindingmap %k", k );
+		for(int i = max(0,z - 50); i <= min(MapHeight-1, z + 50); i++)
+		{
+			for(int j = max(0,x - 50); j <= min(MapWidth-1, x + 50); j++)
+			{
+				if ( MapArrayBackup.at(k)[i*MapWidth + j] > 666 + move->GetMaxSlope() )
+				{
+					ai->utility->LogNN( ALL, PATHFIND, "C" );
+				}
+				else if ( MapArrayBackup.at(k)[i*MapWidth + j] <= 666 + move->GetMaxSlope() && MapArrayBackup.at(k)[i*MapWidth + j] >= 666 )
+				{
+					ai->utility->LogNN( ALL, PATHFIND, "B" );
+				}
+				else
+				{
+					bool walkable = MapArrayBackup.at(k)[i*MapWidth + j] < move->GetMaxSlope();
+					if(x == j && z == i)
+						ai->utility->LogNN(ALL, PATHFIND, (walkable ? "X":"Q"));
+					else
+						ai->utility->LogNN(ALL, PATHFIND, "%d", walkable);
+				}
+			}
+			ai->utility->LogNN(ALL, MISC, "\n");
+		}
+	}
+	delete commanderDef;
+	delete move;
+}
+
+void PathfindingMap::PrintSection(SAIFloat3 pos)
+{
+	int x = pos.x/Resolution;
+	int z = pos.z/Resolution;
+	UnitDef *commanderDef = ai->commander->GetDef();
+	MoveData *move = commanderDef->GetMoveData();
+	ai->utility->Log( ALL, PATHFIND, "New pathfindingmap" );
 	for(int i = max(0,z - 50); i <= min(MapHeight-1, z + 50); i++)
 	{
 		for(int j = max(0,x - 50); j <= min(MapWidth-1, x + 50); j++)
 		{
 			bool walkable = MapArray[i*MapWidth + j] < move->GetMaxSlope();
 			if(x == j && z == i)
-				ai->utility->LogNN(ALL, MISC, (walkable ? "X":"Q"));
+				ai->utility->LogNN(ALL, PATHFIND, (walkable ? "X":"Q"));
 			else
-				ai->utility->LogNN(ALL, MISC, "%d", walkable);
+				ai->utility->LogNN(ALL, PATHFIND, "%d", walkable);
 		}
-		ai->utility->LogNN(ALL, MISC, "\n");
+		ai->utility->LogNN(ALL, PATHFIND, "\n");
 	}
 	delete commanderDef;
 	delete move;
