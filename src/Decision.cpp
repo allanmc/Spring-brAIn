@@ -362,6 +362,11 @@ void Decision::Reset()
 	bc = NULL;
 	bc = new BuildingController( ai );
 	ai->utility->Log(ALL, MISC, "Reset() done");
+
+	if (gameCounter > 500)
+	{
+		ai->utility->Suicide(0, true);
+	}
 }
 
 void Decision::Update(int frame)
