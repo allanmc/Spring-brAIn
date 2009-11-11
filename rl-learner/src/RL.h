@@ -12,29 +12,31 @@
 
 #define GAMMA 0.9
 #define ALPHA 0.1
-#define EPSILON 9
+#define EPSILON 0.1
 
 #define FILE_HEADER "QB"
 
-#include "global.h"
 #include "RL_State.h"
 #include "RL_Q.h"
+#include "game.h"
+#include <vector>
+#include "RL_Action.h"
 
-using namespace springai;
+using namespace std;
 
 namespace brainSpace {	
 
 	class RL
 	{
 	public:
-		RL( AIClasses* aiClasses);
+		RL(Game *g);
 		virtual ~RL();
+		float GetTotalReward();
 
 
 		RL_Action Update();
 	private:
-		AIClasses* ai;
-
+		Game *game;
 		RL_State nullState;
 		RL_Action nullAction;
 

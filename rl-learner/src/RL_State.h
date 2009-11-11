@@ -1,9 +1,9 @@
 #ifndef _BRAINSPACE_RL_STATE_H
 #define _BRAINSPACE_RL_STATE_H
+#include <vector>
+#include "game.h"
+#include "RL_Action.h"
 
-#include "types.h"
-
-using namespace springai;
 using namespace std;
 
 namespace brainSpace {
@@ -11,7 +11,7 @@ namespace brainSpace {
 	class RL_State
 	{
 	public:
-		RL_State( AIClasses* ai, int node );
+		RL_State(Game *g, int node );
 		RL_State();
 		virtual ~RL_State();
 		int GetID();
@@ -22,8 +22,8 @@ namespace brainSpace {
 		bool operator==(const RL_State &other) const;
 		RL_State & operator=(const RL_State &rhs);
 	protected:
+		Game *game;
 		bool terminal;
-		AIClasses* ai;
 		int ID;
 		int Node;
 		vector<RL_Action> Actions;
