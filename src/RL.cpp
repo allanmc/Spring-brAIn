@@ -15,19 +15,33 @@ RL::RL( AIClasses* aiClasses)
 	nullState = RL_State( ai, -1 );
 	nullAction = RL_Action( -1, -1, false );
 
-	vector<QStateVar> stateVars (3);
-	vector<QAction> actions (3);
-	stateVars[0] = (QStateVar){"Lab", RL_LAB_INDEX};
-	stateVars[1] = (QStateVar){"Solar", RL_SOLAR_INDEX};
-	stateVars[2] = (QStateVar){"Mex", RL_MEX_INDEX};
-	actions[0] = (QAction){"Lab", 0};
-	actions[1] = (QAction){"Solar", 1};
-	actions[2] = (QAction){"Mex", 2};
+	vector<QStateVar> stateVars (2);
+	vector<QAction> actions (2);
+	stateVars[0] = (QStateVar){"CBL", 2};
+	stateVars[1] = (QStateVar){"EL", 2};
+	actions[0] = (QAction){"Production", 0};
+	actions[1] = (QAction){"Resource", 1};
 	ValueFunction[0] = new RL_Q(ai, actions, stateVars); //root
+	stateVars[0] = (QStateVar){"Plant", RL_PLANT_INDEX};
+	stateVars[1] = (QStateVar){"Lab", RL_LAB_INDEX};
+	actions[0] = (QAction){"Plant", 0};
+	actions[1] = (QAction){"Lab", 1};
+	ValueFunction[1] = new RL_Q(ai, actions, stateVars); //Factory
+	stateVars[0] = (QStateVar){"Mex", RL_MEX_INDEX};
+	stateVars[1] = (QStateVar){"Solar", RL_SOLAR_INDEX};
+	actions[0] = (QAction){"Mex", 0};
+	actions[1] = (QAction){"Solar", 1};
+	ValueFunction[2] = new RL_Q(ai, actions, stateVars); //Resource
 
 	ClearAllNodes();
 
-	ParentNode[0] = -1; //no parent
+	for (int i = 0 ; i < RL_NUM_NODES ; i++) 
+	{
+		if (i==0)
+			ParentNode[i] = -1; //no parent
+		else
+			ParentNode[i] = 0;
+	}
 
 	//Epsilon = 9;
 	LoadFromFile();
@@ -80,7 +94,7 @@ void RL::LoadFromFile()
 
 	char *path = new char[200];
 	strcpy(path, dir);
-	strcat(path, "qn.bin");
+	strcat(path, Q_FILE);
 
 	FILE* fp = NULL;
 	fp = fopen( path, "rb" );
@@ -120,7 +134,7 @@ void RL::SaveToFile()
 	
 	char *path = new char[200];
 	strcpy(path, dir);
-	strcat(path, "qn.bin");
+	strcat(path, Q_FILE);
 
 	ofstream *file = new ofstream(path, ios::binary | ios::out);
 

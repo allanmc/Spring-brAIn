@@ -8,11 +8,13 @@
 
 #define QBFILE_VERSION 2
 
-#define RL_NUM_NODES 1
+#define RL_NUM_NODES 3
 
 #define GAMMA 0.9
 #define ALPHA 0.1
-#define EPSILON 9
+#define EPSILON 0.1
+
+#define Q_FILE "qh.bin"
 
 #define FILE_HEADER "QB"
 
@@ -49,7 +51,7 @@ namespace brainSpace {
 		int ParentNode[RL_NUM_NODES];
 		float totalReward;
 		bool goalAchieved;
-		int Epsilon;
+		float Epsilon;
 		RL_State GetState(int node);
 		RL_Action SafeNextAction(RL_State &state);
 		void TakeAction(RL_Action &action);

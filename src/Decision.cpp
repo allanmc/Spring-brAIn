@@ -115,8 +115,9 @@ void Decision::UnitFinished(int unit)
 			//BuildAttackUnit();
 		}
 	}else{
-		ai->utility->Log(ALL, MISC, "Finished with a building");
+		ai->utility->Log(ALL, MISC, "Finished with a building, bc = %i", bc);
 		//add to BuildingController
+		
 		bc->AddBuilding(u);
 		ai->utility->Log(ALL, MISC, "Added building");
 		//BuildAttackUnit();
