@@ -11,8 +11,10 @@
 #define RL_NUM_NODES 3
 
 #define GAMMA 0.9
-#define ALPHA 0.5
+#define ALPHA 0.1
 #define EPSILON 0.1
+
+#define Q_FILE "qh.bin"
 
 #define FILE_HEADER "QB"
 
@@ -58,8 +60,6 @@ namespace brainSpace {
 		void SaveToFile();
 
 		RL_Q* ValueFunction[RL_NUM_NODES];
-		int NumGreedyActions;
-		int NumNonGreedyActions;
 	};
 }
 

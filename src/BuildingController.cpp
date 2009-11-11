@@ -18,8 +18,10 @@ brainSpace::BuildingController::~BuildingController(void)
 
 void BuildingController::AddBuilding(springai::Unit *unit)
 {
+	ai->utility->Log(ALL, MISC, "BuildingController::AddBuilding received a building");
+	
 	UnitDef* def = unit->GetDef();
-	//ai->utility->Log(ALL, MISC, "Recieved building! type: %s, name: %s",def->GetType(), def->GetName());
+	ai->utility->Log(ALL, MISC, "Recieved building! type: %s, name: %s",def->GetType(), def->GetName());
 	vector<Resource*> resources = ai->callback->GetResources();
 	bool isResource = false;
 	for(int i = 0; i < (int)resources.size(); i++)
@@ -35,17 +37,17 @@ void BuildingController::AddBuilding(springai::Unit *unit)
 	if (def->GetWeaponMounts().size() > 0)
 	{
 		DefenceBuildings.push_back(unit);
-		//ai->utility->Log(ALL, MISC, "Defence building built and added to manager");
+		ai->utility->Log(ALL, MISC, "Defence building built and added to manager");
 	}
 	else if (isResource)
 	{
 		ResourceBuildings.push_back(unit);
-		//ai->utility->Log(ALL, MISC, "Resource building built and added to manager");
+		ai->utility->Log(ALL, MISC, "Resource building built and added to manager");
 	}
 	else
 	{
 		ConstructionBuildings.push_back(unit);
-		//ai->utility->Log(ALL, MISC, "Construction building built and added to manager");
+		ai->utility->Log(ALL, MISC, "Construction building built and added to manager");
 	}
 	delete def;
 }

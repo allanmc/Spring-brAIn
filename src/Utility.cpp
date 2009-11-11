@@ -447,7 +447,7 @@ bool Utility::FileExists( const char* FileName )
     return false;
 }
 
-void Utility::ResetGame(RL **rl)
+void Utility::ResetGame(RL **rl, bool endGame)
 {
 	Log(IMPORTANT, MISC, "brAIn is now resetting..."); 
 
@@ -487,7 +487,7 @@ void Utility::ResetGame(RL **rl)
 	Log(IMPORTANT, MISC, "Killing all units besides the commander..."); 
 	//Delete all units besides out new commander
 	
-	Suicide(ai->commander->GetUnitId(), true);
+	Suicide((endGame ? 0 : ai->commander->GetUnitId()), true);
 	c->SetEnabled(false);
 	delete c;
 
