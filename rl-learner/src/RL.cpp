@@ -1,3 +1,4 @@
+/*
 #include "RL.h"
 
 
@@ -15,45 +16,35 @@ RL::RL( AIClasses* aiClasses)
 	nullState = RL_State( ai, -1 );
 	nullAction = RL_Action( -1, -1, false );
 
-	vector<QStateVar> stateVars (2);
-	vector<QAction> actions (2);
-	stateVars[0] = (QStateVar){"CBL", 2};
-	stateVars[1] = (QStateVar){"EL", 2};
-	actions[0] = (QAction){"Production", 0};
-	actions[1] = (QAction){"Resource", 1};
-	ValueFunction[0] = new RL_Q(ai, actions, stateVars); //root
-	stateVars[0] = (QStateVar){"Plant", RL_PLANT_INDEX};
-	stateVars[1] = (QStateVar){"Lab", RL_LAB_INDEX};
-	actions[0] = (QAction){"Plant", 0};
-	actions[1] = (QAction){"Lab", 1};
-	ValueFunction[1] = new RL_Q(ai, actions, stateVars); //Factory
-	stateVars[0] = (QStateVar){"Mex", RL_MEX_INDEX};
+	vector<QStateVar> stateVars (3);
+	vector<QAction> actions (3);
+	stateVars[0] = (QStateVar){"Lab", RL_LAB_INDEX};
 	stateVars[1] = (QStateVar){"Solar", RL_SOLAR_INDEX};
-	actions[0] = (QAction){"Mex", 0};
+	stateVars[2] = (QStateVar){"Mex", RL_MEX_INDEX};
+	actions[0] = (QAction){"Lab", 0};
 	actions[1] = (QAction){"Solar", 1};
-	ValueFunction[2] = new RL_Q(ai, actions, stateVars); //Resource
+	actions[2] = (QAction){"Mex", 2};
+	ValueFunction[0] = new RL_Q(ai, actions, stateVars); //root
 
 	ClearAllNodes();
 
 	ParentNode[0] = -1; //no parent
-	ParentNode[1] = 0;
-	ParentNode[2] = 0;
 
-	Epsilon = EPSILON;
+	//Epsilon = 9;
 	LoadFromFile();
 
 	totalReward = 0.0;
 	goalAchieved = false;
-
-	NumNonGreedyActions = 0;
-	NumGreedyActions = 0;
 }
 
 RL::~RL()
 {
+	ai->utility->Log(ALL, MISC, "Saving file");
 	SaveToFile();
+	ai->utility->Log(ALL, MISC, "File saved");
 	for ( int i = 0 ; i < RL_NUM_NODES ; i++ )
 	{
+		ai->utility->Log(ALL, MISC, "Deleting ValueFunction[%i]", i);
 		delete ValueFunction[i];
 		ValueFunction[i] = NULL;
 		//delete PreviousAction[i];
@@ -69,7 +60,7 @@ RL::~RL()
 	{
 		ai->utility->ChatMsg("RL goal NOT achieved, but total reward is: %f", totalReward);
 	}
-	ai->utility->ChatMsg("GreedyActions: %d. NonGreedyActions: %d", NumGreedyActions, NumNonGreedyActions );
+	ai->utility->Log(ALL, MISC, "Done deconstructing RL");
 }
 
 void RL::ClearAllNodes()
@@ -90,7 +81,7 @@ void RL::LoadFromFile()
 
 	char *path = new char[200];
 	strcpy(path, dir);
-	strcat(path, "qh.bin");
+	strcat(path, "qn.bin");
 
 	FILE* fp = NULL;
 	fp = fopen( path, "rb" );
@@ -130,7 +121,7 @@ void RL::SaveToFile()
 	
 	char *path = new char[200];
 	strcpy(path, dir);
-	strcat(path, "qh.bin");
+	strcat(path, "qn.bin");
 
 	ofstream *file = new ofstream(path, ios::binary | ios::out);
 
@@ -138,7 +129,7 @@ void RL::SaveToFile()
 
 	fileHeader.header[0] = FILE_HEADER[0];
 	fileHeader.header[1] = FILE_HEADER[1];
-	fileHeader.numQTables = 3;
+	fileHeader.numQTables = RL_NUM_NODES;
 	fileHeader.type = QBFILE_VERSION;
 
 
@@ -166,16 +157,14 @@ RL_Action RL::FindNextAction( RL_State &state )
 	vector<RL_Action> stateActions = state.GetActions();
 	RL_Action action = stateActions[0]; //unitdefID
 	
-	float r = rand()/(float)RAND_MAX;
-	if ( r <= Epsilon ) //non-greedy
+	int r = rand()%100;
+	if ( r <= EPSILON ) //non-greedy
 	{
-		NumNonGreedyActions++;
 		action = stateActions[rand()%stateActions.size()];
 		ai->utility->Log( ALL, LOG_RL, "Non-greedy: actionID=%d unitdef=%d", action.ID, action.Action );
 	}
 	else //greedy
 	{
-		NumGreedyActions++;
 		action = FindBestAction(state);
 		ai->utility->Log( ALL, LOG_RL, "Greedy: actionID=%d unitdef=%d", action.ID, action.Action );
 	}
@@ -393,3 +382,4 @@ RL_Action RL::Update()
 	}
 }
 
+*/
