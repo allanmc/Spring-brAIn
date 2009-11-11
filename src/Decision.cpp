@@ -341,7 +341,7 @@ void Decision::Reset()
 	extraMoveSent = false;
 	vector<Unit*> units = ai->callback->GetFriendlyUnits();
 	remainingUnits = units.size();
-	ai->utility->ResetGame(&rl, (gameCounter > 1 ? true : false));
+	ai->utility->ResetGame(&rl, (gameCounter > 300 ? true : false));
 	ai->utility->ChatMsg("Starting game #%i", gameCounter++);
 	delete ai->knowledge;
 	ai->knowledge = NULL;
