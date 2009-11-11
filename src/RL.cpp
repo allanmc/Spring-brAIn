@@ -162,7 +162,7 @@ RL_Action RL::FindNextAction( RL_State &state )
 	vector<RL_Action> stateActions = state.GetActions();
 	RL_Action action = stateActions[0]; //unitdefID
 	
-	int r = rand()%100;
+	float r = rand() / (float)RAND_MAX;
 	if ( r <= EPSILON ) //non-greedy
 	{
 		action = stateActions[rand()%stateActions.size()];
