@@ -341,7 +341,7 @@ void Decision::Reset()
 	extraMoveSent = false;
 	vector<Unit*> units = ai->callback->GetFriendlyUnits();
 	remainingUnits = units.size();
-	ai->utility->ResetGame(&rl);
+	ai->utility->ResetGame(&rl, (gameCounter > 1 ? true : false));
 	ai->utility->ChatMsg("Starting game #%i", gameCounter++);
 	delete ai->knowledge;
 	ai->knowledge = NULL;
@@ -363,10 +363,6 @@ void Decision::Reset()
 	bc = new BuildingController( ai );
 	ai->utility->Log(ALL, MISC, "Reset() done");
 
-	if (gameCounter > 500)
-	{
-		ai->utility->Suicide(0, true);
-	}
 }
 
 void Decision::Update(int frame)
