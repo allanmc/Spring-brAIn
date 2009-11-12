@@ -29,7 +29,7 @@ namespace brainSpace {
 	class RL
 	{
 	public:
-		RL(Game *g, bool HRL);
+		RL(Game *g, unsigned short int type);
 		virtual ~RL();
 		float GetTotalReward();
 
@@ -39,7 +39,7 @@ namespace brainSpace {
 		Game *game;
 		RL_State nullState;
 		RL_Action nullAction;
-		bool hrl;
+		unsigned short int type;
 
 		bool FileExists( const char* name );
 		RL_Action FindNextAction( RL_State &state );

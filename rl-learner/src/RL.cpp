@@ -6,19 +6,20 @@
 using namespace brainSpace;
 using namespace std;
 
-RL::RL(Game *g, bool HRL)
+RL::RL(Game *g, unsigned short int type)
 {	
 	game = g;
 	currentNode = 0;
 	totalReward = 0;
-	hrl = HRL;
-	nullState = RL_State(game, -1, hrl );
+	this->type = type;
+	nullState = RL_State(game, -1, type );
 	nullAction = RL_Action( -1, -1, false );
+	vector<QStateVar> stateVars;
+	vector<QAction> actions;
 
-	if(!hrl)
+	switch(type)
 	{
-		vector<QStateVar> stateVars;
-		vector<QAction> actions;
+	case 0:
 		stateVars.push_back( QStateVar("Lab", RL_LAB_INDEX));
 		stateVars.push_back( QStateVar("Solar", RL_SOLAR_INDEX));
 		stateVars.push_back( QStateVar("Mex", RL_MEX_INDEX));
@@ -26,11 +27,8 @@ RL::RL(Game *g, bool HRL)
 		actions.push_back( QAction("Solar", 1));
 		actions.push_back( QAction("Mex", 2));
 		ValueFunction.push_back(new RL_Q( actions, stateVars)); //root
-	}
-	else
-	{
-		vector<QStateVar> stateVars;
-		vector<QAction> actions;
+		break;
+	case 1:
 		stateVars.push_back(QStateVar("CBL", 2));
 		stateVars.push_back(QStateVar("EL", 2));
 		actions.push_back(QAction("Production", 0));
@@ -50,6 +48,19 @@ RL::RL(Game *g, bool HRL)
 		actions.push_back(QAction("Mex", 0));
 		actions.push_back(QAction("Solar", 1));
 		ValueFunction.push_back(new RL_Q( actions, stateVars)); //Resource
+		break;
+	case 2:
+		stateVars.push_back( QStateVar("M-Needs", 10));
+		stateVars.push_back( QStateVar("E-Needs", 10));
+		stateVars.push_back( QStateVar("M-Available", 10));
+		stateVars.push_back( QStateVar("E-Available", 10));
+		actions.push_back( QAction("Done", 0));
+		actions.push_back( QAction("Energy", 1));
+		actions.push_back( QAction("Metal", 2));
+		ValueFunction.push_back(new RL_Q( actions, stateVars)); //root
+		break;
+	default:
+		break;
 	}
 	
 	ClearAllNodes();
@@ -74,7 +85,7 @@ RL::RL(Game *g, bool HRL)
 RL::~RL()
 {
 	SaveToFile();
-	for ( int i = 0 ; i < ValueFunction.size() ; i++ )
+	for ( unsigned int i = 0 ; i < ValueFunction.size() ; i++ )
 	{
 		delete ValueFunction[i];
 		//ValueFunction[i] = NULL;
@@ -90,7 +101,7 @@ void RL::ClearAllNodes()
 {
 	PreviousState.clear();
 	PreviousAction.clear();
-	for(int i = 0; i < ValueFunction.size(); i++)
+	for(unsigned int i = 0; i < ValueFunction.size(); i++)
 	{
 		PreviousState.push_back(nullState);
 		PreviousAction.push_back( nullAction);
@@ -104,10 +115,20 @@ void RL::LoadFromFile()
 
 	char *path = new char[200];
 	strcpy(path, dir);
-	if(!hrl)
+	switch(type)
+	{
+	case 0:
 		strcat(path, "qn.bin");
-	else
+		break;
+	case 1:
 		strcat(path, "qh.bin");
+		break;
+	case 2:
+		strcat(path, "qr.bin");
+		break;
+	default:
+		break;
+	}
 
 	FILE* fp = NULL;
 	fp = fopen( path, "rb" );
@@ -144,10 +165,20 @@ void RL::SaveToFile()
 	
 	char *path = new char[200];
 	strcpy(path, dir);
-	if(!hrl)
+	switch(type)
+	{
+	case 0:
 		strcat(path, "qn.bin");
-	else
+		break;
+	case 1:
 		strcat(path, "qh.bin");
+		break;
+	case 2:
+		strcat(path, "qr.bin");
+		break;
+	default:
+		break;
+	}
 
 	ofstream *file = new ofstream(path, ios::binary | ios::out);
 
@@ -174,7 +205,7 @@ void RL::SaveToFile()
 
 RL_State RL::GetState(int node)
 {
-	return RL_State(game, node, hrl);
+	return RL_State(game, node, type);
 }
 
 RL_Action RL::FindNextAction( RL_State &state )

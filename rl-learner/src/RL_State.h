@@ -11,7 +11,7 @@ namespace brainSpace {
 	class RL_State
 	{
 	public:
-		RL_State(Game *g, int node, bool HRL );
+		RL_State(Game *g, int node, unsigned short int type);
 		RL_State();
 		virtual ~RL_State();
 		int GetID();

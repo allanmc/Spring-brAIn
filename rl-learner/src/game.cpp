@@ -28,7 +28,7 @@ void Game::ResetGame()
 void Game::ConstructBuilding(int buildingId)
 {
 	buildings[buildingId]++;
-	float timeToBuild = unitDefs[buildingId].buildTime/COMMANDER_SPEED;
+	float timeToBuild = unitDefs[buildingId].buildTime/(float)COMMANDER_SPEED;
 	float incomeMetal = - unitDefs[buildingId].metalCost/timeToBuild;
 	float incomeEnergy = - unitDefs[buildingId].energyCost/timeToBuild;
 	float productionMetal = incomeMetal + GetProduction(RL_MEX_ID);
@@ -140,7 +140,7 @@ void Game::ConstructBuilding(int buildingId)
 int Game::CanBuild(int buildingID)
 {
 	int retVal = 0;
-	float timeToBuild = unitDefs[buildingID].buildTime/COMMANDER_SPEED;
+	float timeToBuild = unitDefs[buildingID].buildTime/(float)COMMANDER_SPEED;
 	float incomeMetal = - unitDefs[buildingID].metalCost/timeToBuild;
 	float incomeEnergy = - unitDefs[buildingID].energyCost/timeToBuild;
 	float productionMetal = incomeMetal + GetProduction(RL_MEX_ID);
@@ -171,12 +171,12 @@ float Game::GetProduction(int resourceId)
 	float production = 0;
 	if(resourceId == RL_MEX_ID)
 	{
-		production = RL_MEX_PRODUCTION*buildings[resourceId];
+		production = (float)RL_MEX_PRODUCTION*buildings[resourceId];
 		production += 1.5;
 	}
 	else
 	{
-		production = RL_SOLAR_PRODUCTION*buildings[resourceId];
+		production = (float)RL_SOLAR_PRODUCTION*buildings[resourceId];
 		production += 25;
 	}	
 	return production;

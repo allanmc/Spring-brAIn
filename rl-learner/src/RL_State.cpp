@@ -7,36 +7,27 @@ RL_State::RL_State()
 {
 }
 
-RL_State::RL_State(Game *g, int node, bool HRL)
+RL_State::RL_State(Game *g, int node, unsigned short int type)
 {
 	game = g;
 	Node = node;
-	if (!HRL)
+	switch (type)
 	{
-		switch(node)
+	case 0: //Flat old
 		{
-		case 0://root
-			{
-				int labCount = game->buildings[RL_LAB_ID];
-				int solarCount = game->buildings[RL_SOLAR_ID];
-				int mexCount = game->buildings[RL_MEX_ID];
-				terminal = (labCount==4);
-				ID = labCount*RL_MEX_INDEX*RL_SOLAR_INDEX + solarCount*RL_MEX_INDEX + mexCount;
-				if(labCount < 4)
-					Actions.push_back(RL_Action(RL_LAB_ID,0,false));
-				if(solarCount < 19)
-					Actions.push_back(RL_Action(RL_SOLAR_ID,1,false));
-				if(mexCount < 19)
-					Actions.push_back(RL_Action(RL_MEX_ID,2,false));
-				
-				
-			}break;
-		default://error
-			Node = -1;
-		}
-	}
-	else
-	{
+			int labCount = game->buildings[RL_LAB_ID];
+			int solarCount = game->buildings[RL_SOLAR_ID];
+			int mexCount = game->buildings[RL_MEX_ID];
+			terminal = (labCount==4);
+			ID = labCount*RL_MEX_INDEX*RL_SOLAR_INDEX + solarCount*RL_MEX_INDEX + mexCount;
+			if(labCount < 4)
+				Actions.push_back(RL_Action(RL_LAB_ID,0,false));
+			if(solarCount < 19)
+				Actions.push_back(RL_Action(RL_SOLAR_ID,1,false));
+			if(mexCount < 19)
+				Actions.push_back(RL_Action(RL_MEX_ID,2,false));	
+		}break;
+	case 1: //H old
 		switch(node)
 		{
 		case 0://root
@@ -76,6 +67,12 @@ RL_State::RL_State(Game *g, int node, bool HRL)
 		default://error
 			Node = -1;
 		}
+		break;
+	case 2: //Resource Needs
+		
+		break;
+	default:
+		break;
 	}
 }
 
