@@ -25,7 +25,7 @@ RL::RL(Game *g, bool HRL)
 		actions.push_back( QAction("Lab", 0));
 		actions.push_back( QAction("Solar", 1));
 		actions.push_back( QAction("Mex", 2));
-		ValueFunction[0] = new RL_Q( actions, stateVars); //root
+		ValueFunction.push_back(new RL_Q( actions, stateVars)); //root
 	}
 	else
 	{
@@ -35,31 +35,33 @@ RL::RL(Game *g, bool HRL)
 		stateVars.push_back(QStateVar("EL", 2));
 		actions.push_back(QAction("Production", 0));
 		actions.push_back(QAction("Resource", 1));
-		ValueFunction[0] = new RL_Q( actions, stateVars); //root
+		ValueFunction.push_back(new RL_Q( actions, stateVars)); //root
 		stateVars.clear();
 		actions.clear();
 		stateVars.push_back(QStateVar("Plant", RL_PLANT_INDEX));
 		stateVars.push_back(QStateVar("Lab", RL_LAB_INDEX));
 		actions.push_back(QAction("Plant", 0));
 		actions.push_back(QAction("Lab", 1));
-		ValueFunction[1] = new RL_Q( actions, stateVars); //Factory
+		ValueFunction.push_back(new RL_Q( actions, stateVars)); //Factory
 		stateVars.clear();
 		actions.clear();
 		stateVars.push_back(QStateVar("Mex", RL_MEX_INDEX));
 		stateVars.push_back(QStateVar("Solar", RL_SOLAR_INDEX));
 		actions.push_back(QAction("Mex", 0));
 		actions.push_back(QAction("Solar", 1));
-		ValueFunction[2] = new RL_Q( actions, stateVars); //Resource
+		ValueFunction.push_back(new RL_Q( actions, stateVars)); //Resource
 	}
-
+	
 	ClearAllNodes();
 
-	for (int i = 0 ; i < RL_NUM_NODES ; i++) 
+
+	for (int i = 0 ; i < (int)ValueFunction.size() ; i++) 
 	{
+		PreviousFrame.push_back(0);
 		if (i==0)
-			ParentNode[i] = -1; //no parent
+			ParentNode.push_back(-1); //no parent
 		else
-			ParentNode[i] = 0;
+			ParentNode.push_back(0);
 	}
 
 	//Epsilon = 9;
@@ -72,25 +74,28 @@ RL::RL(Game *g, bool HRL)
 RL::~RL()
 {
 	SaveToFile();
-	for ( int i = 0 ; i < RL_NUM_NODES ; i++ )
+	for ( int i = 0 ; i < ValueFunction.size() ; i++ )
 	{
 		delete ValueFunction[i];
-		ValueFunction[i] = NULL;
+		//ValueFunction[i] = NULL;
 		//delete PreviousAction[i];
 		//PreviousAction[i] = NULL;
 		//delete PreviousState[i];
 		//PreviousState[i] = NULL;
 	}
+	ValueFunction.clear();
 }
 
 void RL::ClearAllNodes()
 {
-	for(int i = 0; i < RL_NUM_NODES; i++)
+	PreviousState.clear();
+	PreviousAction.clear();
+	for(int i = 0; i < ValueFunction.size(); i++)
 	{
-		PreviousState[i] = nullState;
-		PreviousAction[i] = nullAction;
+		PreviousState.push_back(nullState);
+		PreviousAction.push_back( nullAction);
 		ValueFunction[i]->Clear();
-	}
+	}	
 }
 
 void RL::LoadFromFile()

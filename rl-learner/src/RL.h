@@ -46,10 +46,10 @@ namespace brainSpace {
 		RL_Action FindBestAction( RL_State &state );
 
 		int currentNode;
-		RL_State PreviousState[RL_NUM_NODES];
-		RL_Action PreviousAction[RL_NUM_NODES];
-		float PreviousFrame[RL_NUM_NODES];
-		int ParentNode[RL_NUM_NODES];
+		vector<RL_State> PreviousState;
+		vector<RL_Action> PreviousAction;
+		vector<float> PreviousFrame;
+		vector<int> ParentNode;
 		float totalReward;
 		bool goalAchieved;
 		int Epsilon;
@@ -59,8 +59,7 @@ namespace brainSpace {
 		void ClearAllNodes();
 		void LoadFromFile();
 		void SaveToFile();
-
-		RL_Q* ValueFunction[RL_NUM_NODES];
+		vector<RL_Q*> ValueFunction;
 	};
 }
 
