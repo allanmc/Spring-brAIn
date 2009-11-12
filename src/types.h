@@ -28,6 +28,7 @@
 #include "ExternalAI/Interface/AISCommands.h"
 #include "Point.h"
 #include "MoveData.h"
+
 namespace brainSpace {
 enum LogTypes {
 	CHAT		= 1<<0,
@@ -91,8 +92,10 @@ namespace brainSpace {
 	class QuadTreeNode;
 	class QuadTree;
 	class RL;
+	class ReinforcementLearningNode;
 	struct RL_Action
 	{
+		ReinforcementLearningNode* Node;
 		int Action;
 		int ID;
 		bool Complex;
@@ -102,6 +105,14 @@ namespace brainSpace {
 			ID = id;
 			Complex = complex;
 		}
+
+		RL_Action( int action, ReinforcementLearningNode* node, bool complex)
+		{
+			Action = action;
+			Node = node;
+			Complex = complex;
+		}
+
 		RL_Action() {}
 		
 		bool operator==(const RL_Action &other) const {

@@ -34,6 +34,9 @@ namespace brainSpace {
 
 
 		RL_Action Update();
+
+		RL_Action UpdateNew();
+
 	private:
 		AIClasses* ai;
 
@@ -45,10 +48,14 @@ namespace brainSpace {
 		RL_Action FindBestAction( RL_State &state );
 
 		int currentNode;
+
 		RL_State PreviousState[RL_NUM_NODES];
 		RL_Action PreviousAction[RL_NUM_NODES];
+		
 		int PreviousFrame[RL_NUM_NODES];
 		int ParentNode[RL_NUM_NODES];
+
+
 		float totalReward;
 		bool goalAchieved;
 		float Epsilon;

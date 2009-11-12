@@ -7,6 +7,13 @@ RL_State::RL_State()
 {
 }
 
+RL_State::RL_State( AIClasses* ai, vector<RL_Action> actions, bool terminal )
+{
+	Actions = actions;
+	this->terminal = terminal;
+}
+
+
 RL_State::RL_State( AIClasses* aiClasses, int node)
 {
 	Node = node;
