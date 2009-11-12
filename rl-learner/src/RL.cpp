@@ -6,27 +6,61 @@
 using namespace brainSpace;
 using namespace std;
 
-RL::RL(Game *g)
+RL::RL(Game *g, bool HRL)
 {	
 	game = g;
 	currentNode = 0;
 	totalReward = 0;
-	nullState = RL_State(game, -1 );
+	hrl = HRL;
+	nullState = RL_State(game, -1, hrl );
 	nullAction = RL_Action( -1, -1, false );
 
-	vector<QStateVar> stateVars;
-	vector<QAction> actions;
-	stateVars.push_back( QStateVar("Lab", RL_LAB_INDEX));
-	stateVars.push_back( QStateVar("Solar", RL_SOLAR_INDEX));
-	stateVars.push_back( QStateVar("Mex", RL_MEX_INDEX));
-	actions.push_back( QAction("Lab", 0));
-	actions.push_back( QAction("Solar", 1));
-	actions.push_back( QAction("Mex", 2));
-	ValueFunction[0] = new RL_Q( actions, stateVars); //root
+	if(!hrl)
+	{
+		vector<QStateVar> stateVars;
+		vector<QAction> actions;
+		stateVars.push_back( QStateVar("Lab", RL_LAB_INDEX));
+		stateVars.push_back( QStateVar("Solar", RL_SOLAR_INDEX));
+		stateVars.push_back( QStateVar("Mex", RL_MEX_INDEX));
+		actions.push_back( QAction("Lab", 0));
+		actions.push_back( QAction("Solar", 1));
+		actions.push_back( QAction("Mex", 2));
+		ValueFunction[0] = new RL_Q( actions, stateVars); //root
+	}
+	else
+	{
+		vector<QStateVar> stateVars;
+		vector<QAction> actions;
+		stateVars.push_back(QStateVar("CBL", 2));
+		stateVars.push_back(QStateVar("EL", 2));
+		actions.push_back(QAction("Production", 0));
+		actions.push_back(QAction("Resource", 1));
+		ValueFunction[0] = new RL_Q( actions, stateVars); //root
+		stateVars.clear();
+		actions.clear();
+		stateVars.push_back(QStateVar("Plant", RL_PLANT_INDEX));
+		stateVars.push_back(QStateVar("Lab", RL_LAB_INDEX));
+		actions.push_back(QAction("Plant", 0));
+		actions.push_back(QAction("Lab", 1));
+		ValueFunction[1] = new RL_Q( actions, stateVars); //Factory
+		stateVars.clear();
+		actions.clear();
+		stateVars.push_back(QStateVar("Mex", RL_MEX_INDEX));
+		stateVars.push_back(QStateVar("Solar", RL_SOLAR_INDEX));
+		actions.push_back(QAction("Mex", 0));
+		actions.push_back(QAction("Solar", 1));
+		ValueFunction[2] = new RL_Q( actions, stateVars); //Resource
+	}
 
 	ClearAllNodes();
 
-	ParentNode[0] = -1; //no parent
+	for (int i = 0 ; i < RL_NUM_NODES ; i++) 
+	{
+		if (i==0)
+			ParentNode[i] = -1; //no parent
+		else
+			ParentNode[i] = 0;
+	}
 
 	//Epsilon = 9;
 	LoadFromFile();
@@ -65,7 +99,10 @@ void RL::LoadFromFile()
 
 	char *path = new char[200];
 	strcpy(path, dir);
-	strcat(path, "qn.bin");
+	if(!hrl)
+		strcat(path, "qn.bin");
+	else
+		strcat(path, "qh.bin");
 
 	FILE* fp = NULL;
 	fp = fopen( path, "rb" );
@@ -75,9 +112,7 @@ void RL::LoadFromFile()
 		//load stuff
 
 		FileHeader fileHeader;
-		ifstream *readFile = new ifstream(path, ios::binary | ios::in);
-		
-		
+		ifstream *readFile = new ifstream(path, ios::binary | ios::in);		
 		
 		readFile->read( (char*)&fileHeader, sizeof(FileHeader) );
 		if (fileHeader.header[0]==FILE_HEADER[0] &&
@@ -104,7 +139,10 @@ void RL::SaveToFile()
 	
 	char *path = new char[200];
 	strcpy(path, dir);
-	strcat(path, "qn.bin");
+	if(!hrl)
+		strcat(path, "qn.bin");
+	else
+		strcat(path, "qh.bin");
 
 	ofstream *file = new ofstream(path, ios::binary | ios::out);
 
@@ -131,7 +169,7 @@ void RL::SaveToFile()
 
 RL_State RL::GetState(int node)
 {
-	return RL_State(game, node);
+	return RL_State(game, node, hrl);
 }
 
 RL_Action RL::FindNextAction( RL_State &state )
@@ -143,12 +181,13 @@ RL_Action RL::FindNextAction( RL_State &state )
 	if ( r <= EPSILON ) //non-greedy
 	{
 		action = stateActions[rand()%stateActions.size()];
+		game->greedy[0]++;
 		
 	}
 	else //greedy
 	{
 		action = FindBestAction(state);
-		
+		game->greedy[1]++;
 	}
 	return action;
 }
@@ -259,10 +298,10 @@ RL_Action RL::Update()
 	if ( state.IsTerminal() )
 	{
 		if(currentNode == 0)
-			reward += 1000;
+			reward += 100;
 		
 		terminal = true;
-		bestFutureValue = 0;//no future actions to take
+		bestFutureValue = reward;//no future actions to take
 	}
 	else
 	{

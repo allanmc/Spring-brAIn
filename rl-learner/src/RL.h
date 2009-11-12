@@ -29,7 +29,7 @@ namespace brainSpace {
 	class RL
 	{
 	public:
-		RL(Game *g);
+		RL(Game *g, bool HRL);
 		virtual ~RL();
 		float GetTotalReward();
 
@@ -39,6 +39,7 @@ namespace brainSpace {
 		Game *game;
 		RL_State nullState;
 		RL_Action nullAction;
+		bool hrl;
 
 		bool FileExists( const char* name );
 		RL_Action FindNextAction( RL_State &state );
@@ -47,7 +48,7 @@ namespace brainSpace {
 		int currentNode;
 		RL_State PreviousState[RL_NUM_NODES];
 		RL_Action PreviousAction[RL_NUM_NODES];
-		int PreviousFrame[RL_NUM_NODES];
+		float PreviousFrame[RL_NUM_NODES];
 		int ParentNode[RL_NUM_NODES];
 		float totalReward;
 		bool goalAchieved;
