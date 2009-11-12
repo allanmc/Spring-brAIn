@@ -9,8 +9,9 @@ Game::Game()
 	unitDefs[RL_SOLAR_ID] = unitdef(145,0,2845);
 	unitDefs[RL_PLANT_ID] = unitdef(743,1853,7192);
 	unitDefs[RL_LAB_ID] = unitdef(605,1130,6760);
-	frame = 0;
 	ResetGame();
+	greedy[0] = 0;
+	greedy[1] = 0;
 }
 
 void Game::ResetGame()
@@ -46,7 +47,7 @@ void Game::ConstructBuilding(int buildingId)
 	}
 	else if(canBuildVal == -1)
 	{
-		float remainingMetalUse = unitDefs[buildingId].metalCost - resources[RL_MEX_ID];
+		float remainingMetalUse = unitDefs[buildingId].metalCost - resources[RL_MEX_ID] - metalTime*GetProduction(RL_MEX_ID);
 		resources[RL_MEX_ID] = 0;
 		resources[RL_SOLAR_ID] += metalTime*productionEnergy;
 		float remainingEnergy = unitDefs[buildingId].energyCost + incomeEnergy*metalTime;
@@ -58,7 +59,7 @@ void Game::ConstructBuilding(int buildingId)
 	}
 	else if(canBuildVal == -2)
 	{
-		float remainingEnergyUse = unitDefs[buildingId].energyCost - resources[RL_SOLAR_ID];
+		float remainingEnergyUse = unitDefs[buildingId].energyCost - resources[RL_SOLAR_ID] - energyTime*GetProduction(RL_SOLAR_ID);
 		resources[RL_MEX_ID] += energyTime*productionMetal;
 		resources[RL_SOLAR_ID] = 0;
 		float remainingMetal = unitDefs[buildingId].metalCost + incomeMetal*energyTime;
@@ -72,12 +73,12 @@ void Game::ConstructBuilding(int buildingId)
 	{
 		if(metalTime < energyTime)
 		{
-			float remainingMetalUse = unitDefs[buildingId].metalCost - resources[RL_MEX_ID];
+			float remainingMetalUse = unitDefs[buildingId].metalCost - resources[RL_MEX_ID] - metalTime*GetProduction(RL_MEX_ID);
 			resources[RL_MEX_ID] = 0;
 			resources[RL_SOLAR_ID] += metalTime*productionEnergy;
 			float remainingEnergy = unitDefs[buildingId].energyCost + incomeEnergy*metalTime;
 			float remainingTime = remainingMetalUse/GetProduction(RL_MEX_ID);
-			float energyProduction = remainingEnergy/remainingTime + GetProduction(RL_SOLAR_ID);
+			float energyProduction = -remainingEnergy/remainingTime + GetProduction(RL_SOLAR_ID);
 			float energyDepletion = GetTimeToDepletion(resources[RL_SOLAR_ID], energyProduction);
 			if(energyDepletion > remainingTime || energyDepletion == -1)
 			{
@@ -88,7 +89,7 @@ void Game::ConstructBuilding(int buildingId)
 			}
 			else
 			{
-				float remainingEnergyUse = remainingEnergy - resources[RL_SOLAR_ID];
+				float remainingEnergyUse = remainingEnergy - resources[RL_SOLAR_ID] - energyTime*GetProduction(RL_SOLAR_ID);
 				resources[RL_SOLAR_ID] = 0;
 				float remainingMetal = unitDefs[buildingId].metalCost + incomeMetal*energyDepletion;
 				float newRemainingTime = remainingEnergyUse/GetProduction(RL_SOLAR_ID);
@@ -101,12 +102,12 @@ void Game::ConstructBuilding(int buildingId)
 		}
 		else
 		{
-			float remainingEnergyUse = unitDefs[buildingId].energyCost - resources[RL_SOLAR_ID];
+			float remainingEnergyUse = unitDefs[buildingId].energyCost - resources[RL_SOLAR_ID] - energyTime*GetProduction(RL_SOLAR_ID);
 			resources[RL_SOLAR_ID] = 0;
 			resources[RL_MEX_ID] += energyTime*productionMetal;
 			float remainingMetal = unitDefs[buildingId].metalCost + incomeMetal*energyTime;
 			float remainingTime = remainingEnergyUse/GetProduction(RL_SOLAR_ID);
-			float metalProduction = remainingMetal/remainingTime + GetProduction(RL_MEX_ID);
+			float metalProduction = -remainingMetal/remainingTime + GetProduction(RL_MEX_ID);
 			float metalDepletion = GetTimeToDepletion(resources[RL_MEX_ID], metalProduction);
 			if(metalDepletion > remainingTime || metalDepletion == -1)
 			{
@@ -117,7 +118,7 @@ void Game::ConstructBuilding(int buildingId)
 			}
 			else
 			{
-				float remainingMetalUse = remainingMetal - resources[RL_MEX_ID];
+				float remainingMetalUse = remainingMetal - resources[RL_MEX_ID] - metalTime*GetProduction(RL_MEX_ID);
 				resources[RL_MEX_ID] = 0;
 				float remainingEnergy = unitDefs[buildingId].energyCost + incomeEnergy*metalDepletion;
 				float newRemainingTime = remainingMetalUse/GetProduction(RL_MEX_ID);
@@ -167,7 +168,7 @@ float Game::GetTimeToDepletion(float current, float production)
 
 float Game::GetProduction(int resourceId)
 {
-	int production = 0;
+	float production = 0;
 	if(resourceId == RL_MEX_ID)
 	{
 		production = RL_MEX_PRODUCTION*buildings[resourceId];

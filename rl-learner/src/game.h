@@ -30,14 +30,16 @@ namespace brainSpace {
 	{
 	public:
 		Game();
+		int greedy[2];
 		int buildings[4];
 		float GetProduction(int resourceId);
 		int CanBuild(int buildingID);
 		void ConstructBuilding(int buildingId);
 		float frame;
 		void ResetGame();
-	private:
 		float resources[2];
+	private:
+		
 		float GetTimeToDepletion(float current, float production);
 		unitdef unitDefs[4];
 	};
