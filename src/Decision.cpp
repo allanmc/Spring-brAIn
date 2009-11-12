@@ -336,6 +336,11 @@ void Decision::UpdateFrindlyPositions()
 
 void Decision::Reset()
 {
+	if ( gameCounter == 40 )
+	{
+		ai->utility->Suicide();
+		return;
+	}
 	resettingGame = true;
 	waitingForCommander = false;
 	extraMoveSent = false;
