@@ -14,6 +14,8 @@
 #define ALPHA 0.1
 #define EPSILON 0.1
 
+#define Q_FILE "qh.bin"
+
 #define FILE_HEADER "QB"
 
 #include "global.h"
@@ -58,8 +60,6 @@ namespace brainSpace {
 		void SaveToFile();
 
 		RL_Q* ValueFunction[RL_NUM_NODES];
-		int NumGreedyActions;
-		int NumNonGreedyActions;
 	};
 }
 

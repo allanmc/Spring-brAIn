@@ -1,4 +1,3 @@
-/*
 #include "RL_State.h"
 #include "RL.h"
 
@@ -8,25 +7,25 @@ RL_State::RL_State()
 {
 }
 
-RL_State::RL_State( AIClasses* aiClasses, int node)
+RL_State::RL_State(Game *g, int node)
 {
+	game = g;
 	Node = node;
-	ai = aiClasses;
 	switch(node)
 	{
 	case 0://root
 		{
-			int labCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armlab");
-			int solarCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armsolar");
-			int mexCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armmex");
+			int labCount = game->buildings[RL_LAB_ID];
+			int solarCount = game->buildings[RL_SOLAR_ID];
+			int mexCount = game->buildings[RL_MEX_ID];
 			terminal = (labCount==4);
 			ID = labCount*RL_MEX_INDEX*RL_SOLAR_INDEX + solarCount*RL_MEX_INDEX + mexCount;
 			if(labCount < 4)
-				Actions.push_back(RL_Action(ai->utility->GetUnitDef("armlab")->GetUnitDefId(),0,false));
+				Actions.push_back(RL_Action(RL_LAB_ID,0,false));
 			if(solarCount < 19)
-				Actions.push_back(RL_Action(ai->utility->GetUnitDef("armsolar")->GetUnitDefId(),1,false));
+				Actions.push_back(RL_Action(RL_SOLAR_ID,1,false));
 			if(mexCount < 19)
-				Actions.push_back(RL_Action(ai->utility->GetUnitDef("armmex")->GetUnitDefId(),2,false));
+				Actions.push_back(RL_Action(RL_MEX_ID,2,false));
 			
 			
 		}break;
@@ -47,7 +46,6 @@ int RL_State::GetID()
 
 vector<RL_Action> RL_State::GetActions()
 {
-	ai->utility->Log(ALL, MISC, "RL_State::GetActions.size = %i", Actions.size());
 	return Actions;
 }
 
@@ -89,8 +87,5 @@ RL_State & RL_State::operator=(const RL_State &rhs)
 	ID = rhs.ID;
 	Node = rhs.Node;
 	terminal = rhs.terminal;
-	ai = rhs.ai;
 	return *this;
 }
-
-*/

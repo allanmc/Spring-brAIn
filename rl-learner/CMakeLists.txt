@@ -1,3 +1,5 @@
 cmake_minimum_required (VERSION 2.6)
 project (rl-learner) 
-add_subdirectory (src) 
+
+AUX_SOURCE_DIRECTORY(src SRCS)
+add_executable (rl-learner ${SRCS})

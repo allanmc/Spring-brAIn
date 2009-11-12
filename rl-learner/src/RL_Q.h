@@ -1,23 +1,36 @@
 #ifndef RL_Q_H
 #define RL_Q_H
 
-
-
-#include "types.h"
 #include "RL_State.h"
+#include <fstream>
+#include <vector>
+#include <iostream>
+#include <string.h>
+#include "RL_Action.h"
 
+using namespace std;
 namespace brainSpace
 {
-
 	struct QStateVar
 	{
 		const char *name;
 		short unsigned int numStates;
+
+		QStateVar(const char *n, short unsigned int ns)
+		{
+			name = n;
+			numStates = ns;
+		}
 	};
 	struct QAction
 	{
 		const char *name;
 		short unsigned int id;
+		QAction(const char *n, short unsigned int i)
+		{
+			name = n;
+			id = i;
+		}
 	};
 
 	struct FileHeaderQAction
@@ -25,7 +38,7 @@ namespace brainSpace
 		short unsigned int nameSize;
 		QAction qAction;
 
-		void LoadFromFile(AIClasses *ai, ifstream *file) 
+		void LoadFromFile(ifstream *file) 
 		{
 			file->read( (char*)&nameSize, sizeof(short unsigned int) );
 			qAction.name = new char[nameSize];
@@ -48,7 +61,7 @@ namespace brainSpace
 		short unsigned int nameSize;
 		QStateVar qStateVar;
 
-		void LoadFromFile(AIClasses *ai, ifstream *file) 
+		void LoadFromFile(ifstream *file) 
 		{
 			file->read( (char*)&nameSize, sizeof(short unsigned int) );
 			qStateVar.name = new char[nameSize];
@@ -89,10 +102,9 @@ namespace brainSpace
 		int numActions;
 		std::vector<QAction> actions;
 		std::vector<QStateVar> stateVars;
-		AIClasses *ai;
 
 	public:
-		RL_Q( AIClasses *aiClasses, vector<QAction> actions, vector<QStateVar> stateVars );
+		RL_Q( vector<QAction> actions, vector<QStateVar> stateVars );
 		~RL_Q();
 
 		void SaveToFile(ofstream *readFile);

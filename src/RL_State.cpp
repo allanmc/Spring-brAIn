@@ -59,11 +59,6 @@ RL_State::RL_State( AIClasses* aiClasses, int node)
 
 RL_State::~RL_State()
 {
-	/*for (int i = 0; i < (int)Actions.size(); i++)
-	{
-		delete Actions[i];
-		Actions[i] = NULL;
-	}*/
 	Actions.clear();
 }
 

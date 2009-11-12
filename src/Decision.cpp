@@ -115,8 +115,9 @@ void Decision::UnitFinished(int unit)
 			//BuildAttackUnit();
 		}
 	}else{
-		ai->utility->Log(ALL, MISC, "Finished with a building");
+		ai->utility->Log(ALL, MISC, "Finished with a building, bc = %i", bc);
 		//add to BuildingController
+		
 		bc->AddBuilding(u);
 		ai->utility->Log(ALL, MISC, "Added building");
 		//BuildAttackUnit();
@@ -346,7 +347,7 @@ void Decision::Reset()
 	extraMoveSent = false;
 	vector<Unit*> units = ai->callback->GetFriendlyUnits();
 	remainingUnits = units.size();
-	ai->utility->ResetGame(&rl);
+	ai->utility->ResetGame(&rl, (gameCounter > 300 ? true : false));
 	ai->utility->ChatMsg("Starting game #%i", gameCounter++);
 	delete ai->knowledge;
 	ai->knowledge = NULL;
@@ -367,6 +368,7 @@ void Decision::Reset()
 	bc = NULL;
 	bc = new BuildingController( ai );
 	ai->utility->Log(ALL, MISC, "Reset() done");
+
 }
 
 void Decision::Update(int frame)
