@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
-
+using System.Collections;
 
 namespace QReader
 {
@@ -37,6 +37,12 @@ namespace QReader
             richTextBox1.Text = str;
         }
 
+        private void appendText(string str)
+        {
+            richTextBox1.AppendText(str);
+        }
+
+
         private void reLoadFile()
         {
 
@@ -62,6 +68,7 @@ namespace QReader
 
             StringBuilder sb = new StringBuilder();
             System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
+            ArrayList highlights = new ArrayList();
             for (int q = 0; q < numQTables; q++)
             {
                 ushort numStates = br.ReadUInt16();
@@ -70,6 +77,7 @@ namespace QReader
                 string[] actions = new string[numActions];
                 string[] stateVarName = new string[numStateVars];
                 ushort[] stateVarStates = new ushort[numStateVars];
+                
                 Console.WriteLine("numActions: " + numActions);
                 for (int a = 0; a < numActions; a++)
                 {
@@ -95,7 +103,7 @@ namespace QReader
                     sb.AppendFormat(" {0,12}", actions[a]);
                 }
                 sb.AppendFormat("\r\n");
-
+                
                 for (int i = 0; i < numStates; i++)
                 {
                     sb.AppendFormat("{0,5}|", i);
@@ -116,25 +124,59 @@ namespace QReader
                     }
 
                     sb.AppendFormat("|");
+
+                    //appendText(sb.ToString());
+                    //sb = new StringBuilder();
+                    float currentMax = -999999;
+                    int index = 0;
+                    int length = 0;
+                    int previousLength = sb.Length;
                     for (int a = 0; a < numActions; a++)
                     {
                         float value = br.ReadSingle();
                         sb.AppendFormat(" {0,12:F2}", value);
-
+                        if (value > currentMax) {
+                            currentMax = value;
+                            length = sb.Length - previousLength;
+                            index = previousLength;
+                        }
+                        previousLength = sb.Length;
                     }
-                    sb.AppendFormat("\r\n");
+                    highlights.Add(new int[2] { index, length });
+                    //int oldLength = richTextBox1.Text.Length;
+                    //appendText(sb.ToString());
+                    //sb = new StringBuilder();
+                    //richTextBox1.Select(oldLength + index, length);
+                    //richTextBox1.SelectionColor = Color.Red;
+                    //richTextBox1.SelectionLength = 0;
+                    sb.AppendFormat("\n");
                 }
-                sb.AppendFormat("\r\n");
+                sb.AppendFormat("\n");
             }
             br.Close();
             s.Close();
             setText(sb.ToString());
+
+            richTextBox1.Hide();
+            Font ourFont = new Font(richTextBox1.Font, FontStyle.Bold | FontStyle.Italic);
+            for (int i = 0 ; i < highlights.Count;i++) {
+                int[] highlight = (int[])highlights[i];
+                //richTextBox1.Select(highlight[0], highlight[1]);
+                richTextBox1.SelectionStart = highlight[0];
+                richTextBox1.SelectionLength = highlight[1];
+                richTextBox1.SelectionColor = Color.Green;
+                richTextBox1.SelectionFont = ourFont;
+            }
+            richTextBox1.BackColor = Color.White;
+            richTextBox1.Show();
+
         }
 
         private void Form1_Shown(object sender, EventArgs e)
         {
             this.Focus();
             richTextBox1.Font = new Font("Courier New", 12);
+            
             OpenFileDialog op;
             op = new OpenFileDialog();
             StringBuilder sb = new StringBuilder();
