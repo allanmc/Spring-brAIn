@@ -79,11 +79,11 @@ RL_State ReinforcementLearningNode::GetState()
 	
 	bool CanBuildLab = (affordable == 0);
 
-	int ID = (CanBuildLab ? 2 : 0) + (EnoughLabs ? 1 : 0);
+	int id = (CanBuildLab ? 2 : 0) + (EnoughLabs ? 1 : 0);
 	vector<RL_Action> actions;
 	actions.push_back(RL_Action(1,0,true));
 	actions.push_back(RL_Action(2,1,true));
-	return RL_State( ai, actions, terminal );
+	return RL_State( ai, actions, id, terminal );
 }
 
 

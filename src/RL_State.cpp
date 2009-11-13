@@ -7,10 +7,11 @@ RL_State::RL_State()
 {
 }
 
-RL_State::RL_State( AIClasses* ai, vector<RL_Action> actions, bool terminal )
+RL_State::RL_State( AIClasses* ai, vector<RL_Action> actions, int id, bool terminal )
 {
 	Actions = actions;
 	this->terminal = terminal;
+	ID = id;
 }
 
 
