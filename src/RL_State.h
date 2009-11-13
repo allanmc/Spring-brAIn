@@ -12,7 +12,7 @@ namespace brainSpace {
 	{
 	public:
 
-		RL_State( AIClasses* ai, vector<RL_Action> actions, bool terminal );
+		RL_State( AIClasses* ai, vector<RL_Action> actions, int id, bool terminal );
 		RL_State( AIClasses* ai, int node );
 		RL_State();
 		virtual ~RL_State();
