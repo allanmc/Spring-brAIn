@@ -79,6 +79,7 @@ RL::RL(Game *g, unsigned short int type)
 	LoadFromFile();
 
 	totalReward = 0.0;
+	buildingToBuild = 0;
 	goalAchieved = false;
 }
 
@@ -200,7 +201,15 @@ void RL::SaveToFile()
 
 RL_State RL::GetState(int node)
 {
-	return RL_State(game, node, type);
+	if (type==2)
+	{
+		return RL_State(game, node, type, this->buildingToBuild);
+	}
+	else 
+	{
+		return RL_State(game, node, type);
+	}
+	
 }
 
 RL_Action RL::FindNextAction( RL_State &state )
@@ -281,6 +290,11 @@ RL_Action RL::SafeNextAction(RL_State &state)
 	}
 	
 	return nullAction;
+}
+
+void RL::setDesireToBuild(int buildingId)
+{
+	this->buildingToBuild = buildingId;
 }
 
 void RL::TakeAction(RL_Action &action)

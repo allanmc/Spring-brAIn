@@ -4,42 +4,61 @@
 #include "RL_Q.h"
 #include "RL_Action.h"
 #include <time.h>
+#include "main.h"
 
 using namespace std;
 using namespace brainSpace;
+
+void ChangeColour(WORD theColour)
+{
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);  // Get handle to standard output
+    SetConsoleTextAttribute(hConsole,theColour);  // set the text attribute of the previous handle
+}
+
+
 int main(int argc, char *argv[])
 {
 	srand(time(NULL));
 	int i = 0;
 	Game *g = new Game();
 	RL *r;
+
+	//ChangeColour(FOREGROUND_GREEN); 
+
 	float bestReward = -1999;
 	while(i < 1000)
 	{
 		r = new RL(g, RL_TYPE);
+		int buildingToBuild = RL_SOLAR_ID;
+		r->setDesireToBuild(buildingToBuild);
 		RL_Action a;
-		a = r->Update();	
+		a = r->Update();
+		
+		//if (i==0) system("pause");
 		//vector<RL_Action> actions;
 		//vector<float> resource1;
 		//vector<float> resource2;
 		//vector<float> rewards;
 		
 		if (RL_TYPE == 2) {//We need to spend some resources
+			//g->ConstructBuilding(RL_LAB_ID);
+			//g->ConstructBuilding(RL_LAB_ID);
+			/*g->ConstructBuilding(RL_LAB_ID);
 			g->ConstructBuilding(RL_LAB_ID);
 			g->ConstructBuilding(RL_LAB_ID);
+			g->ConstructBuilding(RL_LAB_ID);*/
+			//g->ConstructBuilding(RL_LAB_ID);
+			//g->ConstructBuilding(RL_LAB_ID);
+			/*g->ConstructBuilding(RL_MEX_ID);
 			g->ConstructBuilding(RL_MEX_ID);
 			g->ConstructBuilding(RL_MEX_ID);
 			g->ConstructBuilding(RL_MEX_ID);
-			g->ConstructBuilding(RL_MEX_ID);
-			g->ConstructBuilding(RL_MEX_ID);
-			g->ConstructBuilding(RL_MEX_ID);
-			g->ConstructBuilding(RL_MEX_ID);
-			g->ConstructBuilding(RL_MEX_ID);
-			g->ConstructBuilding(RL_MEX_ID);
-			//g->ConstructBuilding(RL_SOLAR_ID);
-			//g->ConstructBuilding(RL_SOLAR_ID);
-			//g->ConstructBuilding(RL_SOLAR_ID);
 			g->ConstructBuilding(RL_SOLAR_ID);
+			g->ConstructBuilding(RL_SOLAR_ID);*/
+			//g->ConstructBuilding(RL_MEX_ID);
+			//g->ConstructBuilding(RL_MEX_ID);
+			//g->ConstructBuilding(RL_MEX_ID);
+			//g->ConstructBuilding(RL_SOLAR_ID);
 		}
 		while(a.ID != -1)
 		{
@@ -64,7 +83,7 @@ int main(int argc, char *argv[])
 		{
 			//cout << "I am building a LAB\n";
 			//float oldFrame = g->frame;
-			g->ConstructBuilding(RL_LAB_ID);
+			g->ConstructBuilding(buildingToBuild);
 			//cout << "Frame duration: " << g->frame - oldFrame << "\n";
 			a = r->Update();
 		} 
@@ -82,8 +101,15 @@ int main(int argc, char *argv[])
 		//	cout << "Totalreward: " << r->GetTotalReward() << "\n\n" ;
 		//}
 
+		if (r->GetTotalReward() >= bestReward)
+		{
+			bestReward = r->GetTotalReward();
+			//system("color 2");
+			ChangeColour(FOREGROUND_GREEN); 
+		}
 		cout << i << "\t" << r->GetTotalReward() << "\n" ;
-
+		ChangeColour(FOREGROUND_RED); 
+		//system("color 7");
 		//if (i%50==0) cout << i << "\t" << r->GetTotalReward() << "\n" ;
 
 		g->ResetGame();
@@ -93,5 +119,5 @@ int main(int argc, char *argv[])
 			//cout << "I:" << i << "\n";
 		i++;
 	}
-	//system("pause");
+	system("pause");
 }

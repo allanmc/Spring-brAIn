@@ -33,12 +33,13 @@ namespace brainSpace {
 		virtual ~RL();
 		float GetTotalReward();
 
-
+		void setDesireToBuild(int buildingId);
 		RL_Action Update();
 	private:
 		Game *game;
 		RL_State nullState;
 		RL_Action nullAction;
+		int buildingToBuild;
 		unsigned short int type;
 
 		bool FileExists( const char* name );
