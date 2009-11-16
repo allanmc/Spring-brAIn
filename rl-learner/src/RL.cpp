@@ -342,10 +342,20 @@ RL_Action RL::Update()
 	float bestFutureValue;
 	if ( state.IsTerminal() || (RL_TYPE==2 && PreviousAction[currentNode].ID==0) )
 	{
-		//cout << "GIVE IT A BONE!";
+		//cout << "GIVE IT A BONE , old reward: " << reward << "\n";
 		if(currentNode == 0)
+		{
 			reward += ( RL_TYPE==2 ? 50 : 100 );
-		
+			if (RL_TYPE==2) 
+			{
+				float curMetalProduction = game->GetProduction(RL_MEX_ID)-game->GetUsage(RL_MEX_ID);
+				float curEnergyProduction = game->GetProduction(RL_SOLAR_ID)-game->GetUsage(RL_SOLAR_ID);
+				curMetalProduction = ( curMetalProduction>0 ? 0 : curMetalProduction);
+				curEnergyProduction = ( curEnergyProduction>0 ? 0 : curEnergyProduction);
+				reward += curMetalProduction*10 + curEnergyProduction;
+				cout << "Random beating: " << (curMetalProduction*10 + curEnergyProduction) << "\n";
+			}
+		}
 		terminal = true;
 		bestFutureValue = reward;//no future actions to take
 	}

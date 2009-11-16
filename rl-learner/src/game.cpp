@@ -29,13 +29,16 @@ void Game::ConstructBuilding(int buildingId)
 {
 	buildings[buildingId]++;
 	float timeToBuild = unitDefs[buildingId].buildTime/(float)COMMANDER_SPEED;
-	float incomeMetal = - unitDefs[buildingId].metalCost/timeToBuild;
-	float incomeEnergy = - unitDefs[buildingId].energyCost/timeToBuild;
+	float incomeMetal = - unitDefs[buildingId].metalCost/timeToBuild - GetUsage(RL_MEX_ID);
+	float incomeEnergy = - unitDefs[buildingId].energyCost/timeToBuild - GetUsage(RL_SOLAR_ID);
 	float productionMetal = incomeMetal + GetProduction(RL_MEX_ID);
 	float productionEnergy = incomeEnergy + GetProduction(RL_SOLAR_ID);
 	
 	float metalTime = GetTimeToDepletion(resources[RL_MEX_ID], productionMetal);
 	float energyTime = GetTimeToDepletion(resources[RL_SOLAR_ID], productionEnergy);
+
+	float metalCost = unitDefs[buildingId].metalCost + GetUsage(RL_MEX_ID)*timeToBuild;
+	float energyCost = unitDefs[buildingId].energyCost + GetUsage(RL_SOLAR_ID)*timeToBuild;
 
 	int canBuildVal = CanBuild(buildingId);
 	if(canBuildVal == 0)
@@ -47,10 +50,10 @@ void Game::ConstructBuilding(int buildingId)
 	}
 	else if(canBuildVal == -1)
 	{
-		float remainingMetalUse = unitDefs[buildingId].metalCost - resources[RL_MEX_ID] - metalTime*GetProduction(RL_MEX_ID);
+		float remainingMetalUse = metalCost - resources[RL_MEX_ID] - metalTime*GetProduction(RL_MEX_ID);
 		resources[RL_MEX_ID] = 0;
 		resources[RL_SOLAR_ID] += metalTime*productionEnergy;
-		float remainingEnergy = unitDefs[buildingId].energyCost + incomeEnergy*metalTime;
+		float remainingEnergy = energyCost + incomeEnergy*metalTime;
 		float remainingTime = remainingMetalUse/GetProduction(RL_MEX_ID);
 		resources[RL_SOLAR_ID] += GetProduction(RL_SOLAR_ID)*remainingTime - remainingEnergy;
 		frame += metalTime+remainingTime;
@@ -59,10 +62,10 @@ void Game::ConstructBuilding(int buildingId)
 	}
 	else if(canBuildVal == -2)
 	{
-		float remainingEnergyUse = unitDefs[buildingId].energyCost - resources[RL_SOLAR_ID] - energyTime*GetProduction(RL_SOLAR_ID);
+		float remainingEnergyUse = energyCost - resources[RL_SOLAR_ID] - energyTime*GetProduction(RL_SOLAR_ID);
 		resources[RL_MEX_ID] += energyTime*productionMetal;
 		resources[RL_SOLAR_ID] = 0;
-		float remainingMetal = unitDefs[buildingId].metalCost + incomeMetal*energyTime;
+		float remainingMetal = metalCost + incomeMetal*energyTime;
 		float remainingTime = remainingEnergyUse/GetProduction(RL_SOLAR_ID);
 		resources[RL_MEX_ID] += GetProduction(RL_MEX_ID)*remainingTime - remainingMetal;
 		frame += energyTime+remainingTime;
@@ -73,10 +76,10 @@ void Game::ConstructBuilding(int buildingId)
 	{
 		if(metalTime < energyTime)
 		{
-			float remainingMetalUse = unitDefs[buildingId].metalCost - resources[RL_MEX_ID] - metalTime*GetProduction(RL_MEX_ID);
+			float remainingMetalUse = metalCost - resources[RL_MEX_ID] - metalTime*GetProduction(RL_MEX_ID);
 			resources[RL_MEX_ID] = 0;
 			resources[RL_SOLAR_ID] += metalTime*productionEnergy;
-			float remainingEnergy = unitDefs[buildingId].energyCost + incomeEnergy*metalTime;
+			float remainingEnergy = energyCost + incomeEnergy*metalTime;
 			float remainingTime = remainingMetalUse/GetProduction(RL_MEX_ID);
 			float energyProduction = -remainingEnergy/remainingTime + GetProduction(RL_SOLAR_ID);
 			float energyDepletion = GetTimeToDepletion(resources[RL_SOLAR_ID], energyProduction);
@@ -91,7 +94,7 @@ void Game::ConstructBuilding(int buildingId)
 			{
 				float remainingEnergyUse = remainingEnergy - resources[RL_SOLAR_ID] - energyTime*GetProduction(RL_SOLAR_ID);
 				resources[RL_SOLAR_ID] = 0;
-				float remainingMetal = unitDefs[buildingId].metalCost + incomeMetal*energyDepletion;
+				float remainingMetal = metalCost + incomeMetal*energyDepletion;
 				float newRemainingTime = remainingEnergyUse/GetProduction(RL_SOLAR_ID);
 				resources[RL_MEX_ID] += GetProduction(RL_MEX_ID)*newRemainingTime - remainingMetal;
 				frame += metalTime + remainingTime + newRemainingTime;
@@ -102,10 +105,10 @@ void Game::ConstructBuilding(int buildingId)
 		}
 		else
 		{
-			float remainingEnergyUse = unitDefs[buildingId].energyCost - resources[RL_SOLAR_ID] - energyTime*GetProduction(RL_SOLAR_ID);
+			float remainingEnergyUse = energyCost - resources[RL_SOLAR_ID] - energyTime*GetProduction(RL_SOLAR_ID);
 			resources[RL_SOLAR_ID] = 0;
 			resources[RL_MEX_ID] += energyTime*productionMetal;
-			float remainingMetal = unitDefs[buildingId].metalCost + incomeMetal*energyTime;
+			float remainingMetal = metalCost + incomeMetal*energyTime;
 			float remainingTime = remainingEnergyUse/GetProduction(RL_SOLAR_ID);
 			float metalProduction = -remainingMetal/remainingTime + GetProduction(RL_MEX_ID);
 			float metalDepletion = GetTimeToDepletion(resources[RL_MEX_ID], metalProduction);
@@ -120,7 +123,7 @@ void Game::ConstructBuilding(int buildingId)
 			{
 				float remainingMetalUse = remainingMetal - resources[RL_MEX_ID] - metalTime*GetProduction(RL_MEX_ID);
 				resources[RL_MEX_ID] = 0;
-				float remainingEnergy = unitDefs[buildingId].energyCost + incomeEnergy*metalDepletion;
+				float remainingEnergy = energyCost + incomeEnergy*metalDepletion;
 				float newRemainingTime = remainingMetalUse/GetProduction(RL_MEX_ID);
 				resources[RL_SOLAR_ID] += GetProduction(RL_SOLAR_ID)*newRemainingTime - remainingEnergy;
 				frame += energyTime + remainingTime + newRemainingTime;
@@ -199,6 +202,17 @@ float Game::GetTimeToDepletion(float current, float production)
 
 }
 
+float Game::GetUsage(int resourceId)
+{
+	 if (resourceId == RL_MEX_ID)
+	 {
+		return buildings[RL_LAB_ID]*ROCKO_M_USE;
+	 }
+	 else
+	 {
+		 return buildings[RL_LAB_ID]*ROCKO_E_USE;
+	 }
+}
 float Game::GetProduction(int resourceId)
 {
 	float production = 0;
@@ -206,11 +220,13 @@ float Game::GetProduction(int resourceId)
 	{
 		production = (float)RL_MEX_PRODUCTION*buildings[resourceId];
 		production += 1.5;
+		//production -= buildings[RL_LAB_ID]*ROCKO_M_USE;//Simulate continuous Rocko production
 	}
 	else
 	{
 		production = (float)RL_SOLAR_PRODUCTION*buildings[resourceId];
 		production += 25;
+		//production -= buildings[RL_LAB_ID]*ROCKO_E_USE;//Simulate continuous Rocko production
 	}	
 	return production;
 }

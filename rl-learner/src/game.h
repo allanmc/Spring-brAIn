@@ -5,9 +5,13 @@
 #define RL_MEX_ID 1
 #define RL_LAB_ID 2
 #define RL_PLANT_ID 3
-#define RL_MEX_PRODUCTION 3
-#define RL_SOLAR_PRODUCTION 20
+#define RL_MEX_PRODUCTION 3.0
+#define RL_SOLAR_PRODUCTION 20.0
 #define COMMANDER_SPEED 300.0
+
+#define ROCKO_BUILDTIME 18.9
+#define ROCKO_M_USE 5.1
+#define ROCKO_E_USE 49.9
 
 #define DISCRETE_STATES 5
 #define DISCRETE_STATES_STEP 400
@@ -46,7 +50,7 @@ namespace brainSpace {
 		float AvailableResources(int resourceId, float time);
 		float BuildingCosts(int resourceId, int buildingID);
 		float BuildTime(int buildingID);
-
+		float GetUsage(int resourceId);
 		float frame;
 		void ResetGame();
 		float resources[2];
