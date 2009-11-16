@@ -50,11 +50,11 @@ RL::RL(Game *g, unsigned short int type)
 		ValueFunction.push_back(new RL_Q( actions, stateVars)); //Resource
 		break;
 	case 2:
-		stateVars.push_back( QStateVar("M-Needs", 10));
-		stateVars.push_back( QStateVar("E-Needs", 10));
-		stateVars.push_back( QStateVar("M-Available", 10));
-		stateVars.push_back( QStateVar("E-Available", 10));
-		actions.push_back( QAction("Done", 0));
+		stateVars.push_back( QStateVar("M-Needs", DISCRETE_STATES));
+		stateVars.push_back( QStateVar("E-Needs", DISCRETE_STATES));
+		stateVars.push_back( QStateVar("M-Available", DISCRETE_STATES));
+		stateVars.push_back( QStateVar("E-Available", DISCRETE_STATES));
+		actions.push_back( QAction("BuildIt", 0));
 		actions.push_back( QAction("Energy", 1));
 		actions.push_back( QAction("Metal", 2));
 		ValueFunction.push_back(new RL_Q( actions, stateVars)); //root
@@ -88,11 +88,6 @@ RL::~RL()
 	for ( unsigned int i = 0 ; i < ValueFunction.size() ; i++ )
 	{
 		delete ValueFunction[i];
-		//ValueFunction[i] = NULL;
-		//delete PreviousAction[i];
-		//PreviousAction[i] = NULL;
-		//delete PreviousState[i];
-		//PreviousState[i] = NULL;
 	}
 	ValueFunction.clear();
 }
@@ -331,10 +326,11 @@ RL_Action RL::Update()
 	//cout << "real-frame: " << game->frame << "\n";
 	//cout << "Reward: " << reward << "\n";
 	float bestFutureValue;
-	if ( state.IsTerminal() )
+	if ( state.IsTerminal() || (RL_TYPE==2 && PreviousAction[currentNode].ID==0) )
 	{
+		//cout << "GIVE IT A BONE!";
 		if(currentNode == 0)
-			reward += 100;
+			reward += ( RL_TYPE==2 ? 50 : 100 );
 		
 		terminal = true;
 		bestFutureValue = reward;//no future actions to take
@@ -346,6 +342,7 @@ RL_Action RL::Update()
 	}
 	if(currentNode == 0)
 	{
+		//cout << "Adding reward: " << reward << ", new total: " << (totalReward+reward) << "\n";
 		totalReward += reward;
 	}
 

@@ -137,6 +137,39 @@ void Game::ConstructBuilding(int buildingId)
 		resources[RL_MEX_ID] = 1000;
 }
 
+short unsigned int Game::GetDiscreteResource(float realValue)
+{
+	for (short unsigned int i = 0; i < DISCRETE_STATES; i++)
+	{
+		if (realValue < DISCRETE_STATES_STEP*(i+1))
+		{
+			return i;
+		}
+	}
+}
+
+float Game::AvailableResources(int resourceId, float time)
+{
+	return resources[resourceId] + GetProduction(resourceId)*time;
+}
+
+float Game::BuildTime(int buildingID)
+{
+	return unitDefs[buildingID].buildTime/(float)COMMANDER_SPEED;
+}
+
+float Game::BuildingCosts(int resourceId, int buildingID)
+{
+	if(resourceId == RL_MEX_ID)
+	{
+		return unitDefs[buildingID].metalCost;
+	}
+	else
+	{
+		return unitDefs[buildingID].energyCost;
+	}
+}
+
 int Game::CanBuild(int buildingID)
 {
 	int retVal = 0;

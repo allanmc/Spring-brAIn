@@ -11,6 +11,13 @@ RL_State::RL_State(Game *g, int node, unsigned short int type)
 {
 	game = g;
 	Node = node;
+
+	if (node == -1)
+	{
+		ID = -1;
+		return;
+	}
+
 	switch (type)
 	{
 	case 0: //Flat old
@@ -69,7 +76,28 @@ RL_State::RL_State(Game *g, int node, unsigned short int type)
 		}
 		break;
 	case 2: //Resource Needs
-		
+		{
+			terminal = false;
+			//float timeToBuild = building->GetBuildTime() / builder->GetBuildSpeed();
+			//float incomeMetal = - (building->GetCost(*metal) / timeToBuild);
+			//float incomeEnergy = - (building->GetCost(*energy) / timeToBuild);
+			//float productionMetal = incomeMetal - economy->GetUsage(*metal) + economy->GetIncome(*metal);
+			//float productionEnergy = incomeEnergy - economy->GetUsage(*energy) + economy->GetIncome(*energy);
+			//float metalStorage = economy->GetCurrent(*metal);
+			//float metalEnergy = economy->GetCurrent(*energy);
+			short unsigned int mNeeds = game->GetDiscreteResource(game->BuildingCosts(RL_MEX_ID, RL_LAB_ID));
+			short unsigned int eNeeds = game->GetDiscreteResource(game->BuildingCosts(RL_SOLAR_ID, RL_LAB_ID));
+			short unsigned int mAvailable = game->GetDiscreteResource(game->AvailableResources(RL_MEX_ID, game->BuildTime(RL_LAB_ID)));
+			short unsigned int eAvailable = game->GetDiscreteResource(game->AvailableResources(RL_SOLAR_ID, game->BuildTime(RL_LAB_ID)));
+			
+			//cout << "State: " << mNeeds << " - " << eNeeds << " - " << mAvailable << " - " << eAvailable << "\n";
+			
+			float dStates = DISCRETE_STATES;
+			ID =  mNeeds*(int)pow(dStates,3) + eNeeds*(int)pow(dStates,2) + mAvailable*(int)pow(dStates,1) + eAvailable;
+			Actions.push_back(RL_Action(-1,0,false));
+			Actions.push_back(RL_Action(RL_SOLAR_ID,1,false));
+			Actions.push_back(RL_Action(RL_MEX_ID,2,false));
+		}
 		break;
 	default:
 		break;

@@ -8,7 +8,14 @@
 #define RL_MEX_PRODUCTION 3
 #define RL_SOLAR_PRODUCTION 20
 #define COMMANDER_SPEED 300.0
+
+#define DISCRETE_STATES 5
+#define DISCRETE_STATES_STEP 400
+
+#define RL_TYPE 2
+
 #include <algorithm>
+#include <math.h>
 
 namespace brainSpace {
 
@@ -35,6 +42,11 @@ namespace brainSpace {
 		float GetProduction(int resourceId);
 		int CanBuild(int buildingID);
 		void ConstructBuilding(int buildingId);
+		short unsigned int GetDiscreteResource(float realValue);
+		float AvailableResources(int resourceId, float time);
+		float BuildingCosts(int resourceId, int buildingID);
+		float BuildTime(int buildingID);
+
 		float frame;
 		void ResetGame();
 		float resources[2];
