@@ -63,18 +63,35 @@ int main(int argc, char *argv[])
 		currentReward += r->GetTotalReward();
 		//cout << "Check: " << i << "\t" << r->GetTotalReward() << "\n" ;
 
-		if (i%2==1) {
+		if (i%4==3) {
 			g->ResetGame();
 
 			if (currentReward >= bestReward)
 			{
 				bestReward = currentReward;
-				ChangeColour(FOREGROUND_GREEN); 
+				ChangeColour(FOREGROUND_INTENSITY | FOREGROUND_GREEN); 
+			} else {
+				ChangeColour(FOREGROUND_INTENSITY | FOREGROUND_RED); 
 			}
+
+			short unsigned int mNeeds = g->GetDiscreteResource(g->BuildingCosts(RL_MEX_ID, buildingToBuild));
+			short unsigned int eNeeds = g->GetDiscreteResource(g->BuildingCosts(RL_SOLAR_ID, buildingToBuild));
+			short unsigned int mAvailable = g->GetDiscreteResource(g->AvailableResources(RL_MEX_ID, g->BuildTime(buildingToBuild)));
+			short unsigned int eAvailable = g->GetDiscreteResource(g->AvailableResources(RL_SOLAR_ID, g->BuildTime(buildingToBuild)));
+			
+			cout << "Current State: " << mNeeds << " - " << eNeeds << " - " << mAvailable << " - " << eAvailable << "\n";
+			
+
 			//if(i%120 == 3)
-				cout << i << "\t" << currentReward << "\n" ;
+			cout << i << "\t" << currentReward << "\n" ;
+
+			if (currentReward >= bestReward)
+			{
+				system("pause");
+			}
+
 			currentReward = 0.0;
-			ChangeColour(FOREGROUND_RED); 
+			ChangeColour(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE); 
 		}
 
 		delete r;

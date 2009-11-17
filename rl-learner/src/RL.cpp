@@ -345,9 +345,9 @@ RL_Action RL::Update()
 		//cout << "GIVE IT A BONE , old reward: " << reward << "\n";
 		if(currentNode == 0)
 		{
-			reward += ( RL_TYPE==2 ? 50 : 100 );
 			if (RL_TYPE==2) 
 			{
+				reward += 50;
 				float curMetalProduction = game->GetProduction(RL_MEX_ID)-game->GetUsage(RL_MEX_ID);
 				float curEnergyProduction = game->GetProduction(RL_SOLAR_ID)-game->GetUsage(RL_SOLAR_ID);
 				curMetalProduction = ( curMetalProduction>0 ? 0 : curMetalProduction);
@@ -355,8 +355,15 @@ RL_Action RL::Update()
 				reward += curMetalProduction*10 + curEnergyProduction;
 				cout << "Random beating: " << (curMetalProduction*10 + curEnergyProduction) << "\n";
 			}
+			else
+			{
+				reward += 100;
+			}
 		}
-		terminal = true;
+		if (RL_TYPE!=2) 
+		{
+			terminal = true;
+		}
 		bestFutureValue = reward;//no future actions to take
 	}
 	else
