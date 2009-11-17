@@ -353,7 +353,7 @@ RL_Action RL::Update()
 				curMetalProduction = ( curMetalProduction>0 ? 0 : curMetalProduction);
 				curEnergyProduction = ( curEnergyProduction>0 ? 0 : curEnergyProduction);
 				reward += curMetalProduction*10 + curEnergyProduction;
-				cout << "Random beating: " << (curMetalProduction*10 + curEnergyProduction) << "\n";
+				//cout << "Random beating: " << (curMetalProduction*10 + curEnergyProduction) << "\n";
 			}
 			else
 			{

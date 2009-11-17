@@ -142,13 +142,15 @@ void Game::ConstructBuilding(int buildingId)
 
 short unsigned int Game::GetDiscreteResource(float realValue)
 {
-	for (short unsigned int i = 0; i < DISCRETE_STATES; i++)
+	short unsigned int i;
+	for (i = 0; i < DISCRETE_STATES; i++)
 	{
 		if (realValue < DISCRETE_STATES_STEP*(i+1))
 		{
 			return i;
 		}
 	}
+	return i;
 }
 
 float Game::AvailableResources(int resourceId, float time)

@@ -13,8 +13,8 @@
 #define ROCKO_M_USE 5.1
 #define ROCKO_E_USE 49.9
 
-#define DISCRETE_STATES 5
-#define DISCRETE_STATES_STEP 400
+#define DISCRETE_STATES 7
+#define DISCRETE_STATES_STEP 300
 
 #define RL_TYPE 2
 
