@@ -32,7 +32,8 @@ int main(int argc, char *argv[])
 	float currentFrame = 0.0;
 	float bestFrame = 999999;
 	int currentIndex = 0;
-	while(i < 2000)
+	short unsigned int runs = 10000;
+	while(i < runs)
 	{
 		r = new RL(g, RL_TYPE);
 		int buildingToBuild = RL_LAB_ID;
@@ -137,8 +138,8 @@ int main(int argc, char *argv[])
 		}
 		delete r;
 		
-		//if(i%100 == 0)
-			//cout << "I:" << i << "\n";
+		if(i%(runs/100) == 0)
+			cerr << "Status:" << round(((i/(double)runs)*100)) << "%\n";
 		i++;
 	}
 	//system("pause");

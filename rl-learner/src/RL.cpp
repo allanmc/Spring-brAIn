@@ -335,7 +335,9 @@ RL_Action RL::Update()
 
 	
 	//Reward
-	float reward = 0; //PreviousFrame[currentNode] - game->frame;
+	float reward;
+	//reward = 0;
+	reward = PreviousFrame[currentNode] - game->frame;
 	//cout << "previousframe: " << PreviousFrame[currentNode] << "\n";
 	//cout << "real-frame: " << game->frame << "\n";
 	//cout << "Reward: " << reward << "\n";
@@ -384,14 +386,14 @@ RL_Action RL::Update()
 		int subNode = PreviousAction[currentNode].Action;
 		float subValue = ValueFunction[subNode]->GetValue(PreviousState[subNode],PreviousAction[subNode]) 
 						+ ALPHA*(
-							reward + pow((double)GAMMA, (double)game->frame - (double)PreviousFrame[currentNode])*bestFutureValue 
+							reward + pow((double)GAMMA, 1*((double)game->frame - (double)PreviousFrame[currentNode]))*bestFutureValue 
 							- ValueFunction[subNode]->GetValue(PreviousState[subNode],PreviousAction[subNode]) );
 		ValueFunction[subNode]->SetValue(PreviousState[subNode],PreviousAction[subNode], subValue);
 	}
 	//update own value function
 	float value = ValueFunction[currentNode]->GetValue(PreviousState[currentNode],PreviousAction[currentNode]) 
 				+ ALPHA*(
-					reward + pow((double)GAMMA, (double)game->frame - (double)PreviousFrame[currentNode])*bestFutureValue 
+					reward + pow((double)GAMMA, 1*((double)game->frame - (double)PreviousFrame[currentNode]))*bestFutureValue 
 					- ValueFunction[currentNode]->GetValue(PreviousState[currentNode],PreviousAction[currentNode]) );
 	ValueFunction[currentNode]->SetValue(PreviousState[currentNode],PreviousAction[currentNode], value);
 	
