@@ -13,13 +13,13 @@ namespace QReader
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
             
             
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Form1 form = new Form1();
+            Form1 form = new Form1(args);
             form.validVersion = 2;
 
             Application.Run(form);
