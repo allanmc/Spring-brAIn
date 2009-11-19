@@ -16,7 +16,7 @@
 #define DISCRETE_STATES 7
 #define DISCRETE_STATES_STEP 300
 
-#define RL_TYPE 2
+#define RL_TYPE 0
 
 #include <algorithm>
 #include <math.h>

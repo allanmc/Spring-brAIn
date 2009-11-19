@@ -27,10 +27,12 @@ int main(int argc, char *argv[])
 
 	bool debug = true;
 
-	float bestReward = -1999;
-	float currentReward = 0.0;
+	//float bestReward = -1999;
+	//float currentReward = 0.0;
+	float currentFrame = 0.0;
+	float bestFrame = 999999;
 	int currentIndex = 0;
-	while(i < 20000)
+	while(i < 2)
 	{
 		r = new RL(g, RL_TYPE);
 		int buildingToBuild = RL_LAB_ID;
@@ -45,7 +47,7 @@ int main(int argc, char *argv[])
 			//g->ConstructBuilding(RL_LAB_ID);
 			//g->ConstructBuilding(RL_LAB_ID);
 		}
-
+/*
 		if (i%4==0) {
 			if (debug) {
 				short unsigned int mNeeds = g->GetDiscreteResource(g->BuildingCosts(RL_MEX_ID, buildingToBuild));
@@ -58,11 +60,11 @@ int main(int argc, char *argv[])
 				ChangeColour(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE); 
 			}
 		}
-
+*/
 		while(a.ID != -1)
 		{
 			if (RL_TYPE==2 && a.ID==0) break;
-			if (debug) cout << (a.Action==RL_MEX_ID?"M":"E");
+			if (debug) cout << (a.Action==RL_MEX_ID?"M":(a.Action == RL_SOLAR_ID ? "E" : "L"));
 
 			float oldFrame = g->frame;
 			g->ConstructBuilding(a.Action);
@@ -72,24 +74,27 @@ int main(int argc, char *argv[])
 		
 		if (RL_TYPE == 2)
 		{
-			if (debug) cout << "L\n";
+			if (debug) cout << "L";
 			g->ConstructBuilding(buildingToBuild);
 			a = r->Update();
 		} 
-		
-		currentReward += r->GetTotalReward();
+		if (debug) cout << "\n";
+		//currentReward += r->GetTotalReward();
 		//cout << "Check: " << i << "\t" << r->GetTotalReward() << "\n" ;
 
-		if (i%4==3) {
+		if (RL_TYPE != 2 || i%4==3) {
+			currentFrame = g->frame;
 			g->ResetGame();
 			currentIndex++;
-			if (currentReward >= bestReward)
+			//if (currentReward >= bestReward)
+			if(currentFrame <= bestFrame)
 			{
-				bestReward = currentReward;
+				//bestReward = currentReward;
 				ChangeColour(FOREGROUND_INTENSITY | FOREGROUND_GREEN); 
 			} else {
 				ChangeColour(FOREGROUND_INTENSITY | FOREGROUND_RED); 
 			}
+			/*
 			if (debug) {
 				short unsigned int mNeeds = g->GetDiscreteResource(g->BuildingCosts(RL_MEX_ID, buildingToBuild));
 				short unsigned int eNeeds = g->GetDiscreteResource(g->BuildingCosts(RL_SOLAR_ID, buildingToBuild));
@@ -97,17 +102,21 @@ int main(int argc, char *argv[])
 				short unsigned int eAvailable = g->GetDiscreteResource(g->AvailableResources(RL_SOLAR_ID, g->BuildTime(buildingToBuild)));
 				
 				cout << "Final State: " << mNeeds << " - " << eNeeds << " - " << mAvailable << " - " << eAvailable << "\n";
-			}
+			}*/
 
 			//if(i%120 == 3)
-			cout << (currentIndex-1) << "\t" << currentReward << "\n" ;
+			//cout << (currentIndex-1) << "\t" << currentReward << "\n" ;
+			cout << (currentIndex-1) << "\t" << currentFrame << (currentFrame == bestFrame ? "*" : "") << "\n" ;
 
-			if (currentReward >= bestReward)
+			//if (currentReward >= bestReward)
+			if(currentFrame <= bestFrame)
 			{
+				bestFrame = currentFrame;
 				if (debug) system("pause");
 			}
 
-			currentReward = 0.0;
+			//currentReward = 0.0;
+			currentFrame = 0.0;
 			ChangeColour(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE); 
 		}
 
