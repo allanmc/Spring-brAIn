@@ -17,19 +17,15 @@ namespace QReader
         private string filePath;
         public ushort validVersion;
 
-        public Form1()
+        public Form1(string[] args)
         {
             InitializeComponent();
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-
-
-        private void richTextBox1_TextChanged(object sender, EventArgs e)
-        {
+            this.richTextBox1.DragEnter += new System.Windows.Forms.DragEventHandler(this.richTextBox1_DragEnter);
+            this.richTextBox1.DragDrop += new System.Windows.Forms.DragEventHandler(this.richTextBox1_DragDrop);
+       
+            if (args.Length>0 && File.Exists(args[0])) {
+                this.filePath = args[0];
+            }
         }
 
         private void setText(string str)
@@ -176,14 +172,16 @@ namespace QReader
         {
             this.Focus();
             richTextBox1.Font = new Font("Courier New", 12);
-            
-            OpenFileDialog op;
-            op = new OpenFileDialog();
-            StringBuilder sb = new StringBuilder();
-            sb.Append("C:\\Program Files\\Spring\\AI\\Skirmish\\brAIn\\0.1");
-            
-            sb.Append("\\qh.bin");
-            filePath = sb.ToString();
+            OpenFileDialog op = new OpenFileDialog();
+
+            if (filePath=="") {
+                StringBuilder sb = new StringBuilder();
+                sb.Append("C:\\Program Files\\Spring\\AI\\Skirmish\\brAIn\\0.1");
+                
+                sb.Append("\\qh.bin");
+                filePath = sb.ToString();
+            }
+
             Boolean b = File.Exists(filePath);
             if (!b)
             {         
@@ -213,6 +211,37 @@ namespace QReader
             this.Focus();
             filePath = op.FileName;
             reLoadFile();
+        }
+         
+        private void richTextBox1_DragEnter(object sender, DragEventArgs e)
+        {
+            // make sure they're actually dropping files (not text or anything else)
+            if (e.Data.GetDataPresent(DataFormats.FileDrop, false) == true)
+            {
+                // allow them to continue
+                // (without this, the cursor stays a "NO" symbol
+                e.Effect = DragDropEffects.All;
+            }
+        }
+
+        private void richTextBox1_DragDrop(object sender, DragEventArgs e)
+        {
+            // transfer the filenames to a string array
+            // (yes, everything to the left of the "=" can be put in the 
+            // foreach loop in place of "files", but this is easier to understand.)
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+            // loop through the string array, adding each filename to the ListBox
+            if (files.Length>0) {
+                filePath = files[0];
+                reLoadFile();
+            }
+            /*foreach (string file in files)
+            {
+                Console.WriteLine(file);
+            }*/
+            e.Effect = DragDropEffects.None;
+
         }
     }
 }
