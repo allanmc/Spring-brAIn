@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 	float currentFrame = 0.0;
 	float bestFrame = 999999;
 	int currentIndex = 0;
-	while(i < 2)
+	while(i < 2000)
 	{
 		r = new RL(g, RL_TYPE);
 		int buildingToBuild = RL_LAB_ID;
@@ -120,9 +120,9 @@ int main(int argc, char *argv[])
 			g->ResetGame();
 			
 			//if(i%120 == 3)
-			//cout << (currentIndex-1) << "\t" << currentReward << "\n" ;
-			cout << (currentIndex-1) << "\t" << currentFrame << (currentFrame == bestFrame ? "*" : "") << "\n" ;
-			currentIndex++;
+			//cout << currentIndex-1 << "\t" << currentReward << "\n" ;
+			cout << currentIndex++ << "\t" << currentFrame << (currentFrame == bestFrame && debug ? "*" : "") << "\n" ;
+			//currentIndex++;
 
 			//if (currentReward >= bestReward)
 			if(currentFrame <= bestFrame)

@@ -10,7 +10,7 @@
 
 #define RL_NUM_NODES 1
 
-#define GAMMA 0.9
+#define GAMMA 0.99
 #define ALPHA 0.1
 #define EPSILON 0.1
 
