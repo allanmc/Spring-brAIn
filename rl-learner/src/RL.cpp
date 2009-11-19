@@ -360,10 +360,10 @@ RL_Action RL::Update()
 				reward += 100;
 			}
 		}
-		if (RL_TYPE!=2) 
-		{
+		//if (RL_TYPE!=2) 
+		//{
 			terminal = true;
-		}
+		//}
 		bestFutureValue = reward;//no future actions to take
 	}
 	else

@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 
 	//ChangeColour(FOREGROUND_GREEN); 
 
-	bool debug = true;
+	bool debug = false;
 
 	//float bestReward = -1999;
 	//float currentReward = 0.0;
@@ -50,13 +50,21 @@ int main(int argc, char *argv[])
 /*
 		if (i%4==0) {
 			if (debug) {
-				short unsigned int mNeeds = g->GetDiscreteResource(g->BuildingCosts(RL_MEX_ID, buildingToBuild));
-				short unsigned int eNeeds = g->GetDiscreteResource(g->BuildingCosts(RL_SOLAR_ID, buildingToBuild));
-				short unsigned int mAvailable = g->GetDiscreteResource(g->AvailableResources(RL_MEX_ID, g->BuildTime(buildingToBuild)));
-				short unsigned int eAvailable = g->GetDiscreteResource(g->AvailableResources(RL_SOLAR_ID, g->BuildTime(buildingToBuild)));
+				float mNeeds_raw = g->BuildingCosts(RL_MEX_ID, buildingToBuild);
+				short unsigned int mNeeds = g->GetDiscreteResource(mNeeds_raw);
+				float eNeeds_raw = g->BuildingCosts(RL_SOLAR_ID, buildingToBuild);
+				short unsigned int eNeeds = g->GetDiscreteResource(eNeeds_raw);
+				float mAvailable_raw = g->AvailableResources(RL_MEX_ID, g->BuildTime(buildingToBuild));
+				short unsigned int mAvailable = g->GetDiscreteResource(mAvailable_raw);
+				float eAvailable_raw = g->AvailableResources(RL_SOLAR_ID, g->BuildTime(buildingToBuild));
+				short unsigned int eAvailable = g->GetDiscreteResource(eAvailable_raw);
 			
 				ChangeColour(FOREGROUND_INTENSITY | FOREGROUND_BLUE); 
-				cout << "Initial State: " << mNeeds << " - " << eNeeds << " - " << mAvailable << " - " << eAvailable << "\n";
+				cout << "Initial State: ";
+				cout << mNeeds << "(" << mNeeds_raw << ") - ";
+				cout << eNeeds << "(" << eNeeds_raw << ") - ";
+				cout << mAvailable << "(" << mAvailable_raw << ") - ";
+				cout << eAvailable << "(" << eAvailable_raw << ")\n";
 				ChangeColour(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE); 
 			}
 		}
@@ -84,8 +92,6 @@ int main(int argc, char *argv[])
 
 		if (RL_TYPE != 2 || i%4==3) {
 			currentFrame = g->frame;
-			g->ResetGame();
-			currentIndex++;
 			//if (currentReward >= bestReward)
 			if(currentFrame <= bestFrame)
 			{
@@ -96,17 +102,27 @@ int main(int argc, char *argv[])
 			}
 			/*
 			if (debug) {
-				short unsigned int mNeeds = g->GetDiscreteResource(g->BuildingCosts(RL_MEX_ID, buildingToBuild));
-				short unsigned int eNeeds = g->GetDiscreteResource(g->BuildingCosts(RL_SOLAR_ID, buildingToBuild));
-				short unsigned int mAvailable = g->GetDiscreteResource(g->AvailableResources(RL_MEX_ID, g->BuildTime(buildingToBuild)));
-				short unsigned int eAvailable = g->GetDiscreteResource(g->AvailableResources(RL_SOLAR_ID, g->BuildTime(buildingToBuild)));
-				
-				cout << "Final State: " << mNeeds << " - " << eNeeds << " - " << mAvailable << " - " << eAvailable << "\n";
+				float mNeeds_raw = g->BuildingCosts(RL_MEX_ID, buildingToBuild);
+				short unsigned int mNeeds = g->GetDiscreteResource(mNeeds_raw);
+				float eNeeds_raw = g->BuildingCosts(RL_SOLAR_ID, buildingToBuild);
+				short unsigned int eNeeds = g->GetDiscreteResource(eNeeds_raw);
+				float mAvailable_raw = g->AvailableResources(RL_MEX_ID, g->BuildTime(buildingToBuild));
+				short unsigned int mAvailable = g->GetDiscreteResource(mAvailable_raw);
+				float eAvailable_raw = g->AvailableResources(RL_SOLAR_ID, g->BuildTime(buildingToBuild));
+				short unsigned int eAvailable = g->GetDiscreteResource(eAvailable_raw);
+ 
+				cout << "Final State: ";
+				cout << mNeeds << "(" << mNeeds_raw << ") - ";
+				cout << eNeeds << "(" << eNeeds_raw << ") - ";
+				cout << mAvailable << "(" << mAvailable_raw << ") - ";
+				cout << eAvailable << "(" << eAvailable_raw << ")\n";
 			}*/
-
+			g->ResetGame();
+			
 			//if(i%120 == 3)
 			//cout << (currentIndex-1) << "\t" << currentReward << "\n" ;
 			cout << (currentIndex-1) << "\t" << currentFrame << (currentFrame == bestFrame ? "*" : "") << "\n" ;
+			currentIndex++;
 
 			//if (currentReward >= bestReward)
 			if(currentFrame <= bestFrame)
@@ -119,8 +135,8 @@ int main(int argc, char *argv[])
 			currentFrame = 0.0;
 			ChangeColour(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE); 
 		}
-
 		delete r;
+		
 		//if(i%100 == 0)
 			//cout << "I:" << i << "\n";
 		i++;

@@ -179,14 +179,16 @@ int Game::CanBuild(int buildingID)
 {
 	int retVal = 0;
 	float timeToBuild = unitDefs[buildingID].buildTime/(float)COMMANDER_SPEED;
-	float incomeMetal = - unitDefs[buildingID].metalCost/timeToBuild;
-	float incomeEnergy = - unitDefs[buildingID].energyCost/timeToBuild;
+
+	float incomeMetal = - unitDefs[buildingID].metalCost/timeToBuild - GetUsage(RL_MEX_ID);
+	float incomeEnergy = - unitDefs[buildingID].energyCost/timeToBuild - GetUsage(RL_SOLAR_ID);
+
 	float productionMetal = incomeMetal + GetProduction(RL_MEX_ID);
 	float productionEnergy = incomeEnergy + GetProduction(RL_SOLAR_ID);
 	
 	float metalTime = GetTimeToDepletion(resources[RL_MEX_ID], productionMetal);
 	float energyTime = GetTimeToDepletion(resources[RL_SOLAR_ID], productionEnergy);
-	
+
 	retVal += (metalTime>=0 && metalTime<timeToBuild ? -1 : 0);
 	retVal += (energyTime>=0 && energyTime<timeToBuild ? -2 : 0);
 
