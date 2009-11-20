@@ -18,6 +18,12 @@
 
 #define RL_TYPE 0
 
+#define RL_FILE_DELETE true
+#define RL_FILE_PATH ""
+#define RL_FILE_1 "qn.bin"
+#define RL_FILE_2 "qh.bin"
+#define RL_FILE_3 "qr.bin"
+
 #include <algorithm>
 #include <math.h>
 

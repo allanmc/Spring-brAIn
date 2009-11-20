@@ -25,6 +25,18 @@ int main(int argc, char *argv[])
 
 	//ChangeColour(FOREGROUND_GREEN); 
 
+	//Delete old Q-file?
+	if (RL_FILE_DELETE) 
+	{
+		const char* dir = RL_FILE_PATH;
+		char *path = new char[200];
+		strcpy(path, dir);
+		strcat(path,	(RL_TYPE==0 ? RL_FILE_1 :
+						(RL_TYPE==1 ? RL_FILE_2 :
+						(RL_TYPE==2 ? RL_FILE_3 : ""))));
+		remove(path);
+
+	}
 	bool debug = false;
 
 	cout << (USE_QSMDP ? "QSMDP" : "Q");

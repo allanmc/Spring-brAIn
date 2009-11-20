@@ -115,13 +115,13 @@ void RL::LoadFromFile()
 	switch(type)
 	{
 	case 0:
-		strcat(path, "qn.bin");
+		strcat(path, RL_FILE_1);
 		break;
 	case 1:
-		strcat(path, "qh.bin");
+		strcat(path, RL_FILE_2);
 		break;
 	case 2:
-		strcat(path, "qr.bin");
+		strcat(path, RL_FILE_3);
 		break;
 	default:
 		break;
@@ -158,20 +158,20 @@ void RL::LoadFromFile()
 
 void RL::SaveToFile()
 {
-	const char* dir = "";
+	const char* dir = RL_FILE_PATH;
 	
 	char *path = new char[200];
 	strcpy(path, dir);
 	switch(type)
 	{
 	case 0:
-		strcat(path, "qn.bin");
+		strcat(path, RL_FILE_1);
 		break;
 	case 1:
-		strcat(path, "qh.bin");
+		strcat(path, RL_FILE_2);
 		break;
 	case 2:
-		strcat(path, "qr.bin");
+		strcat(path, RL_FILE_3);
 		break;
 	default:
 		break;
