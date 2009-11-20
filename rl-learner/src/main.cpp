@@ -27,6 +27,14 @@ int main(int argc, char *argv[])
 
 	bool debug = false;
 
+	cout << (USE_QSMDP ? "QSMDP" : "Q");
+	if(USE_RS_TIME || USE_RS_LABS || USE_BACKTRACKING)
+		cout << " w/ ";
+	if(USE_RS_TIME || USE_RS_LABS)
+		printf("Reward Shaping(%s%s)",(USE_RS_TIME ? (USE_RS_LABS ? "Time,":"Time") : ""), (USE_RS_LABS ? "Labs" : "") );
+	if(USE_BACKTRACKING)
+		cout << (USE_RS_TIME || USE_RS_LABS ? " & ": "") << "Backtracking";
+	cout << "\n";
 	//float bestReward = -1999;
 	//float currentReward = 0.0;
 	float currentFrame = 0.0;
@@ -122,8 +130,8 @@ int main(int argc, char *argv[])
 			
 			//if(i%120 == 3)
 			//cout << currentIndex-1 << "\t" << currentReward << "\n" ;
-			cout << currentIndex++ << "\t" << currentFrame << (currentFrame == bestFrame && debug ? "*" : "") << "\n" ;
-			//currentIndex++;
+			cout << currentFrame << (currentFrame == bestFrame && debug ? "*" : "") << "\n" ;
+			currentIndex++;
 
 			//if (currentReward >= bestReward)
 			if(currentFrame <= bestFrame)
@@ -138,8 +146,8 @@ int main(int argc, char *argv[])
 		}
 		delete r;
 		
-		if(i%(runs/100) == 0)
-			cerr << "Status:" << round(((i/(double)runs)*100)) << "%\n";
+		if(runs > 100 && i%(runs/100) == 0)
+			cerr << "Status:" << floor(((i/(double)runs)*100)+0.5) << "%\xd";
 		i++;
 	}
 	//system("pause");

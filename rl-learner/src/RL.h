@@ -10,6 +10,12 @@
 
 #define RL_NUM_NODES 1
 
+
+#define USE_QSMDP true
+#define USE_RS_TIME true
+#define USE_RS_LABS true
+#define USE_BACKTRACKING true
+
 #define GAMMA 0.99
 #define ALPHA 0.1
 #define EPSILON 0.1
@@ -25,6 +31,24 @@
 using namespace std;
 
 namespace brainSpace {	
+	
+	struct DataPoint
+	{
+		RL_State prevState;
+		RL_Action prevAction;
+		RL_State resultState;
+		float reward;
+		float duration;
+
+		DataPoint(RL_State ps, RL_Action pa, RL_State rs, float r, float d)
+		{
+			prevState = ps;
+			prevAction = pa;
+			resultState = rs;
+			reward = r;
+			duration = d;
+		}
+	};
 
 	class RL
 	{
@@ -37,6 +61,7 @@ namespace brainSpace {
 		RL_Action Update();
 	private:
 		Game *game;
+		vector<DataPoint> dataTrail;
 		RL_State nullState;
 		RL_Action nullAction;
 		int buildingToBuild;

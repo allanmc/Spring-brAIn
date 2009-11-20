@@ -64,7 +64,7 @@ RL::RL(Game *g, unsigned short int type)
 	}
 	
 	ClearAllNodes();
-
+	dataTrail.clear();
 
 	for (int i = 0 ; i < (int)ValueFunction.size() ; i++) 
 	{
@@ -91,6 +91,7 @@ RL::~RL()
 		delete ValueFunction[i];
 	}
 	ValueFunction.clear();
+	dataTrail.clear();
 }
 
 void RL::ClearAllNodes()
@@ -336,8 +337,12 @@ RL_Action RL::Update()
 	
 	//Reward
 	float reward;
-	//reward = 0;
-	reward = PreviousFrame[currentNode] - game->frame;
+	reward = 0;
+	if (USE_RS_TIME) reward = PreviousFrame[currentNode] - game->frame;
+
+	if(USE_RS_LABS && PreviousAction[currentNode].Action == RL_LAB_ID)
+		reward += 10;
+
 	//cout << "previousframe: " << PreviousFrame[currentNode] << "\n";
 	//cout << "real-frame: " << game->frame << "\n";
 	//cout << "Reward: " << reward << "\n";
@@ -386,17 +391,34 @@ RL_Action RL::Update()
 		int subNode = PreviousAction[currentNode].Action;
 		float subValue = ValueFunction[subNode]->GetValue(PreviousState[subNode],PreviousAction[subNode]) 
 						+ ALPHA*(
-							reward + pow((double)GAMMA, 1*((double)game->frame - (double)PreviousFrame[currentNode]))*bestFutureValue 
+						reward + pow((double)GAMMA, (USE_QSMDP?0:1)+(USE_QSMDP?1:0)*((double)game->frame - (double)PreviousFrame[currentNode]))*bestFutureValue 
 							- ValueFunction[subNode]->GetValue(PreviousState[subNode],PreviousAction[subNode]) );
 		ValueFunction[subNode]->SetValue(PreviousState[subNode],PreviousAction[subNode], subValue);
 	}
 	//update own value function
 	float value = ValueFunction[currentNode]->GetValue(PreviousState[currentNode],PreviousAction[currentNode]) 
 				+ ALPHA*(
-					reward + pow((double)GAMMA, 1*((double)game->frame - (double)PreviousFrame[currentNode]))*bestFutureValue 
+					reward + pow((double)GAMMA, (USE_QSMDP?0:1)+(USE_QSMDP?1:0)*((double)game->frame - (double)PreviousFrame[currentNode]))*bestFutureValue 
 					- ValueFunction[currentNode]->GetValue(PreviousState[currentNode],PreviousAction[currentNode]) );
 	ValueFunction[currentNode]->SetValue(PreviousState[currentNode],PreviousAction[currentNode], value);
 	
+	if(USE_BACKTRACKING)
+	{
+		//backtrack hack
+		for(int i = dataTrail.size()-1; i>=0; i--)
+		{
+			RL_Action bestAction = FindBestAction( dataTrail[i].resultState );
+			float bestFutureValue = ValueFunction[currentNode]->GetValue(dataTrail[i].resultState, bestAction);
+			value = ValueFunction[currentNode]->GetValue(dataTrail[i].prevState, dataTrail[i].prevAction)
+					+ ALPHA*(
+						dataTrail[i].reward + pow((double)GAMMA, (USE_QSMDP?0:1)+(USE_QSMDP?1:0)*((double)dataTrail[i].duration))*bestFutureValue 
+						- ValueFunction[currentNode]->GetValue(dataTrail[i].prevState, dataTrail[i].prevAction) );
+			ValueFunction[currentNode]->SetValue(dataTrail[i].prevState, dataTrail[i].prevAction, value);
+		}
+		//add the current to the dataTrail
+		dataTrail.push_back(DataPoint(PreviousState[currentNode], PreviousAction[currentNode], state, reward, game->frame - PreviousFrame[currentNode]));
+	}
+
 	if ( terminal )
 	{
 		if(ParentNode[currentNode] == -1)//root check
