@@ -10,18 +10,18 @@
 
 #define RL_NUM_NODES 1
 
-#define USE_QSMDP true
+#define USE_QSMDP false
 #define USE_RS_TIME true
 #define USE_RS_LABS false
-#define USE_BACKTRACKING true
+#define USE_BACKTRACKING false
 
 //zero means infinite
 #define BACKTRACKING_STEPS 0
 
-#define GAMMA 0.99
+#define GAMMA 0.9
 #define ALPHA 0.1
 #define EPSILON_START 0.1
-#define EPSILON_DECAY 0.9999
+#define EPSILON_DECAY 1
 
 #define FILE_HEADER "QB"
 

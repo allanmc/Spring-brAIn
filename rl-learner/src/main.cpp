@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 	}
 	bool debug = false;
 
-	cout << (USE_QSMDP ? "QSMDP" : "Q");
+	cout << (USE_QSMDP ? "SMDPQ" : "Q");
 	if(USE_RS_TIME || USE_RS_LABS || USE_BACKTRACKING)
 		cout << " w/ ";
 	if(USE_RS_TIME || USE_RS_LABS)
@@ -49,11 +49,11 @@ int main(int argc, char *argv[])
 		cout << (USE_RS_TIME || USE_RS_LABS ? " & ": "") << "Backtracking(" << (BACKTRACKING_STEPS > 0 ? BACKTRACKING_STEPS : "Infinte") <<")";
 	cout << "\n";
 	//float bestReward = -1999;
-	//float currentReward = 0.0;
+	float currentReward = 0.0;
 	float currentFrame = 0.0;
 	float bestFrame = 999999;
 	int currentIndex = 0;
-	short unsigned int runs = 10000;
+	short unsigned int runs = 6766;
 	while(i < runs)
 	{
 		r = new RL(g, RL_TYPE, currentEpsilon);
@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
 			a = r->Update();
 		} 
 		if (debug) cout << "\n";
-		//currentReward += r->GetTotalReward();
+		currentReward += r->GetTotalReward();
 		//cout << "Check: " << i << "\t" << r->GetTotalReward() << "\n" ;
 
 		if (RL_TYPE != 2 || i%4==3) {
@@ -142,8 +142,8 @@ int main(int argc, char *argv[])
 			g->ResetGame();
 			
 			//if(i%120 == 3)
-			//cout << currentIndex-1 << "\t" << currentReward << "\n" ;
-			cout << currentFrame << (currentFrame == bestFrame && debug ? "*" : "") << "\n" ;
+			cout << currentReward << "\n" ;
+			//cout << currentFrame << (currentFrame == bestFrame && debug ? "*" : "") << "\n" ;
 			currentIndex++;
 
 			//if (currentReward >= bestReward)
@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
 				if (debug) system("pause");
 			}
 
-			//currentReward = 0.0;
+			currentReward = 0.0;
 			currentFrame = 0.0;
 			ChangeColour(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE); 
 		}
