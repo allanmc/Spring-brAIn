@@ -15,9 +15,13 @@
 #define USE_RS_LABS false
 #define USE_BACKTRACKING true
 
+//zero means infinite
+#define BACKTRACKING_STEPS 0
+
 #define GAMMA 0.99
 #define ALPHA 0.1
-#define EPSILON 0.1
+#define EPSILON_START 0.1
+#define EPSILON_DECAY 0.9999
 
 #define FILE_HEADER "QB"
 
@@ -52,7 +56,7 @@ namespace brainSpace {
 	class RL
 	{
 	public:
-		RL(Game *g, unsigned short int type);
+		RL(Game *g, unsigned short int type, double epsilon);
 		virtual ~RL();
 		float GetTotalReward();
 
@@ -85,6 +89,8 @@ namespace brainSpace {
 		void LoadFromFile();
 		void SaveToFile();
 		vector<RL_Q*> ValueFunction;
+
+		double EPSILON;
 	};
 }
 

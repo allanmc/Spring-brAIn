@@ -18,6 +18,7 @@ void ChangeColour(WORD theColour)
 
 int main(int argc, char *argv[])
 {
+	double currentEpsilon = EPSILON_START;
 	srand(time(NULL));
 	int i = 0;
 	Game *g = new Game();
@@ -45,7 +46,7 @@ int main(int argc, char *argv[])
 	if(USE_RS_TIME || USE_RS_LABS)
 		printf("Reward Shaping(%s%s)",(USE_RS_TIME ? (USE_RS_LABS ? "Time,":"Time") : ""), (USE_RS_LABS ? "Labs" : "") );
 	if(USE_BACKTRACKING)
-		cout << (USE_RS_TIME || USE_RS_LABS ? " & ": "") << "Backtracking";
+		cout << (USE_RS_TIME || USE_RS_LABS ? " & ": "") << "Backtracking(" << (BACKTRACKING_STEPS > 0 ? BACKTRACKING_STEPS : "Infinte") <<")";
 	cout << "\n";
 	//float bestReward = -1999;
 	//float currentReward = 0.0;
@@ -55,7 +56,7 @@ int main(int argc, char *argv[])
 	short unsigned int runs = 10000;
 	while(i < runs)
 	{
-		r = new RL(g, RL_TYPE);
+		r = new RL(g, RL_TYPE, currentEpsilon);
 		int buildingToBuild = RL_LAB_ID;
 		r->setDesireToBuild(buildingToBuild);
 		RL_Action a;
@@ -161,6 +162,8 @@ int main(int argc, char *argv[])
 		if(runs > 100 && i%(runs/100) == 0)
 			cerr << "Status:" << floor(((i/(double)runs)*100)+0.5) << "%\xd";
 		i++;
+
+		currentEpsilon *= EPSILON_DECAY;
 	}
 	//system("pause");
 }
