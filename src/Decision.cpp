@@ -400,7 +400,7 @@ void Decision::EnemyDestroyed(int enemy, int attacker)
 
 	BattleInfoInstance->EnemyDestroyed( unit, attackerUnit );
 
-	if (defPointer->GetWeaponMounts().size()>0) 
+	if (d->GetWeaponMounts().size()>0) 
 	{
 		ai->knowledge->enemyInfo->armyInfo->RemoveUnit(unit);
 	}
