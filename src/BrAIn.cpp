@@ -1,5 +1,4 @@
 #include "BrAIn.h"
-#include "CurrentCommand.h"
 
 using namespace std;
 using namespace springai;
@@ -110,34 +109,8 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 			{
 				ai->utility->Log(IMPORTANT,EVENT,"I GOT A MOVE FAILED!!!!! WARNING, THIS SHALL NEVER HAPPEN!!!!!");
 				struct SUnitMoveFailedEvent* evt = (struct SUnitMoveFailedEvent*)data;
-				ai->utility->Log(ALL,MISC,"I GOT A MOVE FAILED! Unit id: %d",evt->unit);
-				////ai->utility->ChatMsg("I GOT A MOVE FAILED! Unit id: %d",evt->unit);
-				//Unit* u = Unit::GetInstance(ai->callback, evt->unit);
-				//vector<CurrentCommand*> cmds = u->GetCurrentCommands();
-				//ai->utility->Log(ALL,MISC,"Commander pos: %f, %f", u->GetPos().x, u->GetPos().z);
-				//ai->utility->Log(ALL,MISC,"Commander buildrange: %f", u->GetDef()->GetBuildDistance());
-				//for (list<SAIFloat3>::const_iterator it = ai->utility->wayPoints.begin(); it != ai->utility->wayPoints.end(); ++it)
-				//{
-				//	SAIFloat3 retPos;
-				//	retPos = *it;
-				//	ai->utility->Log(ALL,MISC,"Latest path: %f,%f", retPos.x, retPos.z );
-
-				//}
-				//for(int i = 0; i<cmds.size(); i++)
-				//{
-				//	vector<float> params = cmds[i]->GetParams();
-				//	ai->utility->Log(ALL,MISC,"Cmd %d: %d",i, cmds[i]->GetId());
-
-				//	for(int j = 0; j<params.size(); j++)
-				//	{
-				//		ai->utility->Log(ALL,MISC,"Param %d: %f",j, params[j]);
-				//	}
-				//}
-				//ai->knowledge->mapInfo->pathfindingMap->PrintSection(u->GetPos());
-				//SPauseCommand lala;
-				//lala.enable = true;
-				//lala.reason = "fordi vi kan";
-				//ai->callback->GetEngine()->HandleCommand(0,-1,COMMAND_PAUSE,&lala);
+				//ai->utility->Log(ALL,MISC,"I GOT A MOVE FAILED! Unit id: %d",evt->unit);
+				//ai->utility->ChatMsg("I GOT A MOVE FAILED! Unit id: %d",evt->unit);
 				break;
 			}
 		case EVENT_UNIT_DAMAGED:
@@ -214,18 +187,8 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 			{
 				struct SCommandFinishedEvent* evt = (struct SCommandFinishedEvent*)data;
 				ai->utility->Log(ALL,MISC,"command finished, id: %d, unit: %d",  evt->commandTopicId, evt->unitId);
-				vector<CurrentCommand*> cmds = ai->commander->GetCurrentCommands();
-				ai->utility->Log(ALL,MISC,"Commander pos: %f, %f", ai->commander->GetPos().x, ai->commander->GetPos().z);
-				/*for(int i = 0; i<cmds.size(); i++)
-				{
-					vector<float> params = cmds[i]->GetParams();
-					ai->utility->Log(ALL,MISC,"Cmd %d: %d",i, cmds[i]->GetId());
-
-					for(int j = 0; j<params.size(); j++)
-					{
-						ai->utility->Log(ALL,MISC,"Param %d: %f",j, params[j]);
-					}
-				}*/
+				Unit *u = Unit::GetInstance(ai->callback, evt->unitId);
+				ai->utility->Log(ALL, MISC, "Unit: %s", u->GetDef()->GetName());
 				break;
 			}
 		case EVENT_LOAD:

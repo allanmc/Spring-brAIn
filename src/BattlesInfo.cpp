@@ -13,12 +13,14 @@ BattlesInfo::BattlesInfo( AIClasses* aiClasses )
 
 BattlesInfo::~BattlesInfo()
 {
+	ai->utility->Log(ALL,MISC, "Start deleting battlesinfo");
 	for ( list<Battle*>::iterator iter = CurrentBattles.begin() ; iter != CurrentBattles.end() ; iter++ )
 	{
 		delete *iter;
 		*iter = NULL;
 	}
 	CurrentBattles.clear();
+	ai->utility->Log(ALL,MISC, "middle deleting battlesinfo");
 	//OldBattles
 	for ( list<Battle*>::iterator iter = OldBattles.begin() ; iter != OldBattles.end() ; iter++ )
 	{
@@ -26,6 +28,7 @@ BattlesInfo::~BattlesInfo()
 		*iter = NULL;
 	}
 	OldBattles.clear();
+	ai->utility->Log(ALL,MISC, "done deleting battlesinfo");
 }
 
 

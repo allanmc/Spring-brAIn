@@ -1,7 +1,7 @@
 #ifndef _BRAINSPACE_BRAINMATH_H
 #define _BRAINSPACE_BRAINMATH_H
 
-#include "global.h"
+#include "types.h"
 #include "QuadTreeNode.h"
 #include <algorithm>
 

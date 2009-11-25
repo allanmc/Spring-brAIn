@@ -1,7 +1,7 @@
 #ifndef _BRAINSPACE_GROUPCONTROLLER_H
 #define _BRAINSPACE_GROUPCONTROLLER_H
 
-#include "global.h"
+#include "types.h"
 #include "ConstructionGroupManager.h"
 #include "MilitaryGroupManager.h"
 #include "BrainGroup.h"
@@ -23,6 +23,10 @@ namespace brainSpace {
 
 		void ScoutWithIdleGroup();
 		void AttackWithGroup(int enemy);
+		void MoveGroupToPosition(SAIFloat3 pos);
+	
+		ConstructionGroupManager* GetConstructionGroupMgr();
+		MilitaryGroupManager* GetMilitaryGroupMgr();
 
 	private:
 		ConstructionGroupManager* ConstructionGroupMgr;

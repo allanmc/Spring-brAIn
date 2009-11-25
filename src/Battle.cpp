@@ -1,4 +1,5 @@
 #include "Battle.h"
+#include "Knowledge.h"
 
 using namespace std;
 using namespace springai;

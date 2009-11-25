@@ -5,7 +5,7 @@
 #define RADIUS_BUFFER 300
 #define BATTLE_TIMEOUT 400
 
-#include "global.h"
+#include "types.h"
 
 namespace brainSpace
 {

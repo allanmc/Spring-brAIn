@@ -1,4 +1,5 @@
 #include "RL.h"
+#include <iostream>
 
 
 
@@ -9,33 +10,53 @@ using namespace springai;
 RL::RL( AIClasses* aiClasses)
 {	
 	ai = aiClasses;
-	
+	accumulatedReward = 0;
 	currentNode = 0;
 	totalReward = 0;
-	nullState = RL_State( ai, -1 );
+	nullState = RL_State(ai, -1 );
 	nullAction = RL_Action( -1, -1, false );
+	vector<QStateVar> stateVars;
+	vector<QAction> actions;
+	ai->utility->Log(ALL,MISC, "begin statevars");
 
-	vector<QStateVar> stateVars (3);
-	vector<QAction> actions (3);
-	stateVars[0] = (QStateVar){"Lab", RL_LAB_INDEX};
-	stateVars[1] = (QStateVar){"Solar", RL_SOLAR_INDEX};
-	stateVars[2] = (QStateVar){"Mex", RL_MEX_INDEX};
-	actions[0] = (QAction){"Lab", 0};
-	actions[1] = (QAction){"Solar", 1};
-	actions[2] = (QAction){"Mex", 2};
-	ValueFunction[0] = new RL_Q(ai, actions, stateVars); //root
+	stateVars.push_back( QStateVar("eap/odp", 4));
+	stateVars.push_back( QStateVar("oap/edp", 4));
+	stateVars.push_back( QStateVar("Mexprof", 4));
+	stateVars.push_back( QStateVar("Enerprof", 4));
+	stateVars.push_back( QStateVar("scoutknow", 3));
+	stateVars.push_back( QStateVar("productionPower", 5));
+	stateVars.push_back( QStateVar("CommanderDead", 3));
+	ai->utility->Log(ALL,MISC, "begin actions");
+	actions.push_back( QAction("Solar", 0));
+	actions.push_back( QAction("Mex", 1));
+	actions.push_back( QAction("Lab", 2));
+	actions.push_back( QAction("Plant", 3));
+	actions.push_back( QAction("flea", 4));
+	actions.push_back( QAction("rocko", 5));
+	actions.push_back( QAction("hammer", 6));
+	actions.push_back( QAction("flash", 7));
+	actions.push_back( QAction("jeffy", 8));
+	actions.push_back( QAction("shellshocker", 9));
+	actions.push_back( QAction("attack base", 10));
+	actions.push_back( QAction("attack weak", 11));
+	//actions.push_back( QAction("guard commander", 12));
+	//actions.push_back( QAction("guard weak", 13));
+	actions.push_back( QAction("scout", 12));
+	ai->utility->Log(ALL,MISC, "begin valuefunc");
+	ValueFunction.push_back(new RL_Q( ai, actions, stateVars)); //root	
 
-	ClearAllNodes();
-
-	for (int i = 0 ; i < RL_NUM_NODES ; i++) 
+	ai->utility->Log(ALL,MISC, "begin frame");
+	for (int i = 0 ; i < (int)ValueFunction.size() ; i++) 
 	{
+		PreviousFrame.push_back(0);
 		if (i==0)
-			ParentNode[i] = -1; //no parent
+			ParentNode.push_back(-1); //no parent
 		else
-			ParentNode[i] = 0;
+			ParentNode.push_back(0);
 	}
-
-	//Epsilon = 9;
+	ai->utility->Log(ALL,MISC, "begin clear");	
+	ClearAllNodes();
+	ai->utility->Log(ALL,MISC, "begin loadfromfile");
 	LoadFromFile();
 
 	totalReward = 0.0;
@@ -47,7 +68,7 @@ RL::~RL()
 	ai->utility->Log(ALL, MISC, "Saving file");
 	SaveToFile();
 	ai->utility->Log(ALL, MISC, "File saved");
-	for ( int i = 0 ; i < RL_NUM_NODES ; i++ )
+	for ( int i = 0 ; i < ValueFunction.size() ; i++ )
 	{
 		ai->utility->Log(ALL, MISC, "Deleting ValueFunction[%i]", i);
 		delete ValueFunction[i];
@@ -70,12 +91,14 @@ RL::~RL()
 
 void RL::ClearAllNodes()
 {
-	for(int i = 0; i < RL_NUM_NODES; i++)
+	PreviousState.clear();
+	PreviousAction.clear();
+	for(unsigned int i = 0; i < ValueFunction.size(); i++)
 	{
-		PreviousState[i] = nullState;
-		PreviousAction[i] = nullAction;
+		PreviousState.push_back(nullState);
+		PreviousAction.push_back( nullAction);
 		ValueFunction[i]->Clear();
-	}
+	}	
 }
 
 void RL::LoadFromFile()
@@ -86,7 +109,11 @@ void RL::LoadFromFile()
 
 	char *path = new char[200];
 	strcpy(path, dir);
-	strcat(path, Q_FILE);
+	strcat(path,"qn");
+	char buffer[2];
+	sprintf(buffer, "%d", ai->callback->GetTeamId());
+	strcat(path, buffer);
+	strcat(path, ".bin");
 
 	FILE* fp = NULL;
 	fp = fopen( path, "rb" );
@@ -126,7 +153,11 @@ void RL::SaveToFile()
 	
 	char *path = new char[200];
 	strcpy(path, dir);
-	strcat(path, Q_FILE);
+	strcat(path,"qn");
+	char buffer[2];
+	sprintf(buffer, "%d", ai->callback->GetTeamId());
+	strcat(path, buffer);
+	strcat(path, ".bin");
 
 	ofstream *file = new ofstream(path, ios::binary | ios::out);
 
@@ -162,7 +193,7 @@ RL_Action RL::FindNextAction( RL_State &state )
 	vector<RL_Action> stateActions = state.GetActions();
 	RL_Action action = stateActions[0]; //unitdefID
 	
-	float r = rand() / (float)RAND_MAX;
+	int r = rand()%100;
 	if ( r <= EPSILON ) //non-greedy
 	{
 		action = stateActions[rand()%stateActions.size()];
@@ -211,8 +242,6 @@ RL_Action RL::FindBestAction( RL_State &state )
 	}
 	ai->utility->Log(ALL, MISC, "Hax action: action->ID = %i, action->Action = %i", stateActions[0].ID, stateActions[0].Action);
 	ai->utility->Log(ALL, MISC, "Reutning from GetAction, with action->ID = %i, action->Action = %i", action.ID, action.Action);
-	if (action.ID < 0 || action.ID > 2)
-		exit(0);
 	return action;
 }
 
@@ -298,14 +327,27 @@ RL_Action RL::Update()
 	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() before reward");
 
 	//Reward
-	float reward = -(ai->frame - PreviousFrame[currentNode]) / 30.0;
+	float reward = 0;
+	if(PreviousAction[currentNode].ID < 10)
+	{
+		reward -= (ai->frame - PreviousFrame[currentNode]) / 30.0;
+	}
+	reward += accumulatedReward;
+	accumulatedReward = 0;
 	float bestFutureValue;
 	if ( state.IsTerminal() )
 	{
 		ai->utility->Log(LOG_DEBUG, LOG_RL, "terminal set");
-		if(currentNode == 0)
-			reward += 100;
-		
+		if(ai->commanderDead == -1)
+		{
+			//not good, bad reward
+			reward -= 1000;
+		}
+		else if(ai->commanderDead == 1)
+		{
+			//great, we won!
+			reward += 1000;
+		}
 		terminal = true;
 		bestFutureValue = 0;//no future actions to take
 	}
@@ -321,7 +363,7 @@ RL_Action RL::Update()
 		totalReward += reward;
 	}
 
-	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() reward set");
+	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() reward set, %f", reward);
 
 	//if complex then update the childs value funtion
 	if(PreviousAction[currentNode].Complex)
@@ -387,3 +429,77 @@ RL_Action RL::Update()
 	}
 }
 
+void RL::AddReward(float r)
+{
+	accumulatedReward += r;
+}
+
+bool RL::ShouldIUpdate()
+{
+	switch(PreviousAction[currentNode].ID)
+	{
+	case RL_Solar:
+		{
+		}
+	case RL_Mex:
+		{
+		}
+	case RL_Lab:
+		{
+		}
+	case RL_Plant:
+		{
+			return ai->knowledge->groupManager->ConstructionGroupIsIdle();
+		}
+	case RL_flea:
+	case RL_rocko:
+	case RL_hammer:
+		{
+			map<int, struct UnitInformationContainer> units = ai->knowledge->selfInfo->baseInfo->GetUnits();
+			//ai->knowledge->groupManager->GetMilitaryGroupMgr()->
+			map<int, struct UnitInformationContainer>::iterator it;
+			for(it = units.begin();it != units.end(); it++)
+			{
+				if(strcmp((*it).second.def->GetName(), "armlab") == 0)
+				{
+					if(Unit::GetInstance(ai->callback, (*it).first)->GetCurrentCommands().size() > 0)
+						return false;
+				}
+			}
+			return true;
+		}
+	case RL_flash:
+	case RL_jeffy:
+	case RL_shellshocker:
+		{
+			map<int, struct UnitInformationContainer> units = ai->knowledge->selfInfo->baseInfo->GetUnits();
+			map<int, struct UnitInformationContainer>::iterator it;
+			for(it = units.begin();it != units.end(); it++)
+			{
+				if(strcmp((*it).second.def->GetName(), "armvp") == 0)
+				{
+					if(Unit::GetInstance(ai->callback, (*it).first)->GetCurrentCommands().size() > 0)
+						return false;
+				}
+			}
+			return true;
+		}
+	case RL_attack_base:
+	case RL_attack_weak:
+		{
+			if(ai->knowledge->groupManager->GetMilitaryGroupMgr()->GetNumAttackingGroups() > 0)
+				return false;
+			return true;
+		}
+	case RL_scout:
+		{
+			if(ai->knowledge->groupManager->GetMilitaryGroupMgr()->GetNumScoutingGroups() > 0)
+				return false;
+			return true;
+		}
+	default:
+		{
+			return true;
+		}
+	}
+}

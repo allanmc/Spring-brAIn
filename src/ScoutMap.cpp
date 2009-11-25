@@ -14,6 +14,23 @@ ScoutMap::~ScoutMap()
 {
 }
 
+float ScoutMap::GetScoutedPercentageWithinSeconds(int i)
+{
+	int frame = ai->frame - i*30;
+	int c = 0;
+	for(int j = 0; j < MapWidth; j++)
+	{
+		for(int z = 0; z < MapHeight; z++)
+		{
+			if( (int)MapArray[z*MapWidth + j] > frame)
+			{
+				c++;
+			}
+		}
+	}
+	return (c/MapWidth*MapHeight*100);
+}
+
 ///updates the map depending on all friendly units LOS
 void ScoutMap::Update()
 {

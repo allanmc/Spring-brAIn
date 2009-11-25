@@ -3,7 +3,7 @@
 
 #include <set>
 #include "BrainGroup.h"
-#include "global.h"
+#include "types.h"
 #include "MilitaryUnitGroup.h"
 #include "Point.h"
 
@@ -27,18 +27,25 @@ namespace brainSpace
 
 		MilitaryGroupManager( AIClasses* aiClasses );
 		virtual ~MilitaryGroupManager();
-
+		void GuardUnit(Unit* unit);
 		void AddUnit( Unit* unit );
 		void RemoveUnit( Unit* unit );
 		void GiveScoutOrder(MilitaryUnitGroup* group);
 		void GiveAttackOrder(MilitaryUnitGroup* group, int enemy );
-		vector<MilitaryUnitGroup*> GetIdleGroups();
+		vector<MilitaryUnitGroup*> GetIdleAttackGroups();
+		vector<MilitaryUnitGroup*> GetIdleScoutGroups();
 		void UnitIdle(Unit* unit );
-		vector<MilitaryUnitGroup*> GetNonAttackingGroups();
-
+		bool IsAttackGroupAvailable();
+		bool IsScoutGroupAvailable();
+		void GiveMoveOrder(MilitaryUnitGroup* group, SAIFloat3 pos);
+		int GetNumAttackingGroups();
+		int GetNumScoutingGroups();
+		bool IsAllAttackGroupsIdle();
+		bool IsAllScoutGroupsIdle();
 		
 	private:
 		vector<MilitaryUnitGroup*> UnitGroups;
+		vector<MilitaryUnitGroup*> ScoutGroups;
 		AIClasses* ai;
 	};
 }

@@ -35,6 +35,8 @@ namespace brainSpace
 
 		int CountDefensive();
 		int CountAggressive();
+		float GetAggresiveDps();
+		float GetDefensiveDps();
 
 	private:
 		AIClasses* ai;
@@ -42,6 +44,7 @@ namespace brainSpace
 		map<int,UnitDef*> knownUnitDefs;
 		
 		int aggressive, defensive;
+		float aggressiveDps, defensiveDps;
 	};
 }
 

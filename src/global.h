@@ -1,7 +1,7 @@
 #ifndef _BRAIN_GLOBAL_H
 #define _BRAIN_GLOBAL_H
 
-#define LOG_TYPE (PATHFIND)
+#define LOG_TYPE (MISC|PATHFIND|LOG_RL|EVENT|GROUPING|SCOUTING|UTILITY|SLOPEMAP|QUADTREE)
 #define LOG_LEVEL ALL
 
 #include "types.h"
@@ -17,7 +17,6 @@ using namespace std;
 using namespace springai;
 using namespace brainSpace;
 */
-
 
 #include "BrainMath.h"
 #include "Knowledge.h"

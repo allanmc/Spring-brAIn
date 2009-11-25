@@ -160,3 +160,78 @@ int BaseInfo::CountBuildingsByName( const char* name )
 	}
 	return count;
 }
+
+vector< vector<SAIFloat3> > BaseInfo::GetBases()
+{
+	KMedoids *km = new KMedoids( ai );
+	vector<SAIFloat3> points;
+	
+	map<int, UnitInformationContainer> units = quadTree->GetUnits();
+	map<int, UnitInformationContainer>::iterator iter;
+	
+	for ( iter = units.begin() ; iter != units.end() ; iter++ )
+	{
+		SAIFloat3 pos = (*iter).second.pos;
+		points.push_back(pos);
+	}
+
+	km->AddPoints(points);
+
+	vector< vector<SAIFloat3> > clusters = km->GetClusters();
+	delete km;
+	km = NULL;
+	return clusters;
+}
+
+Unit* BaseInfo::GetWeakestBaseBuilding()
+{
+	vector< vector<SAIFloat3> > bases = GetBases();
+	SAIFloat3 startpos = ai->callback->GetMap()->GetStartPos();
+	SAIFloat3 best;
+	float bestthreat = 99999;
+	
+	for(int i = 0; i < bases.size(); i++)
+	{
+		for(int j = 0; j < bases[i].size(); j++)
+		{
+			float current = ai->knowledge->mapInfo->threatMap->GetThreatAtPos(bases[i][j]);
+			if(current < bestthreat)
+			{
+				best = bases[i][j];
+				bestthreat = current;
+			}
+		}
+	}
+	vector<Unit*> units = GetUnitsInRange(best, 5);
+	if(units.size() < 1)
+		return NULL;
+	return units[0];
+}
+Unit* BaseInfo::GetNearestBaseBuilding()
+{
+	vector< vector<SAIFloat3> > bases = GetBases();
+	SAIFloat3 startpos = ai->callback->GetMap()->GetStartPos();
+	SAIFloat3 best;
+	double bestdist = 99999;
+	for(int i = 0; i < bases.size(); i++)
+	{
+		for(int j = 0; j < bases[i].size(); j++)
+		{
+			double current = ai->utility->EuclideanDistance(bases[i][j], startpos);
+			if(current < bestdist)
+			{
+				best = bases[i][j];
+				bestdist = current;
+			}
+		}
+	}
+	vector<Unit*> units = GetUnitsInRange(best, 5);
+	if(units.size() < 1)
+		return NULL;
+	return units[0];
+}
+
+const map<int, struct UnitInformationContainer> BaseInfo::GetUnits()
+{
+	return quadTree->GetUnits();
+}

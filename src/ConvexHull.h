@@ -1,7 +1,7 @@
 #ifndef _CONVEXHULL_H
 #define _CONVEXHULL_H
 
-#include "global.h"
+#include "types.h"
 #include <algorithm>
 
 
