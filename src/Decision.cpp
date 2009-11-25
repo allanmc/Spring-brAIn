@@ -275,18 +275,23 @@ void Decision::UnitDestroyed(int unit, int attacker)
 	BattleInfoInstance->UnitDestroyed( destroyee, destroyer );
 	UnitDef* d = destroyee->GetDef();
 
-	if(d->IsCommander())
-	{
-		ai->commanderDead = -1;
-		UpdateRL();
-	}
+
 
 	if ( d == NULL )
 		ai->utility->Log( LOG_DEBUG, DECISION, "UnitDestroyed: UnitDef was null" );
 	else if ( d->GetUnitDefId() == -1 )
 		ai->utility->Log( LOG_DEBUG, DECISION, "UnitDestroyed: Unitdef was -1" );
 	else
+	{
 		rl->AddReward(-ai->utility->GetDpsFromUnitDef(d));
+		ai->utility->Log( LOG_DEBUG, DECISION, "UnitDestroyed: Unitdef was %s",d->GetName() );
+	}
+
+	if(d->IsCommander())
+	{
+		ai->commanderDead = -1;
+		UpdateRL();
+	}
 
 	vector<WeaponMount*> wpmt = d->GetWeaponMounts();
 
@@ -364,20 +369,24 @@ void Decision::EnemyDestroyed(int enemy, int attacker)
 	Unit* unit = Unit::GetInstance(ai->callback, enemy);
 	Unit* attackerUnit = Unit::GetInstance( ai->callback, attacker );
 	UnitDef* d = unit->GetDef();
-	
-	if(d->IsCommander())
-	{
-		ai->utility->Log( LOG_DEBUG, DECISION, "EnemyDestroyed: commander" );
-		ai->commanderDead = 1;
-		UpdateRL();
-	}
+
 
 	if ( d == NULL )
 		ai->utility->Log( LOG_DEBUG, DECISION, "EnemyDestroyed: UnitDef was null" );
 	else if ( d->GetUnitDefId() == -1 )
 		ai->utility->Log( LOG_DEBUG, DECISION, "EnemyDestroyed: Unitdef was -1" );
 	else
+	{
+		ai->utility->Log( LOG_DEBUG, DECISION, "EnemyDestroyed: Unitdef was %s",d->GetName() );
 		rl->AddReward(ai->utility->GetDpsFromUnitDef(d));
+	}
+
+	if(d->IsCommander())
+	{
+		ai->utility->Log( LOG_DEBUG, DECISION, "EnemyDestroyed: commander" );
+		ai->commanderDead = 1;
+		UpdateRL();
+	}
 
 
 	UnitDef* defPointer = NULL;
