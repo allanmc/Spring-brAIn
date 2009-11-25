@@ -26,12 +26,16 @@ brainSpace::BrAIn::~BrAIn()
 {
 	delete decision;
 	decision = NULL;
+	ai->utility->Log(ALL, MISC, "Decision delete...");
 	delete ai->knowledge;
 	ai->knowledge = NULL;
+	ai->utility->Log(ALL, MISC, "knowledge delete...");
 	delete ai->math;
 	ai->math = NULL;
+	ai->utility->Log(ALL, MISC, "math delete...");
 	delete ai->utility;
 	ai->utility = NULL;
+	ai->utility->Log(ALL, MISC, "utility delete...");
 	delete ai;
 	ai = NULL;
 }
