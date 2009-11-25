@@ -274,7 +274,6 @@ void Decision::UnitDestroyed(int unit, int attacker)
 	Unit* destroyer = Unit::GetInstance( ai->callback, attacker );
 	BattleInfoInstance->UnitDestroyed( destroyee, destroyer );
 	UnitDef* d = destroyee->GetDef();
-	rl->AddReward(-ai->utility->GetDpsFromUnitDef(d));
 
 	if(d->IsCommander())
 	{
@@ -286,6 +285,9 @@ void Decision::UnitDestroyed(int unit, int attacker)
 		ai->utility->Log( LOG_DEBUG, DECISION, "UnitDestroyed: UnitDef was null" );
 	else if ( d->GetUnitDefId() == -1 )
 		ai->utility->Log( LOG_DEBUG, DECISION, "UnitDestroyed: Unitdef was -1" );
+	else
+		rl->AddReward(-ai->utility->GetDpsFromUnitDef(d));
+
 	vector<WeaponMount*> wpmt = d->GetWeaponMounts();
 
 	if (wpmt.size()>0) 
@@ -362,7 +364,7 @@ void Decision::EnemyDestroyed(int enemy, int attacker)
 	Unit* unit = Unit::GetInstance(ai->callback, enemy);
 	Unit* attackerUnit = Unit::GetInstance( ai->callback, attacker );
 	UnitDef* d = unit->GetDef();
-	rl->AddReward(ai->utility->GetDpsFromUnitDef(d));
+	
 	if(d->IsCommander())
 	{
 		ai->utility->Log( LOG_DEBUG, DECISION, "EnemyDestroyed: commander" );
@@ -374,6 +376,8 @@ void Decision::EnemyDestroyed(int enemy, int attacker)
 		ai->utility->Log( LOG_DEBUG, DECISION, "EnemyDestroyed: UnitDef was null" );
 	else if ( d->GetUnitDefId() == -1 )
 		ai->utility->Log( LOG_DEBUG, DECISION, "EnemyDestroyed: Unitdef was -1" );
+	else
+		rl->AddReward(ai->utility->GetDpsFromUnitDef(d));
 
 
 	UnitDef* defPointer = NULL;
