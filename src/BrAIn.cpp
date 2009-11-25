@@ -35,7 +35,6 @@ brainSpace::BrAIn::~BrAIn()
 	ai->utility->Log(ALL, MISC, "math delete...");
 	delete ai->utility;
 	ai->utility = NULL;
-	ai->utility->Log(ALL, MISC, "utility delete...");
 	delete ai;
 	ai = NULL;
 }
