@@ -369,11 +369,21 @@ void Decision::EnemyDestroyed(int enemy, int attacker)
 	Unit* unit = Unit::GetInstance(ai->callback, enemy);
 	Unit* attackerUnit = Unit::GetInstance( ai->callback, attacker );
 	UnitDef* d = unit->GetDef();
-
-
 	if ( d == NULL )
-		ai->utility->Log( LOG_DEBUG, DECISION, "EnemyDestroyed: UnitDef was null" );
-	else if ( d->GetUnitDefId() == -1 )
+	{
+		d = ai->knowledge->enemyInfo->armyInfo->GetUnitDef( unit->GetUnitId() );
+	}
+	if ( d == NULL ) //Unknown unit type: we never saw it, just killed it :D
+	{
+		return;
+		/*
+		ai->knowledge->enemyInfo->armyInfo->RemoveUnit( unit );
+		ai->knowledge->enemyInfo->baseInfo->RemoveBuilding( unit );
+		return;
+		*/
+	}
+	
+	if ( d->GetUnitDefId() == -1 )
 		ai->utility->Log( LOG_DEBUG, DECISION, "EnemyDestroyed: Unitdef was -1" );
 	else
 	{
@@ -388,26 +398,7 @@ void Decision::EnemyDestroyed(int enemy, int attacker)
 		UpdateRL();
 	}
 
-
-	UnitDef* defPointer = NULL;
-
 	BattleInfoInstance->EnemyDestroyed( unit, attackerUnit );
-
-	if ( unit->GetDef() == NULL )
-	{
-		defPointer = ai->knowledge->enemyInfo->armyInfo->GetUnitDef( unit->GetUnitId() );
-	}
-	else defPointer = unit->GetDef();
-
-	if ( defPointer == NULL ) //Unknown unit type: we never saw it, just killed it :D
-	{
-		return;
-		/*
-		ai->knowledge->enemyInfo->armyInfo->RemoveUnit( unit );
-		ai->knowledge->enemyInfo->baseInfo->RemoveBuilding( unit );
-		return;
-		*/
-	}
 
 	if (defPointer->GetWeaponMounts().size()>0) 
 	{
