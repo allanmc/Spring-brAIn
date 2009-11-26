@@ -148,7 +148,7 @@ void BattlesInfo::SomeoneDamaged( int our, int their )
 	if ( b != NULL )
 	{
 		b->SomeoneDamaged();
-		if ( !b->Contains( their ) )
+		if ( !b->Contains( their ) && their != -1)
 			b->UnitEnteredBattle( their, true );
 		return;
 	}
@@ -159,7 +159,7 @@ void BattlesInfo::SomeoneDamaged( int our, int their )
 		if ( b != NULL )
 		{
 			b->UnitEnteredBattle( our, false );
-			if ( !b->Contains( their ) )
+			if ( !b->Contains( their ) && their != -1)
 				b->UnitEnteredBattle( their, true );
 			return;
 		}
@@ -168,7 +168,8 @@ void BattlesInfo::SomeoneDamaged( int our, int their )
 		//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "New battle. Frame %d. Pos (%f, %f)", ai->frame, our->GetPos().x, our->GetPos().z );
 		b = new Battle( ai, ourU->GetPos() );
 		b->UnitEnteredBattle( our, false );
-		b->UnitEnteredBattle( their, true );
+		if(their != -1)
+			b->UnitEnteredBattle( their, true );
 		CurrentBattles.push_back( b );
 	}
 }

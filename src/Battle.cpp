@@ -82,6 +82,8 @@ void Battle::UnitEnteredBattle( int unitID, bool enemy )
 {
 	ai->utility->Log(ALL, KNOWLEDGE, "UnitEnteredBattle start");
 	Unit *u = Unit::GetInstance(ai->callback, unitID);
+	if(u == NULL)
+		ai->utility->Log(ALL, KNOWLEDGE, "UnitEnteredBattle: WTF, unit is NULL? id: %d, enemy: %d", unitID, enemy);
 	UnitInformationContainer container;
 	container.def = u->GetDef();
 	container.pos = u->GetPos();
