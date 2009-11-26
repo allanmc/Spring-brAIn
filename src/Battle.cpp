@@ -97,8 +97,9 @@ void Battle::UnitEnteredBattle( int unitID, bool enemy )
 		ai->utility->Log(ALL, KNOWLEDGE, "UnitEnteredBattle Unitdef = NULL");
 		//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "defID was -1" );
 		UnitDef* def = ai->knowledge->enemyInfo->armyInfo->GetUnitDef( unitID );
-		if ( def != NULL && def->GetUnitDefId() != -1 )
+		if ( def != NULL )
 		{
+			ai->utility->Log(ALL, KNOWLEDGE, "UnitEnteredBattle Unitdef = %s", def->GetName());
 			container.def = def;
 			//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "Def updated!" );
 		}

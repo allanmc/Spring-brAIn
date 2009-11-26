@@ -122,6 +122,7 @@ UnitDef* ArmyInfo::GetUnitDef(int unitID)
 	map<int,UnitDef*>::iterator iter = knownUnitDefs.find(unitID);
 	if (iter!=knownUnitDefs.end())
 	{
+		ai->utility->Log(ALL, MISC, "GetUnitDef: we found a def, %s", iter->second->GetName());
 		foundDef = iter->second;
 	}
 	return foundDef;
