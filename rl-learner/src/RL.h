@@ -13,7 +13,7 @@
 #define USE_QSMDP true
 #define USE_RS_TIME true
 #define USE_RS_LABS false
-#define USE_BACKTRACKING true
+#define USE_BACKTRACKING false
 
 #define GAMMA 0.99
 #define ALPHA 0.1
