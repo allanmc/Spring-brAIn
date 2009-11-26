@@ -91,13 +91,17 @@ void ArmyInfo::RemoveUnit(int unit)
 //updates the position of the unit in the QuadTree.
 void ArmyInfo::UpdateUnit(Unit* unit)
 {
+	if(unit == NULL)
+		return;
 	SAIFloat3 new_pos = unit->GetPos();
 	int i = quadTree->UpdateUnit( unit->GetUnitId(), unit->GetPos() );
 	UnitDef* unitDef = unit->GetDef();
-	if (unitDef->GetUnitDefId() != -1) {
-		knownUnitDefs[unit->GetUnitId()] = unitDef;
-	}
 	unitCount += i;
+	if (unitDef == NULL) {
+		return;//we dont know this unit?!
+	}
+	knownUnitDefs[unit->GetUnitId()] = unitDef;
+	
 
 	if(i != 0)
 	{
@@ -120,7 +124,7 @@ UnitDef* ArmyInfo::GetUnitDef(int unitID)
 {
 	UnitDef* foundDef = NULL;
 	map<int,UnitDef*>::iterator iter = knownUnitDefs.find(unitID);
-	if (iter!=knownUnitDefs.end())
+	if (iter!=knownUnitDefs.end() && iter->second != NULL)
 	{
 		ai->utility->Log(ALL, MISC, "GetUnitDef: we found a def, %s", iter->second->GetName());
 		foundDef = iter->second;
