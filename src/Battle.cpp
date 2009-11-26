@@ -287,7 +287,7 @@ void Battle::ToString()
 	ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "Active Friendly Units: %d\n--------------", ActiveFriendlyUnits.size() );
 	for ( map<int, UnitInformationContainer>::iterator iter = ActiveFriendlyUnits.begin() ; iter != ActiveFriendlyUnits.end() ; iter++ )
 	{
-		if ( (*iter).second.def->GetUnitDefId() != -1 )
+		if ( (*iter).second.def != NULL )
 			ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "UnitID: %d - %s", (*iter).first, (*iter).second.def->GetHumanName() );
 		else ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "UnitID: %d - unitdef unknown", (*iter).first );
 	}
@@ -295,7 +295,7 @@ void Battle::ToString()
 	ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "Active Enemy Units: %d\n--------------", ActiveEnemyUnits.size() );
 	for ( map<int, UnitInformationContainer>::iterator iter = ActiveEnemyUnits.begin() ; iter != ActiveEnemyUnits.end() ; iter++ )
 	{
-		if ( (*iter).second.def->GetUnitDefId() != -1 )
+		if ( (*iter).second.def != NULL )
 			ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "UnitID: %d - %s", (*iter).first, (*iter).second.def->GetHumanName() );
 		else ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "UnitID: %d - unitdef unknown", (*iter).first );
 	}
