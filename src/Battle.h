@@ -36,11 +36,11 @@ namespace brainSpace
 
 		virtual ~Battle();
 
-		void UnitDied( springai::Unit* u, bool enemy );
+		void UnitDied( int unitID, bool enemy );
 
-		void UnitEnteredBattle( springai::Unit* u, bool enemy );
+		void UnitEnteredBattle(int unitID, bool enemy );
 
-		bool Contains( springai::Unit* u );
+		bool Contains( int unitID );
 
 		SAIFloat3 GetCenter();
 
@@ -48,7 +48,7 @@ namespace brainSpace
 
 		int GetLastFrameOfActivity();
 
-		void RemoveUnit( springai::Unit* unit );
+		void RemoveUnit( int unitID );
 
 		void Update();
 

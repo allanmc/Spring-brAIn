@@ -17,7 +17,7 @@ namespace brainSpace
 		BaseInfo( AIClasses* aiClasses );
 		virtual ~BaseInfo();
 		void AddBuilding(Unit* building);
-		void RemoveBuilding(Unit* building);
+		void RemoveBuilding(int building);
 		void DrawBasePerimiter();
 		vector< vector<SAIFloat3> > GetBases();
 		Unit* GetNearestBaseBuilding();

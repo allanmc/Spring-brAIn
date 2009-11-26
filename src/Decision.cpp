@@ -271,11 +271,8 @@ void Decision::UnitDestroyed(int unit, int attacker)
 	}
 
 	Unit* destroyee = Unit::GetInstance( ai->callback, unit );
-	Unit* destroyer = Unit::GetInstance( ai->callback, attacker );
-	BattleInfoInstance->UnitDestroyed( destroyee, destroyer );
+	BattleInfoInstance->UnitDestroyed( unit, attacker );
 	UnitDef* d = destroyee->GetDef();
-
-
 
 	if ( d == NULL )
 		ai->utility->Log( LOG_DEBUG, DECISION, "UnitDestroyed: UnitDef was null" );
@@ -285,26 +282,16 @@ void Decision::UnitDestroyed(int unit, int attacker)
 	{
 		rl->AddReward(-ai->utility->GetDpsFromUnitDef(d));
 		ai->utility->Log( LOG_DEBUG, DECISION, "UnitDestroyed: Unitdef was %s",d->GetName() );
+		if(d->IsCommander())
+		{
+			ai->commanderDead = -1;
+			UpdateRL();
+		}
 	}
-
-	if(d->IsCommander())
-	{
-		ai->commanderDead = -1;
-		UpdateRL();
-	}
-
-	vector<WeaponMount*> wpmt = d->GetWeaponMounts();
-
-	if (wpmt.size()>0) 
-	{
-		ai->knowledge->selfInfo->armyInfo->RemoveUnit(destroyee);
-	}
-	else 
-	{	
-		ai->utility->Log(ALL, MISC,  "Unit destroyed: %s", destroyee->GetDef()->GetHumanName() );
-		ai->knowledge->selfInfo->baseInfo->RemoveBuilding(destroyee);
-	}
-
+	
+	//Always remove :)
+	ai->knowledge->selfInfo->armyInfo->RemoveUnit(unit);
+	ai->knowledge->selfInfo->baseInfo->RemoveBuilding(unit);
 
 	if(d->GetSpeed() > 0)
 	{
@@ -320,14 +307,7 @@ void Decision::UnitDestroyed(int unit, int attacker)
 	}
 	delete d;
 	delete destroyee;
-	delete destroyer;
-	for(int i = 0; i < (int)wpmt.size(); i++)
-	{
-		delete wpmt[i];
-	}
-	wpmt.clear();
 
-	//build a repacement?
 }
 
 ///called when we can see an enemy unit that we could not see before.
@@ -367,20 +347,16 @@ void Decision::EnemyDestroyed(int enemy, int attacker)
 	}
 	//good job!
 	Unit* unit = Unit::GetInstance(ai->callback, enemy);
-	Unit* attackerUnit = Unit::GetInstance( ai->callback, attacker );
 	UnitDef* d = unit->GetDef();
 	if ( d == NULL )
 	{
 		d = ai->knowledge->enemyInfo->armyInfo->GetUnitDef( unit->GetUnitId() );
 	}
+	ai->knowledge->enemyInfo->armyInfo->RemoveUnit( enemy );
+	ai->knowledge->enemyInfo->baseInfo->RemoveBuilding( enemy );
 	if ( d == NULL ) //Unknown unit type: we never saw it, just killed it :D
-	{
-		return;
-		/*
-		ai->knowledge->enemyInfo->armyInfo->RemoveUnit( unit );
-		ai->knowledge->enemyInfo->baseInfo->RemoveBuilding( unit );
-		return;
-		*/
+	{		
+		return;		
 	}
 	
 	if ( d->GetUnitDefId() == -1 )
@@ -389,25 +365,14 @@ void Decision::EnemyDestroyed(int enemy, int attacker)
 	{
 		ai->utility->Log( LOG_DEBUG, DECISION, "EnemyDestroyed: Unitdef was %s",d->GetName() );
 		rl->AddReward(ai->utility->GetDpsFromUnitDef(d));
+		if(d->IsCommander())
+		{
+			ai->utility->Log( LOG_DEBUG, DECISION, "EnemyDestroyed: commander" );
+			ai->commanderDead = 1;
+			UpdateRL();
+		}
 	}
-
-	if(d->IsCommander())
-	{
-		ai->utility->Log( LOG_DEBUG, DECISION, "EnemyDestroyed: commander" );
-		ai->commanderDead = 1;
-		UpdateRL();
-	}
-
-	BattleInfoInstance->EnemyDestroyed( unit, attackerUnit );
-
-	if (d->GetWeaponMounts().size()>0) 
-	{
-		ai->knowledge->enemyInfo->armyInfo->RemoveUnit(unit);
-	}
-	else 
-	{
-		ai->knowledge->enemyInfo->baseInfo->RemoveBuilding(unit);
-	}
+	BattleInfoInstance->EnemyDestroyed( enemy, attacker );
 }
 
 ///used to update the positions of all friendly units in the ArmyInfo
@@ -881,9 +846,7 @@ void Decision::UnitDamaged( int unitID, int attacker )
 	{
 		return;
 	}
-	Unit* u1 = Unit::GetInstance( ai->callback, unitID );
-	Unit* u2 = Unit::GetInstance( ai->callback, unitID );
-	BattleInfoInstance->UnitDamaged( u1, u2 );
+	BattleInfoInstance->UnitDamaged( unitID, attacker );
 }
 
 void Decision::EnemyDamaged( int attacker, int enemy )
@@ -892,7 +855,5 @@ void Decision::EnemyDamaged( int attacker, int enemy )
 	{
 		return;
 	}
-	Unit* attackerUnit = Unit::GetInstance( ai->callback, attacker );
-	Unit* enemyUnit = Unit::GetInstance( ai->callback, enemy );
-	BattleInfoInstance->EnemyDamaged( attackerUnit, enemyUnit );
+	BattleInfoInstance->EnemyDamaged( attacker, enemy );
 }

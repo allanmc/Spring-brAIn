@@ -58,27 +58,31 @@ void ArmyInfo::AddUnit(Unit* unit)
 	UpdateUnit(unit);
 }
 
-void ArmyInfo::RemoveUnit(Unit* unit)
+void ArmyInfo::RemoveUnit(int unit)
 {
 	if (unitCount==0)
 	{
 		return;
 	}
 
-	if (quadTree->RemoveUnit( unit->GetUnitId()))
+	if (quadTree->RemoveUnit( unit))
 	{
+		Unit* u = Unit::GetInstance(ai->callback, unit);
 		unitCount--;
-		UnitDef *unitDef = unit->GetDef();
+		UnitDef *unitDef = u->GetDef();
+		if(unitDef != NULL)
+		{
 
-		if(unitDef->GetSpeed() > 0)
-		{
-			aggressive--;
-			aggressiveDps -= ai->utility->GetDpsFromUnitDef(unitDef);
-		}
-		else
-		{
-			defensive--;
-			defensiveDps -= ai->utility->GetDpsFromUnitDef(unitDef);
+			if(unitDef->GetSpeed() > 0)
+			{
+				aggressive--;
+				aggressiveDps -= ai->utility->GetDpsFromUnitDef(unitDef);
+			}
+			else
+			{
+				defensive--;
+				defensiveDps -= ai->utility->GetDpsFromUnitDef(unitDef);
+			}
 		}
 		delete unitDef;
 	}	

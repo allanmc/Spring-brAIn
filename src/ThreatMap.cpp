@@ -20,7 +20,7 @@ ThreatMap::~ThreatMap()
 void ThreatMap::Update()
 {
 	//ai->callback->GetMap()->GetSlopeMap();
-	bool printArray = false;
+	//bool printArray = false;
 	map<int, struct UnitInformationContainer> enemyUnits = ai->knowledge->enemyInfo->armyInfo->GetUnits();
 	Reset();
 

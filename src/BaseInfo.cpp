@@ -46,29 +46,39 @@ void BaseInfo::AddBuilding(Unit* building)
 	ai->knowledge->mapInfo->pathfindingMap->AddBuilding( building );
 }
 
-void BaseInfo::RemoveBuilding(Unit* building)
+void BaseInfo::RemoveBuilding(int building)
 {
-	//check for builder units
-	if(building->GetDef()->GetSpeed() > 0) return;
-
 	if (buildingCount==0)
 	{
 		return;
 	}
-	quadTree->RemoveUnit( building->GetUnitId() );
+	bool seen = quadTree->RemoveUnit( building );
 	//remove unit from quadtree, using pos
 
-	buildingCount--;
-	if(building->GetDef()->IsBuilder())
+	Unit *buildingU = Unit::GetInstance(ai->callback, building);
+	UnitDef *def = buildingU->GetDef();
+	if(seen)
 	{
-		productionBuildings--;
-	}
-	else
-	{
-		resourceBuildings--;
-	}
+		if(def != NULL)
+		{
+			buildingCount--;
 
-	ai->knowledge->mapInfo->pathfindingMap->RemoveBuilding( building );
+			if(def->IsBuilder())
+			{
+				productionBuildings--;
+			}
+			else
+			{
+				resourceBuildings--;
+			}
+
+			ai->knowledge->mapInfo->pathfindingMap->RemoveBuilding( buildingU );
+		}
+		else
+			ai->utility->Log(ALL,KNOWLEDGE,"RemoveBuilding: We are trying to remove a seen building with no unitdef"); 
+	}
+	delete def;
+	delete buildingU;
 }
 
 ///@return the number of resource producing buildings

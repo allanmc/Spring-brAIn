@@ -20,7 +20,7 @@ namespace brainSpace
 		virtual ~ArmyInfo();
 
 		void AddUnit(Unit* unit);
-		void RemoveUnit(Unit* unit);
+		void RemoveUnit(int unit);
 		void UpdateUnit(Unit* unit);
 		SAIFloat3 GetUnitPos(int unitId);
 		void Print();
