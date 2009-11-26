@@ -116,7 +116,6 @@ void ArmyInfo::UpdateUnit(Unit* unit)
 			defensiveDps += ai->utility->GetDpsFromUnitDef(unitDef);
 		}
 	}
-	delete unitDef;
 }
 
 ///@return the UnitDef of a unit in the army, or NULL if we have never seen the unit
