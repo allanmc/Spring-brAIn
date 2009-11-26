@@ -70,7 +70,7 @@ RL::~RL()
 		//we didnt see enemys commander die, but we didnt die, so we must have won!
 		ai->commanderDead = 1;
 		UnitDef *d = ai->commander->GetDef();
-		rl->AddReward(ai->utility->GetDpsFromUnitDef(d));
+		AddReward(ai->utility->GetDpsFromUnitDef(d));
 		delete d;
 		Update();
 	}
