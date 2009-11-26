@@ -6,8 +6,9 @@
 using namespace brainSpace;
 using namespace std;
 
-RL::RL(Game *g, unsigned short int type)
+RL::RL(Game *g, unsigned short int type, double epsilon)
 {	
+	EPSILON = epsilon;
 	game = g;
 	currentNode = 0;
 	totalReward = 0;
@@ -417,6 +418,8 @@ RL_Action RL::Update()
 		}
 		//add the current to the dataTrail
 		dataTrail.push_back(DataPoint(PreviousState[currentNode], PreviousAction[currentNode], state, reward, game->frame - PreviousFrame[currentNode]));
+		if(BACKTRACKING_STEPS > 0 &&  dataTrail.size() > BACKTRACKING_STEPS)
+			dataTrail.erase(dataTrail.begin());
 	}
 
 	if ( terminal )
