@@ -60,8 +60,7 @@ void BattlesInfo::EnemyDestroyed( int deadEnemyUnit, int attackingUnit )
 	{	
 		b->UnitDied( deadEnemyUnit, true );
 	}
-	CleanupAfterSomeoneDied( deadEnemyUnit );
-	
+	CleanupAfterSomeoneDied( deadEnemyUnit );	
 }
 
 void BattlesInfo::EnemyDamaged( int attacker, int enemy )
