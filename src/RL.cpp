@@ -65,6 +65,16 @@ RL::RL( AIClasses* aiClasses)
 
 RL::~RL()
 {
+	if(ai->commanderDead == 0)
+	{
+		//we didnt see enemys commander die, but we didnt die, so we must have won!
+		ai->commanderDead = 1;
+		UnitDef *d = ai->commander->GetDef();
+		rl->AddReward(ai->utility->GetDpsFromUnitDef(d));
+		delete d;
+		Update();
+	}
+
 	ai->utility->Log(ALL, MISC, "Saving file");
 	SaveToFile();
 	ai->utility->Log(ALL, MISC, "File saved");
