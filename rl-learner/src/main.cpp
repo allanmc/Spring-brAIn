@@ -47,13 +47,15 @@ int main(int argc, char *argv[])
 		printf("Reward Shaping(%s%s)",(USE_RS_TIME ? (USE_RS_LABS ? "Time,":"Time") : ""), (USE_RS_LABS ? "Labs" : "") );
 	if(USE_BACKTRACKING)
 		cout << (USE_RS_TIME || USE_RS_LABS ? " & ": "") << "Backtracking(" << (BACKTRACKING_STEPS > 0 ? BACKTRACKING_STEPS : "Infinte") <<")";
+	if(USE_N_STEP)
+		cout << (USE_RS_TIME || USE_RS_LABS ? " & ": "") << "N-Step(" << (BACKTRACKING_STEPS > 0 ? BACKTRACKING_STEPS : "Infinte") <<")";
 	cout << "\n";
 	//float bestReward = -1999;
 	float currentReward = 0.0;
 	float currentFrame = 0.0;
 	float bestFrame = 999999;
 	int currentIndex = 0;
-	short unsigned int runs = 6766;
+	short unsigned int runs = 10000;
 	while(i < runs)
 	{
 		r = new RL(g, RL_TYPE, currentEpsilon);
@@ -142,8 +144,14 @@ int main(int argc, char *argv[])
 			g->ResetGame();
 			
 			//if(i%120 == 3)
-			cout << currentReward << "\n" ;
-			//cout << currentFrame << (currentFrame == bestFrame && debug ? "*" : "") << "\n" ;
+			if(PRINT_REWARD)
+			{
+				cout << currentReward << "\n" ;
+			}
+			else
+			{
+				cout << currentFrame << (currentFrame == bestFrame && debug ? "*" : "") << "\n" ;
+			}
 			currentIndex++;
 
 			//if (currentReward >= bestReward)

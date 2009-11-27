@@ -385,23 +385,27 @@ RL_Action RL::Update()
 		totalReward += reward;
 	}
 
+	float value;
 
-	//if complex then update the childs value funtion
-	if(PreviousAction[currentNode].Complex)
+	if(!USE_N_STEP)
 	{
-		int subNode = PreviousAction[currentNode].Action;
-		float subValue = ValueFunction[subNode]->GetValue(PreviousState[subNode],PreviousAction[subNode]) 
-						+ ALPHA*(
-						reward + pow((double)GAMMA, (USE_QSMDP?0:1)+(USE_QSMDP?1:0)*((double)game->frame - (double)PreviousFrame[currentNode]))*bestFutureValue 
-							- ValueFunction[subNode]->GetValue(PreviousState[subNode],PreviousAction[subNode]) );
-		ValueFunction[subNode]->SetValue(PreviousState[subNode],PreviousAction[subNode], subValue);
-	}
-	//update own value function
-	float value = ValueFunction[currentNode]->GetValue(PreviousState[currentNode],PreviousAction[currentNode]) 
+		//if complex then update the childs value funtion
+		if(PreviousAction[currentNode].Complex)
+		{
+			int subNode = PreviousAction[currentNode].Action;
+			float subValue = ValueFunction[subNode]->GetValue(PreviousState[subNode],PreviousAction[subNode]) 
+							+ ALPHA*(
+							reward + pow((double)GAMMA, (USE_QSMDP?0:1)+(USE_QSMDP?1:0)*((double)game->frame - (double)PreviousFrame[currentNode]))*bestFutureValue 
+								- ValueFunction[subNode]->GetValue(PreviousState[subNode],PreviousAction[subNode]) );
+			ValueFunction[subNode]->SetValue(PreviousState[subNode],PreviousAction[subNode], subValue);
+		}
+		//update own value function
+		value = ValueFunction[currentNode]->GetValue(PreviousState[currentNode],PreviousAction[currentNode]) 
 				+ ALPHA*(
 					reward + pow((double)GAMMA, (USE_QSMDP?0:1)+(USE_QSMDP?1:0)*((double)game->frame - (double)PreviousFrame[currentNode]))*bestFutureValue 
 					- ValueFunction[currentNode]->GetValue(PreviousState[currentNode],PreviousAction[currentNode]) );
-	ValueFunction[currentNode]->SetValue(PreviousState[currentNode],PreviousAction[currentNode], value);
+		ValueFunction[currentNode]->SetValue(PreviousState[currentNode],PreviousAction[currentNode], value);
+	}
 	
 	if(USE_BACKTRACKING)
 	{
@@ -420,6 +424,36 @@ RL_Action RL::Update()
 		dataTrail.push_back(DataPoint(PreviousState[currentNode], PreviousAction[currentNode], state, reward, game->frame - PreviousFrame[currentNode]));
 		if(BACKTRACKING_STEPS > 0 &&  dataTrail.size() > BACKTRACKING_STEPS)
 			dataTrail.erase(dataTrail.begin());
+	}
+	
+	if(USE_N_STEP)
+	{
+		bool done = false;
+		dataTrail.push_back(DataPoint(PreviousState[currentNode], PreviousAction[currentNode], state, reward, game->frame - PreviousFrame[currentNode]));
+		while(!done)
+		{
+			float powerDiscount = 0.0;
+			if((terminal || BACKTRACKING_STEPS > 0) &&  dataTrail.size() > BACKTRACKING_STEPS)
+			{
+				float stepReward = 0.0;
+				for(int i = 0; i<dataTrail.size(); i++)
+				{
+					stepReward += dataTrail[i].reward * pow((float)GAMMA, powerDiscount);
+					if(USE_QSMDP)
+						powerDiscount += dataTrail[i].duration;
+					else
+						powerDiscount += 1;
+				}
+				//RL_Action bestAction = FindBestAction( dataTrail[i].resultState );
+				stepReward += bestFutureValue; //ValueFunction[currentNode]->GetValue(dataTrail[i].resultState, bestAction);
+				ValueFunction[currentNode]->SetValue(dataTrail[0].prevState, dataTrail[0].prevAction, stepReward);
+				dataTrail.erase(dataTrail.begin());
+			}
+			if(dataTrail.size() > 0 && terminal)
+				done = false;
+			else
+				done = true;
+		}
 	}
 
 	if ( terminal )
