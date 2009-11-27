@@ -63,7 +63,7 @@ void brainSpace::MilitaryGroupManager::AddUnit( Unit* unit )
 	}
 	else
 	{
-		for(int i = 0; i < (int)UnitGroups.size(); i++)
+		for(int i = 0; i < (int)ScoutGroups.size(); i++)
 		{
 			if(ScoutGroups[i]->GetSize() < 3 && ScoutGroups[i]->GetStatus() == MilitaryUnitGroup::MILI_UNIT_GRP_REGROUPING )
 			{
