@@ -92,5 +92,8 @@ float RL_Q::GetValue( RL_State &state, RL_Action &action )
 
 void RL_Q::SetValue( RL_State &state, RL_Action &action, float value )
 {
-	actionValueFunction[ (state.GetID()) * numActions + (action.ID) ] = value;
+	int stateID = state.GetID();
+	int actionID = action.ID;
+	int index = stateID * numActions + actionID;
+	actionValueFunction[ index ] = value;
 }

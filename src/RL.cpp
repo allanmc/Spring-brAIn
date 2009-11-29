@@ -446,6 +446,11 @@ void RL::AddReward(float r)
 
 bool RL::ShouldIUpdate()
 {
+	if(PreviousAction.empty())
+	{
+		ai->utility->Log(ALL, LOG_RL, "Wtf, previousaction is NULL?");
+		return false;
+	}
 	switch(PreviousAction[currentNode].ID)
 	{
 	case RL_Solar:
