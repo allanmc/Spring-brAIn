@@ -241,3 +241,8 @@ const map<int, struct UnitInformationContainer> BaseInfo::GetUnits()
 {
 	return quadTree->GetUnits();
 }
+
+UnitDef* BaseInfo::GetUnitDef(int unitID)
+{
+	return quadTree->GetUnitDef(unitID);
+}

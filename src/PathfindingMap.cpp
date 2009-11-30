@@ -127,10 +127,11 @@ void PathfindingMap::RemoveHypotheticalBuilding(UnitDef* unit, SAIFloat3 pos)
 void PathfindingMap::RemoveBuilding(Unit* unit)
 {
 	SAIFloat3 pos = unit->GetPos();
-	UnitDef *def = unit->GetDef();
+	UnitDef *def = ai->knowledge->selfInfo->baseInfo->GetUnitDef(unit->GetUnitId());
+	if(def == NULL)
+		return;
 	int xSize = def->GetXSize()*8;
 	int zSize = def->GetZSize()*8;
-	delete def;
 	int topCell = (pos.z-zSize/2)/Resolution;
 	int bottomCell = (pos.z+zSize/2)/Resolution;
 	int leftCell = (pos.x-xSize/2)/Resolution;
@@ -150,12 +151,11 @@ void PathfindingMap::RemoveBuilding(Unit* unit)
 	for ( int i = 0 ; i < (int)unitsInRange.size() ; i++ )
 	{
 		SAIFloat3 unitPos = unitsInRange[i]->GetPos();
-		UnitDef *def = unitsInRange[i]->GetDef();
-		if(def == NULL)
+		UnitDef *def1 = ai->knowledge->selfInfo->baseInfo->GetUnitDef(unitsInRange[i]->GetUnitId());
+		if(def1 == NULL)
 			continue;
-		int unitXsize = def->GetXSize()*8;
-		int unitZsize = def->GetZSize()*8;
-		delete def;
+		int unitXsize = def1->GetXSize()*8;
+		int unitZsize = def1->GetZSize()*8;
 
 		int unitTopCell = (unitPos.z-unitZsize/2)/Resolution;
 		int unitBottomCell = (unitPos.z+unitZsize/2)/Resolution;
