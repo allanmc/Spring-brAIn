@@ -150,8 +150,12 @@ void PathfindingMap::RemoveBuilding(Unit* unit)
 	for ( int i = 0 ; i < (int)unitsInRange.size() ; i++ )
 	{
 		SAIFloat3 unitPos = unitsInRange[i]->GetPos();
-		int unitXsize = unitsInRange[i]->GetDef()->GetXSize()*8;
-		int unitZsize = unitsInRange[i]->GetDef()->GetZSize()*8;
+		UnitDef *def = unitsInRange[i]->GetDef();
+		if(def == NULL)
+			continue;
+		int unitXsize = def->GetXSize()*8;
+		int unitZsize = def->GetZSize()*8;
+		delete def;
 
 		int unitTopCell = (unitPos.z-unitZsize/2)/Resolution;
 		int unitBottomCell = (unitPos.z+unitZsize/2)/Resolution;

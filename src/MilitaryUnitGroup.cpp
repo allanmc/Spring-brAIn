@@ -86,7 +86,10 @@ void MilitaryUnitGroup::UnitIdle(springai::Unit *unit)
 		{
 			it->second = true;
 			//Check if all units in group are now idle
-			ai->utility->Log( ALL, GROUPING, "Unit %d has gone idle. GroupID %d. Status %d", unit->GetUnitId(), GroupID, Status );
+			ai->utility->Log( ALL, GROUPING, "");
+			ai->utility->Log( ALL, GROUPING, "Unit %d has gone idle", unit->GetUnitId() );
+			ai->utility->Log( ALL, GROUPING, "GroupID %d", GroupID );
+			ai->utility->Log( ALL, GROUPING,"Status %d",Status );
 			bool allUnitsIdle = true;
 			if ( !(Status == MILI_UNIT_GRP_REGROUPING ))
 			{

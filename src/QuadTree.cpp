@@ -34,7 +34,7 @@ bool QuadTree::RemoveUnit( int unitID )
 			iter = iter->GetContainingNode( pos );
 			continue;
 		}
-		//The node has no children. Attempt to insert the unit here.
+		//The node has no children. Attempt to delete the unit here.
 		else
 		{
 			ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "Removing unit %d", unitID );
@@ -50,6 +50,15 @@ bool QuadTree::RemoveUnit( int unitID )
 		}
 	}
 	return true;
+}
+
+UnitDef* QuadTree::GetUnitDef(int unitID)
+{
+	if (units.find(unitID) == units.end())
+		return NULL;	
+	else
+		return units[unitID].def;
+
 }
 
 ///@return the amount of units added to the Qtree
@@ -168,7 +177,8 @@ vector<Unit*> QuadTree::RangeQuery(CBoundingBox bbox)
 				SAIFloat3 pos = (*iter).second.pos;
 				if (QuadTreeNode::IsInsideBoundingBox(pos, bbox))
 				{
-					units.push_back(Unit::GetInstance(ai->callback, unitID));
+					Unit *u = Unit::GetInstance(ai->callback, unitID);
+					units.push_back(u);
 				}
 			}
 		}

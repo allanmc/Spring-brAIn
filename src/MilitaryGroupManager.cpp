@@ -58,7 +58,8 @@ void brainSpace::MilitaryGroupManager::AddUnit( Unit* unit )
 		{
 			tmpGroup->SetStatus(MilitaryUnitGroup::MILI_UNIT_GRP_IDLE);
 			Unit* ug = ai->knowledge->selfInfo->baseInfo->GetWeakestBaseBuilding();
-			GiveMoveOrder(tmpGroup, ug->GetPos());
+			if(ug != NULL)
+				GiveMoveOrder(tmpGroup, ug->GetPos());
 		}
 	}
 	else

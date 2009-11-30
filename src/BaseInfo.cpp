@@ -52,32 +52,28 @@ void BaseInfo::RemoveBuilding(int building)
 	{
 		return;
 	}
-	bool seen = quadTree->RemoveUnit( building );
-	//remove unit from quadtree, using pos
-
 	Unit *buildingU = Unit::GetInstance(ai->callback, building);
-	UnitDef *def = buildingU->GetDef();
-	if(seen)
+	UnitDef *def = quadTree->GetUnitDef(building);
+	//remove unit from quadtree, using pos
+	if(def != NULL)
 	{
-		if(def != NULL)
+		buildingCount--;
+
+		if(def->IsBuilder())
 		{
-			buildingCount--;
-
-			if(def->IsBuilder())
-			{
-				productionBuildings--;
-			}
-			else
-			{
-				resourceBuildings--;
-			}
-
-			ai->knowledge->mapInfo->pathfindingMap->RemoveBuilding( buildingU );
+			productionBuildings--;
 		}
 		else
-			ai->utility->Log(ALL,KNOWLEDGE,"RemoveBuilding: We are trying to remove a seen building with no unitdef"); 
+		{
+			resourceBuildings--;
+		}
+
+		ai->knowledge->mapInfo->pathfindingMap->RemoveBuilding( buildingU );
 	}
-	delete def;
+	else
+		ai->utility->Log(ALL,KNOWLEDGE,"RemoveBuilding: We are trying to remove a seen building with no unitdef"); 
+
+	quadTree->RemoveUnit( building );
 	delete buildingU;
 }
 
