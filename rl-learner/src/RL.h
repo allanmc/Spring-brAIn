@@ -10,12 +10,15 @@
 
 #define RL_NUM_NODES 1
 
+#define PRINT_REWARD false
+
 #define USE_QSMDP false
 #define USE_RS_TIME true
 #define USE_RS_LABS false
 #define USE_BACKTRACKING false
+#define USE_N_STEP true
 
-//zero means infinite
+//zero means infinite (Used both for backtracking and n-step)
 #define BACKTRACKING_STEPS 0
 
 #define GAMMA 0.9
