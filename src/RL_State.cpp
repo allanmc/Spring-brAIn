@@ -23,6 +23,7 @@ RL_State::RL_State( AIClasses* aiClasses, int node)
 			int scoutKnowledge = (percent < 25 ? 0 : 1);
 			scoutKnowledge += (percent < 50 ? 0 : 1);
 			ai->utility->Log(LOG_DEBUG, LOG_RL, "rl_state 2");
+			
 
 			float energyProd = ai->knowledge->selfInfo->resourceInfo->GetCurrentProduction(ai->utility->GetResource("Energy"));
 			float energyUse = ai->knowledge->selfInfo->resourceInfo->GetCurrentConsumption(ai->utility->GetResource("Energy"));
@@ -102,7 +103,7 @@ RL_State::RL_State( AIClasses* aiClasses, int node)
 
 RL_State::~RL_State()
 {
-	Actions.clear();
+	//Actions.clear();
 }
 
 int RL_State::GetID()
