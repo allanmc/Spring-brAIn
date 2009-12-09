@@ -1,10 +1,11 @@
 #ifndef _BRAINSPACE_RL_H
 #define _BRAINSPACE_RL_H
 
-#define RL_SOLAR_INDEX 20
+#define RL_SOLAR_INDEX 15
 #define RL_MEX_INDEX 20
 #define RL_LAB_INDEX 5
 #define RL_PLANT_INDEX 5
+#define RL_ROCKO_INDEX 40
 
 #define QBFILE_VERSION 2
 
@@ -12,11 +13,11 @@
 
 #define PRINT_REWARD false
 
-#define USE_QSMDP false
+#define USE_QSMDP true
 #define USE_RS_TIME true
 #define USE_RS_LABS false
 #define USE_BACKTRACKING false
-#define USE_N_STEP true
+#define USE_N_STEP false
 
 //zero means infinite (Used both for backtracking and n-step)
 #define BACKTRACKING_STEPS 0

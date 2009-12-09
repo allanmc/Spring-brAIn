@@ -25,8 +25,8 @@ RL_State::RL_State(Game *g, int node, unsigned short int type, int buildingToBui
 	terminal = false;
 	short unsigned int mNeeds = game->GetDiscreteResource(game->BuildingCosts(RL_MEX_ID, buildingToBuild));
 	short unsigned int eNeeds = game->GetDiscreteResource(game->BuildingCosts(RL_SOLAR_ID, buildingToBuild));
-	short unsigned int mAvailable = game->GetDiscreteResource(game->AvailableResources(RL_MEX_ID, game->BuildTime(buildingToBuild)));
-	short unsigned int eAvailable = game->GetDiscreteResource(game->AvailableResources(RL_SOLAR_ID, game->BuildTime(buildingToBuild)));
+	short unsigned int mAvailable = game->GetDiscreteResource(game->GetAvailableResources(RL_MEX_ID, game->GetBuildTime(buildingToBuild)));
+	short unsigned int eAvailable = game->GetDiscreteResource(game->GetAvailableResources(RL_SOLAR_ID, game->GetBuildTime(buildingToBuild)));
 	
 	//cout << "State: " << mNeeds << " - " << eNeeds << " - " << mAvailable << " - " << eAvailable << "\n";
 	
@@ -35,6 +35,7 @@ RL_State::RL_State(Game *g, int node, unsigned short int type, int buildingToBui
 	Actions.push_back(RL_Action(-1,0,false));
 	Actions.push_back(RL_Action(RL_SOLAR_ID,1,false));
 	Actions.push_back(RL_Action(RL_MEX_ID,2,false));
+	Actions.push_back(RL_Action(RL_ROCKO_ID,3,false));
 }
 
 RL_State::RL_State(Game *g, int node, unsigned short int type)
@@ -42,37 +43,49 @@ RL_State::RL_State(Game *g, int node, unsigned short int type)
 	game = g;
 	Node = node;
 
+
 	if (node == -1)
 	{
 		ID = -1;
 		return;
 	}
 
+
 	switch (type)
 	{
 	case 0: //Flat old
 		{
-			int labCount = game->buildings[RL_LAB_ID];
-			int solarCount = game->buildings[RL_SOLAR_ID];
-			int mexCount = game->buildings[RL_MEX_ID];
-			terminal = (labCount==4);
-			ID = labCount*RL_MEX_INDEX*RL_SOLAR_INDEX + solarCount*RL_MEX_INDEX + mexCount;
-			if(labCount < 4)
+			terminal = false;
+			int labCount = game->units[RL_LAB_ID];
+			int solarCount = game->units[RL_SOLAR_ID];
+			int mexCount = game->units[RL_MEX_ID];
+			int rockoCount = game->units[RL_ROCKO_ID];
+			if (rockoCount >= RL_ROCKO_INDEX-1)
+			{
+				terminal = true;
+				rockoCount = RL_ROCKO_INDEX-1;
+			}
+			ID = rockoCount*RL_MEX_INDEX*RL_SOLAR_INDEX*RL_LAB_INDEX + labCount*RL_MEX_INDEX*RL_SOLAR_INDEX + solarCount*RL_MEX_INDEX + mexCount;
+			if(labCount < RL_LAB_INDEX-1)
 				Actions.push_back(RL_Action(RL_LAB_ID,0,false));
-			if(solarCount < 19)
+			if(solarCount < RL_SOLAR_INDEX-1)
 				Actions.push_back(RL_Action(RL_SOLAR_ID,1,false));
-			if(mexCount < 19)
-				Actions.push_back(RL_Action(RL_MEX_ID,2,false));	
+			if(mexCount < RL_MEX_INDEX-1)
+				Actions.push_back(RL_Action(RL_MEX_ID,2,false));
+			if (labCount > 0 && rockoCount < RL_ROCKO_INDEX)
+			{
+				Actions.push_back(RL_Action(RL_ROCKO_ID,3,false));
+			}
 		}break;
 	case 1: //H old
 		switch(node)
 		{
 		case 0://root
 			{
-				int labCount = game->buildings[RL_LAB_ID];
+				int labCount = game->units[RL_LAB_ID];
 				int EnoughLabs = (labCount >= 4);
 				terminal = 	(EnoughLabs ? true : false);
-				int affordable = game->CanBuild(RL_LAB_ID);
+				int affordable = game->CanBuild(RL_LAB_ID, 1);
 				bool CanBuildLab = (affordable == 0);
 				
 				ID = (CanBuildLab ? 2 : 0) + (EnoughLabs ? 1 : 0);
@@ -82,19 +95,19 @@ RL_State::RL_State(Game *g, int node, unsigned short int type)
 		case 1://factory
 			{
 				terminal = true;
-				int LabCount = game->buildings[RL_LAB_ID];
-				int PlantCount = game->buildings[RL_PLANT_ID];
-				ID = PlantCount * 5 + LabCount;
-				if(PlantCount < 4)
-					Actions.push_back(RL_Action(RL_PLANT_ID,0,false));
+				int LabCount = game->units[RL_LAB_ID];
+				int RockoCount = game->units[RL_ROCKO_ID];
+				ID = RockoCount * 5 + LabCount;
+				if(RockoCount < 4)
+					Actions.push_back(RL_Action(RL_ROCKO_ID,0,false));
 				if(LabCount < 4)
 					Actions.push_back(RL_Action(RL_LAB_ID,1,false));
 			}break;
 		case 2://resource
 			{
 				terminal = true;
-				int MexCount = game->buildings[RL_MEX_ID];
-				int SolarCount = game->buildings[RL_SOLAR_ID];
+				int MexCount = game->units[RL_MEX_ID];
+				int SolarCount = game->units[RL_SOLAR_ID];
 				ID = MexCount * 20 + SolarCount;
 				if(MexCount < 19)
 					Actions.push_back(RL_Action(RL_MEX_ID,0,false));

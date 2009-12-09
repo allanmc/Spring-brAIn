@@ -21,12 +21,14 @@ RL::RL(Game *g, unsigned short int type, double epsilon)
 	switch(type)
 	{
 	case 0:
+		stateVars.push_back( QStateVar("Rocko", RL_ROCKO_INDEX));
 		stateVars.push_back( QStateVar("Lab", RL_LAB_INDEX));
 		stateVars.push_back( QStateVar("Solar", RL_SOLAR_INDEX));
-		stateVars.push_back( QStateVar("Mex", RL_MEX_INDEX));
+		stateVars.push_back( QStateVar("Mex", RL_MEX_INDEX));		
 		actions.push_back( QAction("Lab", 0));
 		actions.push_back( QAction("Solar", 1));
 		actions.push_back( QAction("Mex", 2));
+		actions.push_back( QAction("Rocko", 3));
 		ValueFunction.push_back(new RL_Q( actions, stateVars)); //root
 		break;
 	case 1:
@@ -260,7 +262,7 @@ RL_Action RL::FindBestAction( RL_State &state )
 			action = tempAction;
 		}
 	}
-	if (action.ID < 0 || action.ID > 2)
+	if (action.ID < 0 || action.ID > 3)
 		exit(0);
 	return action;
 }

@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 	float currentFrame = 0.0;
 	float bestFrame = 999999;
 	int currentIndex = 0;
-	short unsigned int runs = 10000;
+	unsigned int runs = 50000;
 	while(i < runs)
 	{
 		r = new RL(g, RL_TYPE, currentEpsilon);
@@ -63,8 +63,8 @@ int main(int argc, char *argv[])
 		r->setDesireToBuild(buildingToBuild);
 		RL_Action a;
 		a = r->Update();
+
 		
-		//if (i==0) system("pause");
 
 		if (RL_TYPE == 2) {//We need to spend some resources
 			//g->ConstructBuilding(RL_LAB_ID);
@@ -96,10 +96,27 @@ int main(int argc, char *argv[])
 		while(a.ID != -1)
 		{
 			if (RL_TYPE==2 && a.ID==0) break;
-			if (debug) cout << (a.Action==RL_MEX_ID?"M":(a.Action == RL_SOLAR_ID ? "E" : "L"));
+			if (debug)
+			{
+				switch(a.Action)
+				{
+					case RL_LAB_ID:
+						cout << "L\n";
+						break;
+					case RL_MEX_ID:
+						cout << "M\n";
+						break;
+					case RL_SOLAR_ID:
+						cout << "S\n";
+						break;
+					case RL_ROCKO_ID:
+						cout << "R\n";
+						break;
+				}
+			}
 
 			float oldFrame = g->frame;
-			g->ConstructBuilding(a.Action);
+			g->ConstructUnit(a.Action);
 
 			a = r->Update();		
 		}
@@ -107,7 +124,7 @@ int main(int argc, char *argv[])
 		if (RL_TYPE == 2)
 		{
 			if (debug) cout << "L";
-			g->ConstructBuilding(buildingToBuild);
+			g->ConstructUnit(buildingToBuild);
 			a = r->Update();
 		} 
 		if (debug) cout << "\n";
@@ -173,5 +190,6 @@ int main(int argc, char *argv[])
 
 		currentEpsilon *= EPSILON_DECAY;
 	}
+	cout << "Bestframe: " << bestFrame;
 	//system("pause");
 }
