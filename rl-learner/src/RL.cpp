@@ -435,14 +435,14 @@ RL_Action RL::Update()
 		while(!done)
 		{
 			float powerDiscount = 0.0;
-			if((terminal || BACKTRACKING_STEPS > 0) &&  dataTrail.size() > BACKTRACKING_STEPS)
+			if(terminal || (BACKTRACKING_STEPS > 0 && dataTrail.size() > BACKTRACKING_STEPS))
 			{
 				float stepReward = 0.0;
 				for(int i = 0; i<dataTrail.size(); i++)
 				{
 					stepReward += dataTrail[i].reward * pow((float)GAMMA, powerDiscount);
 					if(USE_QSMDP)
-						powerDiscount += dataTrail[i].duration;
+						powerDiscount += 0.01*dataTrail[i].duration;
 					else
 						powerDiscount += 1;
 				}

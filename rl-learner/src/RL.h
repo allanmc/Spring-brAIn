@@ -20,7 +20,7 @@
 #define USE_N_STEP false
 
 //zero means infinite (Used both for backtracking and n-step)
-#define BACKTRACKING_STEPS 0
+#define BACKTRACKING_STEPS 2
 
 #define GAMMA 0.9
 #define ALPHA 0.1

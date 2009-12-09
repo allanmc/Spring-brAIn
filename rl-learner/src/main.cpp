@@ -40,15 +40,27 @@ int main(int argc, char *argv[])
 	}
 	bool debug = false;
 
-	cout << (USE_QSMDP ? "SMDPQ" : "Q");
+	cout << (USE_QSMDP ? "SMDPQ " : "Q ");
 	if(USE_RS_TIME || USE_RS_LABS || USE_BACKTRACKING)
-		cout << " w/ ";
+		cout << "w/ ";
 	if(USE_RS_TIME || USE_RS_LABS)
 		printf("Reward Shaping(%s%s)",(USE_RS_TIME ? (USE_RS_LABS ? "Time,":"Time") : ""), (USE_RS_LABS ? "Labs" : "") );
 	if(USE_BACKTRACKING)
-		cout << (USE_RS_TIME || USE_RS_LABS ? " & ": "") << "Backtracking(" << (BACKTRACKING_STEPS > 0 ? BACKTRACKING_STEPS : "Infinte") <<")";
+	{
+		cout << (USE_RS_TIME || USE_RS_LABS ? " & ": "") << "Backtracking(";
+		if (BACKTRACKING_STEPS > 0)
+			cout << BACKTRACKING_STEPS << ")";
+		else
+			cout << "Infinte" << ")";
+	}
 	if(USE_N_STEP)
-		cout << (USE_RS_TIME || USE_RS_LABS ? " & ": "") << "N-Step(" << (BACKTRACKING_STEPS > 0 ? BACKTRACKING_STEPS : "Infinte") <<")";
+	{
+		cout << (USE_RS_TIME || USE_RS_LABS ? " & ": "") << "N-Step(";
+		if (BACKTRACKING_STEPS > 0)
+			cout << BACKTRACKING_STEPS << ")";
+		else
+			cout << "Infinte" << ")";
+	}
 	cout << "\n";
 	//float bestReward = -1999;
 	float currentReward = 0.0;
