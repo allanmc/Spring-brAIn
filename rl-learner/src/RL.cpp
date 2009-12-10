@@ -397,14 +397,14 @@ RL_Action RL::Update()
 			int subNode = PreviousAction[currentNode].Action;
 			float subValue = ValueFunction[subNode]->GetValue(PreviousState[subNode],PreviousAction[subNode]) 
 							+ ALPHA*(
-							reward + pow((double)GAMMA, (USE_QSMDP?0:1)+(USE_QSMDP?1:0)*((double)game->frame - (double)PreviousFrame[currentNode]))*bestFutureValue 
+							reward + pow((double)GAMMA, (USE_QSMDP?0:1)+(USE_QSMDP?1:0)*(0.01*((double)game->frame - (double)PreviousFrame[currentNode])))*bestFutureValue 
 								- ValueFunction[subNode]->GetValue(PreviousState[subNode],PreviousAction[subNode]) );
 			ValueFunction[subNode]->SetValue(PreviousState[subNode],PreviousAction[subNode], subValue);
 		}
 		//update own value function
 		value = ValueFunction[currentNode]->GetValue(PreviousState[currentNode],PreviousAction[currentNode]) 
 				+ ALPHA*(
-					reward + pow((double)GAMMA, (USE_QSMDP?0:1)+(USE_QSMDP?1:0)*((double)game->frame - (double)PreviousFrame[currentNode]))*bestFutureValue 
+					reward + pow((double)GAMMA, (USE_QSMDP?0:1)+(USE_QSMDP?1:0)*(0.01*((double)game->frame - (double)PreviousFrame[currentNode])))*bestFutureValue 
 					- ValueFunction[currentNode]->GetValue(PreviousState[currentNode],PreviousAction[currentNode]) );
 		ValueFunction[currentNode]->SetValue(PreviousState[currentNode],PreviousAction[currentNode], value);
 	}
@@ -418,7 +418,7 @@ RL_Action RL::Update()
 			float bestFutureValue = ValueFunction[currentNode]->GetValue(dataTrail[i].resultState, bestAction);
 			value = ValueFunction[currentNode]->GetValue(dataTrail[i].prevState, dataTrail[i].prevAction)
 					+ ALPHA*(
-						dataTrail[i].reward + pow((double)GAMMA, (USE_QSMDP?0:1)+(USE_QSMDP?1:0)*((double)dataTrail[i].duration))*bestFutureValue 
+						dataTrail[i].reward + pow((double)GAMMA, (USE_QSMDP?0:1)+(USE_QSMDP?1:0)*((0.01*(double)dataTrail[i].duration)))*bestFutureValue 
 						- ValueFunction[currentNode]->GetValue(dataTrail[i].prevState, dataTrail[i].prevAction) );
 			ValueFunction[currentNode]->SetValue(dataTrail[i].prevState, dataTrail[i].prevAction, value);
 		}
