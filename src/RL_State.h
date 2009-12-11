@@ -11,7 +11,8 @@ namespace brainSpace {
 	class RL_State
 	{
 	public:
-		RL_State( AIClasses* ai, int node );
+		//RL_State(AIClasses* ai, int node, unsigned short int type, int buildingToBuild);
+		RL_State(AIClasses* ai, int node, unsigned short int type);
 		RL_State();
 		virtual ~RL_State();
 		int GetID();
