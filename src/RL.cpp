@@ -422,9 +422,7 @@ bool brainSpace::RL::ShouldIUpdate()
 
 	if (PreviousAction[currentNode].Action == RL_ATTACK_ACTION)
 	{
-		if(ai->knowledge->groupManager->GetMilitaryGroupMgr()->GetNumAttackingGroups() > 0)
-			return false;
-		return true;
+		return ai->knowledge->groupManager->GetMilitaryGroupMgr()->IsAllAttackGroupsIdle();
 	} 
 	else if (PreviousAction[currentNode].Action == ai->utility->GetUnitDef("armrock")->GetUnitDefId())
 	{
