@@ -57,7 +57,11 @@ void brainSpace::MilitaryGroupManager::AddUnit( Unit* unit )
 		if(tmpGroup->GetSize() > 8)
 		{
 			tmpGroup->SetStatus(MilitaryUnitGroup::MILI_UNIT_GRP_IDLE);
-			Unit* ug = ai->knowledge->selfInfo->baseInfo->GetWeakestBaseBuilding();
+			SAIFloat3 pos;
+			pos.x = ai->callback->GetMap()->GetWidth()/2;
+			pos.z = ai->callback->GetMap()->GetHeight()/2;
+			pos.y = 50;
+			tmpGroup->Scout(pos);
 		}
 	}
 	else

@@ -438,7 +438,7 @@ void Decision::Update(int frame)
 	{//kill your self after 30 mins
 
 		// why didnt we finish??
-		ai->utility->Log(ALL, MISC, "We stopped.. fuck. ShouldIUpdate? %d", rl->ShouldIUpdate());
+		ai->utility->ChatMsg("We stopped.. fuck. ShouldIUpdate? %d", rl->ShouldIUpdate());
 
 		ai->utility->Suicide();
 		//ai->utility->ResetGame(rl);
