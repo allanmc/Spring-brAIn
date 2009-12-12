@@ -416,13 +416,17 @@ bool brainSpace::RL::ShouldIUpdate()
 {
 	if(PreviousAction.empty())
 	{
-		ai->utility->Log(ALL, LOG_RL, "Wtf, previousaction is NULL?");
+		ai->utility->Log(ALL, MISC, "Wtf, previousaction is NULL?");
 		return false;
 	}
 
 	if (PreviousAction[currentNode].Action == RL_ATTACK_ACTION)
 	{
+		ai->utility->Log(ALL, MISC, "We were attacking, idle?: %d", ai->knowledge->groupManager->GetMilitaryGroupMgr()->IsAllAttackGroupsIdle());
+		ai->utility->Log(ALL, MISC, "We were attacking, attacking amount: %d", ai->knowledge->groupManager->GetMilitaryGroupMgr()->GetNumAttackingGroups());
+
 		return ai->knowledge->groupManager->GetMilitaryGroupMgr()->IsAllAttackGroupsIdle();
+
 	} 
 	else if (PreviousAction[currentNode].Action == ai->utility->GetUnitDef("armrock")->GetUnitDefId())
 	{

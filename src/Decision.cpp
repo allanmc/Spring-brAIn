@@ -434,8 +434,13 @@ void Decision::Update(int frame)
 		return;
 	}
 
-	if(frame == 254000)
+	if(frame == 354000)
 	{//kill your self after 30 mins
+
+		// why didnt we finish??
+		ai->utility->Log(ALL, MISC, "We stopped.. fuck. ShouldIUpdate? %d", rl->ShouldIUpdate());
+		ai->utility->Log(ALL, MISC, "is state terminal? %d", rl->GetState(0).IsTerminal());
+
 		ai->utility->Suicide();
 		//ai->utility->ResetGame(rl);
 		//resettingGame = true;
