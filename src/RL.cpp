@@ -446,7 +446,10 @@ bool brainSpace::RL::ShouldIUpdate()
 	} 
 	else
 	{
-		ai->utility->Log(ALL, MISC, "We were building a building, and command is idle: %d", ai->knowledge->groupManager->ConstructionGroupIsIdle());
-		return ai->knowledge->groupManager->ConstructionGroupIsIdle();
+		ai->utility->Log(ALL, MISC, "We were building a building, and command is idle: %d, commands: %d", ai->knowledge->groupManager->ConstructionGroupIsIdle(), ai->commander->GetCurrentCommands().size());
+		if(ai->knowledge->groupManager->ConstructionGroupIsIdle())
+			return true;
+		else
+			return (ai->commander->GetCurrentCommands().size() > 0);
 	}
 }
