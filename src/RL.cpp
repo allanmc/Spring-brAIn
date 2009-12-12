@@ -220,7 +220,7 @@ RL_Action RL::FindBestAction( RL_State &state )
 			action = tempAction;
 		}
 	}
-	if (action.ID < 0 || action.ID > 3)
+	if (action.ID < 0 || action.ID > 4)
 		exit(0);
 	return action;
 }
@@ -305,6 +305,10 @@ RL_Action RL::Update()
 	//Reward
 	float reward = 0;
 	if (USE_RS_TIME) reward = PreviousFrame[currentNode] - ai->frame;
+	if (PreviousAction[currentNode].Action == RL_ATTACK_ACTION)
+	{
+		reward = -10;
+	}
 
 	if(USE_RS_LABS && PreviousAction[currentNode].Action == ai->utility->GetUnitDef("armlab")->GetUnitDefId())
 		reward += 10;

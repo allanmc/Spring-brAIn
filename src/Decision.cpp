@@ -157,6 +157,7 @@ void Decision::UpdateRL()
 			if (action.Action == RL_ATTACK_ACTION)
 			{
 				//attack enemy
+				ai->utility->Log(ALL, MISC, "Attacking enemy!!!");
 				vector<Point*> points = ai->callback->GetMap()->GetPoints(true);
 				SAIFloat3 enemyStartingPosition;
 				for( int i = 0 ; i < (int)points.size() ; i++ )
@@ -438,6 +439,14 @@ void Decision::Update(int frame)
 		//ai->utility->Suicide();
 		//ai->utility->ResetGame(rl);
 		//resettingGame = true;
+	}
+
+	if (frame % 90 == 0)
+	{
+		if (rl->ShouldIUpdate())
+		{
+			UpdateRL();
+		}
 	}
 	if(frame == 1)
 	{	

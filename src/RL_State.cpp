@@ -19,7 +19,7 @@ RL_State::RL_State( AIClasses* aiClasses, int node, unsigned short int type)
 			int labCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armlab");
 			int solarCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armsolar");
 			int mexCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armmex");
-			int rockoCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armrock");
+			int rockoCount = ai->knowledge->selfInfo->armyInfo->CountAggressive();
 			if (rockoCount >= RL_ROCKO_INDEX-1)
 			{
 				terminal = true;
@@ -32,7 +32,7 @@ RL_State::RL_State( AIClasses* aiClasses, int node, unsigned short int type)
 				Actions.push_back(RL_Action(ai->utility->GetUnitDef("armsolar")->GetUnitDefId(),1,false));
 			if(mexCount < RL_MEX_INDEX-1)
 				Actions.push_back(RL_Action(ai->utility->GetUnitDef("armmex")->GetUnitDefId(),2,false));
-			if (labCount > 0 && rockoCount < RL_ROCKO_INDEX)
+			if (labCount > 0 && rockoCount < RL_ROCKO_INDEX-1)
 			{
 				Actions.push_back(RL_Action(ai->utility->GetUnitDef("armrock")->GetUnitDefId(),3,false));
 			}
