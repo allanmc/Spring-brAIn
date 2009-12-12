@@ -28,6 +28,7 @@ RL::RL( AIClasses* aiClasses, unsigned short int type, double epsilon)
 	actions.push_back( QAction("Solar", 1));
 	actions.push_back( QAction("Mex", 2));
 	actions.push_back( QAction("Rocko", 3));
+	actions.push_back( QAction("Attack", 4));
 	ValueFunction.push_back(new RL_Q(ai, actions, stateVars)); //root
 
 	ClearAllNodes();
@@ -405,4 +406,39 @@ RL_Action RL::Update()
 float RL::GetTotalReward()
 {
 	return totalReward;
+}
+
+bool brainSpace::RL::ShouldIUpdate()
+{
+	if(PreviousAction.empty())
+	{
+		ai->utility->Log(ALL, LOG_RL, "Wtf, previousaction is NULL?");
+		return false;
+	}
+
+	if (PreviousAction[currentNode].Action == RL_ATTACK_ACTION)
+	{
+		if(ai->knowledge->groupManager->GetMilitaryGroupMgr()->GetNumAttackingGroups() > 0)
+			return false;
+		return true;
+	} 
+	else if (PreviousAction[currentNode].Action == ai->utility->GetUnitDef("armrock")->GetUnitDefId())
+	{
+		map<int, struct UnitInformationContainer> units = ai->knowledge->selfInfo->baseInfo->GetUnits();
+		//ai->knowledge->groupManager->GetMilitaryGroupMgr()->
+		map<int, struct UnitInformationContainer>::iterator it;
+		for(it = units.begin();it != units.end(); it++)
+		{
+			if(strcmp((*it).second.def->GetName(), "armlab") == 0)
+			{
+				if(Unit::GetInstance(ai->callback, (*it).first)->GetCurrentCommands().size() > 0)
+					return false;
+			}
+		}
+		return true;
+	} 
+	else
+	{
+		return ai->knowledge->groupManager->ConstructionGroupIsIdle();
+	}
 }

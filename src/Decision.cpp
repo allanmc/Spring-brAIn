@@ -138,7 +138,8 @@ void Decision::UnitFinished(int unit)
 	{
 		delete wpmt[i];
 	}
-	if(ai->frame > 0)
+	wpmt.clear();
+	if(rl->ShouldIUpdate())
 		UpdateRL();
 }
 
@@ -153,28 +154,48 @@ void Decision::UpdateRL()
 			ai->utility->Log(LOG_DEBUG, LOG_RL, "UpdateRL() anot null action");
 			ai->utility->Log(LOG_DEBUG, LOG_RL, "UpdateRL() action->ID = %i", action.ID);
 			ai->utility->Log(LOG_DEBUG, LOG_RL, "UpdateRL() action->Action = %i", action.Action);
-			//simple unit to build
-			
-			SBuildUnitCommand c;
-			ai->utility->Log(LOG_DEBUG, LOG_RL, "UpdateRL() action->Action = %i", action.Action);
-			c.toBuildUnitDefId = action.Action;
-			ai->utility->Log(LOG_DEBUG, LOG_RL, "UpdateRL() continuing");
-			c.timeOut = 30000;
-
-			if(action.ID == 3)
+			if (action.Action == RL_ATTACK_ACTION)
 			{
-				c.buildPos = (SAIFloat3){0,0,0};
-				c.facing = UNIT_COMMAND_BUILD_NO_FACING;
-				c.options = 0;
-				bc->ConstructUnit(c);					
-			}
+				//attack enemy
+				vector<Point*> points = ai->callback->GetMap()->GetPoints(true);
+				SAIFloat3 enemyStartingPosition;
+				for( int i = 0 ; i < (int)points.size() ; i++ )
+				{
+					if ( points[i]->GetPosition().x == ai->callback->GetMap()->GetStartPos().x &&
+						points[i]->GetPosition().z == ai->callback->GetMap()->GetStartPos().z )
+					{
+						continue;
+					}
+					enemyStartingPosition = points[i]->GetPosition();
+					break;
+				}
+				ai->knowledge->groupManager->AttackPositionWithAllGroups(enemyStartingPosition);
+			} 
 			else
-			{
-				c.facing = 0;
-				c.options = 0;
-				ai->knowledge->groupManager->ErectBuilding( c );
+				{
+				//simple unit to build
+				
+				SBuildUnitCommand c;
+				ai->utility->Log(LOG_DEBUG, LOG_RL, "UpdateRL() action->Action = %i", action.Action);
+				c.toBuildUnitDefId = action.Action;
+				ai->utility->Log(LOG_DEBUG, LOG_RL, "UpdateRL() continuing");
+				c.timeOut = 30000;
+
+				if(action.ID == 3)
+				{
+					c.buildPos = (SAIFloat3){0,0,0};
+					c.facing = UNIT_COMMAND_BUILD_NO_FACING;
+					c.options = 0;
+					bc->ConstructUnit(c);					
+				}
+				else
+				{
+					c.facing = 0;
+					c.options = 0;
+					ai->knowledge->groupManager->ErectBuilding( c );
+				}
+				ai->utility->Log(ALL, MISC,  "RL: Building unit with unitdef: %d", action.Action );
 			}
-			ai->utility->Log(ALL, MISC,  "RL: Building unit with unitdef: %d", action.Action );
 		}
 		else 
 		{

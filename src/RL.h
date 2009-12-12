@@ -6,6 +6,7 @@
 #define RL_LAB_INDEX 5
 #define RL_PLANT_INDEX 5
 #define RL_ROCKO_INDEX 40
+#define RL_ATTACK_ACTION -1
 
 #define QBFILE_VERSION 2
 
@@ -65,6 +66,7 @@ namespace brainSpace {
 
 		void setDesireToBuild(int buildingId);
 		RL_Action Update();
+		bool ShouldIUpdate();
 	private:
 		AIClasses* ai;
 		vector<DataPoint> dataTrail;

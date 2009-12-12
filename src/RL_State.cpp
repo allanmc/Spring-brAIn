@@ -11,7 +11,7 @@ RL_State::RL_State( AIClasses* aiClasses, int node, unsigned short int type)
 {
 	Node = node;
 	ai = aiClasses;
-	switch (type)
+	switch (node)
 	{
 	case 0: //Flat old
 		{
@@ -35,6 +35,10 @@ RL_State::RL_State( AIClasses* aiClasses, int node, unsigned short int type)
 			if (labCount > 0 && rockoCount < RL_ROCKO_INDEX)
 			{
 				Actions.push_back(RL_Action(ai->utility->GetUnitDef("armrock")->GetUnitDefId(),3,false));
+			}
+			if (rockoCount > 0)
+			{
+				Actions.push_back(RL_Action(RL_ATTACK_ACTION, 4, false));
 			}
 		}break;
 	default://error
