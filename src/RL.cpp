@@ -430,6 +430,7 @@ bool brainSpace::RL::ShouldIUpdate()
 	} 
 	else if (PreviousAction[currentNode].Action == ai->utility->GetUnitDef("armrock")->GetUnitDefId())
 	{
+		ai->utility->Log(ALL, MISC, "We were building rockos");
 		map<int, struct UnitInformationContainer> units = ai->knowledge->selfInfo->baseInfo->GetUnits();
 		//ai->knowledge->groupManager->GetMilitaryGroupMgr()->
 		map<int, struct UnitInformationContainer>::iterator it;
@@ -445,6 +446,7 @@ bool brainSpace::RL::ShouldIUpdate()
 	} 
 	else
 	{
+		ai->utility->Log(ALL, MISC, "We were building a building, and command is idle: %d", ai->knowledge->groupManager->ConstructionGroupIsIdle());
 		return ai->knowledge->groupManager->ConstructionGroupIsIdle();
 	}
 }
