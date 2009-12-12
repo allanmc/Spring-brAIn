@@ -439,7 +439,6 @@ void Decision::Update(int frame)
 
 		// why didnt we finish??
 		ai->utility->Log(ALL, MISC, "We stopped.. fuck. ShouldIUpdate? %d", rl->ShouldIUpdate());
-		ai->utility->Log(ALL, MISC, "is state terminal? %d", rl->GetState(0).IsTerminal());
 
 		ai->utility->Suicide();
 		//ai->utility->ResetGame(rl);
