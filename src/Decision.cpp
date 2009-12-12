@@ -434,9 +434,9 @@ void Decision::Update(int frame)
 		return;
 	}
 
-	if(frame == 54000)
+	if(frame == 254000)
 	{//kill your self after 30 mins
-		//ai->utility->Suicide();
+		ai->utility->Suicide();
 		//ai->utility->ResetGame(rl);
 		//resettingGame = true;
 	}
