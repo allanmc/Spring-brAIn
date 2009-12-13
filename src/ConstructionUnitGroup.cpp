@@ -227,6 +227,8 @@ void ConstructionUnitGroup::QueueBuildOrder( SBuildUnitCommand order )
 	ai->utility->ChatMsg( "Size of build queue: %d", BuildQueue.size() );
 }
 
+
+
 ///Is the group idle, and has nothing in its queue?
 bool ConstructionUnitGroup::IsIdle()
 {
@@ -584,3 +586,8 @@ SAIFloat3 ConstructionUnitGroup::FindGoodBuildSite(SAIFloat3 builderPos, UnitDef
 	return bestBuildSpot;
 }
 
+
+int brainSpace::ConstructionUnitGroup::GetBuildQueueSize()
+{
+	return BuildQueue.size();
+}

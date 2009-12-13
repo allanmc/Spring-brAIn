@@ -29,6 +29,11 @@ void brainSpace::GroupController::AttackPositionWithAllGroups( SAIFloat3 pos )
 		MilitaryGroupMgr->GiveMoveOrder(groups[i], pos);
 	}
 }
+
+int brainSpace::GroupController::GetAmountOfBuildOrders()
+{
+	return ConstructionGroupMgr->GetAmountOfBuildOrdersForGroup0();
+}
 void GroupController::AddUnit(Unit *unit)
 {
 	if ( unit->GetDef()->IsBuilder() )

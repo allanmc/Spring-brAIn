@@ -434,7 +434,7 @@ void Decision::Update(int frame)
 		return;
 	}
 
-	if(frame == 354000)
+	if(frame == 200000)
 	{//kill your self after 30 mins
 
 		// why didnt we finish??

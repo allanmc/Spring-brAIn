@@ -450,6 +450,6 @@ bool brainSpace::RL::ShouldIUpdate()
 		if(ai->knowledge->groupManager->ConstructionGroupIsIdle())
 			return true;
 		else
-			return (ai->commander->GetCurrentCommands().size() > 0);
+			return (ai->commander->GetCurrentCommands().size() + ai->knowledge->groupManager->GetAmountOfBuildOrders() > 0);
 	}
 }

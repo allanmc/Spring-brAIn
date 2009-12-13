@@ -100,3 +100,8 @@ bool ConstructionGroupManager::IsIdle()
 	}
 	return UnitGroups[0]->IsIdle();
 }
+
+int brainSpace::ConstructionGroupManager::GetAmountOfBuildOrdersForGroup0()
+{
+	return UnitGroups[0]->GetBuildQueueSize();
+}
