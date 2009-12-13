@@ -23,8 +23,11 @@ RL_State::RL_State( AIClasses* aiClasses, int node, unsigned short int type)
 			ai->utility->Log(ALL, MISC, "CountAggressive: %d", rockoCount);
 			if (rockoCount >= RL_ROCKO_INDEX-1)
 			{
-				terminal = true;
 				rockoCount = RL_ROCKO_INDEX-1;
+			}
+			if (ai->commanderDead != 0)
+			{
+				terminal = true;
 			}
 			ID = rockoCount*RL_MEX_INDEX*RL_SOLAR_INDEX*RL_LAB_INDEX + labCount*RL_MEX_INDEX*RL_SOLAR_INDEX + solarCount*RL_MEX_INDEX + mexCount;
 			if(labCount < RL_LAB_INDEX-1)
