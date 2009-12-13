@@ -19,7 +19,8 @@ RL_State::RL_State( AIClasses* aiClasses, int node, unsigned short int type)
 			int labCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armlab");
 			int solarCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armsolar");
 			int mexCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armmex");
-			int rockoCount = ai->knowledge->selfInfo->armyInfo->CountAggressive();
+			int rockoCount = ai->knowledge->selfInfo->armyInfo->CountUnitsByName("armrock");
+			ai->utility->Log(ALL, MISC, "CountAggressive: %d", rockoCount);
 			if (rockoCount >= RL_ROCKO_INDEX-1)
 			{
 				terminal = true;

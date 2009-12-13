@@ -37,6 +37,7 @@ namespace brainSpace
 		int CountAggressive();
 		float GetAggresiveDps();
 		float GetDefensiveDps();
+		int CountUnitsByName( const char* name );
 
 	private:
 		AIClasses* ai;

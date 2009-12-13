@@ -139,8 +139,11 @@ void Decision::UnitFinished(int unit)
 		delete wpmt[i];
 	}
 	wpmt.clear();
-	if(rl->ShouldIUpdate())
-		UpdateRL();
+	if(ai->frame > 0)
+	{
+		if(rl->ShouldIUpdate())
+			UpdateRL();
+	}
 }
 
 void Decision::UpdateRL()

@@ -163,3 +163,18 @@ float ArmyInfo::GetDefensiveDps()
 {
 	return defensiveDps;
 }
+
+int brainSpace::ArmyInfo::CountUnitsByName( const char* name )
+{
+	map<int, UnitInformationContainer> i = quadTree->GetUnits();
+	map<int, UnitInformationContainer>::iterator it = i.begin();
+
+	int count = 0;
+	while ( it != i.end() )
+	{
+		if ( strcmp(it->second.def->GetName(), name ) == 0 )
+			count++;
+		it++;
+	}
+	return count;
+}
