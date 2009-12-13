@@ -275,7 +275,7 @@ void RL::TakeAction(RL_Action &action)
 RL_Action RL::Update()
 {
 	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() node:%d", currentNode);
-
+	
 	bool terminal = false;
 	RL_State state = GetState(currentNode);
 	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() fail? state found");
