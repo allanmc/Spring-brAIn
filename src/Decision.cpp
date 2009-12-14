@@ -461,7 +461,12 @@ void Decision::Update(int frame)
 		RL_State state = RL_State(ai, 0, 0);
 		ai->utility->ChatMsg("amount of actions: %d, stateid: %d", state.GetActions().size(), state.GetID());
 		ai->utility->ChatMsg("previousaction: %d", rl->PreviousAction[0].ID);
-		ai->utility->Suicide();
+		int labCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armlab");
+		int solarCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armsolar");
+		int mexCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armmex");
+		int rockoCount = ai->knowledge->selfInfo->armyInfo->CountUnitsByName("armrock");
+		ai->utility->ChatMsg("labs: %d, solar: %d, mex: %d, rockos: %d", labCount, solarCount, mexCount, rockoCount);
+		exit(0);
 		//ai->utility->ResetGame(rl);
 		//resettingGame = true;
 	}
