@@ -448,7 +448,7 @@ void Decision::Update(int frame)
 		{
 			UpdateRL();
 		}
-		else
+		//else
 			//ai->utility->Suicide();
 		//ai->utility->ResetGame(rl);
 		//resettingGame = true;
