@@ -472,6 +472,8 @@ void Decision::Update(int frame)
 
 		// why didnt we finish??
 		ai->utility->ChatMsg("We stopped.. fuck. ShouldIUpdate? %d", rl->ShouldIUpdate());
+		RL_State state = RL_State(ai, 0, 0);
+		ai->utility->ChatMsg("amount of actions: %d, stateid: %d", state.GetActions().size(), state.GetID());
 		ai->utility->Suicide();
 		//ai->utility->ResetGame(rl);
 		//resettingGame = true;

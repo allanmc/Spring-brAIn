@@ -425,7 +425,7 @@ bool brainSpace::RL::ShouldIUpdate()
 		ai->utility->ChatMsg("Wtf, previousaction is NULL?");
 		return false;
 	}
-
+	
 	if (PreviousAction[currentNode].Action == RL_ATTACK_ACTION)
 	{
 		//ai->utility->ChatMsg("We were attacking, idle?: %d", ai->knowledge->groupManager->GetMilitaryGroupMgr()->IsAllAttackGroupsIdle());
