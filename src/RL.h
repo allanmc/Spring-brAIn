@@ -67,6 +67,7 @@ namespace brainSpace {
 		void setDesireToBuild(int buildingId);
 		RL_Action Update();
 		bool ShouldIUpdate();
+		vector<RL_Action> PreviousAction;
 	private:
 		AIClasses* ai;
 		vector<DataPoint> dataTrail;
@@ -81,7 +82,6 @@ namespace brainSpace {
 
 		int currentNode;
 		vector<RL_State> PreviousState;
-		vector<RL_Action> PreviousAction;
 		vector<float> PreviousFrame;
 		vector<int> ParentNode;
 		float totalReward;
