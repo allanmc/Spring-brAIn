@@ -439,20 +439,6 @@ void Decision::Update(int frame)
 		return;
 	}
 
-	if(frame == 200000)
-	{//kill your self after 30 mins
-
-		// why didnt we finish??
-		ai->utility->ChatMsg("We stopped.. fuck. ShouldIUpdate? %d", rl->ShouldIUpdate());
-		if (rl->ShouldIUpdate())
-		{
-			UpdateRL();
-		}
-		else
-			ai->utility->Suicide();
-		//ai->utility->ResetGame(rl);
-		//resettingGame = true;
-	}
 	if(frame == 400000)
 	{//kill your self after 30 mins
 
