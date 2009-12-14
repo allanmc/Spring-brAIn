@@ -11,7 +11,7 @@ ConstructionGroupManager::ConstructionGroupManager( AIClasses* aiClasses )
 
 ConstructionGroupManager::~ConstructionGroupManager()
 {
-	ai->utility->ChatMsg("Deconstructing ConstructionGroupManager");
+	//ai->utility->ChatMsg("Deconstructing ConstructionGroupManager");
 	for (int i = 0; i < (int)UnitGroups.size(); i++)
 	{
 		delete UnitGroups[i];

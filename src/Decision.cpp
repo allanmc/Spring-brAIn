@@ -244,7 +244,8 @@ void Decision::UnitDestroyed(int unit, int attacker)
 		ai->utility->Log( LOG_DEBUG, DECISION, "UnitDestroyed: Unitdef was %s",d->GetName() );
 		if(d->IsCommander())
 		{
-			ai->commanderDead = -1;
+			// our commander died
+			ai->commanderDead = 2;
 			UpdateRL();
 		}
 	}
@@ -327,6 +328,7 @@ void Decision::EnemyDestroyed(int enemy, int attacker)
 		if(d->IsCommander())
 		{
 			ai->utility->Log( LOG_DEBUG, DECISION, "EnemyDestroyed: commander" );
+			//his commander died
 			ai->commanderDead = 1;
 			UpdateRL();
 		}

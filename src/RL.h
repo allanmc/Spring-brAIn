@@ -1,11 +1,11 @@
 #ifndef _BRAINSPACE_RL_H
 #define _BRAINSPACE_RL_H
 
-#define RL_SOLAR_INDEX 15
-#define RL_MEX_INDEX 20
-#define RL_LAB_INDEX 5
+#define RL_SOLAR_INDEX 10
+#define RL_MEX_INDEX 15
+#define RL_LAB_INDEX 4
 #define RL_PLANT_INDEX 5
-#define RL_ROCKO_INDEX 40
+#define RL_ROCKO_INDEX 20
 #define RL_ATTACK_ACTION -2
 
 #define QBFILE_VERSION 2
@@ -21,7 +21,7 @@
 #define USE_N_STEP false
 
 //zero means infinite (Used both for backtracking and n-step)
-#define BACKTRACKING_STEPS 0
+#define BACKTRACKING_STEPS 5
 #define EPSILON_START 0.1
 #define GAMMA 0.9
 #define ALPHA 0.1

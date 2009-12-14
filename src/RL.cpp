@@ -19,7 +19,8 @@ RL::RL( AIClasses* aiClasses, unsigned short int type, double epsilon)
 	vector<QStateVar> stateVars;
 	vector<QAction> actions;
 	ai->utility->Log(ALL,MISC, "begin statevars");
-
+	
+	stateVars.push_back( QStateVar("CommanderDead", 3));
 	stateVars.push_back( QStateVar("Rocko", RL_ROCKO_INDEX));
 	stateVars.push_back( QStateVar("Lab", RL_LAB_INDEX));
 	stateVars.push_back( QStateVar("Solar", RL_SOLAR_INDEX));
@@ -316,9 +317,14 @@ RL_Action RL::Update()
 	float bestFutureValue;
 	if ( state.IsTerminal() )
 	{
-		if(currentNode == 0)
+		if(currentNode == 0 && ai->commanderDead == 1)
 		{
 			reward += 100;
+		}
+		else if(currentNode == 0 && ai->commanderDead == 2)
+		{
+			//we died.. bad boy
+			reward -= 100;
 		}
 
 		terminal = true;
@@ -422,15 +428,15 @@ bool brainSpace::RL::ShouldIUpdate()
 
 	if (PreviousAction[currentNode].Action == RL_ATTACK_ACTION)
 	{
-		ai->utility->ChatMsg("We were attacking, idle?: %d", ai->knowledge->groupManager->GetMilitaryGroupMgr()->IsAllAttackGroupsIdle());
-		ai->utility->ChatMsg("We were attacking, attacking amount: %d", ai->knowledge->groupManager->GetMilitaryGroupMgr()->GetNumAttackingGroups());
+		//ai->utility->ChatMsg("We were attacking, idle?: %d", ai->knowledge->groupManager->GetMilitaryGroupMgr()->IsAllAttackGroupsIdle());
+		//ai->utility->ChatMsg("We were attacking, attacking amount: %d", ai->knowledge->groupManager->GetMilitaryGroupMgr()->GetNumAttackingGroups());
 
 		return ai->knowledge->groupManager->GetMilitaryGroupMgr()->IsAllAttackGroupsIdle();
 
 	} 
 	else if (PreviousAction[currentNode].Action == ai->utility->GetUnitDef("armrock")->GetUnitDefId())
 	{
-		ai->utility->ChatMsg("We were building rockos");
+		//ai->utility->ChatMsg("We were building rockos");
 		map<int, struct UnitInformationContainer> units = ai->knowledge->selfInfo->baseInfo->GetUnits();
 		//ai->knowledge->groupManager->GetMilitaryGroupMgr()->
 		map<int, struct UnitInformationContainer>::iterator it;
@@ -446,7 +452,7 @@ bool brainSpace::RL::ShouldIUpdate()
 	} 
 	else
 	{
-		ai->utility->ChatMsg("We were building a building, and command is idle: %d, commands: %d", ai->knowledge->groupManager->ConstructionGroupIsIdle(), ai->commander->GetCurrentCommands().size());
+		//ai->utility->ChatMsg("We were building a building, and command is idle: %d, commands: %d", ai->knowledge->groupManager->ConstructionGroupIsIdle(), ai->commander->GetCurrentCommands().size());
 		if(ai->knowledge->groupManager->ConstructionGroupIsIdle())
 			return true;
 		else
