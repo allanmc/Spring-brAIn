@@ -393,8 +393,8 @@ RL_Action RL::Update()
 			if( dataTrail[i].eligibilityTrace < Q_LAMBDA_THRESHOLD)
 				dataTrail.erase(dataTrail.begin());
 
-		RL_Action bestAction = FindBestAction( state );
-		float delta = reward + GAMMA*ValueFunction[currentNode]->GetValue( state, bestAction ) - ValueFunction[currentNode]->GetValue( PreviousState[currentNode], PreviousAction[currentNode] );
+		//RL_Action bestAction = FindBestAction( state );
+		float delta = reward + GAMMA*bestFutureValue - ValueFunction[currentNode]->GetValue( PreviousState[currentNode], PreviousAction[currentNode] );
 
 		for(int i = dataTrail.size()-1; i>=0; i--)
 		{
