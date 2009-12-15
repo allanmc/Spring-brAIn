@@ -186,10 +186,12 @@ RL_Action RL::FindNextAction( RL_State &state )
 	float r = rand()/(float)RAND_MAX;
 	if ( r <= EPSILON ) //non-greedy
 	{
+		m_greedyChoice = false;
 		action = stateActions[rand()%stateActions.size()];
 	}
 	else //greedy
 	{
+		m_greedyChoice = true;
 		action = FindBestAction(state);
 	}
 	return action;
@@ -344,7 +346,7 @@ RL_Action RL::Update()
 
 	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() reward set, %f", reward);
 	float value;
-	if(!USE_N_STEP)
+	if(!USE_N_STEP && !USE_Q_LAMBDA)
 	{
 		//if complex then update the childs value funtion
 		if(PreviousAction[currentNode].Complex)
@@ -381,6 +383,31 @@ RL_Action RL::Update()
 		dataTrail.push_back(DataPoint(PreviousState[currentNode], PreviousAction[currentNode], state, reward, ai->frame - PreviousFrame[currentNode]));
 		if(BACKTRACKING_STEPS > 0 &&  dataTrail.size() > BACKTRACKING_STEPS)
 			dataTrail.erase(dataTrail.begin());
+	}
+	if(USE_Q_LAMBDA )
+	{
+		//add the current to the dataTrail
+		dataTrail.push_back(DataPoint(PreviousState[currentNode], PreviousAction[currentNode], state, reward, ai->frame - PreviousFrame[currentNode]));
+
+		for ( int i = 0 ; i < dataTrail.size() ; i++ )
+			if( dataTrail[i].eligibilityTrace < Q_LAMBDA_THRESHOLD)
+				dataTrail.erase(dataTrail.begin());
+
+		RL_Action bestAction = FindBestAction( state );
+		float delta = reward + GAMMA*ValueFunction[currentNode]->GetValue( state, bestAction ) - ValueFunction[currentNode]->GetValue( PreviousState[currentNode], PreviousAction[currentNode] );
+
+		for(int i = dataTrail.size()-1; i>=0; i--)
+		{
+			value = ValueFunction[currentNode]->GetValue(dataTrail[i].prevState, dataTrail[i].prevAction)
+				+ ALPHA*delta*dataTrail[i].eligibilityTrace;
+			ValueFunction[currentNode]->SetValue(dataTrail[i].prevState, dataTrail[i].prevAction, value);
+			if ( m_greedyChoice )
+			{
+				dataTrail[i].eligibilityTrace *= GAMMA*LAMBDA;
+			}
+			else dataTrail[i].eligibilityTrace = 0;
+		}
+
 	}
 	
 	if ( terminal )

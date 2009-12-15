@@ -19,6 +19,9 @@
 #define USE_RS_LABS false
 #define USE_BACKTRACKING false
 #define USE_N_STEP false
+#define USE_Q_LAMBDA true
+#define LAMBDA 0.95
+#define Q_LAMBDA_THRESHOLD 0.00005
 
 //zero means infinite (Used both for backtracking and n-step)
 #define BACKTRACKING_STEPS 5
@@ -46,6 +49,7 @@ namespace brainSpace {
 		RL_State resultState;
 		float reward;
 		float duration;
+		float eligibilityTrace;
 
 		DataPoint(RL_State ps, RL_Action pa, RL_State rs, float r, float d)
 		{
@@ -54,6 +58,7 @@ namespace brainSpace {
 			resultState = rs;
 			reward = r;
 			duration = d;
+			eligibilityTrace = 1;
 		}
 	};
 
@@ -70,7 +75,6 @@ namespace brainSpace {
 		vector<RL_Action> PreviousAction;
 	private:
 		AIClasses* ai;
-		vector<DataPoint> dataTrail;
 		RL_State nullState;
 		RL_Action nullAction;
 		int buildingToBuild;
@@ -83,6 +87,7 @@ namespace brainSpace {
 		int currentNode;
 		vector<RL_State> PreviousState;
 		vector<float> PreviousFrame;
+		vector<DataPoint> dataTrail;
 		vector<int> ParentNode;
 		float totalReward;
 		bool goalAchieved;
@@ -94,6 +99,7 @@ namespace brainSpace {
 		void LoadFromFile();
 		void SaveToFile();
 		vector<RL_Q*> ValueFunction;
+		bool m_greedyChoice;
 
 		double EPSILON;
 	};
