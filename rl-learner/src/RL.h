@@ -13,14 +13,18 @@
 
 #define PRINT_REWARD false
 
-#define USE_QSMDP true
+#define USE_QSMDP false
 #define USE_RS_TIME true
 #define USE_RS_LABS false
-#define USE_BACKTRACKING true
+#define USE_BACKTRACKING false
 #define USE_N_STEP false
+#define USE_Q_LAMBDA true
+#define LAMBDA 0.95
+#define Q_LAMBDA_THRESHOLD 0.00005
+
 
 //zero means infinite (Used both for backtracking and n-step)
-#define BACKTRACKING_STEPS 2
+#define BACKTRACKING_STEPS 0
 
 #define GAMMA 0.9
 #define ALPHA 0.1
@@ -46,6 +50,7 @@ namespace brainSpace {
 		RL_State resultState;
 		float reward;
 		float duration;
+		float eligibilityTrace;
 
 		DataPoint(RL_State ps, RL_Action pa, RL_State rs, float r, float d)
 		{
@@ -54,6 +59,7 @@ namespace brainSpace {
 			resultState = rs;
 			reward = r;
 			duration = d;
+			eligibilityTrace = 1;
 		}
 	};
 
@@ -93,6 +99,8 @@ namespace brainSpace {
 		void LoadFromFile();
 		void SaveToFile();
 		vector<RL_Q*> ValueFunction;
+
+		bool m_greedyChoice;
 
 		double EPSILON;
 	};
