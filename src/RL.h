@@ -17,7 +17,7 @@
 #define USE_QSMDP false
 #define USE_RS_TIME true
 #define USE_RS_LABS false
-#define USE_BACKTRACKING true
+#define USE_BACKTRACKING false
 #define USE_N_STEP false
 
 //zero means infinite (Used both for backtracking and n-step)
