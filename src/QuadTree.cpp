@@ -84,7 +84,7 @@ void QuadTree::InsertUnit( int unitID, SAIFloat3 pos )
 	QuadTreeNode *iter = RootNode;
 	Unit* u = Unit::GetInstance( ai->callback, unitID );
 	UnitDef* def = u->GetDef();
-	if(pos.x == 0 && pos.z == 0 || def == NULL)
+	if((pos.x == 0 && pos.z == 0) || def == NULL)
 		return;
 
 	RemoveUnit(unitID);
