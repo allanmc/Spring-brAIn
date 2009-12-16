@@ -22,6 +22,8 @@ bool QuadTree::RemoveUnit( int unitID )
 	{
 		return false;
 	}
+	else
+		units.erase(unitID);
 
 	QuadTreeNode *iter = RootNode;
 
@@ -39,7 +41,6 @@ bool QuadTree::RemoveUnit( int unitID )
 		{
 			ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "Removing unit %d", unitID );
 			iter->RemoveUnit(unitID);
-			units.erase(unitID);
 			do 
 			{
 				iter = iter->GetParentNode();

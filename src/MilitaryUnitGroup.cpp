@@ -51,6 +51,7 @@ void MilitaryUnitGroup::Attack(int enemy)
 	{
 		com.unitId = it->first->GetUnitId();
 		ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_ATTACK, &com);
+		it->second = false;
 	}
 }
 
@@ -75,7 +76,9 @@ void MilitaryUnitGroup::Scout(SAIFloat3 pos)
 	{
 		com.unitId = it->first->GetUnitId();
 		ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &com);
+		it->second = false;
 	}
+	
 }
 
 void MilitaryUnitGroup::UnitIdle(springai::Unit *unit)

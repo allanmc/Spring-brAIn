@@ -60,10 +60,10 @@ void ArmyInfo::AddUnit(Unit* unit)
 
 void ArmyInfo::RemoveUnit(int unit)
 {
-	if (unitCount==0)
-	{
-		return;
-	}
+	//if (unitCount==0)
+	//{
+	//	return;
+	//}
 
 	if (quadTree->RemoveUnit( unit))
 	{
@@ -166,15 +166,27 @@ float ArmyInfo::GetDefensiveDps()
 
 int brainSpace::ArmyInfo::CountUnitsByName( const char* name )
 {
+	ai->utility->Log(ALL, MISC, "CountUnitsByName start ");
 	map<int, UnitInformationContainer> i = quadTree->GetUnits();
+	ai->utility->Log(ALL, MISC, "CountUnitsByName gotten units ");
 	map<int, UnitInformationContainer>::iterator it = i.begin();
+	ai->utility->Log(ALL, MISC, "CountUnitsByName gotten iterator ");
 
 	int count = 0;
 	while ( it != i.end() )
 	{
+		UnitDef *def = it->second.def;
+		if(def == NULL)
+		{
+			ai->utility->Log(ALL, MISC, "CountUnitsByName: def is null");
+			//i.erase(it);
+			it++;
+			continue;
+		}
 		if ( strcmp(it->second.def->GetName(), name ) == 0 )
 			count++;
 		it++;
 	}
+	ai->utility->Log(ALL, MISC, "CountUnitsByName:return");
 	return count;
 }

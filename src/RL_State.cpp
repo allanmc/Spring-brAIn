@@ -17,11 +17,15 @@ RL_State::RL_State( AIClasses* aiClasses, int node, unsigned short int type)
 		{
 			terminal = false;
 			int labCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armlab");
+			ai->utility->Log(ALL, MISC, "labCount: %d", labCount);
 			int solarCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armsolar");
+			ai->utility->Log(ALL, MISC, "solarCount: %d", solarCount);
 			int mexCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armmex");
+			ai->utility->Log(ALL, MISC, "mexCount: %d", mexCount);
 			int rockoCount = ai->knowledge->selfInfo->armyInfo->CountUnitsByName("armrock");
+			ai->utility->Log(ALL, MISC, "rockoCount: %d", rockoCount);
 			int commanderDead = ai->commanderDead;
-			ai->utility->Log(ALL, MISC, "CountAggressive: %d", rockoCount);
+			ai->utility->Log(ALL, MISC, "commanderDead: %d", commanderDead);
 			if (rockoCount >= RL_ROCKO_INDEX-1)
 			{
 				rockoCount = RL_ROCKO_INDEX-1;

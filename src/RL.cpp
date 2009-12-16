@@ -455,15 +455,15 @@ bool brainSpace::RL::ShouldIUpdate()
 	
 	if (PreviousAction[currentNode].Action == RL_ATTACK_ACTION)
 	{
-		//ai->utility->ChatMsg("We were attacking, idle?: %d", ai->knowledge->groupManager->GetMilitaryGroupMgr()->IsAllAttackGroupsIdle());
-		//ai->utility->ChatMsg("We were attacking, attacking amount: %d", ai->knowledge->groupManager->GetMilitaryGroupMgr()->GetNumAttackingGroups());
+		ai->utility->Log(ALL,LOG_RL,"We were attacking, idle?: %d", ai->knowledge->groupManager->GetMilitaryGroupMgr()->IsAllAttackGroupsIdle());
+		ai->utility->Log(ALL,LOG_RL,"We were attacking, attacking amount: %d", ai->knowledge->groupManager->GetMilitaryGroupMgr()->GetNumAttackingGroups());
 
 		return ai->knowledge->groupManager->GetMilitaryGroupMgr()->IsAllAttackGroupsIdle();
 
 	} 
 	else if (PreviousAction[currentNode].Action == ai->utility->GetUnitDef("armrock")->GetUnitDefId())
 	{
-		//ai->utility->ChatMsg("We were building rockos");
+		ai->utility->Log(ALL,LOG_RL,"We were building rockos");
 		map<int, struct UnitInformationContainer> units = ai->knowledge->selfInfo->baseInfo->GetUnits();
 		//ai->knowledge->groupManager->GetMilitaryGroupMgr()->
 		map<int, struct UnitInformationContainer>::iterator it;
@@ -472,14 +472,17 @@ bool brainSpace::RL::ShouldIUpdate()
 			if(strcmp((*it).second.def->GetName(), "armlab") == 0)
 			{
 				if(Unit::GetInstance(ai->callback, (*it).first)->GetCurrentCommands().size() > 0)
+				{
+					ai->utility->Log(ALL,LOG_RL,"a lab is not idle");
 					return false;
+				}
 			}
 		}
 		return true;
 	} 
 	else
 	{
-		//ai->utility->ChatMsg("We were building a building, and command is idle: %d, commands: %d", ai->knowledge->groupManager->ConstructionGroupIsIdle(), ai->commander->GetCurrentCommands().size());
+		ai->utility->Log(ALL,LOG_RL,"We were building a building, and command is idle: %d, commands: %d", ai->knowledge->groupManager->ConstructionGroupIsIdle(), ai->commander->GetCurrentCommands().size());
 		if(ai->knowledge->groupManager->ConstructionGroupIsIdle())
 			return true;
 		else

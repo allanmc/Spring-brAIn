@@ -161,6 +161,8 @@ void Decision::UpdateRL()
 			{
 				//attack enemy
 				ai->utility->Log(ALL, MISC, "Attacking enemy!!!");
+				ai->utility->Log(ALL, MISC, "Rocko amount: %d", ai->knowledge->selfInfo->armyInfo->CountUnitsByName("armrock"));
+
 				vector<Point*> points = ai->callback->GetMap()->GetPoints(true);
 				SAIFloat3 enemyStartingPosition;
 				for( int i = 0 ; i < (int)points.size() ; i++ )
@@ -241,7 +243,7 @@ void Decision::UnitDestroyed(int unit, int attacker)
 		ai->utility->Log( LOG_DEBUG, DECISION, "UnitDestroyed: Unitdef was -1" );
 	else
 	{
-		ai->utility->Log( LOG_DEBUG, DECISION, "UnitDestroyed: Unitdef was %s",d->GetName() );
+		ai->utility->Log( LOG_DEBUG, DECISION, "UnitDestroyed: Unitdef was %s, iscommander: %d",d->GetName(), d->IsCommander() );
 		if(d->IsCommander())
 		{
 			// our commander died
@@ -251,15 +253,19 @@ void Decision::UnitDestroyed(int unit, int attacker)
 	}
 	
 	//Always remove :)
+	ai->utility->Log(ALL, MISC, "armyInfo RemoveUnit ");
 	ai->knowledge->selfInfo->armyInfo->RemoveUnit(unit);
+	ai->utility->Log(ALL, MISC, "baseInfo RemoveUnit ");
 	ai->knowledge->selfInfo->baseInfo->RemoveBuilding(unit);
 
 	if(d->GetSpeed() > 0)
 	{
 		//remove from groupController
+		ai->utility->Log(ALL, MISC, "groupManager RemoveUnit ");
 		ai->knowledge->groupManager->RemoveUnit(destroyee);
 	}else{
 		//remove from BuildingController
+		ai->utility->Log(ALL, MISC, "BuildingController RemoveBuilding ");
 		bc->RemoveBuilding(destroyee);
 		if(destroyee->IsBeingBuilt())
 		{
@@ -756,7 +762,11 @@ void Decision::UnitIdle( int id )
 	{
 		ai->knowledge->groupManager->UnitIdle( u );
 	}
-	
+	if(u->GetUnitId() == ai->commander->GetUnitId())
+	{
+		if(rl->ShouldIUpdate())
+			UpdateRL();
+	}
 	//BuildSomethingUsefull();
 	//Construction groups has nothing to do... So build something we need!
 	delete u;

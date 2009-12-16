@@ -27,9 +27,14 @@ void BrainGroup::AddUnit( Unit *unit)
 
 void BrainGroup::RemoveUnit( Unit *unit)
 {
-	if ( Units.find( unit ) != Units.end() )
+	for ( map<Unit*, bool>::iterator it = Units.begin() ; it != Units.end() ; it++ )
 	{
-		Units.erase( unit );
+		if (it->first->GetUnitId() == unit->GetUnitId())
+		{
+			delete it->first;
+			Units.erase(it);
+			break;
+		}
 	}
 }
 

@@ -24,6 +24,7 @@ namespace brainSpace
 	class MilitaryGroupManager
 	{
 	public:
+		
 
 		MilitaryGroupManager( AIClasses* aiClasses );
 		virtual ~MilitaryGroupManager();
@@ -32,6 +33,7 @@ namespace brainSpace
 		void RemoveUnit( Unit* unit );
 		void GiveScoutOrder(MilitaryUnitGroup* group);
 		void GiveAttackOrder(MilitaryUnitGroup* group, int enemy );
+		vector<MilitaryUnitGroup*> GetAllAttackGroups();
 		vector<MilitaryUnitGroup*> GetIdleAttackGroups();
 		vector<MilitaryUnitGroup*> GetIdleScoutGroups();
 		void UnitIdle(Unit* unit );

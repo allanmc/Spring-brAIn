@@ -123,6 +123,10 @@ void brainSpace::MilitaryGroupManager::RemoveUnit( Unit* unit )
 	delete def;
 }
 
+vector<MilitaryUnitGroup*> brainSpace::MilitaryGroupManager::GetAllAttackGroups()
+{
+	return UnitGroups;
+}
 vector<MilitaryUnitGroup*> MilitaryGroupManager::GetIdleAttackGroups()
 {
 	//Utility* u = new Utility(Callback);
@@ -235,6 +239,8 @@ void MilitaryGroupManager::GiveScoutOrder(brainSpace::MilitaryUnitGroup* group)
 ///informs the groups that a unit has gone idle
 void MilitaryGroupManager::UnitIdle(Unit* unit)
 {
+	if(unit->GetCurrentCommands().size() > 0)
+		return;
 	UnitDef *def = unit->GetDef();
 	if(strcmp(def->GetName(),"armfav") != 0 && strcmp(def->GetName(), "armflea") != 0)
 	{
