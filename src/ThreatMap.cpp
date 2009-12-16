@@ -26,6 +26,10 @@ void ThreatMap::Update()
 
 	for ( map<int, struct UnitInformationContainer>::iterator it = enemyUnits.begin() ; it != enemyUnits.end() ; it++ )
 	{
+		if(it->second.def == NULL | it->second.pos.x == 0 && it->second.pos.z == 0)
+		{
+			continue;
+		}
 		InsertUnit( Unit::GetInstance( ai->callback, it->first ), it->second );
 	}
 
