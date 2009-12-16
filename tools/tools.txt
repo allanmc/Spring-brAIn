@@ -1,0 +1,5 @@
+Tools:
+ - QReader: a viewer for the files containing our Q-tables.
+	- Source: the source is in C#, visual studio project file is included
+	- Executable: a .Net executable for windows
+ 
