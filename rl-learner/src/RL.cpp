@@ -21,14 +21,14 @@ RL::RL(Game *g, unsigned short int type, double epsilon)
 	switch(type)
 	{
 	case 0:
-		stateVars.push_back( QStateVar("Rocko", RL_ROCKO_INDEX));
+		//stateVars.push_back( QStateVar("Rocko", RL_ROCKO_INDEX));
 		stateVars.push_back( QStateVar("Lab", RL_LAB_INDEX));
 		stateVars.push_back( QStateVar("Solar", RL_SOLAR_INDEX));
 		stateVars.push_back( QStateVar("Mex", RL_MEX_INDEX));		
 		actions.push_back( QAction("Lab", 0));
 		actions.push_back( QAction("Solar", 1));
 		actions.push_back( QAction("Mex", 2));
-		actions.push_back( QAction("Rocko", 3));
+		//actions.push_back( QAction("Rocko", 3));
 		ValueFunction.push_back(new RL_Q( actions, stateVars)); //root
 		break;
 	case 1:
@@ -240,7 +240,6 @@ RL_Action RL::FindNextAction( RL_State &state )
 
 RL_Action RL::FindBestAction( RL_State &state )
 {
-	
 	vector<RL_Action> stateActions = state.GetActions();
 	
 
@@ -439,8 +438,8 @@ RL_Action RL::Update()
 			if( dataTrail[i].eligibilityTrace < Q_LAMBDA_THRESHOLD)
 				dataTrail.erase(dataTrail.begin());
 
-		RL_Action bestAction = FindBestAction( state );
-		float delta = reward + GAMMA*ValueFunction[currentNode]->GetValue( state, bestAction ) - ValueFunction[currentNode]->GetValue( PreviousState[currentNode], PreviousAction[currentNode] );
+		//RL_Action bestAction = FindBestAction( state );
+		float delta = reward + GAMMA*bestFutureValue - ValueFunction[currentNode]->GetValue( PreviousState[currentNode], PreviousAction[currentNode] );
 
 		for(int i = dataTrail.size()-1; i>=0; i--)
 		{

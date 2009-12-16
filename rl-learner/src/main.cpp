@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 	float currentFrame = 0.0;
 	float bestFrame = 999999;
 	int currentIndex = 0;
-	unsigned int runs = 2000;
+	unsigned int runs = 3000;
 	while(i < runs)
 	{
 		r = new RL(g, RL_TYPE, currentEpsilon);
@@ -91,16 +91,16 @@ int main(int argc, char *argv[])
 				switch(a.Action)
 				{
 					case RL_LAB_ID:
-						cout << "L\n";
+						cout << "L";
 						break;
 					case RL_MEX_ID:
-						cout << "M\n";
+						cout << "M";
 						break;
 					case RL_SOLAR_ID:
-						cout << "S\n";
+						cout << "S";
 						break;
 					case RL_ROCKO_ID:
-						cout << "R\n";
+						cout << "R";
 						break;
 				}
 			}
@@ -110,7 +110,8 @@ int main(int argc, char *argv[])
 
 			a = r->Update();		
 		}
-		
+		if ( debug )
+			cout << endl;
 		if (RL_TYPE == 2)
 		{
 			if (debug) cout << "L";

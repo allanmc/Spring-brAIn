@@ -32,10 +32,10 @@ RL_State::RL_State(Game *g, int node, unsigned short int type, int buildingToBui
 	
 	float dStates = DISCRETE_STATES;
 	ID =  mNeeds*(int)pow(dStates,3) + eNeeds*(int)pow(dStates,2) + mAvailable*(int)pow(dStates,1) + eAvailable;
-	Actions.push_back(RL_Action(-1,0,false));
-	Actions.push_back(RL_Action(RL_SOLAR_ID,1,false));
-	Actions.push_back(RL_Action(RL_MEX_ID,2,false));
-	Actions.push_back(RL_Action(RL_ROCKO_ID,3,false));
+	//Actions.push_back(RL_Action(-1,0,false));
+	//Actions.push_back(RL_Action(RL_SOLAR_ID,1,false));
+	//Actions.push_back(RL_Action(RL_MEX_ID,2,false));
+	//Actions.push_back(RL_Action(RL_ROCKO_ID,3,false));
 }
 
 RL_State::RL_State(Game *g, int node, unsigned short int type)
@@ -60,22 +60,33 @@ RL_State::RL_State(Game *g, int node, unsigned short int type)
 			int solarCount = game->units[RL_SOLAR_ID];
 			int mexCount = game->units[RL_MEX_ID];
 			int rockoCount = game->units[RL_ROCKO_ID];
+			/*
 			if (rockoCount >= RL_ROCKO_INDEX-1)
 			{
 				terminal = true;
 				rockoCount = RL_ROCKO_INDEX-1;
 			}
-			ID = rockoCount*RL_MEX_INDEX*RL_SOLAR_INDEX*RL_LAB_INDEX + labCount*RL_MEX_INDEX*RL_SOLAR_INDEX + solarCount*RL_MEX_INDEX + mexCount;
+			*/
+			if (labCount >= RL_LAB_INDEX-1)
+			{
+				terminal = true;
+				labCount = RL_LAB_INDEX-1;
+			}
+
+			ID = /*rockoCount*RL_MEX_INDEX*RL_SOLAR_INDEX*RL_LAB_INDEX +*/ labCount*RL_MEX_INDEX*RL_SOLAR_INDEX + solarCount*RL_MEX_INDEX + mexCount;
 			if(labCount < RL_LAB_INDEX-1)
 				Actions.push_back(RL_Action(RL_LAB_ID,0,false));
 			if(solarCount < RL_SOLAR_INDEX-1)
 				Actions.push_back(RL_Action(RL_SOLAR_ID,1,false));
 			if(mexCount < RL_MEX_INDEX-1)
 				Actions.push_back(RL_Action(RL_MEX_ID,2,false));
+			/*
 			if (labCount > 0 && rockoCount < RL_ROCKO_INDEX)
 			{
 				Actions.push_back(RL_Action(RL_ROCKO_ID,3,false));
 			}
+			*/
+
 		}break;
 	case 1: //H old
 		switch(node)
