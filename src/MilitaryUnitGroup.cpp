@@ -1,4 +1,5 @@
 #include "MilitaryUnitGroup.h"
+#include "CurrentCommand.h"
 
 using namespace std;
 using namespace springai;
@@ -57,11 +58,19 @@ void MilitaryUnitGroup::Attack(int enemy)
 
 bool MilitaryUnitGroup::IsIdle()
 {
+	ai->utility->Log(ALL,MISC, "isidle: %d", Units.size());
 	for ( map<Unit*, bool>::iterator it = Units.begin() ; it != Units.end() ; it++ )
-	{
+	{			
 		//if ( it->second == false )
 		if(it->first->GetCurrentCommands().size() > 0);
+		{
+			ai->utility->Log(ALL,MISC, "unit %d", it->first->GetUnitId());
+			for(int i = 0; i < it->first->GetCurrentCommands().size(); i++)
+			{
+				ai->utility->Log(ALL,MISC, "command: %d",  it->first->GetCurrentCommands()[i]->GetCommandId());
+			}
 			return false;
+		}
 	}
 	return true;
 }

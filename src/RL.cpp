@@ -456,7 +456,6 @@ bool brainSpace::RL::ShouldIUpdate()
 	if (PreviousAction[currentNode].Action == RL_ATTACK_ACTION)
 	{
 		ai->utility->Log(ALL,LOG_RL,"We were attacking, idle?: %d", ai->knowledge->groupManager->GetMilitaryGroupMgr()->IsAllAttackGroupsIdle());
-		ai->utility->Log(ALL,LOG_RL,"We were attacking, attacking amount: %d", ai->knowledge->groupManager->GetMilitaryGroupMgr()->GetNumAttackingGroups());
 
 		return ai->knowledge->groupManager->GetMilitaryGroupMgr()->IsAllAttackGroupsIdle();
 
