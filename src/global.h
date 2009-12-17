@@ -1,7 +1,7 @@
 #ifndef _BRAIN_GLOBAL_H
 #define _BRAIN_GLOBAL_H
 
-#define LOG_TYPE (MISC|LOG_RL|DECISION )
+#define LOG_TYPE (NULL)
 #define LOG_LEVEL ALL
 
 #include "types.h"
