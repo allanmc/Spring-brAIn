@@ -217,25 +217,30 @@ void Decision::UpdateRL()
 void Decision::UnitDestroyed(int unit, int attacker)
 {
 	ai->utility->Log(ALL, MISC,  "UnitDestroyed id = %i, name = %s", unit, Unit::GetInstance(ai->callback,unit)->GetDef()->GetName() );
-	if (resettingGame)
-	{
-		remainingUnits--;
-		//vector<Unit*> units = ai->callback->GetFriendlyUnits();
-		ai->utility->Log(ALL, MISC, "Units in resetting game check: %i", remainingUnits);
-		if (remainingUnits==0)//Are all old units destroyed now?
-		{
-			waitingForCommander = true;
-		}
-		/*else
-		{
-			ai->utility->Suicide(ai->commander->GetUnitId());
-		}*/
-		return;
-	}
+	//if (resettingGame)
+	//{
+	//	remainingUnits--;
+	//	//vector<Unit*> units = ai->callback->GetFriendlyUnits();
+	//	ai->utility->Log(ALL, MISC, "Units in resetting game check: %i", remainingUnits);
+	//	if (remainingUnits==0)//Are all old units destroyed now?
+	//	{
+	//		waitingForCommander = true;
+	//	}
+	//	/*else
+	//	{
+	//		ai->utility->Suicide(ai->commander->GetUnitId());
+	//	}*/
+	//	return;
+	//}
 
 	Unit* destroyee = Unit::GetInstance( ai->callback, unit );
 	BattleInfoInstance->UnitDestroyed( unit, attacker );
 	UnitDef* d = destroyee->GetDef();
+	//Always remove :)
+	ai->utility->Log(ALL, MISC, "armyInfo RemoveUnit ");
+	ai->knowledge->selfInfo->armyInfo->RemoveUnit(unit);
+	ai->utility->Log(ALL, MISC, "baseInfo RemoveUnit ");
+	ai->knowledge->selfInfo->baseInfo->RemoveBuilding(unit);
 
 	if ( d == NULL )
 		ai->utility->Log( LOG_DEBUG, DECISION, "UnitDestroyed: UnitDef was null" );
@@ -251,13 +256,6 @@ void Decision::UnitDestroyed(int unit, int attacker)
 			UpdateRL();
 		}
 	}
-	
-	//Always remove :)
-	ai->utility->Log(ALL, MISC, "armyInfo RemoveUnit ");
-	ai->knowledge->selfInfo->armyInfo->RemoveUnit(unit);
-	ai->utility->Log(ALL, MISC, "baseInfo RemoveUnit ");
-	ai->knowledge->selfInfo->baseInfo->RemoveBuilding(unit);
-
 	if(d->GetSpeed() > 0)
 	{
 		//remove from groupController

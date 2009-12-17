@@ -18,13 +18,13 @@ QuadTree::~QuadTree()
 
 bool QuadTree::RemoveUnit( int unitID )
 {
+	ai->utility->Log(ALL,MISC, "QuadTree::RemoveUnit, units.size: %d", units.size());
 	if (units.find(unitID) == units.end())
 	{
 		return false;
 	}
-	else
-		units.erase(unitID);
-
+	units.erase(unitID);
+	ai->utility->Log(ALL,MISC, "QuadTree::RemoveUnit, units.size new: %d", units.size());
 	QuadTreeNode *iter = RootNode;
 
 	SAIFloat3 pos = units[unitID].pos;

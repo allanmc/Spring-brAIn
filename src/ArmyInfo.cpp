@@ -64,8 +64,8 @@ void ArmyInfo::RemoveUnit(int unit)
 	//{
 	//	return;
 	//}
-
-	if (quadTree->RemoveUnit( unit))
+	bool removed = quadTree->RemoveUnit( unit);
+	if (removed)
 	{
 		Unit* u = Unit::GetInstance(ai->callback, unit);
 		unitCount--;
