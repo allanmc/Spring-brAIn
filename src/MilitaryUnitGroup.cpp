@@ -62,7 +62,7 @@ bool MilitaryUnitGroup::IsIdle()
 	for ( map<Unit*, bool>::iterator it = Units.begin() ; it != Units.end() ; it++ )
 	{			
 		//if ( it->second == false )
-		if(it->first->GetCurrentCommands().size() > 0);
+		if(it->first->GetCurrentCommands().size() > 0)
 		{
 			ai->utility->Log(ALL,MISC, "unit %d, size of commands: %d", it->first->GetUnitId(), it->first->GetCurrentCommands().size());
 			for(int i = 0; i < it->first->GetCurrentCommands().size(); i++)
