@@ -163,10 +163,10 @@ void Decision::UpdateRL()
 				ai->utility->Log(ALL, MISC, "Attacking enemy!!!");
 				ai->utility->Log(ALL, MISC, "Rocko amount: %d", ai->knowledge->selfInfo->armyInfo->CountUnitsByName("armrock"));
 
-				vector<Point*> points = ai->callback->GetMap()->GetPoints(true);
+				vector<Point*> points = ai->callback->GetMap()->GetPoints(false);
 				SAIFloat3 enemyStartingPosition;
 				for( int i = 0 ; i < (int)points.size() ; i++ )
-				{
+				{					
 					if ( points[i]->GetPosition().x == ai->callback->GetMap()->GetStartPos().x &&
 						points[i]->GetPosition().z == ai->callback->GetMap()->GetStartPos().z )
 					{
@@ -175,6 +175,9 @@ void Decision::UpdateRL()
 					enemyStartingPosition = points[i]->GetPosition();
 					break;
 				}
+				Map *m = ai->callback->GetMap();
+				enemyStartingPosition.x = 3971;
+				enemyStartingPosition.z = 3976;
 				ai->knowledge->groupManager->AttackPositionWithAllGroups(enemyStartingPosition);
 			} 
 			else
