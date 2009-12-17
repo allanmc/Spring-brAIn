@@ -349,11 +349,15 @@ void Decision::UpdateFrindlyPositions()
 	//Run though all frindly units
 	for (int i = 0; i < unitCount; i++)
 	{
+		if (units[i]->GetHealth() < 0.1)
+		{
+			continue;
+		}
 		//If position has changed compred to the one stored in the QuadTree, update the QuadTree.
 		if (units[i]->GetPos().x != armyUnits->GetUnitPos(units[i]->GetUnitId()).x ||
 			units[i]->GetPos().z != armyUnits->GetUnitPos(units[i]->GetUnitId()).z)
 		{
-			armyUnits->UpdateUnit( units[i] );
+				armyUnits->UpdateUnit( units[i] );
 		}
 		delete units[i];
 	}
@@ -452,6 +456,7 @@ void Decision::Update(int frame)
 		{
 			UpdateRL();
 		}
+		ai->knowledge->selfInfo->armyInfo->Print();
 		//else
 			//ai->utility->Suicide();
 		//ai->utility->ResetGame(rl);
@@ -470,6 +475,7 @@ void Decision::Update(int frame)
 		int mexCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armmex");
 		int rockoCount = ai->knowledge->selfInfo->armyInfo->CountUnitsByName("armrock");
 		ai->utility->ChatMsg("labs: %d, solar: %d, mex: %d, rockos: %d", labCount, solarCount, mexCount, rockoCount);
+		ai->knowledge->selfInfo->armyInfo->Print();
 		exit(0);
 		//ai->utility->ResetGame(rl);
 		//resettingGame = true;

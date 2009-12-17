@@ -19,11 +19,12 @@ QuadTree::~QuadTree()
 bool QuadTree::RemoveUnit( int unitID )
 {
 	ai->utility->Log(ALL,MISC, "QuadTree::RemoveUnit, units.size: %d", units.size());
-	if (units.find(unitID) == units.end())
+	map<int, struct UnitInformationContainer>::iterator it = units.find(unitID);
+	if (it == units.end())
 	{
 		return false;
 	}
-	units.erase(unitID);
+	units.erase(it);
 	ai->utility->Log(ALL,MISC, "QuadTree::RemoveUnit, units.size new: %d", units.size());
 	QuadTreeNode *iter = RootNode;
 
@@ -76,7 +77,15 @@ int QuadTree::UpdateUnit( int unitID, SAIFloat3 pos )
 
 SAIFloat3 QuadTree::GetLastUnitPos( int unitID ) 
 {
-	return units[unitID].pos;
+	map<int, UnitInformationContainer>::iterator it = units.find(unitID);
+	if (it == units.end())
+	{
+		return (SAIFloat3){0,0,0};
+	} 
+	else
+	{
+		return units[unitID].pos;
+	}
 }
 
 void QuadTree::InsertUnit( int unitID, SAIFloat3 pos )
@@ -110,6 +119,7 @@ void QuadTree::InsertUnit( int unitID, SAIFloat3 pos )
 		{
 			if ( def == NULL )
 			{
+				return;
 				iter->InsertUnit( unitID, pos );
 				units[unitID].def = NULL;
 			}
