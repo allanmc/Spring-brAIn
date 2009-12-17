@@ -461,13 +461,17 @@ void Decision::Update(int frame)
 		//ai->utility->ResetGame(rl);
 		//resettingGame = true;
 	}
+	if(frame == 1000000)
+		exit(0);
 	if(frame == 500000)
 	{//kill your self after 30 mins
 
 		// why didnt we finish??
-		ai->utility->ChatMsg("We stopped.. fuck. ShouldIUpdate? %d", rl->ShouldIUpdate());
+		bool update = rl->ShouldIUpdate();
+		ai->utility->ChatMsg("We stopped.. fuck. ShouldIUpdate? %d", update);
 		RL_State state = RL_State(ai, 0, 0);
-		ai->utility->ChatMsg("amount of actions: %d, stateid: %d", state.GetActions().size(), state.GetID());
+		int actions = state.GetActions().size();
+		ai->utility->ChatMsg("amount of actions: %d, stateid: %d", actions, state.GetID());
 		ai->utility->ChatMsg("previousaction: %d", rl->PreviousAction[0].ID);
 		int labCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armlab");
 		int solarCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armsolar");
@@ -475,7 +479,8 @@ void Decision::Update(int frame)
 		int rockoCount = ai->knowledge->selfInfo->armyInfo->CountUnitsByName("armrock");
 		ai->utility->ChatMsg("labs: %d, solar: %d, mex: %d, rockos: %d", labCount, solarCount, mexCount, rockoCount);
 		//ai->knowledge->selfInfo->armyInfo->Print();
-		exit(0);
+		if(actions < 1 && !update)
+			exit(0);
 		//ai->utility->ResetGame(rl);
 		//resettingGame = true;
 	}
