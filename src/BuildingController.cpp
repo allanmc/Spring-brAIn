@@ -128,6 +128,7 @@ void BuildingController::ConstructUnit(SBuildUnitCommand order)
 			ai->utility->Log(ALL, MISC, "ConstructionBuildings[i]->GetDef() is NULL!!! :( ");
 		ai->utility->Log(ALL, MISC, "ConstructionBuildings[%d]: %s",i, ConstructionBuildings[i]->GetDef()->GetName());
 		order.unitId = ConstructionBuildings[i]->GetUnitId();
+		order.buildPos = ConstructionBuildings[i]->GetPos();
 		//order.facing = UNIT_COMMAND_BUILD_NO_FACING;
 		//order.options = UNIT_COMMAND_OPTION_SHIFT_KEY;
 		ai->utility->Log(ALL, MISC, "I (%s) am building: %s",

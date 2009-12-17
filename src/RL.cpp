@@ -472,7 +472,7 @@ bool brainSpace::RL::ShouldIUpdate()
 			{
 				if(Unit::GetInstance(ai->callback, (*it).first)->GetCurrentCommands().size() > 0)
 				{
-					ai->utility->Log(ALL,LOG_RL,"a lab is not idle");
+					ai->utility->Log(ALL,LOG_RL,"a lab is not idle, commands: %d", Unit::GetInstance(ai->callback, (*it).first)->GetCurrentCommands().size());
 					return false;
 				}
 			}
@@ -494,8 +494,12 @@ bool brainSpace::RL::ShouldIUpdate()
 				ai->utility->Log(ALL,LOG_RL,"We were building a building, and command is idle: buildorders: %d", ai->knowledge->groupManager->GetAmountOfBuildOrders());
 				bool buildingsInQueue = (ai->knowledge->groupManager->GetAmountOfBuildOrders() != 0);
 				if(buildingsInQueue)
+				{
 					ai->knowledge->groupManager->UnitIdle( ai->commander );
-				return !buildingsInQueue;
+					return false;
+				}
+				else
+					return true;
 			}
 	}
 	return false;
