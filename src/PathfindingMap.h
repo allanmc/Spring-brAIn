@@ -64,6 +64,8 @@ namespace brainSpace {
 
 		void PrintSection(SAIFloat3 pos);
 
+		void ResetEntireMap();
+
 	private:
 
 		void RemoveHypotheticalBuilding(springai::UnitDef* unit, SAIFloat3 pos);

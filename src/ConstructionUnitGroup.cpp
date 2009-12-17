@@ -76,11 +76,15 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	ai->utility->Log(ALL, MISC, "order timeout : %d", order.timeOut );
 	ai->utility->Log(ALL, MISC, "order facing: %d", order.facing );
 	bool hest = ai->knowledge->mapInfo->pathfindingMap->PathExists(commanderDef, buildPos, ai->utility->GetSafePosition());
-	ai->utility->Log(ALL, MISC, "Is commander built in? %d", hest);
+	ai->utility->Log(ALL, MISC, "Is commander built in? %d", !hest);
 	if(!hest)
 	{
+		ai->utility->Log(ALL, MISC, "Map as it looks now:");
 		ai->knowledge->mapInfo->pathfindingMap->PrintSection(buildPos);
 		ai->knowledge->mapInfo->pathfindingMap->PathExists(commanderDef, buildPos, ai->utility->GetSafePosition(), true);
+		ai->knowledge->mapInfo->pathfindingMap->ResetEntireMap();
+		ai->utility->Log(ALL, MISC, "Map after reset");
+		ai->knowledge->mapInfo->pathfindingMap->PrintSection(buildPos);
 		exit(0);
 	}
 	

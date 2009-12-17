@@ -9,13 +9,7 @@ PathfindingMap::PathfindingMap( AIClasses* aiClasses ) : BrainMap( aiClasses, 4 
 {
 
 	//Slopemap has Resolution = 2, where PFmap has Resolution = 4.
-	Map *map = ai->callback->GetMap();
-	//vector<float> slopeMap = map->GetSlopeMap();
-	SlopeMap = map->GetSlopeMap();
-	for ( int z = 0 ; z < MapHeight ; z++ )
-		for ( int x = 0 ; x < MapWidth ; x++ )
-			ResetSlope( x, z );
-	delete map;
+	ResetEntireMap();
 }
 
 
@@ -535,4 +529,15 @@ void PathfindingMap::PrintSection(SAIFloat3 pos)
 	delete commanderDef;
 	delete move;
 	
+}
+
+void brainSpace::PathfindingMap::ResetEntireMap()
+{
+	Map *map = ai->callback->GetMap();
+	//vector<float> slopeMap = map->GetSlopeMap();
+	SlopeMap = map->GetSlopeMap();
+	for ( int z = 0 ; z < MapHeight ; z++ )
+		for ( int x = 0 ; x < MapWidth ; x++ )
+			ResetSlope( x, z );
+	delete map;
 }

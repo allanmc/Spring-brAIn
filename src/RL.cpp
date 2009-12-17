@@ -224,7 +224,7 @@ RL_Action RL::FindBestAction( RL_State &state )
 		}
 	}
 	if (action.ID < 0 || action.ID > 4)
-		exit(0);
+		//exit(0);
 	return action;
 }
 
