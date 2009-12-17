@@ -24,7 +24,6 @@ bool QuadTree::RemoveUnit( int unitID )
 	{
 		return false;
 	}
-	units.erase(it);
 	ai->utility->Log(ALL,MISC, "QuadTree::RemoveUnit, units.size new: %d", units.size());
 	QuadTreeNode *iter = RootNode;
 
@@ -51,6 +50,7 @@ bool QuadTree::RemoveUnit( int unitID )
 			break;
 		}
 	}
+	units.erase(it);
 	return true;
 }
 

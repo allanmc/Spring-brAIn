@@ -456,7 +456,7 @@ void Decision::Update(int frame)
 		{
 			UpdateRL();
 		}
-		ai->knowledge->selfInfo->armyInfo->Print();
+		//ai->knowledge->selfInfo->armyInfo->Print();
 		//else
 			//ai->utility->Suicide();
 		//ai->utility->ResetGame(rl);
@@ -475,7 +475,7 @@ void Decision::Update(int frame)
 		int mexCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armmex");
 		int rockoCount = ai->knowledge->selfInfo->armyInfo->CountUnitsByName("armrock");
 		ai->utility->ChatMsg("labs: %d, solar: %d, mex: %d, rockos: %d", labCount, solarCount, mexCount, rockoCount);
-		ai->knowledge->selfInfo->armyInfo->Print();
+		//ai->knowledge->selfInfo->armyInfo->Print();
 		exit(0);
 		//ai->utility->ResetGame(rl);
 		//resettingGame = true;
@@ -755,10 +755,10 @@ void Decision::Update(int frame)
 void Decision::UnitIdle( int id )
 {
 	ai->utility->Log(ALL, MISC, "Decision::UnitIdle(), reset?: %d", resettingGame);
-	if (resettingGame)
+	/*if (resettingGame)
 	{
 		return;
-	}
+	}*/
 	
 	Unit* u = Unit::GetInstance( ai->callback, id );
 	ai->utility->Log(ALL,MISC,"Unit %s idle, but has %d commands", u->GetDef()->GetName(), u->GetCurrentCommands().size());
