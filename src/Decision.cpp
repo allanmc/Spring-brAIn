@@ -452,10 +452,6 @@ void Decision::Update(int frame)
 
 		// why didnt we finish??
 		ai->utility->ChatMsg("We stopped.. fuck. ShouldIUpdate? %d", rl->ShouldIUpdate());
-		if (rl->ShouldIUpdate())
-		{
-			UpdateRL();
-		}
 		//ai->knowledge->selfInfo->armyInfo->Print();
 		//else
 			//ai->utility->Suicide();
@@ -626,25 +622,24 @@ void Decision::Update(int frame)
 		//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "Start position (%f, %f)", ai->callback->GetMap()->GetStartPos().x, ai->callback->GetMap()->GetStartPos().z );
 		//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "Number of battles close to our base within the last 6000 frames: %d. Current frame %d", BattleInfoInstance->NumberOfBattlesInArea( 6000, box ), ai->frame);
 		int battles = BattleInfoInstance->NumberOfBattlesInArea( 9000, box );
-		ai->utility->Log( LOG_DEBUG, DECISION, "Number of battles close to our base within the last 9000 frames: %d", battles);
-		//ai->utility->Log(ALL, MISC, "Number of battles close to our base within the last 9000 frames: %d", battles);
-		int b_range;
-		if(battles == 0)
-		{
-			b_range = node::attacks::_0;
-		}
-		else if(battles < 4)
-		{
-			b_range = node::attacks::_1_3;
-		}
-		else if(battles < 9)
-		{
-			b_range = node::attacks::_4_8;
-		}
-		else
-		{
-			b_range = node::attacks::_9_;
-		}
+		//ai->utility->Log( LOG_DEBUG, DECISION, "Number of battles close to our base within the last 9000 frames: %d", battles);
+		//int b_range;
+		//if(battles == 0)
+		//{
+		//	b_range = node::attacks::_0;
+		//}
+		//else if(battles < 4)
+		//{
+		//	b_range = node::attacks::_1_3;
+		//}
+		//else if(battles < 9)
+		//{
+		//	b_range = node::attacks::_4_8;
+		//}
+		//else
+		//{
+		//	b_range = node::attacks::_9_;
+		//}
 
 		//huginTest->setEvidence("attacks", b_range);
 		//bn->setEvidence(node::_attacks, b_range);
@@ -661,86 +656,86 @@ void Decision::Update(int frame)
 	if ( frame % 120 == 60 )
 	{
 		//huginTest->setEvidence("myStrategy", "Aggressive");
-		int enemyUnits = ai->knowledge->enemyInfo->armyInfo->CountAggressive();
-		int u_range;
-		if(enemyUnits == 0)
-		{
-			u_range = node::seenUnits::_0;
-		}
-		else if(enemyUnits < 11)
-		{
-			u_range = node::seenUnits::_1_10;
-		}
-		else if(enemyUnits < 51)
-		{
-			u_range = node::seenUnits::_11_50;
-		}
-		else
-		{
-			u_range = node::seenUnits::_51_300;
-		}
-		//huginTest->setEvidence("seenUnits", u_range);
-		//bn->setEvidence(node::_seenUnits, u_range);
+		//int enemyUnits = ai->knowledge->enemyInfo->armyInfo->CountAggressive();
+		//int u_range;
+		//if(enemyUnits == 0)
+		//{
+		//	u_range = node::seenUnits::_0;
+		//}
+		//else if(enemyUnits < 11)
+		//{
+		//	u_range = node::seenUnits::_1_10;
+		//}
+		//else if(enemyUnits < 51)
+		//{
+		//	u_range = node::seenUnits::_11_50;
+		//}
+		//else
+		//{
+		//	u_range = node::seenUnits::_51_300;
+		//}
+		////huginTest->setEvidence("seenUnits", u_range);
+		////bn->setEvidence(node::_seenUnits, u_range);
 
-		ai->utility->Log(ALL, DECISION,"Seen units: %i", u_range);
+		//ai->utility->Log(ALL, DECISION,"Seen units: %i", u_range);
 
-		enemyUnits = ai->knowledge->enemyInfo->armyInfo->CountDefensive();
-		if(enemyUnits == 0)
-		{
-			u_range = node::seenDef::_0;
-		}
-		else if(enemyUnits < 6)
-		{
-			u_range = node::seenDef::_1_5;
-		}
-		else if(enemyUnits < 11)
-		{
-			u_range = node::seenDef::_6_10;
-		}
-		else
-		{
-			u_range = node::seenDef::_11_20;
-		}
+		//enemyUnits = ai->knowledge->enemyInfo->armyInfo->CountDefensive();
+		//if(enemyUnits == 0)
+		//{
+		//	u_range = node::seenDef::_0;
+		//}
+		//else if(enemyUnits < 6)
+		//{
+		//	u_range = node::seenDef::_1_5;
+		//}
+		//else if(enemyUnits < 11)
+		//{
+		//	u_range = node::seenDef::_6_10;
+		//}
+		//else
+		//{
+		//	u_range = node::seenDef::_11_20;
+		//}
 		//huginTest->setEvidence("seenDef", u_range);
 		//bn->setEvidence(node::_seenDef, u_range);
-		ai->utility->Log(ALL, DECISION,"Seen llt: %i", u_range);
-		enemyUnits = ai->knowledge->enemyInfo->baseInfo->CountProductionBuildings();
-		if(enemyUnits == 0)
-		{
-			u_range = node::seenProd::_0;
-		}
-		else if(enemyUnits < 3)
-		{
-			u_range = node::seenProd::_1_2;
-		}
-		else if(enemyUnits < 7)
-		{
-			u_range = node::seenProd::_3_6;
-		}
-		else
-		{
-			u_range = node::seenProd::_7_10;
-		}
-		//huginTest->setEvidence("seenProd", u_range);
-		//bn->setEvidence(node::_seenProd, u_range);
-		ai->utility->Log(ALL, DECISION,"Seen production: %i", u_range);
-		enemyUnits = ai->knowledge->enemyInfo->baseInfo->CountResourceBuildings();
-		if(enemyUnits == 0)
-		{
-			u_range = node::seenRes::_0;
-		}
-		else if(enemyUnits < 11)
-		{
-			u_range = node::seenRes::_1_10;
-		}
-		else if(enemyUnits < 21)
-		{
-			u_range = node::seenRes::_11_20;
-		}
-		else
-		{
-			u_range = node::seenRes::_21_40;
-		}
+		//ai->utility->Log(ALL, DECISION,"Seen llt: %i", u_range);
+		//enemyUnits = ai->knowledge->enemyInfo->baseInfo->CountProductionBuildings();
+		//if(enemyUnits == 0)
+		//{
+		//	u_range = node::seenProd::_0;
+		//}
+		//else if(enemyUnits < 3)
+		//{
+		//	u_range = node::seenProd::_1_2;
+		//}
+		//else if(enemyUnits < 7)
+		//{
+		//	u_range = node::seenProd::_3_6;
+		//}
+		//else
+		//{
+		//	u_range = node::seenProd::_7_10;
+		//}
+		////huginTest->setEvidence("seenProd", u_range);
+		////bn->setEvidence(node::_seenProd, u_range);
+		//ai->utility->Log(ALL, DECISION,"Seen production: %i", u_range);
+		//enemyUnits = ai->knowledge->enemyInfo->baseInfo->CountResourceBuildings();
+		//if(enemyUnits == 0)
+		//{
+		//	u_range = node::seenRes::_0;
+		//}
+		//else if(enemyUnits < 11)
+		//{
+		//	u_range = node::seenRes::_1_10;
+		//}
+		//else if(enemyUnits < 21)
+		//{
+		//	u_range = node::seenRes::_11_20;
+		//}
+		//else
+		//{
+		//	u_range = node::seenRes::_21_40;
+		//}
 		//huginTest->setEvidence("seenRes", u_range);
 		/*
 		bn->setEvidence(node::_seenRes, u_range);

@@ -491,7 +491,8 @@ bool brainSpace::RL::ShouldIUpdate()
 			}
 			else
 			{
-				return (ai->knowledge->groupManager->GetAmountOfBuildOrders() == 0);
+				ai->utility->Log(ALL,LOG_RL,"We were building a building, and command is idle: buildorders: %d", ai->knowledge->groupManager->GetAmountOfBuildOrders());
+				return (ai->knowledge->groupManager->GetAmountOfBuildOrders() < 1);
 			}
 	}
 	return false;
