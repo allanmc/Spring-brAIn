@@ -64,7 +64,7 @@ bool MilitaryUnitGroup::IsIdle()
 		//if ( it->second == false )
 		if(it->first->GetCurrentCommands().size() > 0);
 		{
-			ai->utility->Log(ALL,MISC, "unit %d", it->first->GetUnitId());
+			ai->utility->Log(ALL,MISC, "unit %d, size of commands: %d", it->first->GetUnitId(), it->first->GetCurrentCommands().size());
 			for(int i = 0; i < it->first->GetCurrentCommands().size(); i++)
 			{
 				ai->utility->Log(ALL,MISC, "command: %d",  it->first->GetCurrentCommands()[i]->GetCommandId());
