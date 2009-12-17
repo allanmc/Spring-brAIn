@@ -491,7 +491,7 @@ bool brainSpace::RL::ShouldIUpdate()
 			}
 			else
 			{
-				return (ai->knowledge->groupManager->GetAmountOfBuildOrders() > 0);
+				return (ai->knowledge->groupManager->GetAmountOfBuildOrders() == 0);
 			}
 	}
 	return false;
