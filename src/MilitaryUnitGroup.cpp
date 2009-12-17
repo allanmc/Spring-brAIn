@@ -59,7 +59,8 @@ bool MilitaryUnitGroup::IsIdle()
 {
 	for ( map<Unit*, bool>::iterator it = Units.begin() ; it != Units.end() ; it++ )
 	{
-		if ( it->second == false )
+		//if ( it->second == false )
+		if(it->first->GetCurrentCommands().size() > 0);
 			return false;
 	}
 	return true;
