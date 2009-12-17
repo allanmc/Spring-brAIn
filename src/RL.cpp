@@ -492,7 +492,10 @@ bool brainSpace::RL::ShouldIUpdate()
 			else
 			{
 				ai->utility->Log(ALL,LOG_RL,"We were building a building, and command is idle: buildorders: %d", ai->knowledge->groupManager->GetAmountOfBuildOrders());
-				return (ai->knowledge->groupManager->GetAmountOfBuildOrders() < 1);
+				bool buildingsInQueue = (ai->knowledge->groupManager->GetAmountOfBuildOrders() != 0);
+				if(buildingsInQueue)
+					ai->knowledge->groupManager->UnitIdle( ai->commander );
+				return !buildingsInQueue;
 			}
 	}
 	return false;
