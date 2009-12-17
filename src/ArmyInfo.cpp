@@ -179,6 +179,7 @@ int brainSpace::ArmyInfo::CountUnitsByName( const char* name )
 		if(def == NULL)
 		{
 			ai->utility->Log(ALL, MISC, "CountUnitsByName: def is null");
+			ai->utility->Log(ALL, MISC, "CountUnitsByName: unitid: %d, unitdef is maybe: %s", it->first, GetUnitDef(it->first)->GetName());
 			//i.erase(it);
 			it++;
 			continue;
