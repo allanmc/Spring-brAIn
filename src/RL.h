@@ -25,7 +25,7 @@
 
 //zero means infinite (Used both for backtracking and n-step)
 #define BACKTRACKING_STEPS 5
-#define EPSILON_START 0.1
+#define EPSILON_START 0.0
 #define GAMMA 0.9
 #define ALPHA 0.1
 #define EPSILON_DECAY 1
