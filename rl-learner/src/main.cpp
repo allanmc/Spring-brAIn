@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 	float currentFrame = 0.0;
 	float bestFrame = 999999;
 	int currentIndex = 0;
-	unsigned int runs = 3000;
+	unsigned int runs = 2000;
 	while(i < runs)
 	{
 		r = new RL(g, RL_TYPE, currentEpsilon);

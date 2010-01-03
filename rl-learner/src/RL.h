@@ -13,12 +13,12 @@
 
 #define PRINT_REWARD false
 
-#define USE_QSMDP false
+#define USE_QSMDP true
 #define USE_RS_TIME true
 #define USE_RS_LABS false
 #define USE_BACKTRACKING false
 #define USE_N_STEP false
-#define USE_Q_LAMBDA true
+#define USE_Q_LAMBDA false
 #define LAMBDA 0.95
 #define Q_LAMBDA_THRESHOLD 0.00005
 
