@@ -22,32 +22,43 @@ RL_State::RL_State( AIClasses* aiClasses, int node, unsigned short int type)
 			ai->utility->Log(ALL, MISC, "solarCount: %d", solarCount);
 			int mexCount = ai->knowledge->selfInfo->baseInfo->CountBuildingsByName("armmex");
 			ai->utility->Log(ALL, MISC, "mexCount: %d", mexCount);
-			int rockoCount = ai->knowledge->selfInfo->armyInfo->CountUnitsByName("armrock");
-			ai->utility->Log(ALL, MISC, "rockoCount: %d", rockoCount);
-			int commanderDead = ai->commanderDead;
-			ai->utility->Log(ALL, MISC, "commanderDead: %d", commanderDead);
-			if (rockoCount >= RL_ROCKO_INDEX-1)
-			{
-				rockoCount = RL_ROCKO_INDEX-1;
+			int rockoCount = 0;
+			int commanderDead = 0;
+			if (NEWSCENARIO) {
+				rockoCount = ai->knowledge->selfInfo->armyInfo->CountUnitsByName("armrock");
+				ai->utility->Log(ALL, MISC, "rockoCount: %d", rockoCount);
+				commanderDead = ai->commanderDead;
+				ai->utility->Log(ALL, MISC, "commanderDead: %d", commanderDead);
+				if (rockoCount >= RL_ROCKO_INDEX-1)
+				{
+					rockoCount = RL_ROCKO_INDEX-1;
+				}
+				if (commanderDead != 0)
+				{
+					terminal = true;
+				}
+				ID = commanderDead*RL_MEX_INDEX*RL_SOLAR_INDEX*RL_LAB_INDEX*RL_ROCKO_INDEX + rockoCount*RL_MEX_INDEX*RL_SOLAR_INDEX*RL_LAB_INDEX + labCount*RL_MEX_INDEX*RL_SOLAR_INDEX + solarCount*RL_MEX_INDEX + mexCount;
+			} else {
+				if (labCount==4) {
+					terminal = true;
+				}
+				ID = labCount*RL_MEX_INDEX*RL_SOLAR_INDEX + solarCount*RL_MEX_INDEX + mexCount;
 			}
-			if (commanderDead != 0)
-			{
-				terminal = true;
-			}
-			ID = commanderDead*RL_MEX_INDEX*RL_SOLAR_INDEX*RL_LAB_INDEX*RL_ROCKO_INDEX + rockoCount*RL_MEX_INDEX*RL_SOLAR_INDEX*RL_LAB_INDEX + labCount*RL_MEX_INDEX*RL_SOLAR_INDEX + solarCount*RL_MEX_INDEX + mexCount;
 			if(labCount < RL_LAB_INDEX-1)
 				Actions.push_back(RL_Action(ai->utility->GetUnitDef("armlab")->GetUnitDefId(),0,false));
 			if(solarCount < RL_SOLAR_INDEX-1)
 				Actions.push_back(RL_Action(ai->utility->GetUnitDef("armsolar")->GetUnitDefId(),1,false));
 			if(mexCount < RL_MEX_INDEX-1)
 				Actions.push_back(RL_Action(ai->utility->GetUnitDef("armmex")->GetUnitDefId(),2,false));
-			if (labCount > 0 && rockoCount < RL_ROCKO_INDEX-1)
-			{
-				Actions.push_back(RL_Action(ai->utility->GetUnitDef("armrock")->GetUnitDefId(),3,false));
-			}
-			if (rockoCount > 0)
-			{
-				Actions.push_back(RL_Action(RL_ATTACK_ACTION, 4, false));
+			if (NEWSCENARIO) {
+				if (labCount > 0 && rockoCount < RL_ROCKO_INDEX-1)
+				{
+					Actions.push_back(RL_Action(ai->utility->GetUnitDef("armrock")->GetUnitDefId(),3,false));
+				}
+				if (rockoCount > 0)
+				{
+					Actions.push_back(RL_Action(RL_ATTACK_ACTION, 4, false));
+				}
 			}
 		}break;
 	default://error

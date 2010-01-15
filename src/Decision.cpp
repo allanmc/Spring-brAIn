@@ -141,7 +141,9 @@ void Decision::UnitFinished(int unit)
 	wpmt.clear();
 	if(ai->frame > 0)
 	{
-		if(rl->ShouldIUpdate())
+		if(NEWSCENARIO && rl->ShouldIUpdate())
+			UpdateRL();
+		else if (!NEWSCENARIO)
 			UpdateRL();
 	}
 }
@@ -209,8 +211,10 @@ void Decision::UpdateRL()
 		else 
 		{
 			ai->utility->Log(ALL, MISC,  "we have reached our goal!!" );
-			//ai->utility->Suicide();
-			//Reset();
+			if (!NEWSCENARIO) {
+				//ai->utility->Suicide();
+				//Reset();
+			}
 		}
 	}
 	ai->utility->Log(LOG_DEBUG, LOG_RL, "UpdateRL() done");
@@ -252,7 +256,7 @@ void Decision::UnitDestroyed(int unit, int attacker)
 	else
 	{
 		ai->utility->Log( LOG_DEBUG, DECISION, "UnitDestroyed: Unitdef was %s, iscommander: %d",d->GetName(), d->IsCommander() );
-		if(d->IsCommander())
+		if(NEWSCENARIO && d->IsCommander())
 		{
 			// our commander died
 			ai->commanderDead = 2;
@@ -332,7 +336,7 @@ void Decision::EnemyDestroyed(int enemy, int attacker)
 	else
 	{
 		ai->utility->Log( LOG_DEBUG, DECISION, "EnemyDestroyed: Unitdef was %s",d->GetName() );
-		if(d->IsCommander())
+		if(NEWSCENARIO && d->IsCommander())
 		{
 			ai->utility->Log( LOG_DEBUG, DECISION, "EnemyDestroyed: commander" );
 			//his commander died
@@ -485,7 +489,7 @@ void Decision::Update(int frame)
 		//resettingGame = true;
 	}
 
-	if (frame % 90 == 0)
+	if (NEWSCENARIO && frame % 90 == 0)
 	{
 		if (rl->ShouldIUpdate())
 		{
@@ -771,7 +775,7 @@ void Decision::UnitIdle( int id )
 	}
 	if(u->GetUnitId() == ai->commander->GetUnitId())
 	{
-		if(rl->ShouldIUpdate())
+		if(NEWSCENARIO && rl->ShouldIUpdate())
 			UpdateRL();
 	}
 	//BuildSomethingUsefull();

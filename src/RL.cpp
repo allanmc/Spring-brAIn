@@ -20,16 +20,20 @@ RL::RL( AIClasses* aiClasses, unsigned short int type, double epsilon)
 	vector<QAction> actions;
 	ai->utility->Log(ALL,MISC, "begin statevars");
 	
-	stateVars.push_back( QStateVar("CommanderDead", 3));
-	stateVars.push_back( QStateVar("Rocko", RL_ROCKO_INDEX));
+	if (NEWSCENARIO) {
+		stateVars.push_back( QStateVar("CommanderDead", 3));
+		stateVars.push_back( QStateVar("Rocko", RL_ROCKO_INDEX));
+	}
 	stateVars.push_back( QStateVar("Lab", RL_LAB_INDEX));
 	stateVars.push_back( QStateVar("Solar", RL_SOLAR_INDEX));
 	stateVars.push_back( QStateVar("Mex", RL_MEX_INDEX));		
 	actions.push_back( QAction("Lab", 0));
 	actions.push_back( QAction("Solar", 1));
 	actions.push_back( QAction("Mex", 2));
-	actions.push_back( QAction("Rocko", 3));
-	actions.push_back( QAction("Attack", 4));
+	if (NEWSCENARIO) {
+		actions.push_back( QAction("Rocko", 3));
+		actions.push_back( QAction("Attack", 4));
+	}
 	ValueFunction.push_back(new RL_Q(ai, actions, stateVars)); //root
 
 	ClearAllNodes();
@@ -186,11 +190,13 @@ RL_Action RL::FindNextAction( RL_State &state )
 	float r = rand()/(float)RAND_MAX;
 	if ( r <= EPSILON ) //non-greedy
 	{
+		ai->utility->Log(LOG_DEBUG, LOG_RL, "Non-greedy!");
 		m_greedyChoice = false;
 		action = stateActions[rand()%stateActions.size()];
 	}
 	else //greedy
 	{
+		ai->utility->Log(LOG_DEBUG, LOG_RL, "Greedy!");
 		m_greedyChoice = true;
 		action = FindBestAction(state);
 	}
@@ -319,14 +325,18 @@ RL_Action RL::Update()
 	float bestFutureValue;
 	if ( state.IsTerminal() )
 	{
-		if(currentNode == 0 && ai->commanderDead == 1)
-		{
+		if (NEWSCENARIO) {
+			if(currentNode == 0 && ai->commanderDead == 1)
+			{
+				reward += 100;
+			}
+			else if(currentNode == 0 && ai->commanderDead == 2)
+			{
+				//we died.. bad boy
+				reward -= 100;
+			}
+		} else {
 			reward += 100;
-		}
-		else if(currentNode == 0 && ai->commanderDead == 2)
-		{
-			//we died.. bad boy
-			reward -= 100;
 		}
 
 		terminal = true;
