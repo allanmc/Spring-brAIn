@@ -21,12 +21,14 @@ RL::RL(Game *g, unsigned short int type, double epsilon)
 	switch(type)
 	{
 	case 0:
+		//stateVars.push_back( QStateVar("Rocko", RL_ROCKO_INDEX));
 		stateVars.push_back( QStateVar("Lab", RL_LAB_INDEX));
 		stateVars.push_back( QStateVar("Solar", RL_SOLAR_INDEX));
-		stateVars.push_back( QStateVar("Mex", RL_MEX_INDEX));
+		stateVars.push_back( QStateVar("Mex", RL_MEX_INDEX));		
 		actions.push_back( QAction("Lab", 0));
 		actions.push_back( QAction("Solar", 1));
 		actions.push_back( QAction("Mex", 2));
+		//actions.push_back( QAction("Rocko", 3));
 		ValueFunction.push_back(new RL_Q( actions, stateVars)); //root
 		break;
 	case 1:
@@ -222,12 +224,14 @@ RL_Action RL::FindNextAction( RL_State &state )
 	float r = rand()/(float)RAND_MAX;
 	if ( r <= EPSILON ) //non-greedy
 	{
+		m_greedyChoice = false;
 		action = stateActions[rand()%stateActions.size()];
 		game->greedy[0]++;
 		
 	}
 	else //greedy
 	{
+		m_greedyChoice = true;
 		action = FindBestAction(state);
 		game->greedy[1]++;
 	}
@@ -236,7 +240,6 @@ RL_Action RL::FindNextAction( RL_State &state )
 
 RL_Action RL::FindBestAction( RL_State &state )
 {
-	
 	vector<RL_Action> stateActions = state.GetActions();
 	
 
@@ -260,7 +263,7 @@ RL_Action RL::FindBestAction( RL_State &state )
 			action = tempAction;
 		}
 	}
-	if (action.ID < 0 || action.ID > 2)
+	if (action.ID < 0 || action.ID > 3)
 		exit(0);
 	return action;
 }
@@ -387,7 +390,7 @@ RL_Action RL::Update()
 
 	float value;
 
-	if(!USE_N_STEP)
+	if(!USE_N_STEP && !USE_Q_LAMBDA)
 	{
 		//if complex then update the childs value funtion
 		if(PreviousAction[currentNode].Complex)
@@ -395,14 +398,14 @@ RL_Action RL::Update()
 			int subNode = PreviousAction[currentNode].Action;
 			float subValue = ValueFunction[subNode]->GetValue(PreviousState[subNode],PreviousAction[subNode]) 
 							+ ALPHA*(
-							reward + pow((double)GAMMA, (USE_QSMDP?0:1)+(USE_QSMDP?1:0)*((double)game->frame - (double)PreviousFrame[currentNode]))*bestFutureValue 
+							reward + pow((double)GAMMA, (USE_QSMDP?0:1)+(USE_QSMDP?1:0)*(0.01*((double)game->frame - (double)PreviousFrame[currentNode])))*bestFutureValue 
 								- ValueFunction[subNode]->GetValue(PreviousState[subNode],PreviousAction[subNode]) );
 			ValueFunction[subNode]->SetValue(PreviousState[subNode],PreviousAction[subNode], subValue);
 		}
 		//update own value function
 		value = ValueFunction[currentNode]->GetValue(PreviousState[currentNode],PreviousAction[currentNode]) 
 				+ ALPHA*(
-					reward + pow((double)GAMMA, (USE_QSMDP?0:1)+(USE_QSMDP?1:0)*((double)game->frame - (double)PreviousFrame[currentNode]))*bestFutureValue 
+					reward + pow((double)GAMMA, (USE_QSMDP?0:1)+(USE_QSMDP?1:0)*(0.01*((double)game->frame - (double)PreviousFrame[currentNode])))*bestFutureValue 
 					- ValueFunction[currentNode]->GetValue(PreviousState[currentNode],PreviousAction[currentNode]) );
 		ValueFunction[currentNode]->SetValue(PreviousState[currentNode],PreviousAction[currentNode], value);
 	}
@@ -416,7 +419,7 @@ RL_Action RL::Update()
 			float bestFutureValue = ValueFunction[currentNode]->GetValue(dataTrail[i].resultState, bestAction);
 			value = ValueFunction[currentNode]->GetValue(dataTrail[i].prevState, dataTrail[i].prevAction)
 					+ ALPHA*(
-						dataTrail[i].reward + pow((double)GAMMA, (USE_QSMDP?0:1)+(USE_QSMDP?1:0)*((double)dataTrail[i].duration))*bestFutureValue 
+						dataTrail[i].reward + pow((double)GAMMA, (USE_QSMDP?0:1)+(USE_QSMDP?1:0)*((0.01*(double)dataTrail[i].duration)))*bestFutureValue 
 						- ValueFunction[currentNode]->GetValue(dataTrail[i].prevState, dataTrail[i].prevAction) );
 			ValueFunction[currentNode]->SetValue(dataTrail[i].prevState, dataTrail[i].prevAction, value);
 		}
@@ -424,6 +427,32 @@ RL_Action RL::Update()
 		dataTrail.push_back(DataPoint(PreviousState[currentNode], PreviousAction[currentNode], state, reward, game->frame - PreviousFrame[currentNode]));
 		if(BACKTRACKING_STEPS > 0 &&  dataTrail.size() > BACKTRACKING_STEPS)
 			dataTrail.erase(dataTrail.begin());
+	}
+
+	if(USE_Q_LAMBDA )
+	{
+		//add the current to the dataTrail
+		dataTrail.push_back(DataPoint(PreviousState[currentNode], PreviousAction[currentNode], state, reward, game->frame - PreviousFrame[currentNode]));
+		
+		for ( int i = 0 ; i < dataTrail.size() ; i++ )
+			if( dataTrail[i].eligibilityTrace < Q_LAMBDA_THRESHOLD)
+				dataTrail.erase(dataTrail.begin());
+
+		//RL_Action bestAction = FindBestAction( state );
+		float delta = reward + GAMMA*bestFutureValue - ValueFunction[currentNode]->GetValue( PreviousState[currentNode], PreviousAction[currentNode] );
+
+		for(int i = dataTrail.size()-1; i>=0; i--)
+		{
+			value = ValueFunction[currentNode]->GetValue(dataTrail[i].prevState, dataTrail[i].prevAction)
+				+ ALPHA*delta*dataTrail[i].eligibilityTrace;
+			ValueFunction[currentNode]->SetValue(dataTrail[i].prevState, dataTrail[i].prevAction, value);
+			if ( m_greedyChoice )
+			{
+				dataTrail[i].eligibilityTrace *= GAMMA*LAMBDA;
+			}
+			else dataTrail[i].eligibilityTrace = 0;
+		}
+		
 	}
 	
 	if(USE_N_STEP)
@@ -433,14 +462,14 @@ RL_Action RL::Update()
 		while(!done)
 		{
 			float powerDiscount = 0.0;
-			if((terminal || BACKTRACKING_STEPS > 0) &&  dataTrail.size() > BACKTRACKING_STEPS)
+			if(terminal || (BACKTRACKING_STEPS > 0 && dataTrail.size() > BACKTRACKING_STEPS))
 			{
 				float stepReward = 0.0;
 				for(int i = 0; i<dataTrail.size(); i++)
 				{
 					stepReward += dataTrail[i].reward * pow((float)GAMMA, powerDiscount);
 					if(USE_QSMDP)
-						powerDiscount += dataTrail[i].duration;
+						powerDiscount += 0.01*dataTrail[i].duration;
 					else
 						powerDiscount += 1;
 				}

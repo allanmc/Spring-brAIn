@@ -23,7 +23,7 @@ while (($currentfile=str_replace('{N}', $i, $filename)) && file_exists($currentf
 	$i++;
 }
 
-echo $header . "\n";
+echo $header . "\r\n";
 foreach ($averages as $average) {
 	echo $average . "\n";
 }

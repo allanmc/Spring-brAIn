@@ -4,14 +4,12 @@
 #define RL_SOLAR_ID 0
 #define RL_MEX_ID 1
 #define RL_LAB_ID 2
-#define RL_PLANT_ID 3
+//#define RL_PLANT_ID 3
+#define RL_ROCKO_ID 3
 #define RL_MEX_PRODUCTION 3.0
 #define RL_SOLAR_PRODUCTION 20.0
 #define COMMANDER_SPEED 300.0
-
-#define ROCKO_BUILDTIME 18.9
-#define ROCKO_M_USE 5.1
-#define ROCKO_E_USE 49.9
+#define LAB_SPEED 100.0
 
 #define DISCRETE_STATES 7
 #define DISCRETE_STATES_STEP 300
@@ -48,14 +46,14 @@ namespace brainSpace {
 	public:
 		Game();
 		int greedy[2];
-		int buildings[4];
+		int units[4];
 		float GetProduction(int resourceId);
-		int CanBuild(int buildingID);
-		void ConstructBuilding(int buildingId);
+		int CanBuild(int unitId, int amount);
+		void ConstructUnit(int unitId);
 		short unsigned int GetDiscreteResource(float realValue);
-		float AvailableResources(int resourceId, float time);
-		float BuildingCosts(int resourceId, int buildingID);
-		float BuildTime(int buildingID);
+		float GetAvailableResources(int resourceId, float time);
+		float BuildingCosts(int resourceId, int unitId);
+		float GetBuildTime(int unitId);
 		float GetUsage(int resourceId);
 		float frame;
 		void ResetGame();

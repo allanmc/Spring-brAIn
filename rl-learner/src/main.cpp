@@ -40,22 +40,39 @@ int main(int argc, char *argv[])
 	}
 	bool debug = false;
 
-	cout << (USE_QSMDP ? "SMDPQ" : "Q");
+	if ( USE_Q_LAMBDA )
+		cout << "Q("<< LAMBDA << ")";
+	else
+		cout << (USE_QSMDP ? "SMDPQ " : "Q ");
+
 	if(USE_RS_TIME || USE_RS_LABS || USE_BACKTRACKING)
-		cout << " w/ ";
+		cout << "w/ ";
 	if(USE_RS_TIME || USE_RS_LABS)
 		printf("Reward Shaping(%s%s)",(USE_RS_TIME ? (USE_RS_LABS ? "Time,":"Time") : ""), (USE_RS_LABS ? "Labs" : "") );
+
 	if(USE_BACKTRACKING)
-		cout << (USE_RS_TIME || USE_RS_LABS ? " & ": "") << "Backtracking(" << (BACKTRACKING_STEPS > 0 ? BACKTRACKING_STEPS : "Infinte") <<")";
+	{
+		cout << (USE_RS_TIME || USE_RS_LABS ? " & ": "") << "Backtracking(";
+		if (BACKTRACKING_STEPS > 0)
+			cout << BACKTRACKING_STEPS << ")";
+		else
+			cout << "Infinte" << ")";
+	}
 	if(USE_N_STEP)
-		cout << (USE_RS_TIME || USE_RS_LABS ? " & ": "") << "N-Step(" << (BACKTRACKING_STEPS > 0 ? BACKTRACKING_STEPS : "Infinte") <<")";
+	{
+		cout << (USE_RS_TIME || USE_RS_LABS ? " & ": "") << "N-Step(";
+		if (BACKTRACKING_STEPS > 0)
+			cout << BACKTRACKING_STEPS << ")";
+		else
+			cout << "Infinte" << ")";
+	}
 	cout << "\n";
 	//float bestReward = -1999;
 	float currentReward = 0.0;
 	float currentFrame = 0.0;
 	float bestFrame = 999999;
 	int currentIndex = 0;
-	short unsigned int runs = 10000;
+	unsigned int runs = 2000;
 	while(i < runs)
 	{
 		r = new RL(g, RL_TYPE, currentEpsilon);
@@ -63,51 +80,42 @@ int main(int argc, char *argv[])
 		r->setDesireToBuild(buildingToBuild);
 		RL_Action a;
 		a = r->Update();
-		
-		//if (i==0) system("pause");
 
-		if (RL_TYPE == 2) {//We need to spend some resources
-			//g->ConstructBuilding(RL_LAB_ID);
-			//g->ConstructBuilding(RL_LAB_ID);
-			//g->ConstructBuilding(RL_LAB_ID);
-		}
-/*
-		if (i%4==0) {
-			if (debug) {
-				float mNeeds_raw = g->BuildingCosts(RL_MEX_ID, buildingToBuild);
-				short unsigned int mNeeds = g->GetDiscreteResource(mNeeds_raw);
-				float eNeeds_raw = g->BuildingCosts(RL_SOLAR_ID, buildingToBuild);
-				short unsigned int eNeeds = g->GetDiscreteResource(eNeeds_raw);
-				float mAvailable_raw = g->AvailableResources(RL_MEX_ID, g->BuildTime(buildingToBuild));
-				short unsigned int mAvailable = g->GetDiscreteResource(mAvailable_raw);
-				float eAvailable_raw = g->AvailableResources(RL_SOLAR_ID, g->BuildTime(buildingToBuild));
-				short unsigned int eAvailable = g->GetDiscreteResource(eAvailable_raw);
-			
-				ChangeColour(FOREGROUND_INTENSITY | FOREGROUND_BLUE); 
-				cout << "Initial State: ";
-				cout << mNeeds << "(" << mNeeds_raw << ") - ";
-				cout << eNeeds << "(" << eNeeds_raw << ") - ";
-				cout << mAvailable << "(" << mAvailable_raw << ") - ";
-				cout << eAvailable << "(" << eAvailable_raw << ")\n";
-				ChangeColour(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE); 
-			}
-		}
-*/
+		
+
 		while(a.ID != -1)
 		{
 			if (RL_TYPE==2 && a.ID==0) break;
-			if (debug) cout << (a.Action==RL_MEX_ID?"M":(a.Action == RL_SOLAR_ID ? "E" : "L"));
+			if (debug)
+			{
+				switch(a.Action)
+				{
+					case RL_LAB_ID:
+						cout << "L";
+						break;
+					case RL_MEX_ID:
+						cout << "M";
+						break;
+					case RL_SOLAR_ID:
+						cout << "S";
+						break;
+					case RL_ROCKO_ID:
+						cout << "R";
+						break;
+				}
+			}
 
 			float oldFrame = g->frame;
-			g->ConstructBuilding(a.Action);
+			g->ConstructUnit(a.Action);
 
 			a = r->Update();		
 		}
-		
+		if ( debug )
+			cout << endl;
 		if (RL_TYPE == 2)
 		{
 			if (debug) cout << "L";
-			g->ConstructBuilding(buildingToBuild);
+			g->ConstructUnit(buildingToBuild);
 			a = r->Update();
 		} 
 		if (debug) cout << "\n";
@@ -173,5 +181,6 @@ int main(int argc, char *argv[])
 
 		currentEpsilon *= EPSILON_DECAY;
 	}
+	cout << "Bestframe: " << bestFrame;
 	//system("pause");
 }
