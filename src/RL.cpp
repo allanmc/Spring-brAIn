@@ -296,38 +296,6 @@ void RL::TakeAction(RL_Action &action)
 	PreviousState[currentNode] = nullState;
 }
 
-RL_Action RL::UpdateNew()
-{/*
-	RL_State state = GetState(currentNode);
-	RL_Action nextAction = SafeNextAction( state );
-
-	if ( PreviousState[currentNode] == nullState )
-	{
-		PreviousAction[currentNode] = nextAction;
-		PreviousState[currentNode] = state;
-		PreviousFrame[currentNode] = ai->frame;
-
-		currentNode = nextAction.Action;
-		if ( nextAction.Complex )
-		{
-			return UpdateNew();
-		}
-		return nextAction;
-	}
-
-
-	
-	
-	if ( nextAction.Complex )
-	{
-		currentNode = nextAction.Action;
-	}
-	else
-	{
-		float reward = -(ai->frame - PreviousFrame[currentNode]) / 30.0;
-	}*/
-}
-
 RL_Action RL::Update()
 {
 	ai->utility->Log(LOG_DEBUG, LOG_RL, "RL:Update() node:%d", currentNode);
