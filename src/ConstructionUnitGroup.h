@@ -3,7 +3,7 @@
 
 #include "BrainGroup.h"
 #include "PathfindingMap.h"
-#include "global.h"
+#include "types.h"
 #include <math.h>
 
 namespace brainSpace
@@ -43,6 +43,7 @@ namespace brainSpace
 		SAIFloat3 FindBestDefensePosition(UnitDef *unitDef, SAIFloat3 buildPos);
 		SAIFloat3 GetUnitExitOfLab(SAIFloat3 centerPos, UnitDef *unitDef, int facing);
 		SAIFloat3 FindGoodBuildSite(SAIFloat3 builderPos, UnitDef* building, float radius);
+		bool CheckAbilityToExitFromBuilding(UnitDef *unitDef, SAIFloat3 pos, UnitDef *toBuild, SAIFloat3 buildPos);
 
 	};
 }

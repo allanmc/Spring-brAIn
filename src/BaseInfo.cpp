@@ -46,29 +46,39 @@ void BaseInfo::AddBuilding(Unit* building)
 	ai->knowledge->mapInfo->pathfindingMap->AddBuilding( building );
 }
 
-void BaseInfo::RemoveBuilding(Unit* building)
+void BaseInfo::RemoveBuilding(int building)
 {
-	//check for builder units
-	if(building->GetDef()->GetSpeed() > 0) return;
-
 	if (buildingCount==0)
 	{
 		return;
 	}
-	quadTree->RemoveUnit( building->GetUnitId() );
+	bool seen = quadTree->RemoveUnit( building );
 	//remove unit from quadtree, using pos
 
-	buildingCount--;
-	if(building->GetDef()->IsBuilder())
+	Unit *buildingU = Unit::GetInstance(ai->callback, building);
+	UnitDef *def = buildingU->GetDef();
+	if(seen)
 	{
-		productionBuildings--;
-	}
-	else
-	{
-		resourceBuildings--;
-	}
+		if(def != NULL)
+		{
+			buildingCount--;
 
-	ai->knowledge->mapInfo->pathfindingMap->RemoveBuilding( building );
+			if(def->IsBuilder())
+			{
+				productionBuildings--;
+			}
+			else
+			{
+				resourceBuildings--;
+			}
+
+			ai->knowledge->mapInfo->pathfindingMap->RemoveBuilding( buildingU );
+		}
+		else
+			ai->utility->Log(ALL,KNOWLEDGE,"RemoveBuilding: We are trying to remove a seen building with no unitdef"); 
+	}
+	delete def;
+	delete buildingU;
 }
 
 ///@return the number of resource producing buildings
@@ -159,4 +169,79 @@ int BaseInfo::CountBuildingsByName( const char* name )
 		it++;
 	}
 	return count;
+}
+
+vector< vector<SAIFloat3> > BaseInfo::GetBases()
+{
+	KMedoids *km = new KMedoids( ai );
+	vector<SAIFloat3> points;
+	
+	map<int, UnitInformationContainer> units = quadTree->GetUnits();
+	map<int, UnitInformationContainer>::iterator iter;
+	
+	for ( iter = units.begin() ; iter != units.end() ; iter++ )
+	{
+		SAIFloat3 pos = (*iter).second.pos;
+		points.push_back(pos);
+	}
+
+	km->AddPoints(points);
+
+	vector< vector<SAIFloat3> > clusters = km->GetClusters();
+	delete km;
+	km = NULL;
+	return clusters;
+}
+
+Unit* BaseInfo::GetWeakestBaseBuilding()
+{
+	vector< vector<SAIFloat3> > bases = GetBases();
+	SAIFloat3 startpos = ai->callback->GetMap()->GetStartPos();
+	SAIFloat3 best;
+	float bestthreat = 99999;
+	
+	for(int i = 0; i < bases.size(); i++)
+	{
+		for(int j = 0; j < bases[i].size(); j++)
+		{
+			float current = ai->knowledge->mapInfo->threatMap->GetThreatAtPos(bases[i][j]);
+			if(current < bestthreat)
+			{
+				best = bases[i][j];
+				bestthreat = current;
+			}
+		}
+	}
+	vector<Unit*> units = GetUnitsInRange(best, 5);
+	if(units.size() < 1)
+		return NULL;
+	return units[0];
+}
+Unit* BaseInfo::GetNearestBaseBuilding()
+{
+	vector< vector<SAIFloat3> > bases = GetBases();
+	SAIFloat3 startpos = ai->callback->GetMap()->GetStartPos();
+	SAIFloat3 best;
+	double bestdist = 99999;
+	for(int i = 0; i < bases.size(); i++)
+	{
+		for(int j = 0; j < bases[i].size(); j++)
+		{
+			double current = ai->utility->EuclideanDistance(bases[i][j], startpos);
+			if(current < bestdist)
+			{
+				best = bases[i][j];
+				bestdist = current;
+			}
+		}
+	}
+	vector<Unit*> units = GetUnitsInRange(best, 5);
+	if(units.size() < 1)
+		return NULL;
+	return units[0];
+}
+
+const map<int, struct UnitInformationContainer> BaseInfo::GetUnits()
+{
+	return quadTree->GetUnits();
 }

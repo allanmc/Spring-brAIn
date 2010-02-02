@@ -17,8 +17,12 @@ namespace brainSpace
 		BaseInfo( AIClasses* aiClasses );
 		virtual ~BaseInfo();
 		void AddBuilding(Unit* building);
-		void RemoveBuilding(Unit* building);
+		void RemoveBuilding(int building);
 		void DrawBasePerimiter();
+		vector< vector<SAIFloat3> > GetBases();
+		Unit* GetNearestBaseBuilding();
+		Unit* GetWeakestBaseBuilding();
+		
 
 		unsigned int buildingCount;
 		
@@ -28,6 +32,7 @@ namespace brainSpace
 
 		vector<Unit*> GetUnitsInRange(SAIFloat3 pos, float radius);
 		bool IsBuildingInRange(SAIFloat3 pos, float radius);
+		const map<int, struct UnitInformationContainer> GetUnits();
 
 	private:
 		AIClasses* ai;

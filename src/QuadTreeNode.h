@@ -1,10 +1,11 @@
 #ifndef _BRAINSPACE_QUADTREENODE_H
 #define _BRAINSPACE_QUADTREENODE_H
 
-#include "global.h"
+#include "types.h"
 #include <vector>
 #include <map>
 #include <iostream>
+#include "Battle.h"
 
 using namespace std;
 

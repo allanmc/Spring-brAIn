@@ -12,7 +12,7 @@ Decision::Decision(AIClasses* aiClasses)
 {
 	ai = aiClasses;
 	gameCounter = 0;
-	gc = new GroupController( ai );
+	ai->frame = 0;
 	ai->utility->Log(ALL, MISC, "GroupController loaded...");
 	bc = new BuildingController( ai );
 	ai->utility->Log(ALL, MISC, "BuildingController loaded...");
@@ -21,6 +21,8 @@ Decision::Decision(AIClasses* aiClasses)
 	BattleInfoInstance = new BattlesInfo( ai );
 	ai->utility->Log(ALL, MISC, "BattlesInfo loaded...");
 	resettingGame = false;
+	
+	
 	//time_t t1, t2, t3, t4, t5;
 	//int i;
 	//int iterations = 100;
@@ -50,8 +52,6 @@ Decision::Decision(AIClasses* aiClasses)
 
 Decision::~Decision(void)
 {
-	delete gc;
-	gc = NULL;
 	delete bc;
 	bc = NULL;
 	delete rl;
@@ -97,7 +97,7 @@ void Decision::UnitFinished(int unit)
 {
 	if (resettingGame)
 	{
-		return;
+		//return;
 	}
 
 	Unit *u = Unit::GetInstance(ai->callback,unit);
@@ -109,15 +109,14 @@ void Decision::UnitFinished(int unit)
 	{
 		ai->utility->Log(ALL, MISC, "Finished with a non-building");
 		//add to groupController
-		gc->AddUnit(u);
+		ai->knowledge->groupManager->AddUnit(u);
 		if (!ud->IsBuilder())
 		{
 			//BuildAttackUnit();
 		}
 	}else{
-		ai->utility->Log(ALL, MISC, "Finished with a building, bc = %i", bc);
+		ai->utility->Log(ALL, MISC, "Finished with a building");
 		//add to BuildingController
-		
 		bc->AddBuilding(u);
 		ai->utility->Log(ALL, MISC, "Added building");
 		//BuildAttackUnit();
@@ -133,8 +132,13 @@ void Decision::UnitFinished(int unit)
 	{
 		ai->knowledge->selfInfo->baseInfo->AddBuilding(u);
 	}
-	
-	UpdateRL();
+	if(rl->ShouldIUpdate())
+	{
+		ai->utility->Log(ALL, MISC, "UpdateRL");
+		UpdateRL();
+	}
+	else
+		ai->utility->Log(ALL, MISC, "NOT UpdateRL");
 	ai->utility->Log(LOG_DEBUG, LOG_RL, "UnitFinished() returned");
 	delete ud;
 	for(int i = 0; i < (int)wpmt.size(); i++)
@@ -152,21 +156,95 @@ void Decision::UpdateRL()
 		if ( action.ID != -1)
 		{
 			ai->utility->Log(LOG_DEBUG, LOG_RL, "UpdateRL() anot null action");
-			SBuildUnitCommand c;
+			ai->utility->Log(LOG_DEBUG, LOG_RL, "UpdateRL() action->ID = %i", action.ID);
 			ai->utility->Log(LOG_DEBUG, LOG_RL, "UpdateRL() action->Action = %i", action.Action);
-			c.toBuildUnitDefId = action.Action;
-			ai->utility->Log(LOG_DEBUG, LOG_RL, "UpdateRL() continuing");
-			c.timeOut = 10000000;
-			c.facing = 0;
-			c.options = 0;
-			gc->ErectBuilding( c );
-			ai->utility->Log(ALL, MISC,  "RL: Building unit with unitdef: %d", action.Action );
+			//simple unit to build
+			if(action.Action > 0)
+			{
+				SBuildUnitCommand c;
+				ai->utility->Log(LOG_DEBUG, LOG_RL, "UpdateRL() action->Action = %i", action.Action);
+				c.toBuildUnitDefId = action.Action;
+				ai->utility->Log(LOG_DEBUG, LOG_RL, "UpdateRL() continuing");
+				c.timeOut = 30000;
+
+				if(action.ID >= 4)
+				{
+					c.buildPos = (SAIFloat3){0,0,0};
+					c.facing = UNIT_COMMAND_BUILD_NO_FACING;
+					c.options = 0;
+					bc->ConstructUnit(c);					
+				}
+				else
+				{
+					c.facing = 0;
+					c.options = 0;
+					ai->knowledge->groupManager->ErectBuilding( c );
+				}
+				ai->utility->Log(ALL, MISC,  "RL: Building unit with unitdef: %d", action.Action );
+			}
+			else //complex thing to do
+			{
+				switch(action.Action)
+				{
+					case RL_ATTACK_BASE :
+						{
+						Unit* un = ai->knowledge->enemyInfo->baseInfo->GetNearestBaseBuilding();
+						if(un != NULL)
+						{
+							ai->knowledge->groupManager->AttackWithGroup(un->GetUnitId());
+							ai->utility->Log(ALL,MISC, "Attacking pos: %f,%f", un->GetPos().x, un->GetPos().z);
+						}
+						else
+						{
+							vector<Point*> points = ai->callback->GetMap()->GetPoints(true);
+							SAIFloat3 enemyStartingPosition;
+							for( int i = 0 ; i < (int)points.size() ; i++ )
+							{
+								if ( points[i]->GetPosition().x == ai->callback->GetMap()->GetStartPos().x &&
+									 points[i]->GetPosition().z == ai->callback->GetMap()->GetStartPos().z )
+								{
+									continue;
+								}
+								enemyStartingPosition = points[i]->GetPosition();
+								break;
+							}
+							ai->utility->Log(ALL,MISC, "No enemies seen, sending units to start pos: %f,%f", enemyStartingPosition.x, enemyStartingPosition.z);
+							ai->knowledge->groupManager->MoveGroupToPosition(enemyStartingPosition);
+						}
+						break;
+						}
+
+					case RL_ATTACK_WEAK : 
+						{
+						Unit* uw = ai->knowledge->enemyInfo->baseInfo->GetWeakestBaseBuilding();
+						ai->knowledge->groupManager->AttackWithGroup(uw->GetUnitId());
+						ai->utility->Log(ALL,MISC, "Attacking weak: %f,%f", uw->GetPos().x, uw->GetPos().z);
+						break;
+						}
+
+					case RL_GUARD_COM :
+						ai->knowledge->groupManager->GetMilitaryGroupMgr()->GuardUnit(ai->commander);
+						break;
+
+					case RL_GUARD_WEAK :
+						{
+						Unit* ug = ai->knowledge->selfInfo->baseInfo->GetWeakestBaseBuilding();
+						ai->knowledge->groupManager->MoveGroupToPosition(ug->GetPos());
+						break;
+						}
+
+					case RL_SCOUT : 
+						ai->utility->Log(ALL,MISC,"Scout from RL..");
+						ai->knowledge->groupManager->ScoutWithIdleGroup();
+						break;
+				}
+			}
 		}
 		else 
 		{
 			ai->utility->Log(ALL, MISC,  "we have reached our goal!!" );
 			//ai->utility->Suicide();
-			Reset();
+			//Reset();
 		}
 	}
 	ai->utility->Log(LOG_DEBUG, LOG_RL, "UpdateRL() done");
@@ -193,33 +271,32 @@ void Decision::UnitDestroyed(int unit, int attacker)
 	}
 
 	Unit* destroyee = Unit::GetInstance( ai->callback, unit );
-	Unit* destroyer = Unit::GetInstance( ai->callback, attacker );
-	BattleInfoInstance->UnitDestroyed( destroyee, destroyer );
-
-
+	BattleInfoInstance->UnitDestroyed( unit, attacker );
 	UnitDef* d = destroyee->GetDef();
 
 	if ( d == NULL )
 		ai->utility->Log( LOG_DEBUG, DECISION, "UnitDestroyed: UnitDef was null" );
 	else if ( d->GetUnitDefId() == -1 )
 		ai->utility->Log( LOG_DEBUG, DECISION, "UnitDestroyed: Unitdef was -1" );
-	vector<WeaponMount*> wpmt = d->GetWeaponMounts();
-
-	if (wpmt.size()>0) 
+	else
 	{
-		ai->knowledge->selfInfo->armyInfo->RemoveUnit(destroyee);
+		rl->AddReward(-ai->utility->GetDpsFromUnitDef(d));
+		ai->utility->Log( LOG_DEBUG, DECISION, "UnitDestroyed: Unitdef was %s",d->GetName() );
+		if(d->IsCommander())
+		{
+			ai->commanderDead = -1;
+			UpdateRL();
+		}
 	}
-	else 
-	{	
-		ai->utility->Log(ALL, MISC,  "Unit destroyed: %s", destroyee->GetDef()->GetHumanName() );
-		ai->knowledge->selfInfo->baseInfo->RemoveBuilding(destroyee);
-	}
-
+	
+	//Always remove :)
+	ai->knowledge->selfInfo->armyInfo->RemoveUnit(unit);
+	ai->knowledge->selfInfo->baseInfo->RemoveBuilding(unit);
 
 	if(d->GetSpeed() > 0)
 	{
 		//remove from groupController
-		gc->RemoveUnit(destroyee);
+		ai->knowledge->groupManager->RemoveUnit(destroyee);
 	}else{
 		//remove from BuildingController
 		bc->RemoveBuilding(destroyee);
@@ -230,14 +307,7 @@ void Decision::UnitDestroyed(int unit, int attacker)
 	}
 	delete d;
 	delete destroyee;
-	delete destroyer;
-	for(int i = 0; i < (int)wpmt.size(); i++)
-	{
-		delete wpmt[i];
-	}
-	wpmt.clear();
 
-	//build a repacement?
 }
 
 ///called when we can see an enemy unit that we could not see before.
@@ -248,7 +318,7 @@ void Decision::EnemyEnterLOS(int enemy)
 		return;
 	}
 
-	gc->AttackWithGroup(enemy);
+	//ai->knowledge->groupManager->AttackWithGroup(enemy);
 
 	Unit * unit = Unit::GetInstance(ai->callback,enemy);
 	UnitDef* d = unit->GetDef();
@@ -277,43 +347,32 @@ void Decision::EnemyDestroyed(int enemy, int attacker)
 	}
 	//good job!
 	Unit* unit = Unit::GetInstance(ai->callback, enemy);
-	Unit* attackerUnit = Unit::GetInstance( ai->callback, attacker );
 	UnitDef* d = unit->GetDef();
-
 	if ( d == NULL )
-		ai->utility->Log( LOG_DEBUG, DECISION, "EnemyDestroyed: UnitDef was null" );
-	else if ( d->GetUnitDefId() == -1 )
+	{
+		d = ai->knowledge->enemyInfo->armyInfo->GetUnitDef( unit->GetUnitId() );
+	}
+	ai->knowledge->enemyInfo->armyInfo->RemoveUnit( enemy );
+	ai->knowledge->enemyInfo->baseInfo->RemoveBuilding( enemy );
+	if ( d == NULL ) //Unknown unit type: we never saw it, just killed it :D
+	{		
+		return;		
+	}
+	
+	if ( d->GetUnitDefId() == -1 )
 		ai->utility->Log( LOG_DEBUG, DECISION, "EnemyDestroyed: Unitdef was -1" );
-
-
-	UnitDef* defPointer = NULL;
-
-	BattleInfoInstance->EnemyDestroyed( unit, attackerUnit );
-
-	if ( unit->GetDef() == NULL )
+	else
 	{
-		defPointer = ai->knowledge->enemyInfo->armyInfo->GetUnitDef( unit->GetUnitId() );
+		ai->utility->Log( LOG_DEBUG, DECISION, "EnemyDestroyed: Unitdef was %s",d->GetName() );
+		rl->AddReward(ai->utility->GetDpsFromUnitDef(d));
+		if(d->IsCommander())
+		{
+			ai->utility->Log( LOG_DEBUG, DECISION, "EnemyDestroyed: commander" );
+			ai->commanderDead = 1;
+			UpdateRL();
+		}
 	}
-	else defPointer = unit->GetDef();
-
-	if ( defPointer == NULL ) //Unknown unit type: we never saw it, just killed it :D
-	{
-		return;
-		/*
-		ai->knowledge->enemyInfo->armyInfo->RemoveUnit( unit );
-		ai->knowledge->enemyInfo->baseInfo->RemoveBuilding( unit );
-		return;
-		*/
-	}
-
-	if (defPointer->GetWeaponMounts().size()>0) 
-	{
-		ai->knowledge->enemyInfo->armyInfo->RemoveUnit(unit);
-	}
-	else 
-	{
-		ai->knowledge->enemyInfo->baseInfo->RemoveBuilding(unit);
-	}
+	BattleInfoInstance->EnemyDestroyed( enemy, attacker );
 }
 
 ///used to update the positions of all friendly units in the ArmyInfo
@@ -347,7 +406,7 @@ void Decision::Reset()
 	extraMoveSent = false;
 	vector<Unit*> units = ai->callback->GetFriendlyUnits();
 	remainingUnits = units.size();
-	ai->utility->ResetGame(&rl, (gameCounter > 300 ? true : false));
+	ai->utility->ResetGame(&rl);
 	ai->utility->ChatMsg("Starting game #%i", gameCounter++);
 	delete ai->knowledge;
 	ai->knowledge = NULL;
@@ -359,16 +418,11 @@ void Decision::Reset()
 	ai->utility->Log(ALL, MISC, "Deleted ai->math");
 	ai->math = NULL;
 	ai->math = new BrainMath( ai );
-	delete gc;
-	ai->utility->Log(ALL, MISC, "Deleted gc");
-	gc = NULL;
-	gc = new GroupController( ai );
 	delete bc;
 	ai->utility->Log(ALL, MISC, "Deleted bc");
 	bc = NULL;
 	bc = new BuildingController( ai );
 	ai->utility->Log(ALL, MISC, "Reset() done");
-
 }
 
 void Decision::Update(int frame)
@@ -455,7 +509,7 @@ void Decision::Update(int frame)
 			c.timeOut = 10000000;
 			c.facing = 0;
 			c.options = 0;
-			gc->ErectBuilding( c );
+			ai->knowledge->groupManager->ErectBuilding( c );
 			ai->utility->Log(ALL, MISC,  "RL: Building unit with unitdef: %d", action->UnitDefID );
 		}*/
 		
@@ -514,7 +568,7 @@ void Decision::Update(int frame)
 		solarOrder.options = UNIT_COMMAND_OPTION_SHIFT_KEY;
 		for ( int i = 0 ; i < 6 ; i++ )
 		{
-			gc->ErectBuilding( solarOrder );
+			ai->knowledge->groupManager->ErectBuilding( solarOrder );
 
 		}
 		*/
@@ -530,17 +584,17 @@ void Decision::Update(int frame)
 		ai->callback->GetEngine()->HandleCommand( 0, -1, COMMAND_UNIT_MOVE, &m );*/
 
 		
-		//gc->ErectBuilding(metalExOrder);
-		//gc->ErectBuilding(solarOrder);
-		//gc->ErectBuilding(metalExOrder);
-		//gc->ErectBuilding(solarOrder);
-		//gc->ErectBuilding(metalExOrder);
-		//gc->ErectBuilding(solarOrder);
-		//gc->ErectBuilding(kbotLabOrder);
+		//ai->knowledge->groupManager->ErectBuilding(metalExOrder);
+		//ai->knowledge->groupManager->ErectBuilding(solarOrder);
+		//ai->knowledge->groupManager->ErectBuilding(metalExOrder);
+		//ai->knowledge->groupManager->ErectBuilding(solarOrder);
+		//ai->knowledge->groupManager->ErectBuilding(metalExOrder);
+		//ai->knowledge->groupManager->ErectBuilding(solarOrder);
+		//ai->knowledge->groupManager->ErectBuilding(kbotLabOrder);
 
 		//int num = 100;
 		//while (num--) {
-		//	gc->ErectBuilding(lltDefOrder);
+		//	ai->knowledge->groupManager->ErectBuilding(lltDefOrder);
 		//}
 		
 	}
@@ -553,12 +607,20 @@ void Decision::Update(int frame)
 		//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "update" );
 		ai->knowledge->mapInfo->threatMap->Update();
 		//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "update2" );
-		gc->ScoutWithIdleGroup();
+		//ai->knowledge->groupManager->ScoutWithIdleGroup();
 		//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "update3" );
 		BattleInfoInstance->Update( frame );
 		//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "update4" );
 	}
-
+	
+	if(frame % 90 == 0)
+	{
+		if(rl->ShouldIUpdate())
+		{
+			//ai->utility->Log(ALL, MISC, "UpdateRL");
+			UpdateRL();
+		}
+	}
 	if ( frame % 120 ==0 )
 	{
 		UpdateFrindlyPositions();
@@ -707,7 +769,11 @@ void Decision::UnitIdle( int id )
 	}
 	
 	Unit* u = Unit::GetInstance( ai->callback, id );
-	gc->UnitIdle( u );
+	ai->utility->Log(ALL,MISC,"Unit %s idle, but has %d commands", u->GetDef()->GetName(), u->GetCurrentCommands().size());
+	if(u->GetCurrentCommands().size() == 0)
+	{
+		ai->knowledge->groupManager->UnitIdle( u );
+	}
 	
 	//BuildSomethingUsefull();
 	//Construction groups has nothing to do... So build something we need!
@@ -716,7 +782,7 @@ void Decision::UnitIdle( int id )
 
 void Decision::BuildSomethingUsefull()
 {
-	if (gc->ConstructionGroupIsIdle())
+	if (ai->knowledge->groupManager->ConstructionGroupIsIdle())
 	{
 		ai->utility->Log(ALL, MISC, "I have absolutely nothing to do now!");
 		UnitDef *armsolar = ai->utility->GetSolarDef();
@@ -754,7 +820,7 @@ void Decision::BuildSomethingUsefull()
 		ai->utility->Log(ALL, MISC, "I want to build: %s", UnitDef::GetInstance(ai->callback, buildOrder.toBuildUnitDefId)->GetName());
 		*/
 		buildOrder.toBuildUnitDefId = armsolar->GetUnitDefId();
-		gc->ErectBuilding(buildOrder);
+		ai->knowledge->groupManager->ErectBuilding(buildOrder);
 	}
 }
 
@@ -785,9 +851,7 @@ void Decision::UnitDamaged( int unitID, int attacker )
 	{
 		return;
 	}
-	Unit* u1 = Unit::GetInstance( ai->callback, unitID );
-	Unit* u2 = Unit::GetInstance( ai->callback, unitID );
-	BattleInfoInstance->UnitDamaged( u1, u2 );
+	BattleInfoInstance->UnitDamaged( unitID, attacker );
 }
 
 void Decision::EnemyDamaged( int attacker, int enemy )
@@ -796,7 +860,5 @@ void Decision::EnemyDamaged( int attacker, int enemy )
 	{
 		return;
 	}
-	Unit* attackerUnit = Unit::GetInstance( ai->callback, attacker );
-	Unit* enemyUnit = Unit::GetInstance( ai->callback, enemy );
-	BattleInfoInstance->EnemyDamaged( attackerUnit, enemyUnit );
+	BattleInfoInstance->EnemyDamaged( attacker, enemy );
 }

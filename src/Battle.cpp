@@ -1,4 +1,5 @@
 #include "Battle.h"
+#include "Knowledge.h"
 
 using namespace std;
 using namespace springai;
@@ -44,36 +45,49 @@ Battle::~Battle()
 }
 
 
-void Battle::UnitDied( Unit* u, bool enemy )
+void Battle::UnitDied( int unitID, bool enemy )
 {
 	LastFrameOfActivity = ai->frame;
 	//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "UNIT DIED: %d unitdefID: %d", u->GetUnitId(), u->GetDef()->GetUnitDefId() );
+	Unit *u = Unit::GetInstance(ai->callback, unitID);
 	UnitDef* def = u->GetDef();
+
 	map<int, int>::iterator iter;
-	int unitID = u->GetUnitId();
 
 	if ( enemy )
 	{
 		//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "dead unit is enemy unit" );
-		DeadEnemyUnits[def->GetUnitDefId()] += 1;
+		if(def == NULL)
+			ai->knowledge->enemyInfo->armyInfo->GetUnitDef(unitID);
+		if(def != NULL)
+			DeadEnemyUnits[def->GetUnitDefId()] += 1;
+		else
+			ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "dead unit is enemy unit, but we dont know unitdef!?" );
 		ActiveEnemyUnits.erase( unitID );
 	}
 	else
 	{
 		//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "dead unit is friendly unit" );
-		DeadFriendlyUnits[def->GetUnitDefId()] += 1;
+		if(def != NULL)
+		{
+			DeadFriendlyUnits[def->GetUnitDefId()] += 1;
+		}
+		else
+			ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "dead unit is friendly unit, but we dont know unitdef!?" );
 		ActiveFriendlyUnits.erase( unitID );
 	}
 }
 
-void Battle::UnitEnteredBattle( Unit* u, bool enemy )
+void Battle::UnitEnteredBattle( int unitID, bool enemy )
 {
 	ai->utility->Log(ALL, KNOWLEDGE, "UnitEnteredBattle start");
+	Unit *u = Unit::GetInstance(ai->callback, unitID);
+	if(u == NULL)
+		ai->utility->Log(ALL, KNOWLEDGE, "UnitEnteredBattle: WTF, unit is NULL? id: %d, enemy: %d", unitID, enemy);
 	UnitInformationContainer container;
 	container.def = u->GetDef();
 	container.pos = u->GetPos();
 	
-	int unitID = u->GetUnitId();
 	ai->utility->Log(ALL, KNOWLEDGE, "UnitEnteredBattle 4");
 
 	//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "UnitID %d entered battle: defID %d", unitID, container.def->GetUnitDefId() );
@@ -83,8 +97,9 @@ void Battle::UnitEnteredBattle( Unit* u, bool enemy )
 		ai->utility->Log(ALL, KNOWLEDGE, "UnitEnteredBattle Unitdef = NULL");
 		//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "defID was -1" );
 		UnitDef* def = ai->knowledge->enemyInfo->armyInfo->GetUnitDef( unitID );
-		if ( def != NULL && def->GetUnitDefId() != -1 )
+		if ( def != NULL )
 		{
+			ai->utility->Log(ALL, KNOWLEDGE, "UnitEnteredBattle Unitdef = %s", def->GetName());
 			container.def = def;
 			//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "Def updated!" );
 		}
@@ -133,10 +148,9 @@ void Battle::UnitEnteredBattle( Unit* u, bool enemy )
 	//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "Done! :-) " );
 }
 
-bool Battle::Contains( Unit* u )
+bool Battle::Contains( int unitID )
 {
 	map<int, UnitInformationContainer>::iterator unit;
-	int unitID = u->GetUnitId();
 
 	unit = ActiveEnemyUnits.find( unitID );
 	if ( unit != ActiveEnemyUnits.end() )
@@ -207,10 +221,10 @@ int Battle::GetLastFrameOfActivity()
 	return LastFrameOfActivity;
 }
 
-void Battle::RemoveUnit( Unit* unit )
+void Battle::RemoveUnit( int unitID )
 {
 	//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "UNIT REMOVED: %d", unit->GetUnitId() );
-	map<int, UnitInformationContainer>::iterator it = ActiveFriendlyUnits.find( unit->GetUnitId() );
+	map<int, UnitInformationContainer>::iterator it = ActiveFriendlyUnits.find( unitID );
 	if ( it != ActiveFriendlyUnits.end() )
 	{
 		ActiveFriendlyUnits.erase( it );
@@ -218,7 +232,7 @@ void Battle::RemoveUnit( Unit* unit )
 	}
 	else
 	{
-		it = ActiveEnemyUnits.find( unit->GetUnitId() );
+		it = ActiveEnemyUnits.find( unitID );
 		if ( it != ActiveEnemyUnits.end() )
 		{
 			ActiveEnemyUnits.erase( it );
@@ -274,7 +288,7 @@ void Battle::ToString()
 	ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "Active Friendly Units: %d\n--------------", ActiveFriendlyUnits.size() );
 	for ( map<int, UnitInformationContainer>::iterator iter = ActiveFriendlyUnits.begin() ; iter != ActiveFriendlyUnits.end() ; iter++ )
 	{
-		if ( (*iter).second.def->GetUnitDefId() != -1 )
+		if ( (*iter).second.def != NULL )
 			ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "UnitID: %d - %s", (*iter).first, (*iter).second.def->GetHumanName() );
 		else ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "UnitID: %d - unitdef unknown", (*iter).first );
 	}
@@ -282,7 +296,7 @@ void Battle::ToString()
 	ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "Active Enemy Units: %d\n--------------", ActiveEnemyUnits.size() );
 	for ( map<int, UnitInformationContainer>::iterator iter = ActiveEnemyUnits.begin() ; iter != ActiveEnemyUnits.end() ; iter++ )
 	{
-		if ( (*iter).second.def->GetUnitDefId() != -1 )
+		if ( (*iter).second.def != NULL )
 			ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "UnitID: %d - %s", (*iter).first, (*iter).second.def->GetHumanName() );
 		else ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "UnitID: %d - unitdef unknown", (*iter).first );
 	}

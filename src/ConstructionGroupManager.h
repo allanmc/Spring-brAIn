@@ -2,7 +2,7 @@
 #define _BRAINSPACE_CONSTRUCTION_GROUP_MANAGER_H
 
 
-#include "global.h"
+#include "types.h"
 #include "ConstructionUnitGroup.h"
 
 

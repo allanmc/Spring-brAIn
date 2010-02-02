@@ -58,6 +58,18 @@ bool Utility::IsDebug()
 	return debug;
 }
 
+float Utility::GetDpsFromUnitDef(springai::UnitDef *def)
+{
+	vector<WeaponMount*> weaponMounts = def->GetWeaponMounts();
+	float dmg = 0;
+	for ( int i = 0 ; i < (int)weaponMounts.size() ; i++ )
+	{
+		WeaponDef* wDef = weaponMounts.at(i)->GetWeaponDef();
+		dmg += (wDef->GetDamage()->GetTypes().at(def->GetArmorType()) / wDef->GetReload());
+	}
+	return dmg;
+}
+
 void Utility::LaterInitialization()
 {
 	ai->utility->Log(ALL, MISC, "Calling GetUnitDefs");
@@ -67,8 +79,7 @@ void Utility::LaterInitialization()
 	solarDef = GetUnitDef("armsolar");
 	lltDef = GetUnitDef("armllt");
 	Log(ALL, MISC, "LaterInitialization()");
-	isMetalMap = map->GetResourceMapSpotsPositions(*ai->utility->GetResource("Metal"), NULL).size() > 200;
-	
+	isMetalMap = map->GetResourceMapSpotsPositions(*ai->utility->GetResource("Metal"), NULL).size() > 200;	
 }
 
 bool Utility::IsMetalMap()
@@ -447,7 +458,7 @@ bool Utility::FileExists( const char* FileName )
     return false;
 }
 
-void Utility::ResetGame(RL **rl, bool endGame)
+void Utility::ResetGame(RL **rl)
 {
 	Log(IMPORTANT, MISC, "brAIn is now resetting..."); 
 
@@ -487,7 +498,7 @@ void Utility::ResetGame(RL **rl, bool endGame)
 	Log(IMPORTANT, MISC, "Killing all units besides the commander..."); 
 	//Delete all units besides out new commander
 	
-	Suicide((endGame ? 0 : ai->commander->GetUnitId()), true);
+	Suicide(ai->commander->GetUnitId(), true);
 	c->SetEnabled(false);
 	delete c;
 

@@ -17,13 +17,13 @@ namespace brainSpace
 
 		virtual ~BattlesInfo();
 
-		void UnitDamaged( Unit* friendlyUnit, Unit* attackingUnit );
+		void UnitDamaged( int friendlyUnit, int attackingUnit );
 		
-		void UnitDestroyed( Unit* deadFriendlyUnit, Unit* attackingUnit );
+		void UnitDestroyed( int deadFriendlyUnit, int attackingUnit );
 		
-		void EnemyDestroyed( Unit* deadEnemyUnit , Unit* attackingUnit );
+		void EnemyDestroyed( int deadEnemyUnit , int attackingUnit );
 
-		void EnemyDamaged( Unit* attacker, Unit* enemy );
+		void EnemyDamaged( int attacker, int enemy );
 
 		void Update ( int frame );
 
@@ -33,9 +33,9 @@ namespace brainSpace
 
 	private:
 
-		void SomeoneDamaged( Unit* our, Unit* their );
-		void CleanupAfterSomeoneDied( Unit* unitToCleanup );
-		Battle* FindBattleContaining( Unit* unit );
+		void SomeoneDamaged( int our, int their );
+		void CleanupAfterSomeoneDied(int unitID );
+		Battle* FindBattleContaining( int unitID );
 		Battle* FindNearestBattle( SAIFloat3 pos );
 		
 		

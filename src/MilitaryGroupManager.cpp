@@ -7,13 +7,15 @@ using namespace brainSpace;
 #include "BrainMap.h"
 #include "ScoutMap.h"
 #include "ThreatMap.h"
-
+#include "Knowledge.h"
 
 brainSpace::MilitaryGroupManager::MilitaryGroupManager( AIClasses* aiClasses )
 {
 	ai = aiClasses;
 	MilitaryUnitGroup* group1 = new MilitaryUnitGroup( ai, 0 );
 	UnitGroups.push_back(group1);
+	MilitaryUnitGroup* group2 = new MilitaryUnitGroup( ai, 0 );
+	ScoutGroups.push_back(group2);
 }
 
 
@@ -25,48 +27,101 @@ brainSpace::MilitaryGroupManager::~MilitaryGroupManager()
 		UnitGroups[i] = NULL;
 	}
 	UnitGroups.clear();
+	for (int i = 0; i < (int)ScoutGroups.size(); i++)
+	{
+		delete ScoutGroups[i];
+		ScoutGroups[i] = NULL;
+	}
+	ScoutGroups.clear();
 }
 
 void brainSpace::MilitaryGroupManager::AddUnit( Unit* unit )
 {
 	MilitaryUnitGroup* tmpGroup = NULL;
-	for(int i = 0; i < (int)UnitGroups.size(); i++)
+	UnitDef *def = unit->GetDef();
+	if(strcmp(def->GetName(),"armfav") != 0 && strcmp(def->GetName(), "armflea") != 0)
 	{
-		if(UnitGroups[i]->GetSize() < 10 && UnitGroups[i]->GetStatus() == MilitaryUnitGroup::MILI_UNIT_GRP_REGROUPING )
+		for(int i = 0; i < (int)UnitGroups.size(); i++)
 		{
-			tmpGroup = UnitGroups[i];
-			break;
+			if(UnitGroups[i]->GetSize() < 10 && UnitGroups[i]->GetStatus() == MilitaryUnitGroup::MILI_UNIT_GRP_REGROUPING )
+			{
+				tmpGroup = UnitGroups[i];
+				break;
+			}
+		}
+		if(tmpGroup == NULL)
+		{
+			tmpGroup = new MilitaryUnitGroup( ai, UnitGroups.size() );
+			UnitGroups.push_back(tmpGroup);
+		}
+		if(tmpGroup->GetSize() > 8)
+		{
+			tmpGroup->SetStatus(MilitaryUnitGroup::MILI_UNIT_GRP_IDLE);
+			Unit* ug = ai->knowledge->selfInfo->baseInfo->GetWeakestBaseBuilding();
+			GiveMoveOrder(tmpGroup, ug->GetPos());
 		}
 	}
-	if(tmpGroup == NULL)
+	else
 	{
-		tmpGroup = new MilitaryUnitGroup( ai, UnitGroups.size() );
-		UnitGroups.push_back(tmpGroup);
+		for(int i = 0; i < (int)UnitGroups.size(); i++)
+		{
+			if(ScoutGroups[i]->GetSize() < 3 && ScoutGroups[i]->GetStatus() == MilitaryUnitGroup::MILI_UNIT_GRP_REGROUPING )
+			{
+				tmpGroup = ScoutGroups[i];
+				break;
+			}
+		}
+		if(tmpGroup == NULL)
+		{
+			tmpGroup = new MilitaryUnitGroup( ai, ScoutGroups.size() );
+			ScoutGroups.push_back(tmpGroup);
+		}
+		if(tmpGroup->GetSize() > 1)
+		{
+			tmpGroup->SetStatus(MilitaryUnitGroup::MILI_UNIT_GRP_IDLE);
+			GiveScoutOrder(tmpGroup);
+		}
 	}
 	tmpGroup->AddUnit(unit);
 	ai->utility->Log( ALL, SCOUTING, "Unit %d added to unitgroup %d", unit->GetUnitId(), tmpGroup->GetGroupID() );
-	if(tmpGroup->GetSize() > 9)
-	{
-		tmpGroup->SetStatus(MilitaryUnitGroup::MILI_UNIT_GRP_IDLE);
-	}
+	delete def;
 }
 
 void brainSpace::MilitaryGroupManager::RemoveUnit( Unit* unit )
 {
-	for(int i = 0; i < (int)UnitGroups.size(); i++)
+	UnitDef *def = unit->GetDef();
+	if(strcmp(def->GetName(),"armfav") != 0 && strcmp(def->GetName(), "armflea") != 0)
 	{
-		UnitGroups[i]->RemoveUnit(unit);
-		if(UnitGroups[i]->GetSize() == 0)
+		for(int i = 0; i < (int)UnitGroups.size(); i++)
 		{
-			MilitaryUnitGroup* tmp = UnitGroups[i];
-			UnitGroups.erase(UnitGroups.begin() + i);
-			delete tmp;
-			tmp = NULL;
+			UnitGroups[i]->RemoveUnit(unit);
+			if(UnitGroups[i]->GetSize() == 0)
+			{
+				MilitaryUnitGroup* tmp = UnitGroups[i];
+				UnitGroups.erase(UnitGroups.begin() + i);
+				delete tmp;
+				tmp = NULL;
+			}
 		}
 	}
+	else
+	{
+		for(int i = 0; i < (int)ScoutGroups.size(); i++)
+		{
+			ScoutGroups[i]->RemoveUnit(unit);
+			if(ScoutGroups[i]->GetSize() == 0)
+			{
+				MilitaryUnitGroup* tmp = ScoutGroups[i];
+				ScoutGroups.erase(ScoutGroups.begin() + i);
+				delete tmp;
+				tmp = NULL;
+			}
+		}
+	}
+	delete def;
 }
 
-vector<MilitaryUnitGroup*> MilitaryGroupManager::GetIdleGroups()
+vector<MilitaryUnitGroup*> MilitaryGroupManager::GetIdleAttackGroups()
 {
 	//Utility* u = new Utility(Callback);
 //	u->ChatMsg("Creating vector with idle groups");
@@ -78,6 +133,21 @@ vector<MilitaryUnitGroup*> MilitaryGroupManager::GetIdleGroups()
 		{
 			//ai->utility->Log(ALL, MISC, "Adding an idle group to vector");
 			result.push_back(UnitGroups[i]);
+		}
+	}
+	return result;
+}
+
+vector<MilitaryUnitGroup*> MilitaryGroupManager::GetIdleScoutGroups()
+{
+	vector<MilitaryUnitGroup*> result;
+	
+	for(int i = 0; i < (int)ScoutGroups.size(); i++)
+	{
+		if(ScoutGroups[i]->GetStatus() == MilitaryUnitGroup::MILI_UNIT_GRP_IDLE)
+		{
+			//ai->utility->Log(ALL, MISC, "Adding an idle group to vector");
+			result.push_back(ScoutGroups[i]);
 		}
 	}
 	return result;
@@ -106,7 +176,6 @@ void MilitaryGroupManager::GiveScoutOrder(brainSpace::MilitaryUnitGroup* group)
 	for( int i = 0 ; i < (int)points.size() ; i++ )
 	{
 		if ( points[i]->GetPosition().x == ai->callback->GetMap()->GetStartPos().x &&
-			 points[i]->GetPosition().y == ai->callback->GetMap()->GetStartPos().y &&
 			 points[i]->GetPosition().z == ai->callback->GetMap()->GetStartPos().z )
 		{
 			continue;
@@ -164,22 +233,96 @@ void MilitaryGroupManager::GiveScoutOrder(brainSpace::MilitaryUnitGroup* group)
 ///informs the groups that a unit has gone idle
 void MilitaryGroupManager::UnitIdle(Unit* unit)
 {
-	for(int i = 0; i < (int)UnitGroups.size(); i++)
+	UnitDef *def = unit->GetDef();
+	if(strcmp(def->GetName(),"armfav") != 0 && strcmp(def->GetName(), "armflea") != 0)
 	{
-		UnitGroups[i]->UnitIdle(unit);
+		for(int i = 0; i < (int)UnitGroups.size(); i++)
+		{
+			UnitGroups[i]->UnitIdle(unit);
+		}
 	}
+	else
+	{
+		for(int i = 0; i < (int)ScoutGroups.size(); i++)
+		{
+			ScoutGroups[i]->UnitIdle(unit);
+		}
+	}
+	delete def;
 }
 
-///@return the groups that are not currently attacking enemies.
-vector<MilitaryUnitGroup*> MilitaryGroupManager::GetNonAttackingGroups()
+bool MilitaryGroupManager::IsAllAttackGroupsIdle()
 {
-	vector<MilitaryUnitGroup*> result;
+	for(int i = 0; i < UnitGroups.size(); i++)
+	{
+		if(!UnitGroups[i]->IsIdle())
+			return false;
+	}
+	return true;
+}
+
+bool MilitaryGroupManager::IsAllScoutGroupsIdle()
+{
+	for(int i = 0; i < ScoutGroups.size(); i++)
+	{
+		if(!ScoutGroups[i]->IsIdle())
+			return false;
+	}
+	return true;
+}
+
+bool MilitaryGroupManager::IsAttackGroupAvailable()
+{
+	if(GetIdleAttackGroups().size() > 0)
+		return true;
+	else
+		return false;
+}
+
+bool MilitaryGroupManager::IsScoutGroupAvailable()
+{
+	if(GetIdleScoutGroups().size() > 0)
+		return true;
+	else
+		return false;
+}
+
+void MilitaryGroupManager::GuardUnit(springai::Unit *unit)
+{
+	vector<MilitaryUnitGroup*> groups = GetIdleAttackGroups();
+	groups[0]->Guard(unit->GetUnitId());
+}
+
+void MilitaryGroupManager::GiveMoveOrder(MilitaryUnitGroup* group, SAIFloat3 pos)
+{
+	group->Scout(pos);
+}
+
+int MilitaryGroupManager::GetNumAttackingGroups()
+{
+	int result = 0;
 	
 	for(int i = 0; i < (int)UnitGroups.size(); i++)
 	{
-		if(UnitGroups[i]->GetStatus() == MilitaryUnitGroup::MILI_UNIT_GRP_IDLE || UnitGroups[i]->GetStatus() == MilitaryUnitGroup::MILI_UNIT_GRP_SCOUTING)
-		{			
-			result.push_back(UnitGroups[i]);
+		if(UnitGroups[i]->GetStatus() == MilitaryUnitGroup::MILI_UNIT_GRP_ATTACKING)
+		{
+			//ai->utility->Log(ALL, MISC, "Adding an idle group to vector");
+			i++;
+		}
+	}
+	return result;
+}
+
+int MilitaryGroupManager::GetNumScoutingGroups()
+{
+	int result = 0;
+	
+	for(int i = 0; i < (int)ScoutGroups.size(); i++)
+	{
+		if(ScoutGroups[i]->GetStatus() == MilitaryUnitGroup::MILI_UNIT_GRP_SCOUTING)
+		{
+			//ai->utility->Log(ALL, MISC, "Adding an idle group to vector");
+			i++;
 		}
 	}
 	return result;

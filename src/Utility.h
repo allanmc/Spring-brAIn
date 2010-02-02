@@ -56,12 +56,13 @@ namespace brainSpace
 		bool IsMetalMap();
 		void LaterInitialization();
 		void Suicide(int unitToSurvive=0, bool stopAll=false);
-		void ResetGame(RL **rl, bool endGame = false);
+		void ResetGame(RL **rl);
 		SAIFloat3 GoTo(int unitId, SAIFloat3 pos, bool simulate = false);
 		SAIFloat3 GetSafePosition();
 		springai::UnitDef* GetMexDef();
 		springai::UnitDef* GetSolarDef();
 		springai::UnitDef* GetLLTDef();
+		float GetDpsFromUnitDef(springai::UnitDef* def);
 	};
 }
 #endif

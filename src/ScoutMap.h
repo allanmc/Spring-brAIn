@@ -16,6 +16,7 @@ namespace brainSpace {
 	public:
 		ScoutMap( AIClasses* aiClasses);
 		virtual ~ScoutMap();
+		float GetScoutedPercentageWithinSeconds(int i);
 
 		void Update();
 

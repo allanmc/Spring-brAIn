@@ -1,7 +1,7 @@
 #ifndef _BRAINSPACE_DECISION_H
 #define _BRAINSPACE_DECISION_H
 
-#include "GroupController.h"
+
 #include "BuildingController.h"
 #include "global.h"
 #include "BattlesInfo.h"
@@ -16,7 +16,6 @@ namespace brainSpace {
 class Decision
 {
 public:
-	GroupController * gc;
 	BuildingController * bc;
 	
 	void UnitCreated(int unit, int builder);

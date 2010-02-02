@@ -20,7 +20,7 @@ ThreatMap::~ThreatMap()
 void ThreatMap::Update()
 {
 	//ai->callback->GetMap()->GetSlopeMap();
-	bool printArray = false;
+	//bool printArray = false;
 	map<int, struct UnitInformationContainer> enemyUnits = ai->knowledge->enemyInfo->armyInfo->GetUnits();
 	Reset();
 
@@ -29,7 +29,7 @@ void ThreatMap::Update()
 		InsertUnit( Unit::GetInstance( ai->callback, it->first ), it->second );
 	}
 
-	DrawGrid();
+	//DrawGrid();
 	ai->utility->RemoveGraphics(FigureID);
 	FigureID = 0;
 	for ( int i = 0 ; i < MapWidth ; i++ )
@@ -47,9 +47,10 @@ void ThreatMap::Update()
 				end.z = j*Resolution + 0.5*Resolution;
 
 				
-				int id = ai->utility->DrawLine( start, end, false, Resolution*2, FigureID );
-				if(FigureID == 0) FigureID = id;
-				printArray = true;
+				//int id = ai->utility->DrawLine( start, end, false, Resolution*2, FigureID );
+
+				//if(FigureID == 0) FigureID = id;
+				//printArray = true;
 			}
 		}
 

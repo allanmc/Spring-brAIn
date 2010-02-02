@@ -76,40 +76,40 @@ void BrainMap::EffectCircle( SAIFloat3 center, float radius, float value )
 	}
 	
 	SAIFloat3 cornor;
-	for ( int x = currentIndexX-range ; x < currentIndexX ; x++ )//top left cells
+	for ( int x = max(currentIndexX - range,0) ; x < currentIndexX ; x++ )//top left cells
 	{
 		cornor.x = (x+1)*Resolution;//right
-		for ( int z = currentIndexZ-range ; z < currentIndexZ ; z++ )
+		for ( int z = max(currentIndexZ - range,0) ; z < currentIndexZ ; z++ )
 		{
 			cornor.z = (z+1)*Resolution;//bottom
 			if(ai->utility->EuclideanDistance(center,cornor) < radius)//bottom right conor check
 				EffectCell(z*MapWidth + x, value);
 		}
 	}
-	for ( int x = currentIndexX+range ; x > currentIndexX ; x-- )//top right cells
+	for ( int x = min(currentIndexX + range,MapWidth-1) ; x > currentIndexX ; x-- )//top right cells
 	{
 		cornor.x = x*Resolution;//left
-		for ( int z = currentIndexZ-range ; z < currentIndexZ ; z++ )
+		for ( int z = max(currentIndexZ - range,0) ; z < currentIndexZ ; z++ )
 		{
 			cornor.z = (z+1)*Resolution;//bottom
 			if(ai->utility->EuclideanDistance(center,cornor) < radius)//bottom left conor check
 				EffectCell(z*MapWidth + x, value);
 		}
 	}
-	for ( int x = currentIndexX-range ; x < currentIndexX ; x++ )//bottom left cells
+	for ( int x = max(currentIndexX - range,0) ; x < currentIndexX ; x++ )//bottom left cells
 	{
 		cornor.x = (x+1)*Resolution;//right
-		for ( int z = currentIndexZ+range ; z > currentIndexZ ; z-- )
+		for ( int z = min(currentIndexZ + range,MapHeight-1) ; z > currentIndexZ ; z-- )
 		{
 			cornor.z = z*Resolution;//top
 			if(ai->utility->EuclideanDistance(center,cornor) < radius)//top right conor check
 				EffectCell(z*MapWidth + x, value);
 		}
 	}
-	for ( int x = currentIndexX+range ; x > currentIndexX ; x-- )//top left cells
+	for ( int x = min(currentIndexX + range,MapWidth-1) ; x > currentIndexX ; x-- )//top left cells
 	{
 		cornor.x = x*Resolution;//left
-		for ( int z = currentIndexZ+range ; z > currentIndexZ ; z-- )
+		for ( int z = min(currentIndexZ + range,MapHeight-1); z > currentIndexZ ; z-- )
 		{
 			cornor.z = z*Resolution;//top
 			if(ai->utility->EuclideanDistance(center,cornor) < radius)//top left conor check

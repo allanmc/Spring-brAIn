@@ -1,10 +1,13 @@
 #ifndef _BRAINSPACE_KMEDOIDS_H
 #define _BRAINSPACE_KMEDOIDS_H
 
-#include "global.h"
+#include "types.h"
 #include "ConvexHull.h"
 #include "time.h"
 #include <algorithm>
+#include "BrainMath.h"
+
+using namespace std;
 
 namespace brainSpace
 {

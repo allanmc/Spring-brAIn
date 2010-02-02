@@ -76,17 +76,42 @@ void GroupController::UnitIdle( Unit* unit )
 ///finds an idle group to attack the target.
 void GroupController::AttackWithGroup(int enemy)
 {
-	if(MilitaryGroupMgr->GetNonAttackingGroups().size() > 0)
+	ai->utility->Log(ALL, MISC, "AttackWithGroup::IsAttackGroupAvailable()");
+	if(MilitaryGroupMgr->IsAttackGroupAvailable())
 	{
-		MilitaryGroupMgr->GiveAttackOrder(MilitaryGroupMgr->GetNonAttackingGroups()[0], enemy);
+		ai->utility->Log(ALL, MISC, "AttackWithGroup::IsAttackGroupAvailable() TRUE");
+		MilitaryGroupMgr->GiveAttackOrder(MilitaryGroupMgr->GetIdleAttackGroups()[0], enemy);
 	}
 }
 
 ///finds an idle group to scout with
 void GroupController::ScoutWithIdleGroup()
 {
-	if(!MilitaryGroupMgr->GetIdleGroups().empty())
+	ai->utility->Log(ALL, MISC, "ScoutWithIdleGroup::IsScoutGroupAvailable()");
+	if(MilitaryGroupMgr->IsScoutGroupAvailable())
 	{
-		MilitaryGroupMgr->GiveScoutOrder(MilitaryGroupMgr->GetIdleGroups()[0]);
+		ai->utility->Log(ALL, MISC, "ScoutWithIdleGroup::IsScoutGroupAvailable() TRUE");
+		MilitaryGroupMgr->GiveScoutOrder(MilitaryGroupMgr->GetIdleScoutGroups()[0]);
 	}
 }
+
+void GroupController::MoveGroupToPosition(SAIFloat3 pos)
+{
+	ai->utility->Log(ALL, MISC, "MoveGroupToPosition::IsAttackGroupAvailable()");
+	if(MilitaryGroupMgr->IsAttackGroupAvailable())
+	{
+		ai->utility->Log(ALL, MISC, "MoveGroupToPosition::IsAttackGroupAvailable() TRUE");
+		MilitaryGroupMgr->GiveMoveOrder(MilitaryGroupMgr->GetIdleAttackGroups()[0], pos);
+	}
+}
+
+MilitaryGroupManager* GroupController::GetMilitaryGroupMgr()
+{
+	return MilitaryGroupMgr;
+}
+
+ConstructionGroupManager* GroupController::GetConstructionGroupMgr()
+{
+	return ConstructionGroupMgr;
+}
+

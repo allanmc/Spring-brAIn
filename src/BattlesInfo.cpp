@@ -13,12 +13,14 @@ BattlesInfo::BattlesInfo( AIClasses* aiClasses )
 
 BattlesInfo::~BattlesInfo()
 {
+	ai->utility->Log(ALL,MISC, "Start deleting battlesinfo");
 	for ( list<Battle*>::iterator iter = CurrentBattles.begin() ; iter != CurrentBattles.end() ; iter++ )
 	{
 		delete *iter;
 		*iter = NULL;
 	}
 	CurrentBattles.clear();
+	ai->utility->Log(ALL,MISC, "middle deleting battlesinfo");
 	//OldBattles
 	for ( list<Battle*>::iterator iter = OldBattles.begin() ; iter != OldBattles.end() ; iter++ )
 	{
@@ -26,6 +28,7 @@ BattlesInfo::~BattlesInfo()
 		*iter = NULL;
 	}
 	OldBattles.clear();
+	ai->utility->Log(ALL,MISC, "done deleting battlesinfo");
 }
 
 
@@ -34,13 +37,13 @@ BattlesInfo::~BattlesInfo()
 //2a: The friendly unit was not a part of any ongoing battle, so try and add it to the nearest battle
 //2b: If that battle did not already contain the attacker, add it to the battle
 //3a: No battles were taking place, so add both units to a new Battle object
-void BattlesInfo::UnitDamaged( Unit* friendlyUnit, Unit* attackingUnit )
+void BattlesInfo::UnitDamaged( int friendlyUnit, int attackingUnit )
 {
 	SomeoneDamaged( friendlyUnit, attackingUnit );
 }
 
 
-void BattlesInfo::UnitDestroyed( Unit* deadFriendlyUnit, Unit* attackingUnit  )
+void BattlesInfo::UnitDestroyed( int deadFriendlyUnit, int attackingUnit  )
 {
 	Battle* b = FindBattleContaining( deadFriendlyUnit );
 	if ( b != NULL )
@@ -50,18 +53,17 @@ void BattlesInfo::UnitDestroyed( Unit* deadFriendlyUnit, Unit* attackingUnit  )
 	CleanupAfterSomeoneDied( deadFriendlyUnit );
 }
 
-void BattlesInfo::EnemyDestroyed( Unit* deadEnemyUnit, Unit* attackingUnit )
+void BattlesInfo::EnemyDestroyed( int deadEnemyUnit, int attackingUnit )
 {
 	Battle* b = FindBattleContaining( deadEnemyUnit );
 	if ( b != NULL )
 	{	
 		b->UnitDied( deadEnemyUnit, true );
 	}
-	CleanupAfterSomeoneDied( deadEnemyUnit );
-	
+	CleanupAfterSomeoneDied( deadEnemyUnit );	
 }
 
-void BattlesInfo::EnemyDamaged( Unit* attacker, Unit* enemy )
+void BattlesInfo::EnemyDamaged( int attacker, int enemy )
 {
 	SomeoneDamaged( attacker, enemy );
 }
@@ -108,10 +110,10 @@ void BattlesInfo::Update ( int frame )
 	}
 }
 
-Battle* BattlesInfo::FindBattleContaining( Unit* u )
+Battle* BattlesInfo::FindBattleContaining( int unitID )
 {
 	for ( list<Battle*>::iterator iter = CurrentBattles.begin() ; iter != CurrentBattles.end() ; iter++ )
-		if ( (*iter)->Contains( u ) )
+		if ( (*iter)->Contains( unitID ) )
 			return *iter;
 	return NULL;
 }
@@ -138,44 +140,46 @@ Battle* BattlesInfo::FindNearestBattle( SAIFloat3 pos )
 }
 
 
-void BattlesInfo::SomeoneDamaged( Unit* our, Unit* their )
+void BattlesInfo::SomeoneDamaged( int our, int their )
 {
 	Battle* b = FindBattleContaining( our );
 
 	if ( b != NULL )
 	{
 		b->SomeoneDamaged();
-		if ( !b->Contains( their ) )
+		if ( !b->Contains( their ) && their != -1)
 			b->UnitEnteredBattle( their, true );
 		return;
 	}
 	else
 	{
-		b = FindNearestBattle( our->GetPos() );
+		Unit *ourU = Unit::GetInstance(ai->callback, our);
+		b = FindNearestBattle( ourU->GetPos() );
 		if ( b != NULL )
 		{
 			b->UnitEnteredBattle( our, false );
-			if ( !b->Contains( their ) )
+			if ( !b->Contains( their ) && their != -1)
 				b->UnitEnteredBattle( their, true );
 			return;
 		}
 		//The unit is not a part of any battles, and there are no battles nearby so make a new Battle object.
 
-		ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "New battle. Frame %d. Pos (%f, %f)", ai->frame, our->GetPos().x, our->GetPos().z );
-		b = new Battle( ai, our->GetPos() );
+		//ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "New battle. Frame %d. Pos (%f, %f)", ai->frame, our->GetPos().x, our->GetPos().z );
+		b = new Battle( ai, ourU->GetPos() );
 		b->UnitEnteredBattle( our, false );
-		b->UnitEnteredBattle( their, true );
+		if(their != -1)
+			b->UnitEnteredBattle( their, true );
 		CurrentBattles.push_back( b );
 	}
 }
 
-void BattlesInfo::CleanupAfterSomeoneDied( Unit* unitToCleanup )
+void BattlesInfo::CleanupAfterSomeoneDied( int unitID )
 {
 	for ( list<Battle*>::iterator iter = CurrentBattles.begin() ; iter != CurrentBattles.end() ; iter++ )
 	{
-		if ( (*iter)->Contains( unitToCleanup ) )
+		if ( (*iter)->Contains( unitID ) )
 		{
-			(*iter)->RemoveUnit( unitToCleanup );
+			(*iter)->RemoveUnit( unitID );
 		}
 	}
 }

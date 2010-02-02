@@ -73,7 +73,6 @@ int ConstructionGroupManager::DelegateBuildOrder(SBuildUnitCommand order)
 		return 0;
 	}
 	ai->utility->Log(ALL, MISC,  "Quing order, no idle group " );
-	ai->utility->Log(ALL, MISC,"Quing order, UnitGroups[0] = %i", UnitGroups[0]);
 	UnitGroups[0]->QueueBuildOrder( order );
 	
 	return 0;

@@ -10,6 +10,7 @@ Knowledge::Knowledge( AIClasses* aiClasses )
 	selfInfo = new SelfInfo(ai);
 	enemyInfo = new EnemyInfo(ai);
 	mapInfo = new MapInfo(ai);
+	groupManager = new GroupController(ai);
 }
 
 Knowledge::~Knowledge()
@@ -20,4 +21,6 @@ Knowledge::~Knowledge()
 	enemyInfo = NULL;
 	delete mapInfo;
 	mapInfo = NULL;
+	delete groupManager;
+	groupManager = NULL;
 }

@@ -2,7 +2,7 @@
 #define _BRAINSPACE_MILITARY_UNIT_GROUP_H
 
 #include "BrainGroup.h"
-#include "global.h"
+#include "types.h"
 #include <math.h>
 
 namespace brainSpace
@@ -20,12 +20,13 @@ namespace brainSpace
 
 		MilitaryUnitGroup( AIClasses* aiClasses, int groupID );
 		virtual ~MilitaryUnitGroup();
-
+		void Guard(int unit);
 		MilitaryGroupStatus GetStatus();
 		void SetStatus(MilitaryGroupStatus status);
 		void Attack(int enemy);
 		void Scout(SAIFloat3 pos);
 		void UnitIdle(Unit* unit);
+		bool IsIdle();
 
 	private:
 		MilitaryGroupStatus Status;

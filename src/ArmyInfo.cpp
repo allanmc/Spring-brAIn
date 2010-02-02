@@ -17,6 +17,8 @@ ArmyInfo::ArmyInfo( AIClasses* aiClasses )
 	unitCount = 0;
 	aggressive = 0;
 	defensive = 0;
+	aggressiveDps = 0;
+	defensiveDps = 0;
 }
 
 ArmyInfo::~ArmyInfo()
@@ -48,53 +50,70 @@ vector<Unit*> ArmyInfo::RangeQuery(CBoundingBox bbox)
 void ArmyInfo::AddUnit(Unit* unit)
 {
 	ai->utility->Log(ALL, MISC, "Adding army unit...%s - %d", unit->GetDef()->GetHumanName(), unit->GetUnitId() );
-	quadTree->InsertUnit(unit->GetUnitId(), unit->GetPos());
+	//quadTree->InsertUnit(unit->GetUnitId(), unit->GetPos());
 
-	unitCount++;
+	//unitCount++;
+	//Using updateunit instead :)
+	
+	UpdateUnit(unit);
 }
 
-void ArmyInfo::RemoveUnit(Unit* unit)
+void ArmyInfo::RemoveUnit(int unit)
 {
 	if (unitCount==0)
 	{
 		return;
 	}
 
-	if (quadTree->RemoveUnit( unit->GetUnitId()))
+	if (quadTree->RemoveUnit( unit))
 	{
+		Unit* u = Unit::GetInstance(ai->callback, unit);
 		unitCount--;
+		UnitDef *unitDef = u->GetDef();
+		if(unitDef != NULL)
+		{
 
-		if(unit->GetDef()->GetSpeed() > 0)
-		{
-			aggressive--;
+			if(unitDef->GetSpeed() > 0)
+			{
+				aggressive--;
+				aggressiveDps -= ai->utility->GetDpsFromUnitDef(unitDef);
+			}
+			else
+			{
+				defensive--;
+				defensiveDps -= ai->utility->GetDpsFromUnitDef(unitDef);
+			}
 		}
-		else
-		{
-			defensive--;
-		}
+		delete unitDef;
 	}	
 }
 
 //updates the position of the unit in the QuadTree.
 void ArmyInfo::UpdateUnit(Unit* unit)
 {
+	if(unit == NULL)
+		return;
 	SAIFloat3 new_pos = unit->GetPos();
 	int i = quadTree->UpdateUnit( unit->GetUnitId(), unit->GetPos() );
 	UnitDef* unitDef = unit->GetDef();
-	if (unitDef->GetUnitDefId() != -1) {
-		knownUnitDefs[unit->GetUnitId()] = unitDef;
-	}
 	unitCount += i;
+	if (unitDef == NULL) {
+		return;//we dont know this unit?!
+	}
+	knownUnitDefs[unit->GetUnitId()] = unitDef;
+	
 
 	if(i != 0)
 	{
 		if(unitDef->GetSpeed() > 0)
 		{
 			aggressive += i;
+			aggressiveDps += ai->utility->GetDpsFromUnitDef(unitDef);
 		}
 		else
 		{
 			defensive += i;
+			defensiveDps += ai->utility->GetDpsFromUnitDef(unitDef);
 		}
 	}
 }
@@ -104,8 +123,9 @@ UnitDef* ArmyInfo::GetUnitDef(int unitID)
 {
 	UnitDef* foundDef = NULL;
 	map<int,UnitDef*>::iterator iter = knownUnitDefs.find(unitID);
-	if (iter!=knownUnitDefs.end())
+	if (iter!=knownUnitDefs.end() && iter->second != NULL)
 	{
+		ai->utility->Log(ALL, MISC, "GetUnitDef: we found a def, %s", iter->second->GetName());
 		foundDef = iter->second;
 	}
 	return foundDef;
@@ -132,4 +152,14 @@ int ArmyInfo::CountDefensive()
 int ArmyInfo::CountAggressive()
 {
 	return aggressive;
+}
+
+float ArmyInfo::GetAggresiveDps()
+{
+	return aggressiveDps;
+}
+
+float ArmyInfo::GetDefensiveDps()
+{
+	return defensiveDps;
 }

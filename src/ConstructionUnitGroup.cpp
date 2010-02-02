@@ -1,4 +1,5 @@
 #include "ConstructionUnitGroup.h"
+#include "Knowledge.h"
 
 using namespace std;
 using namespace springai;
@@ -78,7 +79,6 @@ void ConstructionUnitGroup::AssignBuildOrder( SBuildUnitCommand order )
 	ai->utility->Log(ALL, MISC, "Is commander built in? %d", hest);
 	if(!hest)
 	{
-		ai->knowledge->mapInfo->pathfindingMap->PrintOldSection( buildPos );
 		ai->knowledge->mapInfo->pathfindingMap->PrintSection(buildPos);
 		ai->knowledge->mapInfo->pathfindingMap->PathExists(commanderDef, buildPos, ai->utility->GetSafePosition(), true);
 		exit(0);
@@ -267,28 +267,10 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 	for (int i = 0; i < (int)units.size(); i++) 
 	{
 		unitDef = units[i]->GetDef();
-		if ( strcmp(unitDef->GetName(), "armlab")==0 )
+		if ( strcmp(unitDef->GetName(), "armlab")==0 || strcmp(unitDef->GetName(), "armvp")==0 )
 		{
-			//Use pathfinding to check if unit-exit of the lab units[i] has a path out of the base
-			//without using the locaion of the new building
-			fromPos = GetUnitExitOfLab(units[i]->GetPos(), unitDef, units[i]->GetBuildingFacing());
-			ai->utility->Log(ALL, MISC, "BuildBlocksSelf is checking an old lab...");
-			//pos.y = 50.0;
-			//ai->utility->DrawLine(pos, fromPos, true);
-			//ai->utility->DrawLine(fromPos, GetSafePosition(), true);
-			vector<UnitDef*> buildableUnits = unitDef->GetBuildOptions();
-			UnitDef *firstunit = buildableUnits[0];
-			for(int j = 1; j < (int)buildableUnits.size(); j++)
-			{
-				delete buildableUnits[j];
-			}
-			if (!ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom(firstunit, toBuildUnitDef, pos, fromPos, ai->utility->GetSafePosition())) 
-			{
-				//There is a blocking problem with that build
-				ai->utility->Log(ALL, MISC, "BuildBlocksSelf blocked build by reason 1 (No path from exit of an old %s)", unitDef->GetName());
+			if(CheckAbilityToExitFromBuilding(unitDef, units[i]->GetPos(), toBuildUnitDef, pos))
 				blocks = true;
-			}
-			delete firstunit;
 		}
 		delete unitDef;
 	}
@@ -299,23 +281,14 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 	ai->utility->Log(ALL, MISC, "BuildBlocksSelf check 1 done");
 	//If what we want to build is a lab, check that this position allows its units a path out of the base
 	//without using the locaion of the new building
-	if ( strcmp(toBuildUnitDef->GetName(), "armlab")==0) 
+	if ( strcmp(toBuildUnitDef->GetName(), "armlab")==0 || strcmp(toBuildUnitDef->GetName(), "armvp")==0 )
 	{
-		fromPos = GetUnitExitOfLab(pos, toBuildUnitDef, facing);
-		vector<UnitDef*> buildableUnits = toBuildUnitDef->GetBuildOptions();
-		UnitDef *firstunit = buildableUnits[0];
-		for(int k = 1; k < (int)buildableUnits.size(); k++)
+		if(CheckAbilityToExitFromBuilding(toBuildUnitDef, pos, toBuildUnitDef, pos))
 		{
-			delete buildableUnits[k];
-		}
-		if (!ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom(firstunit, toBuildUnitDef, pos, fromPos, ai->utility->GetSafePosition()))
-		{
-			ai->utility->Log(ALL, MISC, "BuildBlocksSelf blocked build by reason 2 (No path from exit of this new %s)", toBuildUnitDef->GetName());
-			delete firstunit;
-			delete commanderdef;
+			ai->utility->Log(ALL, MISC, "No path from exit of new lab or plant");
+			delete commanderdef;		
 			return true;
 		}
-		delete firstunit;
 	}
 	ai->utility->Log(ALL, MISC, "BuildBlocksSelf check 2 done");
 	//If we build this new building, does the commander have a path out of the base?
@@ -354,10 +327,38 @@ bool ConstructionUnitGroup::BuildBlocksSelf(UnitDef *toBuildUnitDef, SAIFloat3 p
 		ai->utility->Log( ALL, MISC, "BuildBlocksSelf blocked build by reason 6 (No path from builder to build position)");
 		return true;
 	}
-	ai->utility->Log(ALL, MISC, "BuildBlocksSelf check 5+6 done");
+	ai->utility->Log(ALL, MISC, "BuildBlocksSelf check 5+6 done, we can build %s at %f,%f", toBuildUnitDef->GetName(), pos.x, pos.z);
 	delete commanderdef;
+
 	return false;
 }
+
+bool ConstructionUnitGroup::CheckAbilityToExitFromBuilding(springai::UnitDef *unitDef, SAIFloat3 pos, UnitDef *toBuild,SAIFloat3 buildPos )
+{
+			//Use pathfinding to check if unit-exit of the lab units[i] has a path out of the base
+			//without using the locaion of the new building
+			bool blocks = false;
+			SAIFloat3 fromPos = GetUnitExitOfLab(pos, unitDef, 0);
+			ai->utility->Log(ALL, MISC, "BuildBlocksSelf is checking a lab or plant...");
+			//pos.y = 50.0;
+			//ai->utility->DrawLine(pos, fromPos, true);
+			//ai->utility->DrawLine(fromPos, GetSafePosition(), true);
+			vector<UnitDef*> buildableUnits = unitDef->GetBuildOptions();
+			UnitDef *firstunit = buildableUnits[0];
+			for(int j = 1; j < (int)buildableUnits.size(); j++)
+			{
+				delete buildableUnits[j];
+			}
+			if (!ai->knowledge->mapInfo->pathfindingMap->IsPossibleToEscapeFrom(firstunit, toBuild, buildPos, fromPos, ai->utility->GetSafePosition())) 
+			{
+				//There is a blocking problem with that build
+				ai->utility->Log(ALL, MISC, "BuildBlocksSelf blocked build by reason 1 (No path from exit of a %s), pos: %f,%f", unitDef->GetName(),pos.x, pos.z);
+				blocks = true;
+			}
+			delete firstunit;
+			return blocks;
+}
+
 
 ///@return unit-exit of a armlab or vehicleplant (bottom on facing=0)
 SAIFloat3 ConstructionUnitGroup::GetUnitExitOfLab(SAIFloat3 centerPos, UnitDef *unitDef, int facing)

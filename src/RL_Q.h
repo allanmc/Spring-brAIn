@@ -1,8 +1,6 @@
 #ifndef RL_Q_H
 #define RL_Q_H
 
-
-
 #include "types.h"
 #include "RL_State.h"
 
@@ -13,17 +11,39 @@ namespace brainSpace
 	{
 		const char *name;
 		short unsigned int numStates;
+
+		QStateVar(const char *n, short unsigned int ns)
+		{
+			name = n;
+			numStates = ns;
+		}
+		QStateVar()
+		{
+		}
 	};
 	struct QAction
 	{
 		const char *name;
 		short unsigned int id;
+		QAction(const char *n, short unsigned int i)
+		{
+			name = n;
+			id = i;
+		}
+		QAction()
+		{
+		}
 	};
 
 	struct FileHeaderQAction
 	{
 		short unsigned int nameSize;
 		QAction qAction;
+		//FileHeaderQAction(QAction a, short unsigned int size)
+		//{
+		//	nameSize = size;
+		//	qAction = a;
+		//}
 
 		void LoadFromFile(AIClasses *ai, ifstream *file) 
 		{
@@ -47,6 +67,12 @@ namespace brainSpace
 	{
 		short unsigned int nameSize;
 		QStateVar qStateVar;
+
+		//FileHeaderQStateVar(QStateVar s, short unsigned int size)
+		//{
+		//	nameSize = size;
+		//	qStateVar = s;
+		//}
 
 		void LoadFromFile(AIClasses *ai, ifstream *file) 
 		{

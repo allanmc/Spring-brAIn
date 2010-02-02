@@ -64,8 +64,6 @@ namespace brainSpace {
 
 		void PrintSection(SAIFloat3 pos);
 
-		void PrintOldSection( SAIFloat3 pos );
-
 	private:
 
 		void RemoveHypotheticalBuilding(springai::UnitDef* unit, SAIFloat3 pos);
@@ -83,8 +81,6 @@ namespace brainSpace {
 
 		std::vector<float> SlopeMap;
 		std::map<int,float> backUp;
-
-		std::vector<float*> MapArrayBackup;
 	};
 }
 

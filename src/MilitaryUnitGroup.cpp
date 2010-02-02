@@ -13,6 +13,21 @@ MilitaryUnitGroup::~MilitaryUnitGroup()
 {
 }
 
+void MilitaryUnitGroup::Guard(int unit)
+{
+
+	SGuardUnitCommand g;
+	g.toGuardUnitId = unit;
+	g.timeOut = 999999;
+
+	for ( map<Unit*, bool>::iterator it = Units.begin() ; it != Units.end() ; it++ )
+	{
+		g.unitId = it->first->GetUnitId();
+		ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_GUARD, &g);
+	}
+	
+}
+
 ///@see Status
 void MilitaryUnitGroup::SetStatus(MilitaryGroupStatus s)
 {
@@ -37,6 +52,16 @@ void MilitaryUnitGroup::Attack(int enemy)
 		com.unitId = it->first->GetUnitId();
 		ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_ATTACK, &com);
 	}
+}
+
+bool MilitaryUnitGroup::IsIdle()
+{
+	for ( map<Unit*, bool>::iterator it = Units.begin() ; it != Units.end() ; it++ )
+	{
+		if ( it->second == false )
+			return false;
+	}
+	return true;
 }
 
 void MilitaryUnitGroup::Scout(SAIFloat3 pos)

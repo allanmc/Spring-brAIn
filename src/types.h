@@ -82,9 +82,11 @@ namespace brainSpace {
 		BrainMath* math;
 		int frame;
 		springai::Unit *commander;
+		int commanderDead;
 		AIClasses()
 		{
 			commander = NULL;
+			commanderDead = 0;
 		}
 	};
 	

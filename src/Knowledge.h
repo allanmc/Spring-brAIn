@@ -3,6 +3,7 @@
 
 #include "global.h"
 #include "MapInfo.h"
+#include "GroupController.h"
 
 namespace brainSpace
 {
@@ -15,6 +16,7 @@ namespace brainSpace
 		SelfInfo* selfInfo;
 		EnemyInfo* enemyInfo;
 		MapInfo* mapInfo;
+		GroupController* groupManager;
 
 	protected:
 
