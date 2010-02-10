@@ -1,7 +1,7 @@
 #ifndef _BRAINSPACE_RL_H
 #define _BRAINSPACE_RL_H
 
-#define RL_SOLAR_INDEX 20
+#define RL_SOLAR_INDEX 15
 #define RL_MEX_INDEX 20
 #define RL_LAB_INDEX 5
 #define RL_PLANT_INDEX 5

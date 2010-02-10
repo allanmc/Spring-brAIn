@@ -18,11 +18,13 @@ QuadTree::~QuadTree()
 
 bool QuadTree::RemoveUnit( int unitID )
 {
-	if (units.find(unitID) == units.end())
+	ai->utility->Log(ALL,MISC, "QuadTree::RemoveUnit, units.size: %d", units.size());
+	map<int, struct UnitInformationContainer>::iterator it = units.find(unitID);
+	if (it == units.end())
 	{
 		return false;
 	}
-
+	ai->utility->Log(ALL,MISC, "QuadTree::RemoveUnit, units.size new: %d", units.size());
 	QuadTreeNode *iter = RootNode;
 
 	SAIFloat3 pos = units[unitID].pos;
@@ -34,12 +36,11 @@ bool QuadTree::RemoveUnit( int unitID )
 			iter = iter->GetContainingNode( pos );
 			continue;
 		}
-		//The node has no children. Attempt to insert the unit here.
+		//The node has no children. Attempt to delete the unit here.
 		else
 		{
 			ai->utility->Log( LOG_DEBUG, KNOWLEDGE, "Removing unit %d", unitID );
 			iter->RemoveUnit(unitID);
-			units.erase(unitID);
 			do 
 			{
 				iter = iter->GetParentNode();
@@ -49,7 +50,17 @@ bool QuadTree::RemoveUnit( int unitID )
 			break;
 		}
 	}
+	units.erase(it);
 	return true;
+}
+
+UnitDef* QuadTree::GetUnitDef(int unitID)
+{
+	if (units.find(unitID) == units.end())
+		return NULL;	
+	else
+		return units[unitID].def;
+
 }
 
 ///@return the amount of units added to the Qtree
@@ -66,12 +77,24 @@ int QuadTree::UpdateUnit( int unitID, SAIFloat3 pos )
 
 SAIFloat3 QuadTree::GetLastUnitPos( int unitID ) 
 {
-	return units[unitID].pos;
+	map<int, UnitInformationContainer>::iterator it = units.find(unitID);
+	if (it == units.end())
+	{
+		return (SAIFloat3){0,0,0};
+	} 
+	else
+	{
+		return units[unitID].pos;
+	}
 }
 
 void QuadTree::InsertUnit( int unitID, SAIFloat3 pos )
 {
 	QuadTreeNode *iter = RootNode;
+	Unit* u = Unit::GetInstance( ai->callback, unitID );
+	UnitDef* def = u->GetDef();
+	if((pos.x == 0 && pos.z == 0) || def == NULL)
+		return;
 
 	RemoveUnit(unitID);
 
@@ -94,10 +117,9 @@ void QuadTree::InsertUnit( int unitID, SAIFloat3 pos )
 		//The node has no children. Attempt to insert the unit here.
 		else if ( iter->CheckBucketSize() )
 		{
-			Unit* u = Unit::GetInstance( ai->callback, unitID );
-			UnitDef* def = u->GetDef();
 			if ( def == NULL )
 			{
+				return;
 				iter->InsertUnit( unitID, pos );
 				units[unitID].def = NULL;
 			}
@@ -168,7 +190,8 @@ vector<Unit*> QuadTree::RangeQuery(CBoundingBox bbox)
 				SAIFloat3 pos = (*iter).second.pos;
 				if (QuadTreeNode::IsInsideBoundingBox(pos, bbox))
 				{
-					units.push_back(Unit::GetInstance(ai->callback, unitID));
+					Unit *u = Unit::GetInstance(ai->callback, unitID);
+					units.push_back(u);
 				}
 			}
 		}

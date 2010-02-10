@@ -465,7 +465,7 @@ void Utility::ResetGame(RL **rl)
 	Log(IMPORTANT, MISC, "Resetting RL...");
 	delete *rl;
 	*rl = NULL;
-	*rl = new RL( ai );//FY!
+	*rl = new RL( ai,0,EPSILON_START );//FY!
 
 	Log(IMPORTANT, MISC, "Creating new commander..."); 
 	//Give me a new commander

@@ -11,7 +11,7 @@ ConstructionGroupManager::ConstructionGroupManager( AIClasses* aiClasses )
 
 ConstructionGroupManager::~ConstructionGroupManager()
 {
-	ai->utility->ChatMsg("Deconstructing ConstructionGroupManager");
+	//ai->utility->ChatMsg("Deconstructing ConstructionGroupManager");
 	for (int i = 0; i < (int)UnitGroups.size(); i++)
 	{
 		delete UnitGroups[i];
@@ -99,4 +99,9 @@ bool ConstructionGroupManager::IsIdle()
 		return false;
 	}
 	return UnitGroups[0]->IsIdle();
+}
+
+int brainSpace::ConstructionGroupManager::GetAmountOfBuildOrdersForGroup0()
+{
+	return UnitGroups[0]->GetBuildQueueSize();
 }

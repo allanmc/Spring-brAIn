@@ -25,6 +25,7 @@ namespace brainSpace
 		int DelegateBuildOrder( SBuildUnitCommand order );
 		bool IsIdle();
 		void UnitIdle( Unit* unit );
+		int GetAmountOfBuildOrdersForGroup0();
 	private:
 		vector<ConstructionUnitGroup*> UnitGroups;
 		AIClasses* ai;

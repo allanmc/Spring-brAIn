@@ -57,13 +57,16 @@ void brainSpace::MilitaryGroupManager::AddUnit( Unit* unit )
 		if(tmpGroup->GetSize() > 8)
 		{
 			tmpGroup->SetStatus(MilitaryUnitGroup::MILI_UNIT_GRP_IDLE);
-			Unit* ug = ai->knowledge->selfInfo->baseInfo->GetWeakestBaseBuilding();
-			GiveMoveOrder(tmpGroup, ug->GetPos());
+			SAIFloat3 pos;
+			pos.x = ai->callback->GetMap()->GetWidth()/2;
+			pos.z = ai->callback->GetMap()->GetHeight()/2;
+			pos.y = 50;
+			tmpGroup->Scout(pos);
 		}
 	}
 	else
 	{
-		for(int i = 0; i < (int)UnitGroups.size(); i++)
+		for(int i = 0; i < (int)ScoutGroups.size(); i++)
 		{
 			if(ScoutGroups[i]->GetSize() < 3 && ScoutGroups[i]->GetStatus() == MilitaryUnitGroup::MILI_UNIT_GRP_REGROUPING )
 			{
@@ -79,7 +82,6 @@ void brainSpace::MilitaryGroupManager::AddUnit( Unit* unit )
 		if(tmpGroup->GetSize() > 1)
 		{
 			tmpGroup->SetStatus(MilitaryUnitGroup::MILI_UNIT_GRP_IDLE);
-			GiveScoutOrder(tmpGroup);
 		}
 	}
 	tmpGroup->AddUnit(unit);
@@ -121,6 +123,10 @@ void brainSpace::MilitaryGroupManager::RemoveUnit( Unit* unit )
 	delete def;
 }
 
+vector<MilitaryUnitGroup*> brainSpace::MilitaryGroupManager::GetAllAttackGroups()
+{
+	return UnitGroups;
+}
 vector<MilitaryUnitGroup*> MilitaryGroupManager::GetIdleAttackGroups()
 {
 	//Utility* u = new Utility(Callback);
@@ -233,6 +239,8 @@ void MilitaryGroupManager::GiveScoutOrder(brainSpace::MilitaryUnitGroup* group)
 ///informs the groups that a unit has gone idle
 void MilitaryGroupManager::UnitIdle(Unit* unit)
 {
+	if(unit->GetCurrentCommands().size() > 0)
+		return;
 	UnitDef *def = unit->GetDef();
 	if(strcmp(def->GetName(),"armfav") != 0 && strcmp(def->GetName(), "armflea") != 0)
 	{

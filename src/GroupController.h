@@ -24,6 +24,8 @@ namespace brainSpace {
 		void ScoutWithIdleGroup();
 		void AttackWithGroup(int enemy);
 		void MoveGroupToPosition(SAIFloat3 pos);
+		void AttackPositionWithAllGroups(SAIFloat3 pos);
+		int GetAmountOfBuildOrders();
 	
 		ConstructionGroupManager* GetConstructionGroupMgr();
 		MilitaryGroupManager* GetMilitaryGroupMgr();

@@ -20,6 +20,20 @@ brainSpace::GroupController::~GroupController(void)
 	MilitaryGroupMgr = NULL;
 }
 
+void brainSpace::GroupController::AttackPositionWithAllGroups( SAIFloat3 pos )
+{
+	vector<MilitaryUnitGroup*> groups = MilitaryGroupMgr->GetAllAttackGroups();
+	for(int i = 0; i < groups.size(); i++)
+	{		
+		MilitaryGroupMgr->GiveMoveOrder(groups[i], pos);
+		groups[i]->SetStatus(MilitaryUnitGroup::MILI_UNIT_GRP_ATTACKING);
+	}
+}
+
+int brainSpace::GroupController::GetAmountOfBuildOrders()
+{
+	return ConstructionGroupMgr->GetAmountOfBuildOrdersForGroup0();
+}
 void GroupController::AddUnit(Unit *unit)
 {
 	if ( unit->GetDef()->IsBuilder() )
@@ -37,10 +51,12 @@ void GroupController::RemoveUnit(Unit *unit)
 {
 	if ( unit->GetDef()->IsBuilder() )
 	{
+		ai->utility->Log(ALL, MISC, "ConstructionGroupMgr RemoveUnit ");
 		ConstructionGroupMgr->RemoveUnit( unit );
 	}
 	else if ( unit->GetDef()->IsAbleToAttack() )
 	{
+		ai->utility->Log(ALL, MISC, "MilitaryGroupMgr RemoveUnit ");
 		MilitaryGroupMgr->RemoveUnit( unit );
 	}
 }

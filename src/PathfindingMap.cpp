@@ -9,13 +9,7 @@ PathfindingMap::PathfindingMap( AIClasses* aiClasses ) : BrainMap( aiClasses, 4 
 {
 
 	//Slopemap has Resolution = 2, where PFmap has Resolution = 4.
-	Map *map = ai->callback->GetMap();
-	//vector<float> slopeMap = map->GetSlopeMap();
-	SlopeMap = map->GetSlopeMap();
-	for ( int z = 0 ; z < MapHeight ; z++ )
-		for ( int x = 0 ; x < MapWidth ; x++ )
-			ResetSlope( x, z );
-	delete map;
+	ResetEntireMap();
 }
 
 
@@ -127,10 +121,11 @@ void PathfindingMap::RemoveHypotheticalBuilding(UnitDef* unit, SAIFloat3 pos)
 void PathfindingMap::RemoveBuilding(Unit* unit)
 {
 	SAIFloat3 pos = unit->GetPos();
-	UnitDef *def = unit->GetDef();
+	UnitDef *def = ai->knowledge->selfInfo->baseInfo->GetUnitDef(unit->GetUnitId());
+	if(def == NULL)
+		return;
 	int xSize = def->GetXSize()*8;
 	int zSize = def->GetZSize()*8;
-	delete def;
 	int topCell = (pos.z-zSize/2)/Resolution;
 	int bottomCell = (pos.z+zSize/2)/Resolution;
 	int leftCell = (pos.x-xSize/2)/Resolution;
@@ -150,8 +145,11 @@ void PathfindingMap::RemoveBuilding(Unit* unit)
 	for ( int i = 0 ; i < (int)unitsInRange.size() ; i++ )
 	{
 		SAIFloat3 unitPos = unitsInRange[i]->GetPos();
-		int unitXsize = unitsInRange[i]->GetDef()->GetXSize()*8;
-		int unitZsize = unitsInRange[i]->GetDef()->GetZSize()*8;
+		UnitDef *def1 = ai->knowledge->selfInfo->baseInfo->GetUnitDef(unitsInRange[i]->GetUnitId());
+		if(def1 == NULL)
+			continue;
+		int unitXsize = def1->GetXSize()*8;
+		int unitZsize = def1->GetZSize()*8;
 
 		int unitTopCell = (unitPos.z-unitZsize/2)/Resolution;
 		int unitBottomCell = (unitPos.z+unitZsize/2)/Resolution;
@@ -531,4 +529,15 @@ void PathfindingMap::PrintSection(SAIFloat3 pos)
 	delete commanderDef;
 	delete move;
 	
+}
+
+void brainSpace::PathfindingMap::ResetEntireMap()
+{
+	Map *map = ai->callback->GetMap();
+	//vector<float> slopeMap = map->GetSlopeMap();
+	SlopeMap = map->GetSlopeMap();
+	for ( int z = 0 ; z < MapHeight ; z++ )
+		for ( int x = 0 ; x < MapWidth ; x++ )
+			ResetSlope( x, z );
+	delete map;
 }

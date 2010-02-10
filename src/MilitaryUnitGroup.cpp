@@ -1,4 +1,5 @@
 #include "MilitaryUnitGroup.h"
+#include "CurrentCommand.h"
 
 using namespace std;
 using namespace springai;
@@ -51,15 +52,25 @@ void MilitaryUnitGroup::Attack(int enemy)
 	{
 		com.unitId = it->first->GetUnitId();
 		ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_ATTACK, &com);
+		it->second = false;
 	}
 }
 
 bool MilitaryUnitGroup::IsIdle()
 {
+	ai->utility->Log(ALL,MISC, "isidle: %d", Units.size());
 	for ( map<Unit*, bool>::iterator it = Units.begin() ; it != Units.end() ; it++ )
-	{
-		if ( it->second == false )
+	{			
+		//if ( it->second == false )
+		if(it->first->GetCurrentCommands().size() > 0)
+		{
+			ai->utility->Log(ALL,MISC, "unit %d, size of commands: %d", it->first->GetUnitId(), it->first->GetCurrentCommands().size());
+			for(int i = 0; i < it->first->GetCurrentCommands().size(); i++)
+			{
+				ai->utility->Log(ALL,MISC, "command: %d",  it->first->GetCurrentCommands()[i]->GetCommandId());
+			}
 			return false;
+		}
 	}
 	return true;
 }
@@ -75,7 +86,9 @@ void MilitaryUnitGroup::Scout(SAIFloat3 pos)
 	{
 		com.unitId = it->first->GetUnitId();
 		ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &com);
+		it->second = false;
 	}
+	
 }
 
 void MilitaryUnitGroup::UnitIdle(springai::Unit *unit)
@@ -86,7 +99,10 @@ void MilitaryUnitGroup::UnitIdle(springai::Unit *unit)
 		{
 			it->second = true;
 			//Check if all units in group are now idle
-			ai->utility->Log( ALL, GROUPING, "Unit %d has gone idle. GroupID %d. Status %d", unit->GetUnitId(), GroupID, Status );
+			ai->utility->Log( ALL, GROUPING, "");
+			ai->utility->Log( ALL, GROUPING, "Unit %d has gone idle", unit->GetUnitId() );
+			ai->utility->Log( ALL, GROUPING, "GroupID %d", GroupID );
+			ai->utility->Log( ALL, GROUPING,"Status %d",Status );
 			bool allUnitsIdle = true;
 			if ( !(Status == MILI_UNIT_GRP_REGROUPING ))
 			{

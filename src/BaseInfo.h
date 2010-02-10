@@ -33,6 +33,7 @@ namespace brainSpace
 		vector<Unit*> GetUnitsInRange(SAIFloat3 pos, float radius);
 		bool IsBuildingInRange(SAIFloat3 pos, float radius);
 		const map<int, struct UnitInformationContainer> GetUnits();
+		UnitDef* GetUnitDef(int unitID);
 
 	private:
 		AIClasses* ai;
