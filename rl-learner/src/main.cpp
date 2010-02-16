@@ -73,123 +73,136 @@ int main(int argc, char *argv[])
 	float bestFrame = 999999;
 	int currentIndex = 0;
 
-	bool game_running = true;
-	r = new RL(g, RL_TYPE, currentEpsilon);
-	while(game_running)
-	{
-		//game loop
-		RL_Action a = r->Update();
-		g->BuildUnit(a.Action);
-	}
-
-
-	//unsigned int runs = 2000;
-	//while(i < runs)
+	//while(true)
 	//{
-	//	r = new RL(g, RL_TYPE, currentEpsilon);
-	//	int buildingToBuild = RL_LAB_ID;
-	//	r->setDesireToBuild(buildingToBuild);
-	//	RL_Action a;
-	//	a = r->Update();
-
-	//	
-
-	//	while(a.ID != -1)
+	//	//game loop
+	//	g->frame++;
+	//	bool update = g->Update();
+	//	if(update)
 	//	{
-	//		if (RL_TYPE==2 && a.ID==0) break;
-	//		if (debug)
+	//		RL_Action b = r->Update();
+	//		if(b.ID == -1 || b.Action > 2)
 	//		{
-	//			switch(a.Action)
-	//			{
-	//				case RL_LAB_ID:
-	//					cout << "L";
-	//					break;
-	//				case RL_MEX_ID:
-	//					cout << "M";
-	//					break;
-	//				case RL_SOLAR_ID:
-	//					cout << "S";
-	//					break;
-	//				case RL_ROCKO_ID:
-	//					cout << "R";
-	//					break;
-	//			}
+	//			g->ResetGame();
+	//			continue;
 	//		}
+	//		g->BuildUnit(b.Action);
 
-	//		float oldFrame = g->frame;
-	//		g->ConstructUnit(a.Action);
-
-	//		a = r->Update();		
 	//	}
-	//	if ( debug )
-	//		cout << endl;
-	//	if (RL_TYPE == 2)
-	//	{
-	//		if (debug) cout << "L";
-	//		g->ConstructUnit(buildingToBuild);
-	//		a = r->Update();
-	//	} 
-	//	if (debug) cout << "\n";
-	//	currentReward += r->GetTotalReward();
-	//	//cout << "Check: " << i << "\t" << r->GetTotalReward() << "\n" ;
-
-	//	if (RL_TYPE != 2 || i%4==3) {
-	//		currentFrame = g->frame;
-	//		//if (currentReward >= bestReward)
-	//		if(currentFrame <= bestFrame)
-	//		{
-	//			//bestReward = currentReward;
-	//			ChangeColour(FOREGROUND_INTENSITY | FOREGROUND_GREEN); 
-	//		} else {
-	//			ChangeColour(FOREGROUND_INTENSITY | FOREGROUND_RED); 
-	//		}
-	//		/*
-	//		if (debug) {
-	//			float mNeeds_raw = g->BuildingCosts(RL_MEX_ID, buildingToBuild);
-	//			short unsigned int mNeeds = g->GetDiscreteResource(mNeeds_raw);
-	//			float eNeeds_raw = g->BuildingCosts(RL_SOLAR_ID, buildingToBuild);
-	//			short unsigned int eNeeds = g->GetDiscreteResource(eNeeds_raw);
-	//			float mAvailable_raw = g->AvailableResources(RL_MEX_ID, g->BuildTime(buildingToBuild));
-	//			short unsigned int mAvailable = g->GetDiscreteResource(mAvailable_raw);
-	//			float eAvailable_raw = g->AvailableResources(RL_SOLAR_ID, g->BuildTime(buildingToBuild));
-	//			short unsigned int eAvailable = g->GetDiscreteResource(eAvailable_raw);
- //
-	//			cout << "Final State: ";
-	//			cout << mNeeds << "(" << mNeeds_raw << ") - ";
-	//			cout << eNeeds << "(" << eNeeds_raw << ") - ";
-	//			cout << mAvailable << "(" << mAvailable_raw << ") - ";
-	//			cout << eAvailable << "(" << eAvailable_raw << ")\n";
-	//		}*/
-	//		g->ResetGame();
-	//		
-	//		//if(i%120 == 3)
-	//		if(PRINT_REWARD)
-	//		{
-	//			cout << currentReward << "\n" ;
-	//		}
-	//		else
-	//		{
-	//			cout << currentFrame << (currentFrame == bestFrame && debug ? "*" : "") << "\n" ;
-	//		}
-	//		currentIndex++;
-
-	//		//if (currentReward >= bestReward)
-	//		if(currentFrame <= bestFrame)
-	//		{
-	//			bestFrame = currentFrame;
-	//			if (debug) system("pause");
-	//		}
-
-	//		currentReward = 0.0;
-	//		currentFrame = 0.0;
-	//		ChangeColour(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE); 
-	//	}
-	//	delete r;
 	//	
-	//	if(runs > 100 && i%(runs/100) == 0)
-	//		cerr << "Status:" << floor(((i/(double)runs)*100)+0.5) << "%\xd";
-	//	i++;
+	//	//if(runs > 100 && i%(runs/1000) == 0)
+	//	//	cerr << "Status:" << floor(((i/(double)runs))+0.5) << "%\xd";
+	//	//i++;
 
-	//	currentEpsilon *= EPSILON_DECAY;
+
 	//}
+
+
+	unsigned int runs = 10000;
+	while(i < runs)
+	{
+		r = new RL(g, RL_TYPE, currentEpsilon);
+		RL_Action a;
+		a = r->Update();
+
+		
+
+		while(a.ID != -1)
+		{
+			if (debug)
+			{
+				switch(a.Action)
+				{
+					case RL_LAB_ID:
+						cout << "L";
+						break;
+					case RL_MEX_ID:
+						cout << "M";
+						break;
+					case RL_SOLAR_ID:
+						cout << "S";
+						break;
+					case RL_ROCKO_ID:
+						cout << "R";
+						break;
+				}
+			}
+
+			float oldFrame = g->frame;
+			g->BuildUnit(a.Action);
+			while(true)
+			{
+				//game loop
+				g->frame++;
+				bool done = g->Update();
+				if(done)
+					break;
+			}
+
+			a = r->Update();		
+		}
+		if ( debug )
+			cout << endl;
+		currentReward += r->GetTotalReward();
+		//cout << "Check: " << i << "\t" << r->GetTotalReward() << "\n" ;
+
+		if (RL_TYPE != 2 || i%4==3) {
+			currentFrame = g->frame;
+			//if (currentReward >= bestReward)
+			if(currentFrame <= bestFrame)
+			{
+				//bestReward = currentReward;
+				ChangeColour(FOREGROUND_INTENSITY | FOREGROUND_GREEN); 
+			} else {
+				ChangeColour(FOREGROUND_INTENSITY | FOREGROUND_RED); 
+			}
+			/*
+			if (debug) {
+				float mNeeds_raw = g->BuildingCosts(RL_MEX_ID, buildingToBuild);
+				short unsigned int mNeeds = g->GetDiscreteResource(mNeeds_raw);
+				float eNeeds_raw = g->BuildingCosts(RL_SOLAR_ID, buildingToBuild);
+				short unsigned int eNeeds = g->GetDiscreteResource(eNeeds_raw);
+				float mAvailable_raw = g->AvailableResources(RL_MEX_ID, g->BuildTime(buildingToBuild));
+				short unsigned int mAvailable = g->GetDiscreteResource(mAvailable_raw);
+				float eAvailable_raw = g->AvailableResources(RL_SOLAR_ID, g->BuildTime(buildingToBuild));
+				short unsigned int eAvailable = g->GetDiscreteResource(eAvailable_raw);
+ 
+				cout << "Final State: ";
+				cout << mNeeds << "(" << mNeeds_raw << ") - ";
+				cout << eNeeds << "(" << eNeeds_raw << ") - ";
+				cout << mAvailable << "(" << mAvailable_raw << ") - ";
+				cout << eAvailable << "(" << eAvailable_raw << ")\n";
+			}*/
+			g->ResetGame();
+			
+			//if(i%120 == 3)
+			if(PRINT_REWARD)
+			{
+				cout << currentReward << "\n" ;
+			}
+			else
+			{
+				cout << currentFrame << (currentFrame == bestFrame && debug ? "*" : "") << "\n" ;
+			}
+			currentIndex++;
+
+			//if (currentReward >= bestReward)
+			if(currentFrame <= bestFrame)
+			{
+				bestFrame = currentFrame;
+				if (debug) system("pause");
+			}
+
+			currentReward = 0.0;
+			currentFrame = 0.0;
+			ChangeColour(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE); 
+		}
+		delete r;
+		
+		if(runs > 100 && i%(runs/100) == 0)
+			cerr << "Status:" << floor(((i/(double)runs)*100)+0.5) << "%\xd";
+		i++;
+
+		currentEpsilon *= EPSILON_DECAY;
+	}
 }

@@ -68,7 +68,7 @@ namespace brainSpace {
 		void ResetGame();
 		float resources[2];
 		void BuildUnit(int unitId);
-		void Update(); 
+		bool Update(); 
 
 	private:
 		int GetBuildingWithShortestBuildtime();

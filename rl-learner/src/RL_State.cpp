@@ -5,51 +5,12 @@ using namespace brainSpace;
 
 RL_State::RL_State()
 {
+	ID = -1;
 }
 
-RL_State::RL_State(Game *g, int node, unsigned short int type, int buildingToBuild)
-{
-	if (type!=2) {
-		RL_State(g, node, type);
-		return;
-	}
-	game = g;
-	Node = node;
-
-	if (node == -1)
-	{
-		ID = -1;
-		return;
-	}
-
-	terminal = false;
-	short unsigned int mNeeds = game->GetDiscreteResource(game->BuildingCosts(RL_MEX_ID, buildingToBuild));
-	short unsigned int eNeeds = game->GetDiscreteResource(game->BuildingCosts(RL_SOLAR_ID, buildingToBuild));
-	short unsigned int mAvailable = game->GetDiscreteResource(game->GetAvailableResources(RL_MEX_ID, game->GetBuildTime(buildingToBuild)));
-	short unsigned int eAvailable = game->GetDiscreteResource(game->GetAvailableResources(RL_SOLAR_ID, game->GetBuildTime(buildingToBuild)));
-	
-	//cout << "State: " << mNeeds << " - " << eNeeds << " - " << mAvailable << " - " << eAvailable << "\n";
-	
-	float dStates = DISCRETE_STATES;
-	ID =  mNeeds*(int)pow(dStates,3) + eNeeds*(int)pow(dStates,2) + mAvailable*(int)pow(dStates,1) + eAvailable;
-	//Actions.push_back(RL_Action(-1,0,false));
-	//Actions.push_back(RL_Action(RL_SOLAR_ID,1,false));
-	//Actions.push_back(RL_Action(RL_MEX_ID,2,false));
-	//Actions.push_back(RL_Action(RL_ROCKO_ID,3,false));
-}
-
-RL_State::RL_State(Game *g, int node, unsigned short int type)
+RL_State::RL_State(Game *g, unsigned short int type)
 {
 	game = g;
-	Node = node;
-
-
-	if (node == -1)
-	{
-		ID = -1;
-		return;
-	}
-
 
 	switch (type)
 	{
@@ -75,60 +36,19 @@ RL_State::RL_State(Game *g, int node, unsigned short int type)
 
 			ID = /*rockoCount*RL_MEX_INDEX*RL_SOLAR_INDEX*RL_LAB_INDEX +*/ labCount*RL_MEX_INDEX*RL_SOLAR_INDEX + solarCount*RL_MEX_INDEX + mexCount;
 			if(labCount < RL_LAB_INDEX-1)
-				Actions.push_back(RL_Action(RL_LAB_ID,0,false));
+				Actions.push_back(RL_Action(RL_LAB_ID,0));
 			if(solarCount < RL_SOLAR_INDEX-1)
-				Actions.push_back(RL_Action(RL_SOLAR_ID,1,false));
+				Actions.push_back(RL_Action(RL_SOLAR_ID,1));
 			if(mexCount < RL_MEX_INDEX-1)
-				Actions.push_back(RL_Action(RL_MEX_ID,2,false));
+				Actions.push_back(RL_Action(RL_MEX_ID,2));
 			/*
 			if (labCount > 0 && rockoCount < RL_ROCKO_INDEX)
 			{
-				Actions.push_back(RL_Action(RL_ROCKO_ID,3,false));
+				Actions.push_back(RL_Action(RL_ROCKO_ID,3));
 			}
 			*/
 
 		}break;
-	case 1: //H old
-		switch(node)
-		{
-		case 0://root
-			{
-				int labCount = game->units[RL_LAB_ID];
-				int EnoughLabs = (labCount >= 4);
-				terminal = 	(EnoughLabs ? true : false);
-				int affordable = game->CanBuild(RL_LAB_ID);
-				bool CanBuildLab = (affordable == 0);
-				
-				ID = (CanBuildLab ? 2 : 0) + (EnoughLabs ? 1 : 0);
-				Actions.push_back(RL_Action(1,0,true));
-				Actions.push_back(RL_Action(2,1,true));
-			}break;
-		case 1://factory
-			{
-				terminal = true;
-				int LabCount = game->units[RL_LAB_ID];
-				int RockoCount = game->units[RL_ROCKO_ID];
-				ID = RockoCount * 5 + LabCount;
-				if(RockoCount < 4)
-					Actions.push_back(RL_Action(RL_ROCKO_ID,0,false));
-				if(LabCount < 4)
-					Actions.push_back(RL_Action(RL_LAB_ID,1,false));
-			}break;
-		case 2://resource
-			{
-				terminal = true;
-				int MexCount = game->units[RL_MEX_ID];
-				int SolarCount = game->units[RL_SOLAR_ID];
-				ID = MexCount * 20 + SolarCount;
-				if(MexCount < 19)
-					Actions.push_back(RL_Action(RL_MEX_ID,0,false));
-				if(SolarCount < 19)
-					Actions.push_back(RL_Action(RL_SOLAR_ID,1,false));
-			}break;
-		default://error
-			Node = -1;
-		}
-		break;
 	default:
 		break;
 	}
@@ -168,11 +88,6 @@ bool RL_State::IsTerminal()
 	return terminal;
 }
 
-int RL_State::GetNode()
-{
-	return Node;
-}
-
 bool RL_State::operator==(const RL_State &other) const
 {
 	return (ID == other.ID);
@@ -185,7 +100,6 @@ RL_State & RL_State::operator=(const RL_State &rhs)
 
 	Actions = rhs.Actions;
 	ID = rhs.ID;
-	Node = rhs.Node;
 	terminal = rhs.terminal;
 	return *this;
 }

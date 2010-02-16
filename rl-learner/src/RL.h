@@ -70,7 +70,6 @@ namespace brainSpace {
 		virtual ~RL();
 		float GetTotalReward();
 
-		void setDesireToBuild(int buildingId);
 		RL_Action Update();
 	private:
 		Game *game;
@@ -85,20 +84,18 @@ namespace brainSpace {
 		RL_Action FindBestAction( RL_State &state );
 
 		int currentNode;
-		vector<RL_State> PreviousState;
-		vector<RL_Action> PreviousAction;
-		vector<float> PreviousFrame;
-		vector<int> ParentNode;
+		RL_State PreviousState;
+		RL_Action PreviousAction;
+		float PreviousFrame;
 		float totalReward;
 		bool goalAchieved;
 		int Epsilon;
-		RL_State GetState(int node);
+		RL_State GetState();
 		RL_Action SafeNextAction(RL_State &state);
-		void TakeAction(RL_Action &action);
 		void ClearAllNodes();
 		void LoadFromFile();
 		void SaveToFile();
-		vector<RL_Q*> ValueFunction;
+		RL_Q* ValueFunction;
 
 		bool m_greedyChoice;
 

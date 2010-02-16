@@ -7,11 +7,10 @@ struct RL_Action
 		int Action;
 		int ID;
 		bool Complex;
-		RL_Action( int action, int id, bool complex)
+		RL_Action( int action, int id)
 		{
 			Action = action;
 			ID = id;
-			Complex = complex;
 		}
 		RL_Action() {}
 		
