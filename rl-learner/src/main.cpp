@@ -76,8 +76,6 @@ int main(int argc, char *argv[])
 	while(i < runs)
 	{
 		r = new RL(g, RL_TYPE, currentEpsilon);
-		int buildingToBuild = RL_LAB_ID;
-		r->setDesireToBuild(buildingToBuild);
 		RL_Action a;
 		a = r->Update();
 
@@ -112,12 +110,6 @@ int main(int argc, char *argv[])
 		}
 		if ( debug )
 			cout << endl;
-		if (RL_TYPE == 2)
-		{
-			if (debug) cout << "L";
-			g->ConstructUnit(buildingToBuild);
-			a = r->Update();
-		} 
 		if (debug) cout << "\n";
 		currentReward += r->GetTotalReward();
 		//cout << "Check: " << i << "\t" << r->GetTotalReward() << "\n" ;
