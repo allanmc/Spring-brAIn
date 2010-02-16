@@ -96,7 +96,7 @@ RL_State::RL_State(Game *g, int node, unsigned short int type)
 				int labCount = game->units[RL_LAB_ID];
 				int EnoughLabs = (labCount >= 4);
 				terminal = 	(EnoughLabs ? true : false);
-				int affordable = game->CanBuild(RL_LAB_ID, 1);
+				int affordable = game->CanBuild(RL_LAB_ID);
 				bool CanBuildLab = (affordable == 0);
 				
 				ID = (CanBuildLab ? 2 : 0) + (EnoughLabs ? 1 : 0);

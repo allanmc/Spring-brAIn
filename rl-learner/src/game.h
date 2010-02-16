@@ -9,6 +9,7 @@
 #define RL_MEX_PRODUCTION 3.0
 #define RL_SOLAR_PRODUCTION 20.0
 #define COMMANDER_SPEED 300.0
+#define BUILDER_SPEED 90.0
 #define LAB_SPEED 100.0
 
 #define DISCRETE_STATES 7
@@ -24,6 +25,7 @@
 
 #include <algorithm>
 #include <math.h>
+#include <vector>
 
 namespace brainSpace {
 
@@ -41,6 +43,13 @@ namespace brainSpace {
 		unitdef() {}
 	};
 
+	struct unitBeingBuilt
+	{
+		int unitId;
+		float remainingMetal;
+		float remainingEnergy;
+	};
+
 	class Game
 	{
 	public:
@@ -48,20 +57,24 @@ namespace brainSpace {
 		int greedy[2];
 		int units[4];
 		float GetProduction(int resourceId);
-		int CanBuild(int unitId, int amount);
+		int CanBuild(int unitId);
 		void ConstructUnit(int unitId);
 		short unsigned int GetDiscreteResource(float realValue);
 		float GetAvailableResources(int resourceId, float time);
 		float BuildingCosts(int resourceId, int unitId);
-		float GetBuildTime(int unitId);
+		float GetBuildTime(int unitId, bool commander);
 		float GetUsage(int resourceId);
 		float frame;
 		void ResetGame();
 		float resources[2];
+		void BuildUnit(int unitId);
+		void Update(); 
+
 	private:
-		
+		int GetBuildingWithShortestBuildtime();
 		float GetTimeToDepletion(float current, float production);
 		unitdef unitDefs[4];
+		std::vector<unitBeingBuilt> buildList;
 	};
 }
 
