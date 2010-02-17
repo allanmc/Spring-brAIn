@@ -11,7 +11,7 @@ namespace brainSpace {
 	class RL_State
 	{
 	public:
-		RL_State(Game *g, unsigned short int type);
+		RL_State(Game *g, unsigned short int type, int agentId = 0);
 		RL_State();
 		virtual ~RL_State();
 		int GetID();

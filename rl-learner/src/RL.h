@@ -66,33 +66,30 @@ namespace brainSpace {
 	class RL
 	{
 	public:
-		RL(Game *g, unsigned short int type, double epsilon);
+		RL(Game *g, unsigned short int type, double epsilon, int numAgents = 1);
 		virtual ~RL();
 		float GetTotalReward();
 
-		RL_Action Update();
+		RL_Action Update(int agentId = 0);
 	private:
 		Game *game;
 		vector<DataPoint> dataTrail;
 		RL_State nullState;
 		RL_Action nullAction;
-		int buildingToBuild;
 		unsigned short int type;
 
 		bool FileExists( const char* name );
 		RL_Action FindNextAction( RL_State &state );
 		RL_Action FindBestAction( RL_State &state );
 
-		int currentNode;
-		RL_State PreviousState;
-		RL_Action PreviousAction;
-		float PreviousFrame;
+		vector<RL_State> PreviousState;
+		vector<RL_Action> PreviousAction;
+		vector<float> PreviousFrame;
 		float totalReward;
 		bool goalAchieved;
 		int Epsilon;
-		RL_State GetState();
+		RL_State GetState(int agentId = 0);
 		RL_Action SafeNextAction(RL_State &state);
-		void ClearAllNodes();
 		void LoadFromFile();
 		void SaveToFile();
 		RL_Q* ValueFunction;

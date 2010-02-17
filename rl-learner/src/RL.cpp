@@ -6,18 +6,24 @@
 using namespace brainSpace;
 using namespace std;
 
-RL::RL(Game *g, unsigned short int type, double epsilon)
+RL::RL(Game *g, unsigned short int type, double epsilon, int numAgents)
 {	
 	EPSILON = epsilon;
 	game = g;
-	currentNode = 0;
-	totalReward = 0;
 	this->type = type;
 	nullState = RL_State();
 	nullAction = RL_Action( -1, -1 );
 	vector<QStateVar> stateVars;
 	vector<QAction> actions;
+	totalReward = 0.0;
 
+	for(int i = 0; i<numAgents; i++)
+	{
+		PreviousFrame[i] = 0;
+		PreviousState[i] = nullState;
+		PreviousAction[i] = nullAction;
+	}
+	
 	switch(type)
 	{
 	case 0:
@@ -35,16 +41,11 @@ RL::RL(Game *g, unsigned short int type, double epsilon)
 		break;
 	}
 	
-	ClearAllNodes();
 	dataTrail.clear();
-
-	PreviousFrame = 0;
 
 	//Epsilon = 9;
 	LoadFromFile();
 
-	totalReward = 0.0;
-	buildingToBuild = 0;
 	goalAchieved = false;
 }
 
@@ -53,13 +54,6 @@ RL::~RL()
 	SaveToFile();
 	delete ValueFunction;
 	dataTrail.clear();
-}
-
-void RL::ClearAllNodes()
-{
-		PreviousState = nullState;
-		PreviousAction = nullAction;
-		ValueFunction->Clear();
 }
 
 void RL::LoadFromFile()
@@ -144,9 +138,9 @@ void RL::SaveToFile()
 	delete file;
 }
 
-RL_State RL::GetState()
+RL_State RL::GetState(int agentId)
 {
-	return RL_State(game, type);
+	return RL_State(game, type, agentId);
 }
 
 RL_Action RL::FindNextAction( RL_State &state )
@@ -174,19 +168,11 @@ RL_Action RL::FindNextAction( RL_State &state )
 RL_Action RL::FindBestAction( RL_State &state )
 {
 	vector<RL_Action> stateActions = state.GetActions();
-	
-
 	RL_Action action = stateActions[0]; //unitdefID
-	
 	float bestValue = ValueFunction->GetValue(state, action);
 
-	
-
-	//vector<RL_Action*>::iterator it;
-	//for ( it = stateActions.begin()+1 ; it != stateActions.end() ; it++ )
 	for ( int i = 1 ; i < (int)stateActions.size() ; i++ )
 	{
-		//RL_Action *tempAction = (RL_Action*)(*it);
 		RL_Action tempAction = stateActions[i];
 		float tempValue = ValueFunction->GetValue(state, tempAction);
 		
@@ -203,43 +189,40 @@ RL_Action RL::FindBestAction( RL_State &state )
 
 RL_Action RL::SafeNextAction(RL_State &state)
 {
-	RL_State tmpCurrentState = state;
-	//int tmpCurrentNode = currentNode;
-
 	while(state.GetActions().size() > 0)
 	{
-		RL_Action nextAction = FindNextAction( state );
-		return nextAction;
+		return FindNextAction( state );
 	}
 	
 	return nullAction;
 }
 
-RL_Action RL::Update()
+RL_Action RL::Update(int agentId)
 {
-	
 	bool terminal = false;
-	RL_State state = GetState();
+	RL_State state = GetState(agentId);
 	RL_Action nextAction = SafeNextAction(state);
 	
 	
 	//Start state
-	if ( PreviousState == nullState )
+	if ( PreviousState[agentId] == nullState )
 	{
-		PreviousState = state;
-		PreviousAction = nextAction;
-		PreviousFrame = game->frame;
+		PreviousState[agentId] = state;
+		PreviousAction[agentId] = nextAction;
+		PreviousFrame[agentId] = game->frame;
 		return nextAction;
 	}//else
 
 	
 	//Reward
-	float reward;
-	reward = 0;
-	if (USE_RS_TIME) reward = PreviousFrame - game->frame;
+	float reward = 0;
+	if (USE_RS_TIME)
+		reward = PreviousFrame[agentId] - game->frame;
 
-	if(USE_RS_LABS && PreviousAction.Action == RL_LAB_ID)
+	if(USE_RS_LABS && PreviousAction[agentId].Action == RL_LAB_ID)
 		reward += 10;
+
+	totalReward += reward;
 
 	//cout << "previousframe: " << PreviousFrame[currentNode] << "\n";
 	//cout << "real-frame: " << game->frame << "\n";
@@ -255,22 +238,17 @@ RL_Action RL::Update()
 		RL_Action bestAction = FindBestAction( state );
 		bestFutureValue = ValueFunction->GetValue(state, bestAction);
 	}
-	if(currentNode == 0)
-	{
-		//cout << "Adding reward: " << reward << ", new total: " << (totalReward+reward) << "\n";
-		totalReward += reward;
-	}
 
 	float value;
 
 	if(!USE_N_STEP && !USE_Q_LAMBDA)
 	{
 		//update own value function
-		value = ValueFunction->GetValue(PreviousState,PreviousAction) 
+		value = ValueFunction->GetValue(PreviousState[agentId],PreviousAction[agentId]) 
 				+ ALPHA*(
-					reward + pow((double)GAMMA, (USE_QSMDP?0:1)+(USE_QSMDP?1:0)*(0.01*((double)game->frame - (double)PreviousFrame)))*bestFutureValue 
-					- ValueFunction->GetValue(PreviousState,PreviousAction) );
-		ValueFunction->SetValue(PreviousState,PreviousAction, value);
+					reward + pow((double)GAMMA, (USE_QSMDP?0:1)+(USE_QSMDP?1:0)*(0.01*((double)game->frame - (double)PreviousFrame[agentId])))*bestFutureValue 
+					- ValueFunction->GetValue(PreviousState[agentId],PreviousAction[agentId]) );
+		ValueFunction->SetValue(PreviousState[agentId],PreviousAction[agentId], value);
 	}
 	
 	if(USE_BACKTRACKING)
@@ -287,7 +265,7 @@ RL_Action RL::Update()
 			ValueFunction->SetValue(dataTrail[i].prevState, dataTrail[i].prevAction, value);
 		}
 		//add the current to the dataTrail
-		dataTrail.push_back(DataPoint(PreviousState, PreviousAction, state, reward, game->frame - PreviousFrame));
+		dataTrail.push_back(DataPoint(PreviousState[agentId], PreviousAction[agentId], state, reward, game->frame - PreviousFrame[agentId]));
 		if(BACKTRACKING_STEPS > 0 &&  dataTrail.size() > BACKTRACKING_STEPS)
 			dataTrail.erase(dataTrail.begin());
 	}
@@ -295,14 +273,13 @@ RL_Action RL::Update()
 	if(USE_Q_LAMBDA )
 	{
 		//add the current to the dataTrail
-		dataTrail.push_back(DataPoint(PreviousState, PreviousAction, state, reward, game->frame - PreviousFrame));
+		dataTrail.push_back(DataPoint(PreviousState[agentId], PreviousAction[agentId], state, reward, game->frame - PreviousFrame[agentId]));
 		
 		for ( int i = 0 ; i < dataTrail.size() ; i++ )
 			if( dataTrail[i].eligibilityTrace < Q_LAMBDA_THRESHOLD)
 				dataTrail.erase(dataTrail.begin());
 
-		//RL_Action bestAction = FindBestAction( state );
-		float delta = reward + GAMMA*bestFutureValue - ValueFunction->GetValue( PreviousState, PreviousAction );
+		float delta = reward + GAMMA*bestFutureValue - ValueFunction->GetValue( PreviousState[agentId], PreviousAction[agentId] );
 
 		for(int i = dataTrail.size()-1; i>=0; i--)
 		{
@@ -321,7 +298,7 @@ RL_Action RL::Update()
 	if(USE_N_STEP)
 	{
 		bool done = false;
-		dataTrail.push_back(DataPoint(PreviousState, PreviousAction, state, reward, game->frame - PreviousFrame));
+		dataTrail.push_back(DataPoint(PreviousState[agentId], PreviousAction[agentId], state, reward, game->frame - PreviousFrame[agentId]));
 		while(!done)
 		{
 			float powerDiscount = 0.0;
@@ -336,8 +313,7 @@ RL_Action RL::Update()
 					else
 						powerDiscount += 1;
 				}
-				//RL_Action bestAction = FindBestAction( dataTrail[i].resultState );
-				stepReward += bestFutureValue; //ValueFunction[currentNode]->GetValue(dataTrail[i].resultState, bestAction);
+				stepReward += bestFutureValue;
 				ValueFunction->SetValue(dataTrail[0].prevState, dataTrail[0].prevAction, stepReward);
 				dataTrail.erase(dataTrail.begin());
 			}
@@ -355,9 +331,9 @@ RL_Action RL::Update()
 	}
 	else
 	{
-		PreviousState = state;
-		PreviousAction = nextAction;
-		PreviousFrame = game->frame;
+		PreviousState[agentId] = state;
+		PreviousAction[agentId] = nextAction;
+		PreviousFrame[agentId] = game->frame;
 		
 		return nextAction;
 	}

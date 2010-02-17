@@ -8,8 +8,9 @@ RL_State::RL_State()
 	ID = -1;
 }
 
-RL_State::RL_State(Game *g, unsigned short int type)
+RL_State::RL_State(Game *g, unsigned short int type, int agentId)
 {
+	//TODO: use agentId to find out what the other agent is doing right now
 	game = g;
 
 	switch (type)

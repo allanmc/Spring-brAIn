@@ -6,7 +6,6 @@ struct RL_Action
 	{
 		int Action;
 		int ID;
-		bool Complex;
 		RL_Action( int action, int id)
 		{
 			Action = action;
