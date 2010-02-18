@@ -46,6 +46,7 @@ namespace brainSpace {
 	struct unitBeingBuilt
 	{
 		int unitId;
+		int builder;
 		float remainingMetal;
 		float remainingEnergy;
 	};
@@ -67,8 +68,8 @@ namespace brainSpace {
 		float frame;
 		void ResetGame();
 		float resources[2];
-		void BuildUnit(int unitId);
-		bool Update(); 
+		void BuildUnit(int unitId, int agentId = 0);
+		int Update(); 
 
 	private:
 		int GetBuildingWithShortestBuildtime();

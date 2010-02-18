@@ -26,16 +26,17 @@ void Game::ResetGame()
 	frame = 0;
 }
 
-void Game::BuildUnit(int unitId)
+void Game::BuildUnit(int unitId, int agentId)
 {
 	unitBeingBuilt b;
+	b.unitId = agentId;
 	b.unitId = unitId;
 	b.remainingEnergy = unitDefs[unitId].energyCost;
 	b.remainingMetal = unitDefs[unitId].metalCost;
 	buildList.push_back(b);
 }
 
-bool Game::Update()
+int Game::Update()
 {
 	float metalUse = 0;
 	float energyUse = 0;
@@ -127,8 +128,8 @@ bool Game::Update()
 		bool hest = true;
 	}
 
-	//anyone finished?
-	bool finished = false;
+	//anyone finished? (TODO: What if more than one are finished at the same time?)
+	int finished = -1;
 	for(int i = 0; i < buildList.size(); i++)
 	{
 		if( buildList[i].remainingEnergy <= 0)
@@ -138,7 +139,7 @@ bool Game::Update()
 			units[buildList[i].unitId]++;
 			buildList.erase(buildList.begin() + i);
 			i--;
-			finished = true;
+			finished = buildList[i].builder;
 		}
 	}
 	

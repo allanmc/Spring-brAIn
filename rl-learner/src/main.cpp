@@ -15,6 +15,28 @@ void ChangeColour(WORD theColour)
     SetConsoleTextAttribute(hConsole,theColour);  // set the text attribute of the previous handle
 }
 
+void PrintAction(bool debug,RL_Action a)
+{
+	if (debug)
+	{
+		switch(a.Action)
+		{
+			case RL_LAB_ID:
+				cout << "L";
+				break;
+			case RL_MEX_ID:
+				cout << "M";
+				break;
+			case RL_SOLAR_ID:
+				cout << "S";
+				break;
+			case RL_ROCKO_ID:
+				cout << "R";
+				break;
+		}
+	}
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -101,45 +123,30 @@ int main(int argc, char *argv[])
 	unsigned int runs = 10000;
 	while(i < runs)
 	{
-		r = new RL(g, RL_TYPE, currentEpsilon);
+		r = new RL(g, RL_TYPE, currentEpsilon, 2);
 		RL_Action a;
-		a = r->Update();
-
-		
+		a = r->Update(0);
+		PrintAction(debug, a);
+		g->BuildUnit(a.Action);
+		a = r->Update(1);
 
 		while(a.ID != -1)
 		{
-			if (debug)
-			{
-				switch(a.Action)
-				{
-					case RL_LAB_ID:
-						cout << "L";
-						break;
-					case RL_MEX_ID:
-						cout << "M";
-						break;
-					case RL_SOLAR_ID:
-						cout << "S";
-						break;
-					case RL_ROCKO_ID:
-						cout << "R";
-						break;
-				}
-			}
+			PrintAction(debug, a);
 
 			float oldFrame = g->frame;
 			g->BuildUnit(a.Action);
+			int builder;
 			while(true)
 			{
 				//game loop
 				g->frame++;
-				bool done = g->Update();
-				if(done)
+				builder = g->Update();
+				if(builder != -1)
 					break;
 			}
 
-			a = r->Update();		
+			a = r->Update(builder);
 		}
 		if ( debug )
 			cout << endl;
