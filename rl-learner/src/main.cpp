@@ -127,26 +127,30 @@ int main(int argc, char *argv[])
 		RL_Action a;
 		a = r->Update(0);
 		PrintAction(debug, a);
-		g->BuildUnit(a.Action);
+		g->BuildUnit(a.Action, 0);
 		a = r->Update(1);
+		g->BuildUnit(a.Action, 1);
+		PrintAction(debug, a);
 
 		while(a.ID != -1)
 		{
-			PrintAction(debug, a);
-
 			float oldFrame = g->frame;
-			g->BuildUnit(a.Action);
-			int builder;
+			
+			vector<int> builders;
 			while(true)
 			{
 				//game loop
 				g->frame++;
-				builder = g->Update();
-				if(builder != -1)
+				builders = g->Update();
+				if(!builders.empty())
 					break;
 			}
-
-			a = r->Update(builder);
+			for(int i = 0; i<builders.size(); i++)
+			{
+				a = r->Update(builders[i]);
+				g->BuildUnit(a.Action, builders[i]);
+				PrintAction(debug, a);
+			}
 		}
 		if ( debug )
 			cout << endl;

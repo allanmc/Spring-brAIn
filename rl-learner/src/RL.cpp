@@ -19,9 +19,9 @@ RL::RL(Game *g, unsigned short int type, double epsilon, int numAgents)
 
 	for(int i = 0; i<numAgents; i++)
 	{
-		PreviousFrame[i] = 0;
-		PreviousState[i] = nullState;
-		PreviousAction[i] = nullAction;
+		PreviousFrame.push_back(0);
+		PreviousState.push_back(nullState);
+		PreviousAction.push_back(nullAction);
 	}
 	
 	switch(type)

@@ -69,7 +69,7 @@ namespace brainSpace {
 		void ResetGame();
 		float resources[2];
 		void BuildUnit(int unitId, int agentId = 0);
-		int Update(); 
+		std::vector<int> Update(); 
 
 	private:
 		int GetBuildingWithShortestBuildtime();

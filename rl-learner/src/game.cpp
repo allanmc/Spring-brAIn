@@ -29,14 +29,14 @@ void Game::ResetGame()
 void Game::BuildUnit(int unitId, int agentId)
 {
 	unitBeingBuilt b;
-	b.unitId = agentId;
+	b.builder = agentId;
 	b.unitId = unitId;
 	b.remainingEnergy = unitDefs[unitId].energyCost;
 	b.remainingMetal = unitDefs[unitId].metalCost;
 	buildList.push_back(b);
 }
 
-int Game::Update()
+vector<int> Game::Update()
 {
 	float metalUse = 0;
 	float energyUse = 0;
@@ -129,7 +129,7 @@ int Game::Update()
 	}
 
 	//anyone finished? (TODO: What if more than one are finished at the same time?)
-	int finished = -1;
+	vector<int> finished;
 	for(int i = 0; i < buildList.size(); i++)
 	{
 		if( buildList[i].remainingEnergy <= 0)
@@ -137,9 +137,10 @@ int Game::Update()
 			resources[RL_MEX_ID] -= buildList[i].remainingMetal;
 			resources[RL_SOLAR_ID] -= buildList[i].remainingEnergy;
 			units[buildList[i].unitId]++;
+			finished.push_back(buildList[i].builder);
 			buildList.erase(buildList.begin() + i);
 			i--;
-			finished = buildList[i].builder;
+			
 		}
 	}
 	
