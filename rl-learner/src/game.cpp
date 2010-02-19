@@ -23,6 +23,7 @@ void Game::ResetGame()
 	units[RL_SOLAR_ID] = 0;
 	units[RL_LAB_ID] = 0;
 	units[RL_ROCKO_ID] = 0;
+	buildList.clear();
 	frame = 0;
 }
 
