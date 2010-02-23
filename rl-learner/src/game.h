@@ -2,15 +2,13 @@
 #define _BRAINSPACE_GAME_H
 
 #define NUM_UNIT_DEFS 4
-#define RL_SOLAR_ID 0
-#define RL_MEX_ID 1
-#define RL_LAB_ID 2
-#define RL_ROCKO_ID 3
-#define RL_MEX_PRODUCTION 3.0
-#define RL_SOLAR_PRODUCTION 20.0
-#define COMMANDER_SPEED 300.0
-#define BUILDER_SPEED 90.0
-#define LAB_SPEED 100.0
+#define SOLAR_ID 0
+#define MEX_ID 1
+#define LAB_ID 2
+#define ROCKO_ID 3
+#define COMMANDER_SPEED 300.0f
+#define BUILDER_SPEED 90.0f
+#define LAB_SPEED 100.0f
 
 #define DISCRETE_STATES 7
 #define DISCRETE_STATES_STEP 300
@@ -32,8 +30,8 @@ namespace brainSpace {
 			metalCost = metal;
 			energyCost = energy;
 			buildTime = time;
-			production[RL_MEX_ID] = metalProduction;
-			production[RL_SOLAR_ID] = energyProduction;
+			production[MEX_ID] = metalProduction;
+			production[SOLAR_ID] = energyProduction;
 		}
 		unitdef() {}
 	};

@@ -21,16 +21,16 @@ void PrintAction(bool debug,RL_Action a)
 	{
 		switch(a.Action)
 		{
-			case RL_LAB_ID:
+			case LAB_ID:
 				cout << "L";
 				break;
-			case RL_MEX_ID:
+			case MEX_ID:
 				cout << "M";
 				break;
-			case RL_SOLAR_ID:
+			case SOLAR_ID:
 				cout << "S";
 				break;
-			case RL_ROCKO_ID:
+			case ROCKO_ID:
 				cout << "R";
 				break;
 		}
@@ -48,10 +48,10 @@ int main(int argc, char *argv[])
 
 	bool debug = false;
 
+	cout << (USE_QSMDP ? "SMDPQ " : "Q ");
+
 	if ( USE_Q_LAMBDA )
-		cout << "Q("<< LAMBDA << ")";
-	else
-		cout << (USE_QSMDP ? "SMDPQ " : "Q ");
+		cout << "Q("<< LAMBDA << ") ";
 
 	if(USE_RS_TIME)
 	{
@@ -74,6 +74,7 @@ int main(int argc, char *argv[])
 		{
 			char* path = r->GetFilePath();
 			remove(path);
+			delete[] path;
 		}
 		
 		RL_Action a;
@@ -110,37 +111,36 @@ int main(int argc, char *argv[])
 		}
 		currentReward += r->GetTotalReward();
 
-		if (i%4==3) {
-			currentFrame = g->frame;
-			if(currentFrame <= bestFrame)
-			{
-				ChangeColour(FOREGROUND_INTENSITY | FOREGROUND_GREEN); 
-			} else {
-				ChangeColour(FOREGROUND_INTENSITY | FOREGROUND_RED); 
-			}
-			
-			g->ResetGame();
-			
-			if(PRINT_REWARD)
-			{
-				cout << currentReward << "\n" ;
-			}
-			else
-			{
-				cout << currentFrame << (currentFrame == bestFrame && debug ? "*" : "") << "\n" ;
-			}
-			currentIndex++;
-
-			if(currentFrame <= bestFrame)
-			{
-				bestFrame = currentFrame;
-				if (debug) system("pause");
-			}
-
-			currentReward = 0.0;
-			currentFrame = 0.0;
-			ChangeColour(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE); 
+		currentFrame = g->frame;
+		if(currentFrame <= bestFrame)
+		{
+			ChangeColour(FOREGROUND_INTENSITY | FOREGROUND_GREEN); 
+		} else {
+			ChangeColour(FOREGROUND_INTENSITY | FOREGROUND_RED); 
 		}
+		
+		g->ResetGame();
+		
+		if(PRINT_REWARD)
+		{
+			cout << currentReward << "\n" ;
+		}
+		else
+		{
+			cout << currentFrame << (currentFrame == bestFrame && debug ? "*" : "") << "\n" ;
+		}
+		currentIndex++;
+
+		if(currentFrame <= bestFrame)
+		{
+			bestFrame = currentFrame;
+			if (debug) system("pause");
+		}
+
+		currentReward = 0.0;
+		currentFrame = 0.0;
+		ChangeColour(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE); 
+
 		delete r;
 		
 		if(runs > 100 && i%(runs/100) == 0)

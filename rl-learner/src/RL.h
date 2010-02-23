@@ -11,7 +11,7 @@
 
 #define PRINT_REWARD false
 
-#define USE_QSMDP false
+#define USE_QSMDP true
 #define USE_RS_TIME true
 #define USE_Q_LAMBDA true
 #define LAMBDA 0.95f

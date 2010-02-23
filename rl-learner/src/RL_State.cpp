@@ -18,10 +18,10 @@ RL_State::RL_State(Game *g, int agentId)
 	case 0: //Flat old
 		{
 			terminal = false;
-			int labCount = game->units[RL_LAB_ID];
-			int solarCount = game->units[RL_SOLAR_ID];
-			int mexCount = game->units[RL_MEX_ID];
-			int rockoCount = game->units[RL_ROCKO_ID];
+			int labCount = game->units[LAB_ID];
+			int solarCount = game->units[SOLAR_ID];
+			int mexCount = game->units[MEX_ID];
+			int rockoCount = game->units[ROCKO_ID];
 
 			if (labCount >= RL_LAB_INDEX-1)
 			{
@@ -31,26 +31,26 @@ RL_State::RL_State(Game *g, int agentId)
 
 			ID = labCount*RL_MEX_INDEX*RL_SOLAR_INDEX + solarCount*RL_MEX_INDEX + mexCount;
 			if(labCount < RL_LAB_INDEX-1)
-				Actions.push_back(RL_Action(RL_LAB_ID,0));
+				Actions.push_back(RL_Action(LAB_ID,0));
 			if(solarCount < RL_SOLAR_INDEX-1)
-				Actions.push_back(RL_Action(RL_SOLAR_ID,1));
+				Actions.push_back(RL_Action(SOLAR_ID,1));
 			if(mexCount < RL_MEX_INDEX-1)
-				Actions.push_back(RL_Action(RL_MEX_ID,2));
+				Actions.push_back(RL_Action(MEX_ID,2));
 
 		}break;
 	case 1://two builders
 		{
 			terminal = false;
 			//storage
-			float metalStore = game->GetAvailableResources(RL_MEX_ID,0.0f);
-			float energyStore = game->GetAvailableResources(RL_SOLAR_ID,0.0f);
+			float metalStore = game->GetAvailableResources(MEX_ID,0.0f);
+			float energyStore = game->GetAvailableResources(SOLAR_ID,0.0f);
 			//income
-			float metalProduction = game->GetProduction(RL_MEX_ID);
-			float energyProduction = game->GetProduction(RL_SOLAR_ID);
+			float metalProduction = game->GetProduction(MEX_ID);
+			float energyProduction = game->GetProduction(SOLAR_ID);
 			//other agents work
 			int concurrent = game->UnitBeingBuildByBuilder((agentId == 0? 1: 0));//only support for two
 			//number of labs
-			int labCount = game->units[RL_LAB_ID];
+			int labCount = game->units[LAB_ID];
 			if (labCount >= RL_LAB_INDEX-1)
 			{
 				terminal = true;
@@ -66,9 +66,9 @@ RL_State::RL_State(Game *g, int agentId)
 			ID = ID*RL_LAB_INDEX + labCount;
 
 			//set actions available
-			Actions.push_back(RL_Action(RL_LAB_ID,0));
-			Actions.push_back(RL_Action(RL_SOLAR_ID,1));
-			Actions.push_back(RL_Action(RL_MEX_ID,2));
+			Actions.push_back(RL_Action(LAB_ID,0));
+			Actions.push_back(RL_Action(SOLAR_ID,1));
+			Actions.push_back(RL_Action(MEX_ID,2));
 		}break;
 	default:
 		break;
