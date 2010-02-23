@@ -37,6 +37,19 @@ RL::RL(Game *g, unsigned short int type, double epsilon, int numAgents)
 		//actions.push_back( QAction("Rocko", 3));
 		ValueFunction = new RL_Q( actions, stateVars); //root
 		break;
+	case 1://two builders
+		stateVars.push_back( QStateVar("ConCur", 4));
+		stateVars.push_back( QStateVar("MStore", 4));
+		stateVars.push_back( QStateVar("EStore", 2));
+		stateVars.push_back( QStateVar("MIncome", 4));
+		stateVars.push_back( QStateVar("EIncome", 3));
+		stateVars.push_back( QStateVar("LabCount", RL_LAB_INDEX));
+		actions.push_back( QAction("Lab", 0));
+		actions.push_back( QAction("Solar", 1));
+		actions.push_back( QAction("Mex", 2));
+
+		ValueFunction = new RL_Q( actions, stateVars); //root
+		break;
 	default:
 		break;
 	}
@@ -66,6 +79,9 @@ void RL::LoadFromFile()
 	{
 	case 0:
 		strcat(path, RL_FILE_1);
+		break;
+	case 1:
+		strcat(path, RL_FILE_2_BUILDERS);
 		break;
 	default:
 		break;
@@ -102,6 +118,7 @@ void RL::LoadFromFile()
 
 void RL::SaveToFile()
 {
+	//at finde fil stien/navnet bør flyttes til en function, da det bruges både her og i load
 	const char* dir = RL_FILE_PATH;
 	
 	char *path = new char[200];
@@ -110,6 +127,9 @@ void RL::SaveToFile()
 	{
 	case 0:
 		strcat(path, RL_FILE_1);
+		break;
+	case 1:
+		strcat(path, RL_FILE_2_BUILDERS);
 		break;
 	default:
 		break;

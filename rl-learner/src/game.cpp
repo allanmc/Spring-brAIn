@@ -407,3 +407,18 @@ float Game::GetProduction(int resourceId)
 	}	
 	return production;
 }
+
+int Game::UnitBeingBuildByBuilder(int builder)
+{
+	int UnitId = -1;
+	for(int i = 0; i<buildList.size(); i++)
+	{
+		if(buildList[i].builder == builder)
+		{
+			UnitId = buildList[i].unitId;
+			break;
+		}
+	}
+	return UnitId;
+}
+

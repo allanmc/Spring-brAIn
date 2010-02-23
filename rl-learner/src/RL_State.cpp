@@ -50,6 +50,38 @@ RL_State::RL_State(Game *g, unsigned short int type, int agentId)
 			*/
 
 		}break;
+	case 1://two builders
+		{
+			terminal = false;
+			//storage
+			float metalStore = game->GetAvailableResources(RL_MEX_ID,0.0f);
+			float energyStore = game->GetAvailableResources(RL_SOLAR_ID,0.0f);
+			//income
+			float metalProduction = game->GetProduction(RL_MEX_ID);
+			float energyProduction = game->GetProduction(RL_SOLAR_ID);
+			//other agents work
+			int concurrent = game->UnitBeingBuildByBuilder((agentId == 0? 1: 0));//only support for two
+			//number of labs
+			int labCount = game->units[RL_LAB_ID];
+			if (labCount >= RL_LAB_INDEX-1)
+			{
+				terminal = true;
+				labCount = RL_LAB_INDEX-1;
+			}
+
+			//set ID
+			ID = concurrent + 1;// concurrent ranges from -1 to max id (-1 for no building)
+			ID = ID*4 + (metalStore > 150 ? (metalStore > 600 ? 3 : 2) : (metalStore > 50 ? 1 : 0) );
+			ID = ID*2 + (energyStore > 500 ? 1 : 0 );
+			ID = ID*4 + (metalProduction > 5 ? (metalProduction > 8 ? 3 : 2) : (metalProduction > 2.5f ? 1 : 0) );
+			ID = ID*3 + (energyProduction > 26 ? 2 : (energyProduction > 15 ? 1 : 0) );
+			ID = ID*RL_LAB_INDEX + labCount;
+
+			//set actions available
+			Actions.push_back(RL_Action(RL_LAB_ID,0));
+			Actions.push_back(RL_Action(RL_SOLAR_ID,1));
+			Actions.push_back(RL_Action(RL_MEX_ID,2));
+		}break;
 	default:
 		break;
 	}

@@ -15,13 +15,15 @@
 #define DISCRETE_STATES 7
 #define DISCRETE_STATES_STEP 300
 
-#define RL_TYPE 0
+//TYPE 0 => normal; 1 => 2 builders;
+#define RL_TYPE 1
 
 #define RL_FILE_DELETE true
 #define RL_FILE_PATH ""
 #define RL_FILE_1 "qn.bin"
 #define RL_FILE_2 "qh.bin"
 #define RL_FILE_3 "qr.bin"
+#define RL_FILE_2_BUILDERS "q2.bin"
 
 #include <algorithm>
 #include <math.h>
@@ -34,7 +36,9 @@ namespace brainSpace {
 		int metalCost;
 		int energyCost;
 		int buildTime;
-		unitdef( int metal, int energy, int time)
+		float metalProduction;
+		float energyProduction;
+		unitdef( int metal, int energy, int time, float metalProduction = 0, float energyProduction = 0)
 		{
 			metalCost = metal;
 			energyCost = energy;
@@ -69,7 +73,8 @@ namespace brainSpace {
 		void ResetGame();
 		float resources[2];
 		void BuildUnit(int unitId, int agentId = 0);
-		std::vector<int> Update(); 
+		std::vector<int> Update();
+		int UnitBeingBuildByBuilder(int builder);
 
 	private:
 		int GetBuildingWithShortestBuildtime();

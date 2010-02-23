@@ -49,14 +49,13 @@ int main(int argc, char *argv[])
 	//ChangeColour(FOREGROUND_GREEN); 
 
 	//Delete old Q-file?
-	if (RL_FILE_DELETE) 
+	if (RL_FILE_DELETE) //bør også genbruge kode til at finde filnavn, fra RL.cpp
 	{
 		const char* dir = RL_FILE_PATH;
 		char *path = new char[200];
 		strcpy(path, dir);
 		strcat(path,	(RL_TYPE==0 ? RL_FILE_1 :
-						(RL_TYPE==1 ? RL_FILE_2 :
-						(RL_TYPE==2 ? RL_FILE_3 : ""))));
+						(RL_TYPE==1 ? RL_FILE_2_BUILDERS : "")));
 		remove(path);
 
 	}
@@ -120,7 +119,7 @@ int main(int argc, char *argv[])
 	//}
 
 
-	unsigned int runs = 10000;
+	unsigned int runs = 100000;
 	while(i < runs)
 	{
 		r = new RL(g, RL_TYPE, currentEpsilon, 2);
