@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 	float bestFrame = 999999;
 	int currentIndex = 0;
 	int i = 0;
-	int runs = 10000;
+	int runs = 100000;
 	while(i < runs)
 	{
 		r = new RL(g, currentEpsilon, 2);
@@ -73,7 +73,8 @@ int main(int argc, char *argv[])
 		if ( i == 0 && RL_FILE_DELETE)
 		{
 			char* path = r->GetFilePath();
-			remove(path);
+			if(remove(path) != 0)
+				perror("deletion fail: ");
 			delete[] path;
 		}
 		
