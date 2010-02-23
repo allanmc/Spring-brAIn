@@ -1,10 +1,10 @@
 #ifndef _BRAINSPACE_GAME_H
 #define _BRAINSPACE_GAME_H
 
+#define NUM_UNIT_DEFS 4
 #define RL_SOLAR_ID 0
 #define RL_MEX_ID 1
 #define RL_LAB_ID 2
-//#define RL_PLANT_ID 3
 #define RL_ROCKO_ID 3
 #define RL_MEX_PRODUCTION 3.0
 #define RL_SOLAR_PRODUCTION 20.0
@@ -14,16 +14,6 @@
 
 #define DISCRETE_STATES 7
 #define DISCRETE_STATES_STEP 300
-
-//TYPE 0 => normal; 1 => 2 builders;
-#define RL_TYPE 1
-
-#define RL_FILE_DELETE true
-#define RL_FILE_PATH ""
-#define RL_FILE_1 "qn.bin"
-#define RL_FILE_2 "qh.bin"
-#define RL_FILE_3 "qr.bin"
-#define RL_FILE_2_BUILDERS "q2.bin"
 
 #include <algorithm>
 #include <math.h>
@@ -36,13 +26,14 @@ namespace brainSpace {
 		int metalCost;
 		int energyCost;
 		int buildTime;
-		float metalProduction;
-		float energyProduction;
+		float production[2];
 		unitdef( int metal, int energy, int time, float metalProduction = 0, float energyProduction = 0)
 		{
 			metalCost = metal;
 			energyCost = energy;
 			buildTime = time;
+			production[RL_MEX_ID] = metalProduction;
+			production[RL_SOLAR_ID] = energyProduction;
 		}
 		unitdef() {}
 	};
@@ -59,8 +50,7 @@ namespace brainSpace {
 	{
 	public:
 		Game();
-		int greedy[2];
-		int units[4];
+		int units[NUM_UNIT_DEFS];
 		float GetProduction(int resourceId);
 		int CanBuild(int unitId);
 		void ConstructUnit(int unitId);
@@ -79,7 +69,7 @@ namespace brainSpace {
 	private:
 		int GetBuildingWithShortestBuildtime();
 		float GetTimeToDepletion(float current, float production);
-		unitdef unitDefs[4];
+		unitdef unitDefs[NUM_UNIT_DEFS];
 		std::vector<unitBeingBuilt> buildList;
 	};
 }

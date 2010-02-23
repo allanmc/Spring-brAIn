@@ -5,24 +5,21 @@ using namespace std;
 
 Game::Game()
 {
-	unitDefs[RL_MEX_ID] = unitdef(50,521,1800);
-	unitDefs[RL_SOLAR_ID] = unitdef(145,0,2845);
-	//unitDefs[RL_PLANT_ID] = unitdef(743,1853,7192);
+	unitDefs[RL_MEX_ID] = unitdef(50,521,1800,3.0f,-3.0f);
+	unitDefs[RL_SOLAR_ID] = unitdef(145,0,2845,0.0f,20.0f);
 	unitDefs[RL_LAB_ID] = unitdef(605,1130,6760);
 	unitDefs[RL_ROCKO_ID] = unitdef(97,944,1887);
 	ResetGame();
-	greedy[0] = 0;
-	greedy[1] = 0;
 }
 
 void Game::ResetGame()
 {
 	resources[RL_MEX_ID] = 1000;
 	resources[RL_SOLAR_ID] = 1000;
-	units[RL_MEX_ID] = 0;
-	units[RL_SOLAR_ID] = 0;
-	units[RL_LAB_ID] = 0;
-	units[RL_ROCKO_ID] = 0;
+	for(i = 0; i<NUM_UNIT_DEFS; i++)
+	{
+		units[i] = 0;
+	}
 	buildList.clear();
 	frame = 0;
 }
@@ -129,7 +126,7 @@ vector<int> Game::Update()
 		bool hest = true;
 	}
 
-	//anyone finished? (TODO: What if more than one are finished at the same time?)
+	//anyone finished?
 	vector<int> finished;
 	for(int i = 0; i < buildList.size(); i++)
 	{
@@ -144,23 +141,6 @@ vector<int> Game::Update()
 			
 		}
 	}
-	
-
-	//if(resources[RL_SOLAR_ID] > 0 && resources[RL_MEX_ID] > 0)
-	//{
-	//	int id = GetBuildingWithShortestBuildtime();
-	//	int ecost = unitDefs[buildList[id].unitId].energyCost;
-	//	int buildTime = (buildList[id].remainingEnergy/ecost)*unitDefs[buildList[id].unitId].buildTime;
-	//	if(timeToMetalDepletion > -1 && timeToMetalDepletion < buildTime/BUILDER_SPEED)
-	//	{
-
-	//	}
-	//    if(timeToEnergyDepletion > -1 && timeToEnergyDepletion < buildTime/BUILDER_SPEED)
-	//	{
-
-	//	}
-	//}
-
 	
 	if(resources[RL_SOLAR_ID] > 1000)
 		resources[RL_SOLAR_ID] = 1000;
@@ -212,7 +192,6 @@ void Game::ConstructUnit(int unitId)
 		resources[RL_MEX_ID] += timeToBuild*metalIncome;
 		resources[RL_SOLAR_ID] += timeToBuild*energyIncome;
 		frame += timeToBuild;
-		//cout << "timetobuild " << timeToBuild << "\n";
 	}
 	else if(canBuildVal == -1)
 	{
@@ -223,8 +202,6 @@ void Game::ConstructUnit(int unitId)
 		float remainingTime = remainingMetalToBeUsed/GetProduction(RL_MEX_ID);
 		resources[RL_SOLAR_ID] += GetProduction(RL_SOLAR_ID)*remainingTime - remainingEnergy;
 		frame += timeToMetalDepletion+remainingTime;
-		//cout << "metalTime " << metalTime << "\n";
-		//cout << "remainingTime " << remainingTime << "\n";
 	}
 	else if(canBuildVal == -2)
 	{
@@ -235,8 +212,6 @@ void Game::ConstructUnit(int unitId)
 		float remainingTime = remainingEnergyToBeUsed/GetProduction(RL_SOLAR_ID);
 		resources[RL_MEX_ID] += GetProduction(RL_MEX_ID)*remainingTime - remainingMetal;
 		frame += timeToEnergyDepletion+remainingTime;
-		/*cout << "remainingTime " << remainingTime << "\n";
-		cout << "energyTime " << energyTime << "\n";*/
 	}
 	else //canBuildVal == -3
 	{
@@ -253,8 +228,6 @@ void Game::ConstructUnit(int unitId)
 			{
 				resources[RL_SOLAR_ID] += GetProduction(RL_SOLAR_ID)*remainingTime - remainingEnergy;
 				frame += timeToMetalDepletion + remainingTime;
-				//cout << "metalTime " << metalTime << "\n";
-				//cout << "remainingTime " << remainingTime << "\n";
 			}
 			else
 			{
@@ -264,9 +237,6 @@ void Game::ConstructUnit(int unitId)
 				float newRemainingTime = remainingEnergyUse/GetProduction(RL_SOLAR_ID);
 				resources[RL_MEX_ID] += GetProduction(RL_MEX_ID)*newRemainingTime - remainingMetal;
 				frame += timeToMetalDepletion + remainingTime + newRemainingTime;
-				//cout << "metalTime " << metalTime << "\n";
-				//cout << "remainingTime" << remainingTime << "\n";
-				//cout << "newRemainingTime " << newRemainingTime << "\n";
 			}
 		}
 		else
@@ -282,8 +252,6 @@ void Game::ConstructUnit(int unitId)
 			{
 				resources[RL_MEX_ID] += GetProduction(RL_MEX_ID)*remainingTime - remainingMetal;
 				frame += timeToEnergyDepletion + remainingTime;
-				//cout << "energyTime " << energyTime << "\n";
-				//cout << "remainingTime " << remainingTime << "\n";
 			}
 			else
 			{
@@ -293,9 +261,6 @@ void Game::ConstructUnit(int unitId)
 				float newRemainingTime = remainingMetalUse/GetProduction(RL_MEX_ID);
 				resources[RL_SOLAR_ID] += GetProduction(RL_SOLAR_ID)*newRemainingTime - remainingEnergy;
 				frame += timeToEnergyDepletion + remainingTime + newRemainingTime;
-				//cout << "energyTime " << energyTime << "\n";
-				//cout << "remainingTime " << remainingTime << "\n";
-				//cout << "newRemainingTime " << newRemainingTime << "\n";
 			}
 		}	
 	}
@@ -371,7 +336,9 @@ int Game::CanBuild(int unitId )
 float Game::GetTimeToDepletion(float current, float production)
 {
 	if(production >= 0)
+	{
 		return -1;
+	}
 	else
 	{
 		return -current/production;
@@ -381,29 +348,29 @@ float Game::GetTimeToDepletion(float current, float production)
 float Game::GetUsage(int resourceId)
 {
 	return 0;
-	 if (resourceId == RL_MEX_ID)
-	 {
+	if (resourceId == RL_MEX_ID)
+	{
 		return units[RL_LAB_ID]*unitDefs[RL_ROCKO_ID].metalCost/LAB_SPEED;
-	 }
-	 else
-	 {
-		 return units[RL_LAB_ID]*unitDefs[RL_ROCKO_ID].energyCost/LAB_SPEED;
-	 }
+	}
+	else
+	{
+		return units[RL_LAB_ID]*unitDefs[RL_ROCKO_ID].energyCost/LAB_SPEED;
+	}
 }
 float Game::GetProduction(int resourceId)
 {
 	float production = 0;
+	for(int i=0; i<NUM_UNIT_DEFS; i++)
+	{
+		production += units[i]*unitDefs[i].production[resourceId]
+	}
 	if(resourceId == RL_MEX_ID)
 	{
-		production = (float)RL_MEX_PRODUCTION*units[resourceId];
 		production += 1.5;
-		//production -= buildings[RL_LAB_ID]*ROCKO_M_USE;//Simulate continuous Rocko production
 	}
 	else
 	{
-		production = (float)RL_SOLAR_PRODUCTION*units[resourceId];
 		production += 25;
-		//production -= buildings[RL_LAB_ID]*ROCKO_E_USE;//Simulate continuous Rocko production
 	}	
 	return production;
 }
