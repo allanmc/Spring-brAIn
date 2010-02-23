@@ -1,4 +1,3 @@
-
 #include "RL_Q.h"
 #include "RL.h"
 
@@ -25,7 +24,6 @@ void RL_Q::LoadFromFile(ifstream *readFile)
 
 RL_Q::RL_Q(vector<QAction> actions, vector<QStateVar> stateVars )
 {
-
 	this->numActions = actions.size();
 	int states = 1;
 	for (int i = 0; i < (int)stateVars.size(); i++)
@@ -35,7 +33,7 @@ RL_Q::RL_Q(vector<QAction> actions, vector<QStateVar> stateVars )
 	this->numStates =  states;
 	this->actions = actions;
 	this->stateVars = stateVars;
-	
+
 	size = this->numStates*this->numActions;
 	actionValueFunction = new float[size];
 }

@@ -8,12 +8,12 @@ RL_State::RL_State()
 	ID = -1;
 }
 
-RL_State::RL_State(Game *g, unsigned short int type, int agentId)
+RL_State::RL_State(Game *g, int agentId)
 {
 	//TODO: use agentId to find out what the other agent is doing right now
 	game = g;
 
-	switch (type)
+	switch (RL_TYPE)
 	{
 	case 0: //Flat old
 		{
@@ -22,32 +22,20 @@ RL_State::RL_State(Game *g, unsigned short int type, int agentId)
 			int solarCount = game->units[RL_SOLAR_ID];
 			int mexCount = game->units[RL_MEX_ID];
 			int rockoCount = game->units[RL_ROCKO_ID];
-			/*
-			if (rockoCount >= RL_ROCKO_INDEX-1)
-			{
-				terminal = true;
-				rockoCount = RL_ROCKO_INDEX-1;
-			}
-			*/
+
 			if (labCount >= RL_LAB_INDEX-1)
 			{
 				terminal = true;
 				labCount = RL_LAB_INDEX-1;
 			}
 
-			ID = /*rockoCount*RL_MEX_INDEX*RL_SOLAR_INDEX*RL_LAB_INDEX +*/ labCount*RL_MEX_INDEX*RL_SOLAR_INDEX + solarCount*RL_MEX_INDEX + mexCount;
+			ID = labCount*RL_MEX_INDEX*RL_SOLAR_INDEX + solarCount*RL_MEX_INDEX + mexCount;
 			if(labCount < RL_LAB_INDEX-1)
 				Actions.push_back(RL_Action(RL_LAB_ID,0));
 			if(solarCount < RL_SOLAR_INDEX-1)
 				Actions.push_back(RL_Action(RL_SOLAR_ID,1));
 			if(mexCount < RL_MEX_INDEX-1)
 				Actions.push_back(RL_Action(RL_MEX_ID,2));
-			/*
-			if (labCount > 0 && rockoCount < RL_ROCKO_INDEX)
-			{
-				Actions.push_back(RL_Action(RL_ROCKO_ID,3));
-			}
-			*/
 
 		}break;
 	case 1://two builders
