@@ -9,27 +9,26 @@
 
 #define QBFILE_VERSION 2
 
-#define RL_NUM_NODES 1
-
 #define PRINT_REWARD false
 
-#define USE_QSMDP true
+#define USE_QSMDP false
 #define USE_RS_TIME true
-#define USE_RS_LABS false
-#define USE_BACKTRACKING false
-#define USE_N_STEP false
-#define USE_Q_LAMBDA false
-#define LAMBDA 0.95
-#define Q_LAMBDA_THRESHOLD 0.00005
+#define USE_Q_LAMBDA true
+#define LAMBDA 0.95f
+#define Q_LAMBDA_THRESHOLD 0.00005f
 
-
-//zero means infinite (Used both for backtracking and n-step)
-#define BACKTRACKING_STEPS 0
-
-#define GAMMA 0.9
-#define ALPHA 0.1
-#define EPSILON_START 0.1
+#define GAMMA 0.9f
+#define ALPHA 0.1f
+#define EPSILON_START 0.1f
 #define EPSILON_DECAY 1
+
+//TYPE 0 => normal; 1 => 2 builders;
+#define RL_TYPE 1
+
+#define RL_FILE_DELETE true
+#define RL_FILE_PATH ""
+#define RL_FILE_1 "qn.bin"
+#define RL_FILE_2_BUILDERS "q2.bin"
 
 #define FILE_HEADER "QB"
 
@@ -66,9 +65,10 @@ namespace brainSpace {
 	class RL
 	{
 	public:
-		RL(Game *g, unsigned short int type, double epsilon, int numAgents = 1);
+		RL(Game *g, double epsilon, int numAgents = 1);
 		virtual ~RL();
 		float GetTotalReward();
+		char* GetFilePath();
 
 		RL_Action Update(int agentId = 0);
 	private:
@@ -76,7 +76,6 @@ namespace brainSpace {
 		vector<DataPoint> dataTrail;
 		RL_State nullState;
 		RL_Action nullAction;
-		unsigned short int type;
 
 		bool FileExists( const char* name );
 		RL_Action FindNextAction( RL_State &state );
@@ -90,6 +89,7 @@ namespace brainSpace {
 		int Epsilon;
 		RL_State GetState(int agentId = 0);
 		RL_Action SafeNextAction(RL_State &state);
+		
 		void LoadFromFile();
 		void SaveToFile();
 		RL_Q* ValueFunction;
