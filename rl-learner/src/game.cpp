@@ -16,7 +16,7 @@ void Game::ResetGame()
 {
 	resources[RL_MEX_ID] = 1000;
 	resources[RL_SOLAR_ID] = 1000;
-	for(i = 0; i<NUM_UNIT_DEFS; i++)
+	for(int i = 0; i<NUM_UNIT_DEFS; i++)
 	{
 		units[i] = 0;
 	}
@@ -362,7 +362,7 @@ float Game::GetProduction(int resourceId)
 	float production = 0;
 	for(int i=0; i<NUM_UNIT_DEFS; i++)
 	{
-		production += units[i]*unitDefs[i].production[resourceId]
+		production += units[i]*unitDefs[i].production[resourceId];
 	}
 	if(resourceId == RL_MEX_ID)
 	{
