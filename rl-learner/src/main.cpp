@@ -68,7 +68,9 @@ int main(int argc, char *argv[])
 	int runs = 40000;
 	while(i < runs)
 	{
-		
+		g_currentGame = i;
+		if ( i % 5000 == 0 )
+			cerr << "i: " << i << endl;
 		/*
 		if ( ( i % 5000 ) == 0 )
 			cerr << "Epsilon for run " << i << ": " << currentEpsilon << endl;
@@ -100,7 +102,8 @@ int main(int argc, char *argv[])
 		while(a.ID != -1)
 		{
 			float oldFrame = g->frame;
-			
+		
+
 			vector<int> builders;
 			while(true)
 			{
@@ -161,4 +164,6 @@ int main(int argc, char *argv[])
 
 		currentEpsilon *= EPSILON_DECAY;
 	}
+
+	cerr << "\nend epsilon" << currentEpsilon << endl;
 }

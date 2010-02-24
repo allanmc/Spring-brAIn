@@ -3,6 +3,7 @@
 using namespace brainSpace;
 using namespace std;
 
+int g_currentGame = 0;
 Game::Game()
 {
 	unitDefs[MEX_ID] = unitdef(50,521,1800,3.0f,-3.0f);

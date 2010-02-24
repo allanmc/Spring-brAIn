@@ -196,6 +196,8 @@ RL_Action RL::Update(int agentId)
 {
 	bool terminal = false;
 	RL_State state = GetState(agentId);
+	if ( state.GetID() == 1200 )
+		int a = 12;
 	RL_Action nextAction = SafeNextAction(state);	
 
 	//Start state
@@ -215,7 +217,6 @@ RL_Action RL::Update(int agentId)
 		reward = PreviousFrame[agentId] - game->frame;
 	}
 
-	totalReward += reward;
 
 	float bestFutureValue;
 	if ( state.IsTerminal() )
@@ -229,6 +230,8 @@ RL_Action RL::Update(int agentId)
 		RL_Action bestAction = FindBestAction( state );
 		bestFutureValue = ValueFunction->GetValue(state, bestAction);
 	}
+
+	totalReward += reward;
 
 	float value;
 	//modify gamme according to use_qmsdp

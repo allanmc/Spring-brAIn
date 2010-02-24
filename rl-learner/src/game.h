@@ -17,6 +17,8 @@
 #include <math.h>
 #include <vector>
 
+extern int g_currentGame;
+
 namespace brainSpace {
 
 	struct unitdef
