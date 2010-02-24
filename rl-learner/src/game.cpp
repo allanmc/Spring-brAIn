@@ -134,6 +134,10 @@ vector<int> Game::Update()
 		{
 			resources[MEX_ID] -= buildList[i].remainingMetal;
 			resources[SOLAR_ID] -= buildList[i].remainingEnergy;
+			if ( buildList[i].unitId == LAB_ID )
+			{
+				//cerr << "Remaining metal: " << resources[MEX_ID] << " Remaining energy: " << resources[SOLAR_ID] << endl;
+			}
 			units[buildList[i].unitId]++;
 			finished.push_back(buildList[i].builder);
 			buildList.erase(buildList.begin() + i);

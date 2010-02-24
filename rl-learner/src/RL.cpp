@@ -13,7 +13,8 @@ RL::RL(Game *g, double epsilon, int numAgents)
 	vector<QStateVar> stateVars;
 	vector<QAction> actions;
 	totalReward = 0.0;
-
+	LongestTrace = 0;
+	
 	for(int i = 0; i<numAgents; i++)
 	{
 		PreviousFrame.push_back(0);
@@ -24,6 +25,7 @@ RL::RL(Game *g, double epsilon, int numAgents)
 	switch(RL_TYPE)
 	{
 	case 0:
+
 		//stateVars.push_back( QStateVar("Rocko", RL_ROCKO_INDEX));
 		stateVars.push_back( QStateVar("Lab", RL_LAB_INDEX));
 		stateVars.push_back( QStateVar("Solar", RL_SOLAR_INDEX));
@@ -31,6 +33,8 @@ RL::RL(Game *g, double epsilon, int numAgents)
 		actions.push_back( QAction("Lab", 0));
 		actions.push_back( QAction("Solar", 1));
 		actions.push_back( QAction("Mex", 2));
+
+		
 		//actions.push_back( QAction("Rocko", 3));
 		ValueFunction = new RL_Q( actions, stateVars); //root
 		break;
@@ -217,6 +221,7 @@ RL_Action RL::Update(int agentId)
 	if ( state.IsTerminal() )
 	{
 		terminal = true;
+		reward += 1000;
 		bestFutureValue = reward;//no future actions to take
 	}
 	else
@@ -242,12 +247,41 @@ RL_Action RL::Update(int agentId)
 	else if(USE_Q_LAMBDA )
 	{
 		//add the current to the dataTrail
-		dataTrail.push_back(DataPoint(PreviousState[agentId], PreviousAction[agentId], state, reward, game->frame - PreviousFrame[agentId]));
 
+		//dataTrail.push_back(DataPoint(PreviousState[agentId], PreviousAction[agentId], state, reward, game->frame - PreviousFrame[agentId]));
+
+		bool stateAndActionFound = false;
+		/** ACCUMULATING TRACES START **/
 		for ( int i = 0 ; i < (int)dataTrail.size() ; i++ )
 		{
-			if( dataTrail[i].eligibilityTrace < Q_LAMBDA_THRESHOLD)
-				dataTrail.erase(dataTrail.begin());
+			if ( PreviousAction[agentId].ID == dataTrail[i].prevAction.ID &&
+				PreviousState[agentId].GetID() == dataTrail[i].prevState.GetID()
+			   )
+			{
+				dataTrail[i].eligibilityTrace += 1;
+				stateAndActionFound = true;
+			}
+		}
+
+		if (!stateAndActionFound)
+		{
+			dataTrail.push_back(DataPoint(PreviousState[agentId], PreviousAction[agentId], state, reward, game->frame - PreviousFrame[agentId]));
+			//cerr << "DataTrail: " << dataTrail.size() << " Longest: " << LongestTrace << endl;
+			if ( dataTrail.size() > LongestTrace )
+			{
+				LongestTrace = dataTrail.size();
+				//cerr << "New Longest Trace: " << LongestTrace << endl;
+			}
+		}
+		 /** ACCUMULATING TRACES END **/
+
+		//Remove insignificant elements in the trace
+		vector<DataPoint>::iterator it = dataTrail.begin();
+		while ( it != dataTrail.end() )
+		{
+			if( it->eligibilityTrace < Q_LAMBDA_THRESHOLD)
+				it = dataTrail.erase(it);
+			else it++;
 		}
 
 		float delta = reward + gamma*bestFutureValue - ValueFunction->GetValue( PreviousState[agentId], PreviousAction[agentId] );

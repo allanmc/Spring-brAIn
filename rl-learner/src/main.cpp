@@ -22,16 +22,16 @@ void PrintAction(bool debug,RL_Action a)
 		switch(a.Action)
 		{
 			case LAB_ID:
-				cout << "L";
+				cerr << "L";
 				break;
 			case MEX_ID:
-				cout << "M";
+				cerr << "M";
 				break;
 			case SOLAR_ID:
-				cout << "S";
+				cerr << "S";
 				break;
 			case ROCKO_ID:
-				cout << "R";
+				cerr << "R";
 				break;
 		}
 	}
@@ -65,10 +65,21 @@ int main(int argc, char *argv[])
 	float bestFrame = 999999;
 	int currentIndex = 0;
 	int i = 0;
-	int runs = 100000;
+	int runs = 40000;
 	while(i < runs)
 	{
-		r = new RL(g, currentEpsilon, 2);
+		
+		/*
+		if ( ( i % 5000 ) == 0 )
+			cerr << "Epsilon for run " << i << ": " << currentEpsilon << endl;
+		*/
+		if ( i == runs-1 )
+		{
+			debug = true;
+		}
+		//cout << "Run: " << i << endl;
+		//getchar();
+		r = new RL(g, currentEpsilon, 1);
 		//Delete old Q-file?
 		if ( i == 0 && RL_FILE_DELETE)
 		{
@@ -82,8 +93,8 @@ int main(int argc, char *argv[])
 		a = r->Update(0);
 		PrintAction(debug, a);
 		g->BuildUnit(a.Action, 0);
-		a = r->Update(1);
-		g->BuildUnit(a.Action, 1);
+		//a = r->Update(1);
+		//g->BuildUnit(a.Action, 1);
 		PrintAction(debug, a);
 
 		while(a.ID != -1)

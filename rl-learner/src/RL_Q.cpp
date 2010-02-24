@@ -36,6 +36,8 @@ RL_Q::RL_Q(vector<QAction> actions, vector<QStateVar> stateVars )
 
 	size = this->numStates*this->numActions;
 	actionValueFunction = new float[size];
+	for ( int i = 0 ; i < size ; i++ )
+		actionValueFunction[i] = 0;
 }
 
 RL_Q::~RL_Q()

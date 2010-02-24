@@ -21,7 +21,7 @@ RL_State::RL_State(Game *g, int agentId)
 			int labCount = game->units[LAB_ID];
 			int solarCount = game->units[SOLAR_ID];
 			int mexCount = game->units[MEX_ID];
-			int rockoCount = game->units[ROCKO_ID];
+			//int rockoCount = game->units[ROCKO_ID];
 
 			if (labCount >= RL_LAB_INDEX-1)
 			{
