@@ -196,8 +196,7 @@ RL_Action RL::Update(int agentId)
 {
 	bool terminal = false;
 	RL_State state = GetState(agentId);
-	if ( state.GetID() == 1200 )
-		int a = 12;
+
 	RL_Action nextAction = SafeNextAction(state);	
 
 	//Start state

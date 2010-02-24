@@ -69,18 +69,7 @@ int main(int argc, char *argv[])
 	while(i < runs)
 	{
 		g_currentGame = i;
-		if ( i % 5000 == 0 )
-			cerr << "i: " << i << endl;
-		/*
-		if ( ( i % 5000 ) == 0 )
-			cerr << "Epsilon for run " << i << ": " << currentEpsilon << endl;
-		*/
-		if ( i == runs-1 )
-		{
-			debug = true;
-		}
-		//cout << "Run: " << i << endl;
-		//getchar();
+
 		r = new RL(g, currentEpsilon, 1);
 		//Delete old Q-file?
 		if ( i == 0 && RL_FILE_DELETE)
