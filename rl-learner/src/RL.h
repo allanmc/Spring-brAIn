@@ -20,10 +20,10 @@
 #define GAMMA 0.9f
 #define ALPHA 0.1f
 #define EPSILON_START 1.0f
-#define EPSILON_DECAY 0.9996f
+#define EPSILON_DECAY 0.99996f
 
 //TYPE 0 => normal; 1 => 2 builders;
-#define RL_TYPE 0
+#define RL_TYPE 1
 
 #define RL_FILE_DELETE true
 #define RL_FILE_PATH ""

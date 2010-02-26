@@ -181,11 +181,6 @@ vector<int> Game::Update()
 
 	//anyone finished?
 	vector<int> finished;
-	if ( buildList.size() == 0 )
-	{
-		cerr << buildList.size() << endl;
-		getchar();
-	}
 	for(unsigned int i = 0; i < buildList.size(); i++)
 	{
 		if( buildList[i].remainingEnergy <= 0 && buildList[i].remainingMetal <= 0)

@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 	double bestFrame = 999999;
 	int currentIndex = 0;
 	int i = 0;
-	int runs = 10000;
+	int runs = 40000;
 	while(i < runs)
 	{
 		g_currentGame = i;
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 			debug = true;
 			currentEpsilon = 0.0f;
 		}
-		r = new RL(g, currentEpsilon, 1);
+		r = new RL(g, currentEpsilon, 2);
 		//Delete old Q-file?
 		if ( i == 0 && RL_FILE_DELETE)
 		{
@@ -90,8 +90,8 @@ int main(int argc, char *argv[])
 		a = r->Update(0);
 		PrintAction(debug, a);
 		g->BuildUnit(a.Action, 0);
-		//a = r->Update(1);
-		//g->BuildUnit(a.Action, 1);
+		a = r->Update(1);
+		g->BuildUnit(a.Action, 1);
 		PrintAction(debug, a);
 
 		while(a.ID != -1)
@@ -105,7 +105,6 @@ int main(int argc, char *argv[])
 				//game loop
 				g->frame++;
 				builders = g->Update();
-				//cerr << "F" << endl;
 				if(!builders.empty())
 				{
 					break;
