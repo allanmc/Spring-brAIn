@@ -11,19 +11,19 @@
 
 #define PRINT_REWARD false
 
-#define USE_QSMDP true
-#define USE_RS_TIME false
+#define USE_QSMDP false
+#define USE_RS_TIME true
 #define USE_Q_LAMBDA true
 #define LAMBDA 0.95f
 #define Q_LAMBDA_THRESHOLD 0.00000005f
 
 #define GAMMA 0.9f
 #define ALPHA 0.1f
-#define EPSILON_START 0.1f
-#define EPSILON_DECAY 1.0f
+#define EPSILON_START 0.8f
+#define EPSILON_DECAY 0.9999f
 
 //TYPE 0 => normal; 1 => 2 builders;
-#define RL_TYPE 1
+#define RL_TYPE 0
 
 #define RL_FILE_DELETE true
 #define RL_FILE_PATH ""

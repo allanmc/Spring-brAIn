@@ -69,14 +69,14 @@ int main(int argc, char *argv[])
 	while(i < runs)
 	{
 		g_currentGame = i;
-		if ( i % 5000 == 0 )
+		if ( i % 500 == 0 )
 			cerr << "Eps: " << currentEpsilon << endl;
 		if ( i == runs-1 )
 		{
 			debug = true;
 			currentEpsilon = 0.0f;
 		}
-		r = new RL(g, currentEpsilon, 2);
+		r = new RL(g, currentEpsilon, 1);
 		//Delete old Q-file?
 		if ( i == 0 && RL_FILE_DELETE)
 		{
@@ -90,8 +90,8 @@ int main(int argc, char *argv[])
 		a = r->Update(0);
 		PrintAction(debug, a);
 		g->BuildUnit(a.Action, 0);
-		a = r->Update(1);
-		g->BuildUnit(a.Action, 1);
+		//a = r->Update(1);
+		//g->BuildUnit(a.Action, 1);
 		PrintAction(debug, a);
 
 		while(a.ID != -1)

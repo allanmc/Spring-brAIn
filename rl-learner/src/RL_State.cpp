@@ -46,8 +46,8 @@ RL_State::RL_State(Game *g, int agentId)
 			double metalStore = game->GetAvailableResources(MEX_ID,0.0f);
 			double energyStore = game->GetAvailableResources(SOLAR_ID,0.0f);
 			//income
-			double metalProduction = game->GetProduction(MEX_ID);
-			double energyProduction = game->GetProduction(SOLAR_ID);
+			double metalProduction = game->GetTotalProduction(MEX_ID);
+			double energyProduction = game->GetTotalProduction(SOLAR_ID);
 			//other agents work
 			int concurrent = game->UnitBeingBuildByBuilder((agentId == 0? 1: 0));//only support for two
 			//number of labs

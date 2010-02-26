@@ -52,7 +52,13 @@ namespace brainSpace {
 	public:
 		Game();
 		int units[NUM_UNIT_DEFS];
-		double GetProduction(int resourceId);
+
+		//With commander production
+		double GetTotalProduction(int resourceId);
+
+		///Without commander production
+		double GetBaseProduction(int resourceId);
+		
 		double GetResourceUsage( int resourceId );
 
 		int CanBuild(int unitId);
