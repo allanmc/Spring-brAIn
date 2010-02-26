@@ -41,12 +41,18 @@ vector<int> Game::Update()
 	float energyUse = 0;
 	float metalProd = GetProduction(MEX_ID);
 	float energyProd = GetProduction(SOLAR_ID);
+	if ( resources[MEX_ID] < 0 || resources[SOLAR_ID] < 0 )
+	{
+		cerr << "Metal: " << resources[MEX_ID] << endl;
+		cerr << "Solar: " << resources[SOLAR_ID] << endl;
+	}
 	resources[MEX_ID] += metalProd;
 	resources[SOLAR_ID] += energyProd;
 	
 	float TotalMetalCost = 0;
 	float TotalEnergyCost = 0;
-	
+
+
 	for(unsigned int i = 0; i < buildList.size(); i++)
 	{
 		float time = GetBuildTime(buildList[i].unitId, false);
@@ -61,6 +67,11 @@ vector<int> Game::Update()
 		//we wont run out this time
 		resources[SOLAR_ID] -= energyUse;
 		resources[MEX_ID] -= metalUse;
+		if ( resources[MEX_ID] < 0 )
+		{
+			cerr << "0:MRes: " << resources[MEX_ID] << " remaining: " << buildList[0].remainingMetal << endl;
+			getchar();
+		}
 		for(unsigned int i = 0; i < buildList.size(); i++)
 		{
 			float time = GetBuildTime(buildList[i].unitId, false);
@@ -80,6 +91,11 @@ vector<int> Game::Update()
 		}
 		resources[SOLAR_ID] = 0;
 		resources[MEX_ID] -= p*metalUse;
+			if ( resources[MEX_ID] < 0 )
+			{
+				cerr << "1:MRes: " << resources[MEX_ID] << " remaining: " << p*metalUse << endl;
+				getchar();
+			}
 	}
 	else if(metalUse > resources[MEX_ID] && energyUse < resources[SOLAR_ID])
 	{
@@ -93,12 +109,14 @@ vector<int> Game::Update()
 		}
 		resources[SOLAR_ID] -= p*energyUse;
 		resources[MEX_ID] = 0;
+
 	}
 	else
 	{
 		//run out of something.. find out what
 		float pm = resources[MEX_ID]/metalUse;
 		float pe = resources[SOLAR_ID]/energyUse;
+
 		if(pm < pe)
 		{
 			for(unsigned int i = 0; i < buildList.size(); i++)
@@ -122,6 +140,7 @@ vector<int> Game::Update()
 			resources[MEX_ID] -= pe*metalUse;
 		}
 	}
+
 	if(resources[MEX_ID] < 0 || resources[SOLAR_ID] < 0 || metalUse < 0 || energyUse < 0)
 	{
 		bool hest = true;
@@ -129,11 +148,22 @@ vector<int> Game::Update()
 
 	//anyone finished?
 	vector<int> finished;
+	if ( buildList.size() == 0 )
+	{
+		cerr << buildList.size() << endl;
+		getchar();
+	}
 	for(unsigned int i = 0; i < buildList.size(); i++)
 	{
+
 		if( buildList[i].remainingEnergy <= 0)
 		{
 			resources[MEX_ID] -= buildList[i].remainingMetal;
+			if ( resources[MEX_ID] < 0 )
+			{
+				cerr << "MRes: " << resources[MEX_ID] << " remaining: " << buildList[i].remainingMetal << endl;
+				getchar();
+			}
 			resources[SOLAR_ID] -= buildList[i].remainingEnergy;
 			if ( buildList[i].unitId == LAB_ID )
 			{

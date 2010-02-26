@@ -65,11 +65,16 @@ int main(int argc, char *argv[])
 	float bestFrame = 999999;
 	int currentIndex = 0;
 	int i = 0;
-	int runs = 40000;
+	int runs = 100000;
 	while(i < runs)
 	{
 		g_currentGame = i;
 
+		if ( i % 10000 == 0 )
+			cerr << "CurrentEpsilon " << currentEpsilon << endl;
+
+		if ( i == runs-1 )
+			debug = true;
 		r = new RL(g, currentEpsilon, 1);
 		//Delete old Q-file?
 		if ( i == 0 && RL_FILE_DELETE)
@@ -99,8 +104,11 @@ int main(int argc, char *argv[])
 				//game loop
 				g->frame++;
 				builders = g->Update();
+				//cerr << "F" << endl;
 				if(!builders.empty())
+				{
 					break;
+				}
 			}
 			for(int i = 0; i < (int)builders.size(); i++)
 			{

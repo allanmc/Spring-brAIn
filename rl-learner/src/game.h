@@ -61,12 +61,13 @@ namespace brainSpace {
 		float GetUsage(int resourceId);
 		float frame;
 		void ResetGame();
-		float resources[2];
 		void BuildUnit(int unitId, int agentId = 0);
 		std::vector<int> Update();
 		int UnitBeingBuildByBuilder(int builder);
 
 	private:
+
+		float resources[2];
 		int GetBuildingWithShortestBuildtime();
 		float GetTimeToDepletion(float current, float production);
 		unitdef unitDefs[NUM_UNIT_DEFS];
