@@ -9,6 +9,7 @@
 #define COMMANDER_SPEED 300.0f
 #define BUILDER_SPEED 90.0f
 #define LAB_SPEED 100.0f
+#define NEAR_ZERO 0.01
 
 #define DISCRETE_STATES 7
 #define DISCRETE_STATES_STEP 300
@@ -68,7 +69,6 @@ namespace brainSpace {
 
 	private:
 
-		float resources[2];
 		int GetBuildingWithShortestBuildtime();
 		double GetTimeToDepletion(double current, double production);
 		unitdef unitDefs[NUM_UNIT_DEFS];
