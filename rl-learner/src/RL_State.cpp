@@ -12,6 +12,8 @@ RL_State::RL_State(Game *g, int agentId)
 {
 	//TODO: use agentId to find out what the other agent is doing right now
 	game = g;
+	int solarCount = game->units[SOLAR_ID];
+	int mexCount = game->units[MEX_ID];
 
 	switch (RL_TYPE)
 	{
@@ -19,8 +21,7 @@ RL_State::RL_State(Game *g, int agentId)
 		{
 			terminal = false;
 			int labCount = game->units[LAB_ID];
-			int solarCount = game->units[SOLAR_ID];
-			int mexCount = game->units[MEX_ID];
+
 			//int rockoCount = game->units[ROCKO_ID];
 
 			if (labCount >= RL_LAB_INDEX-1)
@@ -67,8 +68,10 @@ RL_State::RL_State(Game *g, int agentId)
 
 			//set actions available
 			Actions.push_back(RL_Action(LAB_ID,0));
-			Actions.push_back(RL_Action(SOLAR_ID,1));
-			Actions.push_back(RL_Action(MEX_ID,2));
+			if(solarCount < RL_SOLAR_INDEX-1)
+				Actions.push_back(RL_Action(SOLAR_ID,1));
+			if(mexCount < RL_MEX_INDEX-1)
+				Actions.push_back(RL_Action(MEX_ID,2));
 		}break;
 	default:
 		break;

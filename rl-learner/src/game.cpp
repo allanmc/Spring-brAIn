@@ -66,7 +66,7 @@ vector<int> Game::Update()
 		TotalMetalCost += unitDefs[buildList[i].unitId].metalCost;
 	}
 
-	if ( energyUse + energyUsageForBuildings > energyProd )
+	if ( (energyUse + energyUsageForBuildings) > energyProd && ((energyUse + energyUsageForBuildings) - energyProd) > resources[SOLAR_ID])
 	{
 		metalProductionFactor = energyProd/(energyUsageForBuildings+energyUse);
 		metalProd *= metalProductionFactor;
@@ -176,6 +176,11 @@ vector<int> Game::Update()
 			resources[SOLAR_ID] = 0;
 			resources[MEX_ID] -= pe*metalUse;
 		}
+	}
+
+	if (resources[SOLAR_ID] < 900 || energyUse > 1)
+	{
+		bool hest = true;
 	}
 
 
