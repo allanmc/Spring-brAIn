@@ -53,6 +53,8 @@ namespace brainSpace {
 		Game();
 		int units[NUM_UNIT_DEFS];
 		double GetProduction(int resourceId);
+		double GetResourceUsage( int resourceId );
+
 		int CanBuild(int unitId);
 		void ConstructUnit(int unitId);
 		short unsigned int GetDiscreteResource(double realValue);
