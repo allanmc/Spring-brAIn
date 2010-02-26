@@ -60,22 +60,17 @@ int main(int argc, char *argv[])
 	}
 
 	cout << "\n";
-	float currentReward = 0.0;
-	float currentFrame = 0.0;
-	float bestFrame = 999999;
+	double currentReward = 0.0;
+	double currentFrame = 0.0;
+	double bestFrame = 999999;
 	int currentIndex = 0;
 	int i = 0;
-	int runs = 100000;
+	int runs = 4000;
 	while(i < runs)
 	{
 		g_currentGame = i;
 
-		if ( i % 10000 == 0 )
-			cerr << "CurrentEpsilon " << currentEpsilon << endl;
-
-		if ( i == runs-1 )
-			debug = true;
-		r = new RL(g, currentEpsilon, 1);
+		r = new RL(g, currentEpsilon, 2);
 		//Delete old Q-file?
 		if ( i == 0 && RL_FILE_DELETE)
 		{
@@ -89,13 +84,13 @@ int main(int argc, char *argv[])
 		a = r->Update(0);
 		PrintAction(debug, a);
 		g->BuildUnit(a.Action, 0);
-		//a = r->Update(1);
-		//g->BuildUnit(a.Action, 1);
+		a = r->Update(1);
+		g->BuildUnit(a.Action, 1);
 		PrintAction(debug, a);
 
 		while(a.ID != -1)
 		{
-			float oldFrame = g->frame;
+			double oldFrame = g->frame;
 		
 
 			vector<int> builders;

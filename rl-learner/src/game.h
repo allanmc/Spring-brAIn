@@ -26,8 +26,8 @@ namespace brainSpace {
 		int metalCost;
 		int energyCost;
 		int buildTime;
-		float production[2];
-		unitdef( int metal, int energy, int time, float metalProduction = 0, float energyProduction = 0)
+		double production[2];
+		unitdef( int metal, int energy, int time, double metalProduction = 0, double energyProduction = 0)
 		{
 			metalCost = metal;
 			energyCost = energy;
@@ -42,8 +42,8 @@ namespace brainSpace {
 	{
 		int unitId;
 		int builder;
-		float remainingMetal;
-		float remainingEnergy;
+		double remainingMetal;
+		double remainingEnergy;
 	};
 
 	class Game
@@ -51,16 +51,17 @@ namespace brainSpace {
 	public:
 		Game();
 		int units[NUM_UNIT_DEFS];
-		float GetProduction(int resourceId);
+		double GetProduction(int resourceId);
 		int CanBuild(int unitId);
 		void ConstructUnit(int unitId);
-		short unsigned int GetDiscreteResource(float realValue);
-		float GetAvailableResources(int resourceId, float time);
-		float BuildingCosts(int resourceId, int unitId);
-		float GetBuildTime(int unitId, bool commander);
-		float GetUsage(int resourceId);
-		float frame;
+		short unsigned int GetDiscreteResource(double realValue);
+		double GetAvailableResources(int resourceId, double time);
+		double BuildingCosts(int resourceId, int unitId);
+		double GetBuildTime(int unitId, bool commander);
+		double GetUsage(int resourceId);
+		double frame;
 		void ResetGame();
+		double resources[2];
 		void BuildUnit(int unitId, int agentId = 0);
 		std::vector<int> Update();
 		int UnitBeingBuildByBuilder(int builder);
@@ -69,7 +70,7 @@ namespace brainSpace {
 
 		float resources[2];
 		int GetBuildingWithShortestBuildtime();
-		float GetTimeToDepletion(float current, float production);
+		double GetTimeToDepletion(double current, double production);
 		unitdef unitDefs[NUM_UNIT_DEFS];
 		std::vector<unitBeingBuilt> buildList;
 	};

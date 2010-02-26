@@ -148,7 +148,7 @@ RL_Action RL::FindNextAction( RL_State &state )
 	vector<RL_Action> stateActions = state.GetActions();
 	RL_Action action = stateActions[0]; //unitdefID
 
-	float r = rand()/(float)RAND_MAX;
+	double r = rand()/(double)RAND_MAX;
 	if ( r <= EPSILON ) //non-greedy
 	{
 		m_greedyChoice = false;
@@ -166,12 +166,12 @@ RL_Action RL::FindBestAction( RL_State &state )
 {
 	vector<RL_Action> stateActions = state.GetActions();
 	RL_Action action = stateActions[0]; //unitdefID
-	float bestValue = ValueFunction->GetValue(state, action);
+	double bestValue = ValueFunction->GetValue(state, action);
 
 	for ( int i = 1 ; i < (int)stateActions.size() ; i++ )
 	{
 		RL_Action tempAction = stateActions[i];
-		float tempValue = ValueFunction->GetValue(state, tempAction);
+		double tempValue = ValueFunction->GetValue(state, tempAction);
 
 		if ( tempValue > bestValue )
 		{
@@ -210,14 +210,14 @@ RL_Action RL::Update(int agentId)
 	//else continue
 
 	//Reward
-	float reward = 0;
+	double reward = 0;
 	if (USE_RS_TIME)
 	{
 		reward = PreviousFrame[agentId] - game->frame;
 	}
 
 
-	float bestFutureValue;
+	double bestFutureValue;
 	if ( state.IsTerminal() )
 	{
 		terminal = true;
@@ -232,9 +232,9 @@ RL_Action RL::Update(int agentId)
 
 	totalReward += reward;
 
-	float value;
+	double value;
 	//modify gamme according to use_qmsdp
-	float gamma = (float)pow((double)GAMMA, (USE_QSMDP?0:1)+(USE_QSMDP?1:0)*(0.01*((double)game->frame - (double)PreviousFrame[agentId])));
+	double gamma = (double)pow((double)GAMMA, (USE_QSMDP?0:1)+(USE_QSMDP?1:0)*(0.01*((double)game->frame - (double)PreviousFrame[agentId])));
 
 	if(!USE_Q_LAMBDA)
 	{
@@ -286,7 +286,7 @@ RL_Action RL::Update(int agentId)
 			else it++;
 		}
 
-		float delta = reward + gamma*bestFutureValue - ValueFunction->GetValue( PreviousState[agentId], PreviousAction[agentId] );
+		double delta = reward + gamma*bestFutureValue - ValueFunction->GetValue( PreviousState[agentId], PreviousAction[agentId] );
 
 		for(int i = dataTrail.size()-1; i>=0; i--)
 		{
@@ -321,7 +321,7 @@ RL_Action RL::Update(int agentId)
 	}
 }
 
-float RL::GetTotalReward()
+double RL::GetTotalReward()
 {
 	return totalReward;
 }

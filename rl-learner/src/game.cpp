@@ -110,7 +110,7 @@ vector<int> Game::Update()
 			double time = GetBuildTime(buildList[i].unitId, false);
 			buildList[i].remainingEnergy -= p*unitDefs[buildList[i].unitId].energyCost/time;
 			buildList[i].remainingMetal -= p*unitDefs[buildList[i].unitId].metalCost/time;
-			if(buildList[i].remainingMetal <= 0 && buildList[i].remainingEnergy > 0 || buildList[i].remainingEnergy <= 0 && buildList[i].remainingMetal > 0)
+			if(buildList[i].remainingMetal <= 0 && buildList[i].remainingEnergy > 0 && buildList[i].unitId != 0|| buildList[i].remainingEnergy <= 0 && buildList[i].remainingMetal > 0 && buildList[i].unitId != 0)
 			{
 				bool hest = true;
 			} 
@@ -179,6 +179,10 @@ vector<int> Game::Update()
 			buildList.erase(buildList.begin() + i);
 			i--;			
 		}
+	}
+	if(frame > 6000.0f)
+	{
+		cout << "est";
 	}
 	
 	if(resources[SOLAR_ID] > 1000)

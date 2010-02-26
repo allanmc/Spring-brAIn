@@ -42,11 +42,11 @@ RL_State::RL_State(Game *g, int agentId)
 		{
 			terminal = false;
 			//storage
-			float metalStore = game->GetAvailableResources(MEX_ID,0.0f);
-			float energyStore = game->GetAvailableResources(SOLAR_ID,0.0f);
+			double metalStore = game->GetAvailableResources(MEX_ID,0.0f);
+			double energyStore = game->GetAvailableResources(SOLAR_ID,0.0f);
 			//income
-			float metalProduction = game->GetProduction(MEX_ID);
-			float energyProduction = game->GetProduction(SOLAR_ID);
+			double metalProduction = game->GetProduction(MEX_ID);
+			double energyProduction = game->GetProduction(SOLAR_ID);
 			//other agents work
 			int concurrent = game->UnitBeingBuildByBuilder((agentId == 0? 1: 0));//only support for two
 			//number of labs

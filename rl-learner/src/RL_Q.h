@@ -96,7 +96,7 @@ namespace brainSpace
 	class RL_Q
 	{
 	private:
-		float* actionValueFunction;
+		double* actionValueFunction;
 		int size;
 		int numStates;
 		int numActions;
@@ -110,8 +110,8 @@ namespace brainSpace
 		void SaveToFile(ofstream *readFile);
 		void LoadFromFile(ifstream *readFile);
 		void Clear();
-		float GetValue( RL_State &state, RL_Action &action );
-		void SetValue( RL_State &state, RL_Action &action, float value );
+		double GetValue( RL_State &state, RL_Action &action );
+		void SetValue( RL_State &state, RL_Action &action, double value );
 
 	};
 
