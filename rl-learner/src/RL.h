@@ -11,19 +11,19 @@
 
 #define PRINT_REWARD false
 
-#define USE_QSMDP false
-#define USE_RS_TIME true
-#define USE_Q_LAMBDA false
+#define USE_QSMDP true
+#define USE_RS_TIME false
+#define USE_Q_LAMBDA true
 #define LAMBDA 0.95f
 #define Q_LAMBDA_THRESHOLD 0.00000005f
 
 #define GAMMA 0.9f
 #define ALPHA 0.1f
 #define EPSILON_START 1.0f
-#define EPSILON_DECAY 0.9999f
+#define EPSILON_DECAY .99999f
 
 //TYPE 0 => normal; 1 => 2 builders;
-#define RL_TYPE 0
+#define RL_TYPE 1
 
 #define RL_FILE_DELETE true
 #define RL_FILE_PATH ""
@@ -47,11 +47,11 @@ namespace brainSpace {
 		RL_State prevState;
 		RL_Action prevAction;
 		RL_State resultState;
-		float reward;
-		float duration;
-		float eligibilityTrace;
+		double reward;
+		double duration;
+		double eligibilityTrace;
 
-		DataPoint(RL_State ps, RL_Action pa, RL_State rs, float r, float d)
+		DataPoint(RL_State ps, RL_Action pa, RL_State rs, double r, double d)
 		{
 			prevState = ps;
 			prevAction = pa;
@@ -67,7 +67,7 @@ namespace brainSpace {
 	public:
 		RL(Game *g, double epsilon, int numAgents = 1);
 		virtual ~RL();
-		float GetTotalReward();
+		double GetTotalReward();
 		char* GetFilePath();
 
 		RL_Action Update(int agentId = 0);
@@ -83,8 +83,8 @@ namespace brainSpace {
 
 		vector<RL_State> PreviousState;
 		vector<RL_Action> PreviousAction;
-		vector<float> PreviousFrame;
-		float totalReward;
+		vector<double> PreviousFrame;
+		double totalReward;
 		bool goalAchieved;
 		int Epsilon;
 		RL_State GetState(int agentId = 0);
