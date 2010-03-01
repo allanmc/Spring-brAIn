@@ -1,4 +1,3 @@
-
 #include "RL.h"
 
 using namespace brainSpace;
@@ -32,7 +31,7 @@ RL::RL(Game *g, double epsilon, int numAgents)
 		actions.push_back( QAction("Solar", 1));
 		actions.push_back( QAction("Mex", 2));
 		//actions.push_back( QAction("Rocko", 3));
-		ValueFunction = new RL_Q( actions, stateVars); //root
+		ValueFunction = new RL_Q( actions, stateVars);
 		break;
 	case 1://two builders
 		stateVars.push_back( QStateVar("ConCur", 4));
@@ -45,7 +44,20 @@ RL::RL(Game *g, double epsilon, int numAgents)
 		actions.push_back( QAction("Solar", 1));
 		actions.push_back( QAction("Mex", 2));
 
-		ValueFunction = new RL_Q( actions, stateVars); //root
+		ValueFunction = new RL_Q( actions, stateVars); 
+		break;
+	case 2:
+		stateVars.push_back( QStateVar("ConCur", 4));
+		stateVars.push_back( QStateVar("MStore", 4));
+		stateVars.push_back( QStateVar("EStore", 2));
+		stateVars.push_back( QStateVar("MIncome", 4));
+		stateVars.push_back( QStateVar("EIncome", 3));
+		actions.push_back( QAction("Lab", 0));
+		actions.push_back( QAction("Solar", 1));
+		actions.push_back( QAction("Mex", 2));
+
+		ValueFunction = new RL_Q( actions, stateVars);
+		RL_State::lastLabCount = 0;//static from .h file
 		break;
 	default:
 		break;
@@ -104,6 +116,8 @@ char* RL::GetFilePath()
 	case 1:
 		strcat(path, RL_FILE_2_BUILDERS);
 		break;
+	case 2:
+		strcat(path, RL_FILE_NO_END);
 	default:
 		break;
 	}

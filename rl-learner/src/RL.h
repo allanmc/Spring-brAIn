@@ -30,6 +30,7 @@
 #define RL_FILE_PATH ""
 #define RL_FILE_1 "qn.bin"
 #define RL_FILE_2_BUILDERS "q2.bin"
+#define RL_FILE_NO_END "qc.dat"
 
 #define FILE_HEADER "QB"
 
