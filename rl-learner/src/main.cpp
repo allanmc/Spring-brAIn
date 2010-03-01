@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
 	int runs = 10000;
 	while(i < runs)
 	{
-		for ( unsigned int termCount = 0 ; termCount < ( RL_TYPE==3 ? RL_LAB_INDEX-1 : 1 ) ; termCount++ ) {
+		for ( unsigned int termCount = 0 ; termCount < ( RL_TYPE==2 ? RL_LAB_INDEX-1 : 1 ) ; termCount++ ) {
 
 			r = new RL(g, currentEpsilon, 2);
 			//Delete old Q-file?
