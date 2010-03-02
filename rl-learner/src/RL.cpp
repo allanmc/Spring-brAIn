@@ -1,4 +1,3 @@
-
 #include "RL.h"
 
 using namespace brainSpace;
@@ -13,8 +12,7 @@ RL::RL(Game *g, double epsilon, int numAgents)
 	vector<QStateVar> stateVars;
 	vector<QAction> actions;
 	totalReward = 0.0;
-	LongestTrace = 0;
-	
+
 	for(int i = 0; i<numAgents; i++)
 	{
 		PreviousFrame.push_back(0);
@@ -25,7 +23,6 @@ RL::RL(Game *g, double epsilon, int numAgents)
 	switch(RL_TYPE)
 	{
 	case 0:
-
 		//stateVars.push_back( QStateVar("Rocko", RL_ROCKO_INDEX));
 		stateVars.push_back( QStateVar("Lab", RL_LAB_INDEX));
 		stateVars.push_back( QStateVar("Solar", RL_SOLAR_INDEX));
@@ -33,10 +30,8 @@ RL::RL(Game *g, double epsilon, int numAgents)
 		actions.push_back( QAction("Lab", 0));
 		actions.push_back( QAction("Solar", 1));
 		actions.push_back( QAction("Mex", 2));
-
-		
 		//actions.push_back( QAction("Rocko", 3));
-		ValueFunction = new RL_Q( actions, stateVars); //root
+		ValueFunction = new RL_Q( actions, stateVars);
 		break;
 	case 1://two builders
 		stateVars.push_back( QStateVar("ConCur", 4));
@@ -49,7 +44,20 @@ RL::RL(Game *g, double epsilon, int numAgents)
 		actions.push_back( QAction("Solar", 1));
 		actions.push_back( QAction("Mex", 2));
 
-		ValueFunction = new RL_Q( actions, stateVars); //root
+		ValueFunction = new RL_Q( actions, stateVars); 
+		break;
+	case 2:
+		stateVars.push_back( QStateVar("ConCur", 4));
+		stateVars.push_back( QStateVar("MStore", 4));
+		stateVars.push_back( QStateVar("EStore", 2));
+		stateVars.push_back( QStateVar("MIncome", 4));
+		stateVars.push_back( QStateVar("EIncome", 3));
+		actions.push_back( QAction("Lab", 0));
+		actions.push_back( QAction("Solar", 1));
+		actions.push_back( QAction("Mex", 2));
+
+		ValueFunction = new RL_Q( actions, stateVars);
+		RL_State::lastLabCount = 0;//static from .h file
 		break;
 	default:
 		break;
@@ -108,6 +116,8 @@ char* RL::GetFilePath()
 	case 1:
 		strcat(path, RL_FILE_2_BUILDERS);
 		break;
+	case 2:
+		strcat(path, RL_FILE_NO_END);
 	default:
 		break;
 	}
@@ -148,7 +158,7 @@ RL_Action RL::FindNextAction( RL_State &state )
 	vector<RL_Action> stateActions = state.GetActions();
 	RL_Action action = stateActions[0]; //unitdefID
 
-	double r = rand()/(double)RAND_MAX;
+	float r = rand()/(float)RAND_MAX;
 	if ( r <= EPSILON ) //non-greedy
 	{
 		m_greedyChoice = false;
@@ -166,12 +176,12 @@ RL_Action RL::FindBestAction( RL_State &state )
 {
 	vector<RL_Action> stateActions = state.GetActions();
 	RL_Action action = stateActions[0]; //unitdefID
-	double bestValue = ValueFunction->GetValue(state, action);
+	float bestValue = ValueFunction->GetValue(state, action);
 
 	for ( int i = 1 ; i < (int)stateActions.size() ; i++ )
 	{
 		RL_Action tempAction = stateActions[i];
-		double tempValue = ValueFunction->GetValue(state, tempAction);
+		float tempValue = ValueFunction->GetValue(state, tempAction);
 
 		if ( tempValue > bestValue )
 		{
@@ -196,7 +206,6 @@ RL_Action RL::Update(int agentId)
 {
 	bool terminal = false;
 	RL_State state = GetState(agentId);
-
 	RL_Action nextAction = SafeNextAction(state);	
 
 	//Start state
@@ -210,18 +219,26 @@ RL_Action RL::Update(int agentId)
 	//else continue
 
 	//Reward
-	double reward = 0;
+	float reward = 0.0;
 	if (USE_RS_TIME)
 	{
 		reward = PreviousFrame[agentId] - game->frame;
 	}
 
 
-	double bestFutureValue;
+	float bestFutureValue;
 	if ( state.IsTerminal() )
 	{
+		if (USE_RS_TERMINATION)
+		{
+			float metalGain = game->GetTotalProduction(MEX_ID) - game->GetUsage(MEX_ID);
+			float energyGain = game->GetTotalProduction(SOLAR_ID) - game->GetUsage(SOLAR_ID);
+			float value = 0.0;
+			value += max(0.0f, min(10.0f, metalGain ) ) / 10.0; //metal production-usage [0;1]
+			value += max(0.0f, min(10.0f, energyGain ) ) / 10.0; //energy production-usage [0;1]
+			reward += 100 * value;
+		}
 		terminal = true;
-		reward += 1000;
 		bestFutureValue = reward;//no future actions to take
 	}
 	else
@@ -232,9 +249,9 @@ RL_Action RL::Update(int agentId)
 
 	totalReward += reward;
 
-	double value;
+	float value;
 	//modify gamme according to use_qmsdp
-	double gamma = (double)pow((double)GAMMA, (USE_QSMDP?0:1)+(USE_QSMDP?1:0)*(0.01*((double)game->frame - (double)PreviousFrame[agentId])));
+	float gamma = (float)pow((double)GAMMA, (USE_QSMDP?0:1)+(USE_QSMDP?1:0)*(0.01*((double)game->frame - (double)PreviousFrame[agentId])));
 
 	if(!USE_Q_LAMBDA)
 	{
@@ -249,44 +266,15 @@ RL_Action RL::Update(int agentId)
 	else if(USE_Q_LAMBDA )
 	{
 		//add the current to the dataTrail
+		dataTrail.push_back(DataPoint(PreviousState[agentId], PreviousAction[agentId], state, reward, game->frame - PreviousFrame[agentId]));
 
-		//dataTrail.push_back(DataPoint(PreviousState[agentId], PreviousAction[agentId], state, reward, game->frame - PreviousFrame[agentId]));
-
-		bool stateAndActionFound = false;
-		/** ACCUMULATING TRACES START **/
 		for ( int i = 0 ; i < (int)dataTrail.size() ; i++ )
 		{
-			if ( PreviousAction[agentId].ID == dataTrail[i].prevAction.ID &&
-				PreviousState[agentId].GetID() == dataTrail[i].prevState.GetID()
-			   )
-			{
-				dataTrail[i].eligibilityTrace += 1;
-				stateAndActionFound = true;
-			}
+			if( dataTrail[i].eligibilityTrace < Q_LAMBDA_THRESHOLD)
+				dataTrail.erase(dataTrail.begin());
 		}
 
-		if (!stateAndActionFound)
-		{
-			dataTrail.push_back(DataPoint(PreviousState[agentId], PreviousAction[agentId], state, reward, game->frame - PreviousFrame[agentId]));
-			//cerr << "DataTrail: " << dataTrail.size() << " Longest: " << LongestTrace << endl;
-			if ( dataTrail.size() > LongestTrace )
-			{
-				LongestTrace = dataTrail.size();
-				//cerr << "New Longest Trace: " << LongestTrace << endl;
-			}
-		}
-		 /** ACCUMULATING TRACES END **/
-
-		//Remove insignificant elements in the trace
-		vector<DataPoint>::iterator it = dataTrail.begin();
-		while ( it != dataTrail.end() )
-		{
-			if( it->eligibilityTrace < Q_LAMBDA_THRESHOLD)
-				it = dataTrail.erase(it);
-			else it++;
-		}
-
-		double delta = reward + gamma*bestFutureValue - ValueFunction->GetValue( PreviousState[agentId], PreviousAction[agentId] );
+		float delta = reward + gamma*bestFutureValue - ValueFunction->GetValue( PreviousState[agentId], PreviousAction[agentId] );
 
 		for(int i = dataTrail.size()-1; i>=0; i--)
 		{
@@ -321,7 +309,7 @@ RL_Action RL::Update(int agentId)
 	}
 }
 
-double RL::GetTotalReward()
+float RL::GetTotalReward()
 {
 	return totalReward;
 }

@@ -22,16 +22,16 @@ void PrintAction(bool debug,RL_Action a)
 		switch(a.Action)
 		{
 			case LAB_ID:
-				cerr << "L";
+				cout << "L";
 				break;
 			case MEX_ID:
-				cerr << "M";
+				cout << "M";
 				break;
 			case SOLAR_ID:
-				cerr << "S";
+				cout << "S";
 				break;
 			case ROCKO_ID:
-				cerr << "R";
+				cout << "R";
 				break;
 		}
 	}
@@ -60,68 +60,61 @@ int main(int argc, char *argv[])
 	}
 
 	cout << "\n";
-	double currentReward = 0.0;
-	double currentFrame = 0.0;
-	double bestFrame = 999999;
+	float currentReward = 0.0;
+	float currentFrame = 0.0;
+	float bestFrame = 999999;
 	int currentIndex = 0;
 	int i = 0;
-	int runs = 50000;
+	int runs = 10000;
 	while(i < runs)
 	{
-		g_currentGame = i;
-		//if ( i % 5000 == 0 )
-			//cerr << "Eps: " << currentEpsilon << endl;
-		if ( i == runs-1 )
+		for ( unsigned int termCount = 0 ; termCount < ( RL_TYPE==2 ? RL_LAB_INDEX-1 : 1 ) ; termCount++ )
 		{
-			debug = true;
-			currentEpsilon = 0.0f;
-		}
-		r = new RL(g, currentEpsilon, 1);
-		//Delete old Q-file?
-		if ( i == 0 && RL_FILE_DELETE)
-		{
-			char* path = r->GetFilePath();
-			if(remove(path) != 0)
-				perror("deletion fail: ");
-			delete[] path;
-		}
-		
-		RL_Action a;
-		a = r->Update(0);
-		PrintAction(debug, a);
-		g->BuildUnit(a.Action, 0);
-		//a = r->Update(1);
-		//g->BuildUnit(a.Action, 1);
-		PrintAction(debug, a);
-
-		while(a.ID != -1)
-		{
-			double oldFrame = g->frame;
-		
-
-			vector<int> builders;
-			while(true)
+			r = new RL(g, currentEpsilon, 2);
+			//Delete old Q-file?
+			if ( i == 0 && RL_FILE_DELETE)
 			{
-				//game loop
-				g->frame++;
-				builders = g->Update();
-				if(!builders.empty())
+				char* path = r->GetFilePath();
+				remove(path);
+				delete[] path;
+			}
+			
+			RL_Action a;
+			a = r->Update(0);
+			PrintAction(debug, a);
+			g->BuildUnit(a.Action, 0);
+			a = r->Update(1);
+			g->BuildUnit(a.Action, 1);
+			PrintAction(debug, a);
+
+			while(a.ID != -1)
+			{
+				float oldFrame = g->frame;
+				
+				vector<int> builders;
+				while(true)
 				{
-					break;
+					//game loop
+					g->frame++;
+					builders = g->Update();
+					if(!builders.empty())
+						break;
+				}
+				for(int i = 0; i < (int)builders.size(); i++)
+				{
+					a = r->Update(builders[i]);
+					g->BuildUnit(a.Action, builders[i]);
+					PrintAction(debug, a);
 				}
 			}
-			for(int i = 0; i < (int)builders.size(); i++)
-			{
-				a = r->Update(builders[i]);
-				g->BuildUnit(a.Action, builders[i]);
-				PrintAction(debug, a);
-			}
+			currentReward += r->GetTotalReward();
 		}
+
 		if ( debug )
 		{
 			cout << endl;
 		}
-		currentReward += r->GetTotalReward();
+		
 
 		currentFrame = g->frame;
 		if(currentFrame <= bestFrame)
@@ -161,6 +154,4 @@ int main(int argc, char *argv[])
 
 		currentEpsilon *= EPSILON_DECAY;
 	}
-
-	cerr << "\nend epsilon" << currentEpsilon << endl;
 }
