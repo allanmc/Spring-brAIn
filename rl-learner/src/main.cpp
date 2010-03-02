@@ -76,7 +76,13 @@ int main(int argc, char *argv[])
 			remove(path);
 			delete[] path;
 		}
-		
+		//if ( i % 500 == 0 )
+		//	cerr << "Eps: " << currentEpsilon << endl;
+		if ( i == runs-1 )
+		{
+			debug = true;
+			currentEpsilon = 0.0f;
+		}
 		RL_Action a;
 		a = r->Update(0);
 		PrintAction(debug, a);
