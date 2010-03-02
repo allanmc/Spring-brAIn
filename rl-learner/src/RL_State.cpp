@@ -88,7 +88,7 @@ RL_State::RL_State(Game *g, int agentId)
 			int concurrent = game->UnitBeingBuildByBuilder((agentId == 0? 1: 0));//only support for two
 			//number of labs
 			int labCount = game->units[LAB_ID];
-			if(labCount > this->lastLabCount)
+			if(labCount > RL_LAB_INDEX - 1)
 			{
 				this->lastLabCount = labCount;
 				terminal = true;
