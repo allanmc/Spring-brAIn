@@ -3,7 +3,7 @@
 
 #define RL_SOLAR_INDEX 15
 #define RL_MEX_INDEX 20
-#define RL_LAB_INDEX 5
+#define RL_LAB_INDEX 15
 #define RL_PLANT_INDEX 5
 #define RL_ROCKO_INDEX 40
 
@@ -19,8 +19,8 @@
 
 #define GAMMA 0.9f
 #define ALPHA 0.1f
-#define EPSILON_START 0.8f
-#define EPSILON_DECAY 0.9999f
+#define EPSILON_START 0.1f
+#define EPSILON_DECAY 1.0f
 
 //TYPE 0 => normal; 1 => 2 builders;
 #define RL_TYPE 0

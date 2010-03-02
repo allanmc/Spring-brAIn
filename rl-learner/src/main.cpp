@@ -65,12 +65,12 @@ int main(int argc, char *argv[])
 	double bestFrame = 999999;
 	int currentIndex = 0;
 	int i = 0;
-	int runs = 40000;
+	int runs = 50000;
 	while(i < runs)
 	{
 		g_currentGame = i;
-		if ( i % 500 == 0 )
-			cerr << "Eps: " << currentEpsilon << endl;
+		//if ( i % 5000 == 0 )
+			//cerr << "Eps: " << currentEpsilon << endl;
 		if ( i == runs-1 )
 		{
 			debug = true;
