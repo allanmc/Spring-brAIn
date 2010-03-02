@@ -68,43 +68,45 @@ int main(int argc, char *argv[])
 	int runs = 10000;
 	while(i < runs)
 	{
-		for ( unsigned int termCount = 0 ; termCount < ( RL_TYPE==2 ? RL_LAB_INDEX-1 : 1 ) ; termCount++ )
+		r = new RL(g, currentEpsilon, 2);
+		//Delete old Q-file?
+		if ( i == 0 && RL_FILE_DELETE)
 		{
-			r = new RL(g, currentEpsilon, 2);
-			//Delete old Q-file?
-			if ( i == 0 && RL_FILE_DELETE)
-			{
-				char* path = r->GetFilePath();
-				remove(path);
-				delete[] path;
-			}
-			
-			RL_Action a;
-			a = r->Update(0);
-			PrintAction(debug, a);
-			g->BuildUnit(a.Action, 0);
-			a = r->Update(1);
-			g->BuildUnit(a.Action, 1);
-			PrintAction(debug, a);
+			char* path = r->GetFilePath();
+			remove(path);
+			delete[] path;
+		}
+		
+		RL_Action a;
+		a = r->Update(0);
+		PrintAction(debug, a);
+		g->BuildUnit(a.Action, 0);
+		a = r->Update(1);
+		g->BuildUnit(a.Action, 1);
+		PrintAction(debug, a);
 
-			while(a.ID != -1)
+		bool terminal = false;
+		while(!terminal)
+		{
+			float oldFrame = g->frame;
+			
+			vector<int> builders;
+			while(true)
 			{
-				float oldFrame = g->frame;
-				
-				vector<int> builders;
-				while(true)
+				//game loop
+				g->frame++;
+				builders = g->Update();
+				if(!builders.empty())
+					break;
+			}
+			for(int i = 0; i < (int)builders.size(); i++)
+			{
+				a = r->Update(builders[i]);
+				g->BuildUnit(a.Action, builders[i]);
+				PrintAction(debug, a);
+				if(a.ID == -1)
 				{
-					//game loop
-					g->frame++;
-					builders = g->Update();
-					if(!builders.empty())
-						break;
-				}
-				for(int i = 0; i < (int)builders.size(); i++)
-				{
-					a = r->Update(builders[i]);
-					g->BuildUnit(a.Action, builders[i]);
-					PrintAction(debug, a);
+					terminal = true;
 				}
 			}
 			currentReward += r->GetTotalReward();
