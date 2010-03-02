@@ -176,12 +176,12 @@ RL_Action RL::FindBestAction( RL_State &state )
 {
 	vector<RL_Action> stateActions = state.GetActions();
 	RL_Action action = stateActions[0]; //unitdefID
-	float bestValue = ValueFunction->GetValue(state, action);
+	double bestValue = ValueFunction->GetValue(state, action);
 
 	for ( int i = 1 ; i < (int)stateActions.size() ; i++ )
 	{
 		RL_Action tempAction = stateActions[i];
-		float tempValue = ValueFunction->GetValue(state, tempAction);
+		double tempValue = ValueFunction->GetValue(state, tempAction);
 
 		if ( tempValue > bestValue )
 		{
@@ -222,20 +222,20 @@ RL_Action RL::Update(int agentId)
 	float reward = 0.0;
 	if (USE_RS_TIME)
 	{
-		reward = PreviousFrame[agentId] - game->frame;
+		reward = (float)(PreviousFrame[agentId] - game->frame);
 	}
 
 
-	float bestFutureValue;
+	double bestFutureValue;
 	if ( state.IsTerminal() )
 	{
 		if (USE_RS_TERMINATION)
 		{
-			float metalGain = game->GetTotalProduction(MEX_ID) - game->GetUsage(MEX_ID);
-			float energyGain = game->GetTotalProduction(SOLAR_ID) - game->GetUsage(SOLAR_ID);
+			double metalGain = game->GetTotalProduction(MEX_ID) - game->GetUsage(MEX_ID);
+			double energyGain = game->GetTotalProduction(SOLAR_ID) - game->GetUsage(SOLAR_ID);
 			float value = 0.0;
-			value += max(0.0f, min(10.0f, metalGain ) ) / 10.0; //metal production-usage [0;1]
-			value += max(0.0f, min(10.0f, energyGain ) ) / 10.0; //energy production-usage [0;1]
+			value += (float)(max(0.0, min(10.0, metalGain ) ) / 10.0); //metal production-usage [0;1]
+			value += (float)(max(0.0, min(10.0, energyGain ) ) / 10.0); //energy production-usage [0;1]
 			reward += 100 * value;
 		}
 		terminal = true;
@@ -256,17 +256,17 @@ RL_Action RL::Update(int agentId)
 	if(!USE_Q_LAMBDA)
 	{
 		//update own value function
-		value = ValueFunction->GetValue(PreviousState[agentId],PreviousAction[agentId]) 
+		value = (float)(ValueFunction->GetValue(PreviousState[agentId],PreviousAction[agentId]) 
 			+ ALPHA*(
 			reward + gamma*bestFutureValue 
-			- ValueFunction->GetValue(PreviousState[agentId],PreviousAction[agentId]) );
+			- ValueFunction->GetValue(PreviousState[agentId],PreviousAction[agentId]) ));
 
 		ValueFunction->SetValue(PreviousState[agentId],PreviousAction[agentId], value);
 	}
 	else if(USE_Q_LAMBDA )
 	{
 		//add the current to the dataTrail
-		dataTrail.push_back(DataPoint(PreviousState[agentId], PreviousAction[agentId], state, reward, game->frame - PreviousFrame[agentId]));
+		dataTrail.push_back(DataPoint(PreviousState[agentId], PreviousAction[agentId], state, reward, (float)(game->frame - PreviousFrame[agentId])));
 
 		for ( int i = 0 ; i < (int)dataTrail.size() ; i++ )
 		{
@@ -274,11 +274,11 @@ RL_Action RL::Update(int agentId)
 				dataTrail.erase(dataTrail.begin());
 		}
 
-		float delta = reward + gamma*bestFutureValue - ValueFunction->GetValue( PreviousState[agentId], PreviousAction[agentId] );
+		float delta = (float)(reward + gamma*bestFutureValue - ValueFunction->GetValue( PreviousState[agentId], PreviousAction[agentId] ));
 
 		for(int i = dataTrail.size()-1; i>=0; i--)
 		{
-			value = ValueFunction->GetValue(dataTrail[i].prevState, dataTrail[i].prevAction)
+			value = (float)ValueFunction->GetValue(dataTrail[i].prevState, dataTrail[i].prevAction)
 				+ ALPHA*delta*dataTrail[i].eligibilityTrace;
 
 			ValueFunction->SetValue(dataTrail[i].prevState, dataTrail[i].prevAction, value);
@@ -313,4 +313,3 @@ float RL::GetTotalReward()
 {
 	return totalReward;
 }
-
