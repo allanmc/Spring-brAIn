@@ -61,8 +61,8 @@ int main(int argc, char *argv[])
 
 	cout << "\n";
 	float currentReward = 0.0;
-	float currentFrame = 0.0;
-	float bestFrame = 999999;
+	double currentFrame = 0.0;
+	double bestFrame = 999999;
 	int currentIndex = 0;
 	int i = 0;
 	int runs = 10000;
@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
 
 			while(a.ID != -1)
 			{
-				float oldFrame = g->frame;
+				double oldFrame = g->frame;
 				
 				vector<int> builders;
 				while(true)

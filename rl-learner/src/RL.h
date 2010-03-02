@@ -85,7 +85,7 @@ namespace brainSpace {
 
 		vector<RL_State> PreviousState;
 		vector<RL_Action> PreviousAction;
-		vector<float> PreviousFrame;
+		vector<double> PreviousFrame;
 		float totalReward;
 		bool goalAchieved;
 		int Epsilon;
