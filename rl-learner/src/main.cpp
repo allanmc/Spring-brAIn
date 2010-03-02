@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 	double bestFrame = 999999;
 	int currentIndex = 0;
 	int i = 0;
-	int runs = 10000;
+	int runs = 100000;
 	while(i < runs)
 	{
 		g_currentGame = i;

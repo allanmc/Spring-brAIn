@@ -234,9 +234,10 @@ RL_Action RL::Update(int agentId)
 			double metalGain = game->GetTotalProduction(MEX_ID) - game->GetUsage(MEX_ID);
 			double energyGain = game->GetTotalProduction(SOLAR_ID) - game->GetUsage(SOLAR_ID);
 			float value = 0.0;
-			value += (float)(max(0.0, min(10.0, metalGain ) ) / 10.0); //metal production-usage [0;1]
-			value += (float)(max(0.0, min(10.0, energyGain ) ) / 10.0); //energy production-usage [0;1]
+			value += (float)(max(0.0, min(100.0, metalGain ) ) / 100.0 * 0.5); //metal production-usage [0;0.5]
+			value += (float)(max(0.0, min(100.0, energyGain ) ) / 100.0 * 0.5); //energy production-usage [0;0.5]
 			reward += 100 * value;
+			//cout << "Termination reward:" << (metalGain) << " <> " << (energyGain) << " => " << (100*value) << endl;
 		}
 		terminal = true;
 		bestFutureValue = reward;//no future actions to take
