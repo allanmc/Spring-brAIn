@@ -22,16 +22,16 @@ void PrintAction(bool debug,RL_Action a)
 		switch(a.Action)
 		{
 			case LAB_ID:
-				cout << "L";
+				cerr << "L";
 				break;
 			case MEX_ID:
-				cout << "M";
+				cerr << "M";
 				break;
 			case SOLAR_ID:
-				cout << "S";
+				cerr << "S";
 				break;
 			case ROCKO_ID:
-				cout << "R";
+				cerr << "R";
 				break;
 		}
 	}
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 	}
 
 	cout << "\n";
-	float currentReward = 0.0;
+	double currentReward = 0.0;
 	double currentFrame = 0.0;
 	double bestFrame = 999999;
 	int currentIndex = 0;
@@ -68,14 +68,7 @@ int main(int argc, char *argv[])
 	int runs = 10000;
 	while(i < runs)
 	{
-		r = new RL(g, currentEpsilon, 2);
-		//Delete old Q-file?
-		if ( i == 0 && RL_FILE_DELETE)
-		{
-			char* path = r->GetFilePath();
-			remove(path);
-			delete[] path;
-		}
+		g_currentGame = i;
 		//if ( i % 500 == 0 )
 		//	cerr << "Eps: " << currentEpsilon << endl;
 		if ( i == runs-1 )
@@ -83,6 +76,16 @@ int main(int argc, char *argv[])
 			debug = true;
 			currentEpsilon = 0.0f;
 		}
+		r = new RL(g, currentEpsilon, 2);
+		//Delete old Q-file?
+		if ( i == 0 && RL_FILE_DELETE)
+		{
+			char* path = r->GetFilePath();
+			if(remove(path) != 0)
+				perror("deletion fail: ");
+			delete[] path;
+		}
+		
 		RL_Action a;
 		a = r->Update(0);
 		PrintAction(debug, a);
@@ -92,7 +95,7 @@ int main(int argc, char *argv[])
 		PrintAction(debug, a);
 
 		bool terminal = false;
-		while(!terminal)
+		while( !terminal )
 		{
 			vector<int> builders;
 			while(true)
@@ -101,26 +104,26 @@ int main(int argc, char *argv[])
 				g->frame++;
 				builders = g->Update();
 				if(!builders.empty())
+				{
 					break;
+				}
 			}
 			for(int i = 0; i < (int)builders.size(); i++)
 			{
 				a = r->Update(builders[i]);
 				g->BuildUnit(a.Action, builders[i]);
 				PrintAction(debug, a);
-				if (a.ID == -1)
+				if ( a.ID == -1 ) 
 				{
 					terminal = true;
 				}
 			}
 		}
-		currentReward += r->GetTotalReward();
-
 		if ( debug )
 		{
 			cout << endl;
 		}
-		
+		currentReward += r->GetTotalReward();
 
 		currentFrame = g->frame;
 		if(currentFrame <= bestFrame)
@@ -160,4 +163,6 @@ int main(int argc, char *argv[])
 
 		currentEpsilon *= EPSILON_DECAY;
 	}
+
+	cerr << "\nend epsilon" << currentEpsilon << endl;
 }
