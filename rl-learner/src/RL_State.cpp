@@ -88,9 +88,9 @@ RL_State::RL_State(Game *g, int agentId)
 			int concurrent = game->UnitBeingBuildByBuilder((agentId == 0? 1: 0));//only support for two
 			//number of labs
 			int labCount = game->units[LAB_ID];
-			if(labCount > RL_LAB_INDEX - 1)
+			if(labCount > lastLabCount)
 			{
-				this->lastLabCount = labCount;
+				//this->lastLabCount = labCount; //Moved to main.
 				terminal = true;
 			}
 
@@ -102,11 +102,10 @@ RL_State::RL_State(Game *g, int agentId)
 			ID = ID*3 + (energyProduction > 26 ? 2 : (energyProduction > 15 ? 1 : 0) );
 
 			//set actions available
-			Actions.push_back(RL_Action(LAB_ID,0));
-			if(solarCount < RL_SOLAR_INDEX-1)
-				Actions.push_back(RL_Action(SOLAR_ID,1));
-			if(mexCount < RL_MEX_INDEX-1)
-				Actions.push_back(RL_Action(MEX_ID,2));
+			if(concurrent != LAB_ID)
+				Actions.push_back(RL_Action(LAB_ID,0));
+			Actions.push_back(RL_Action(SOLAR_ID,1));
+			Actions.push_back(RL_Action(MEX_ID,2));
 		}break;
 	default:
 		break;
