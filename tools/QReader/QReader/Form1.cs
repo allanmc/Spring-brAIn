@@ -123,13 +123,13 @@ namespace QReader
 
                     //appendText(sb.ToString());
                     //sb = new StringBuilder();
-                    float currentMax = -999999;
+                    double currentMax = -999999;
                     int index = 0;
                     int length = 0;
                     int previousLength = sb.Length;
                     for (int a = 0; a < numActions; a++)
                     {
-                        float value = br.ReadSingle();
+                        double value = br.ReadDouble();
                         sb.AppendFormat(" {0,12:F2}", value);
                         if (value > currentMax) {
                             currentMax = value;

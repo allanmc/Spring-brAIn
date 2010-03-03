@@ -137,6 +137,7 @@ void RL::SaveToFile()
 	fileHeader.header[0] = FILE_HEADER[0];
 	fileHeader.header[1] = FILE_HEADER[1];
 	fileHeader.type = QBFILE_VERSION;
+	fileHeader.numQTables = 1;
 
 	file->write( (char*)&fileHeader, sizeof(fileHeader) );
 
@@ -230,13 +231,16 @@ RL_Action RL::Update(int agentId)
 		double metalGain = game->GetTotalProduction(MEX_ID) - game->GetUsage(MEX_ID);
 		double energyGain = game->GetTotalProduction(SOLAR_ID) - game->GetUsage(SOLAR_ID);
 
-		float metalValue = (float)(max(-100.0, min(100.0, metalGain ) ) / 100.0); //metal production-usage [-1;1]
-		float energyValue = (float)(max(-1000.0, min(1000.0, energyGain ) ) / 1000.0); //energy production-usage [-1;1]
+		float metalValue = (float)(max(-10.0, min(10.0, metalGain ) ) / 10.0); //metal production-usage [-1;1]
+		float energyValue = (float)(max(-100.0, min(100.0, energyGain ) ) / 100.0); //energy production-usage [-1;1]
 		float value = min(metalValue, energyValue);
+		value *= 100;
+		value += (float)((game->resources[MEX_ID]/20.0) + (game->resources[SOLAR_ID]/20.0));
+
 		//value = 1;
-		reward += 100 * value;
+		reward += value;
 		
-		//cout << "Termination reward:" << game->GetTotalProduction(MEX_ID) << ", " << game->GetUsage(MEX_ID) << " : " << game->GetTotalProduction(SOLAR_ID) << ", " << game->GetUsage(SOLAR_ID) << " => " << (100*value) << endl;
+		cerr << "Termination reward:" << game->GetTotalProduction(MEX_ID) << ", " << game->GetUsage(MEX_ID) << " : " << game->GetTotalProduction(SOLAR_ID) << ", " << game->GetUsage(SOLAR_ID) << " => " << value << endl;
 	}
 
 	double bestFutureValue;
@@ -297,6 +301,7 @@ RL_Action RL::Update(int agentId)
 			}
 		}
 	}
+	cerr << "value: " << value << endl;
 
 	if ( terminal )
 	{

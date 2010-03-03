@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 	Game *g = new Game();
 	RL *r;
 
-	bool debug = false;
+	bool debug = true;
 
 	cout << (USE_QSMDP ? "SMDPQ " : "Q ");
 
@@ -70,6 +70,7 @@ int main(int argc, char *argv[])
 	double currentReward = 0.0;
 	double currentFrame = 0.0;
 	double bestFrame = 999999;
+	double bestReward = -999999;
 	int currentIndex = 0;
 	int i = 0;
 	int runs = 100000;
@@ -144,7 +145,8 @@ int main(int argc, char *argv[])
 			cerr << "Energy: " << g->resources[SOLAR_ID] << endl;
 		}
 		currentFrame = g->frame;
-		if(currentFrame <= bestFrame)
+		bool goodNew = ( PRINT_REWARD ? bestReward <= currentReward : currentFrame <= bestFrame );
+		if(goodNew)
 		{
 			ChangeColour(FOREGROUND_INTENSITY | FOREGROUND_GREEN); 
 		} else {
@@ -163,9 +165,10 @@ int main(int argc, char *argv[])
 		}
 		currentIndex++;
 
-		if(currentFrame <= bestFrame)
+		if(goodNew)
 		{
 			bestFrame = currentFrame;
+			bestReward = currentReward;
 			if (debug) system("pause");
 		}
 
