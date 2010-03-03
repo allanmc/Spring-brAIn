@@ -83,63 +83,60 @@ int main(int argc, char *argv[])
 			debug = true;
 			currentEpsilon = 0.0f;
 		}
-		/*if ( i == 0 )
+			
+		for ( unsigned int cTerm = 0 ; cTerm < (RL_TYPE==2?RL_LAB_INDEX-1:1) ; cTerm++ )
 		{
-			debug = true;
-		}
-		else if ( i == 1)
-		{
-			debug = false;
-		}*/
-		r = new RL(g, currentEpsilon, 2);
-		//Delete old Q-file?
-		if ( i == 0 && RL_FILE_DELETE)
-		{
-			char* path = r->GetFilePath();
-			if(remove(path) != 0)
-				perror("deletion fail: ");
-			delete[] path;
-		}
-		
-		RL_Action a;
-		a = r->Update(0);
-		PrintAction(debug, a, 0);
-		g->BuildUnit(a.Action, 0);
-		a = r->Update(1);
-		g->BuildUnit(a.Action, 1);
-		PrintAction(debug, a, 1);
+			r = new RL(g, currentEpsilon, 2);
+			RL_State::lastLabCount = g->units[LAB_ID];
+			//Delete old Q-file?
+			if ( i == 0 && RL_FILE_DELETE)
+			{
+				char* path = r->GetFilePath();
+				if(remove(path) != 0)
+					perror("deletion fail: ");
+				delete[] path;
+			}
+			
+			RL_Action a;
+			a = r->Update(0);
+			PrintAction(debug, a, 0);
+			g->BuildUnit(a.Action, 0);
+			a = r->Update(1);
+			g->BuildUnit(a.Action, 1);
+			PrintAction(debug, a, 1);
 
-		bool terminal = false;
-		while( !terminal )
-		{
-			vector<int> builders;
-			while(true)
+			bool terminal = false;
+			while( !terminal )
 			{
-				//game loop
-				g->frame++;
-				builders = g->Update();
-				if(!builders.empty())
+				vector<int> builders;
+				while(true)
 				{
-					break;
+					//game loop
+					g->frame++;
+					builders = g->Update();
+					if(!builders.empty())
+					{
+						break;
+					}
+				}
+				for(int i = 0; i < (int)builders.size(); i++)
+				{
+					a = r->Update(builders[i]);
+					g->BuildUnit(a.Action, builders[i]);
+					PrintAction(debug, a, builders[i]);
+					if ( a.ID == -1 ) 
+					{
+						terminal = true;
+					}
 				}
 			}
-			for(int i = 0; i < (int)builders.size(); i++)
-			{
-				a = r->Update(builders[i]);
-				g->BuildUnit(a.Action, builders[i]);
-				PrintAction(debug, a, builders[i]);
-				if ( a.ID == -1 ) 
-				{
-					terminal = true;
-				}
-			}
+			currentReward += r->GetTotalReward();
+			delete r;
 		}
 		if ( debug )
 		{
 			cout << endl;
 		}
-		currentReward += r->GetTotalReward();
-
 		currentFrame = g->frame;
 		if(currentFrame <= bestFrame)
 		{
@@ -170,8 +167,6 @@ int main(int argc, char *argv[])
 		currentFrame = 0.0;
 		ChangeColour(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE); 
 
-		delete r;
-		
 		if(runs > 100 && i%(runs/100) == 0)
 			cerr << "Status:" << floor(((i/(double)runs)*100)+0.5) << "%\xd";
 		i++;
