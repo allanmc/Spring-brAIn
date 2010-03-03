@@ -404,7 +404,7 @@ double Game::GetTimeToDepletion(double current, double production)
 
 double Game::GetUsage(int resourceId)
 {
-	return 0;
+	//return 0;
 	if (resourceId == MEX_ID)
 	{
 		return units[LAB_ID]*unitDefs[ROCKO_ID].metalCost/LAB_SPEED;
@@ -417,13 +417,7 @@ double Game::GetUsage(int resourceId)
 
 double Game::GetTotalProduction(int resourceId)
 {
-	double production = 0;
-	for(int i=0; i<NUM_UNIT_DEFS; i++)
-	{
-		double v = units[i]*unitDefs[i].production[resourceId];
-		if ( v > 0 )
-			production += v;
-	}	
+	double production = GetBaseProduction(resourceId);
 	if ( resourceId == SOLAR_ID )
 	{
 		production += 25;

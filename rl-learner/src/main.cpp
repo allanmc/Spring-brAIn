@@ -15,7 +15,7 @@ void ChangeColour(WORD theColour)
     SetConsoleTextAttribute(hConsole,theColour);  // set the text attribute of the previous handle
 }
 
-void PrintAction(bool debug,RL_Action a)
+void PrintAction(bool debug,RL_Action a, unsigned short builder)
 {
 	if (debug)
 	{
@@ -34,6 +34,7 @@ void PrintAction(bool debug,RL_Action a)
 				cerr << "R";
 				break;
 		}
+		//cerr << builder;
 	}
 }
 
@@ -53,13 +54,19 @@ int main(int argc, char *argv[])
 	if ( USE_Q_LAMBDA )
 		cout << "Q("<< LAMBDA << ") ";
 
-	if(USE_RS_TIME)
+	if (USE_RS_TIME || USE_RS_TERMINATION)
 	{
 		cout << "w/ ";
-		printf("Reward Shaping(Time)");
+		if(USE_RS_TIME)
+		{
+			printf("RS(Time)");
+			if (USE_RS_TERMINATION)
+				cout << " & ";
+		}
+		if (USE_RS_TERMINATION)
+			cout << "RS(Termination)";
 	}
-
-	cout << "\n";
+	cout << " - " << (PRINT_REWARD ? "REWARD":"TIME") << "\n";
 	double currentReward = 0.0;
 	double currentFrame = 0.0;
 	double bestFrame = 999999;
@@ -71,11 +78,19 @@ int main(int argc, char *argv[])
 		g_currentGame = i;
 		//if ( i % 500 == 0 )
 		//	cerr << "Eps: " << currentEpsilon << endl;
-		if ( i == runs-1 )
+		if ( i == runs-1  )
 		{
 			debug = true;
 			currentEpsilon = 0.0f;
 		}
+		/*if ( i == 0 )
+		{
+			debug = true;
+		}
+		else if ( i == 1)
+		{
+			debug = false;
+		}*/
 		r = new RL(g, currentEpsilon, 2);
 		//Delete old Q-file?
 		if ( i == 0 && RL_FILE_DELETE)
@@ -88,11 +103,11 @@ int main(int argc, char *argv[])
 		
 		RL_Action a;
 		a = r->Update(0);
-		PrintAction(debug, a);
+		PrintAction(debug, a, 0);
 		g->BuildUnit(a.Action, 0);
 		a = r->Update(1);
 		g->BuildUnit(a.Action, 1);
-		PrintAction(debug, a);
+		PrintAction(debug, a, 1);
 
 		bool terminal = false;
 		while( !terminal )
@@ -112,7 +127,7 @@ int main(int argc, char *argv[])
 			{
 				a = r->Update(builders[i]);
 				g->BuildUnit(a.Action, builders[i]);
-				PrintAction(debug, a);
+				PrintAction(debug, a, builders[i]);
 				if ( a.ID == -1 ) 
 				{
 					terminal = true;

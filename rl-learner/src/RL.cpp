@@ -225,20 +225,23 @@ RL_Action RL::Update(int agentId)
 		reward = (float)(PreviousFrame[agentId] - game->frame);
 	}
 
+	if (USE_RS_TERMINATION && PreviousAction[agentId].Action == LAB_ID)
+	{
+		double metalGain = game->GetTotalProduction(MEX_ID) - game->GetUsage(MEX_ID);
+		double energyGain = game->GetTotalProduction(SOLAR_ID) - game->GetUsage(SOLAR_ID);
+
+		float metalValue = (float)(max(-100.0, min(100.0, metalGain ) ) / 100.0); //metal production-usage [-1;1]
+		float energyValue = (float)(max(-300.0, min(300.0, energyGain ) ) / 300.0); //energy production-usage [-1;1]
+		float value = min(metalValue, energyValue);
+		//value = 1;
+		reward += 100 * value;
+		
+		//cout << "Termination reward:" << game->GetTotalProduction(MEX_ID) << ", " << game->GetUsage(MEX_ID) << " : " << game->GetTotalProduction(SOLAR_ID) << ", " << game->GetUsage(SOLAR_ID) << " => " << (100*value) << endl;
+	}
 
 	double bestFutureValue;
 	if ( state.IsTerminal() )
 	{
-		if (USE_RS_TERMINATION)
-		{
-			double metalGain = game->GetTotalProduction(MEX_ID) - game->GetUsage(MEX_ID);
-			double energyGain = game->GetTotalProduction(SOLAR_ID) - game->GetUsage(SOLAR_ID);
-			float value = 0.0;
-			value += (float)(max(0.0, min(100.0, metalGain ) ) / 100.0 * 0.5); //metal production-usage [0;0.5]
-			value += (float)(max(0.0, min(300.0, energyGain ) ) / 300.0 * 0.5); //energy production-usage [0;0.5]
-			reward += 100 * value;
-			//cout << "Termination reward:" << (metalGain) << " <> " << (energyGain) << " => " << (100*value) << endl;
-		}
 		terminal = true;
 		bestFutureValue = reward;//no future actions to take
 	}
