@@ -139,10 +139,6 @@ vector<int> Game::Update()
 			}
 			buildList[i].remainingEnergy -= e;
 			buildList[i].remainingMetal -= m;
-			if(buildList[i].remainingMetal <= 0 && buildList[i].remainingEnergy > 0 && buildList[i].unitId != 0|| buildList[i].remainingEnergy <= 0 && buildList[i].remainingMetal > 0 && buildList[i].unitId != 0)
-			{
-				bool hest = true;
-			} 
 		}
 		resources[SOLAR_ID] -= p*energyUse;
 		resources[MEX_ID] = 0;
@@ -178,12 +174,6 @@ vector<int> Game::Update()
 		}
 	}
 
-	if (resources[SOLAR_ID] < 900 || energyUse > 1)
-	{
-		bool hest = true;
-	}
-
-
 	//anyone finished?
 	vector<int> finished;
 	for(unsigned int i = 0; i < buildList.size(); i++)
@@ -192,8 +182,7 @@ vector<int> Game::Update()
 		{
 			resources[MEX_ID] -= buildList[i].remainingMetal;
 			resources[SOLAR_ID] -= buildList[i].remainingEnergy;
-			if(resources[MEX_ID] < 0 || resources[SOLAR_ID] < 0)
-				bool hest = true;
+
 			if ( buildList[i].unitId == LAB_ID )
 			{
 				//cerr << "Remaining metal: " << resources[MEX_ID] << " Remaining energy: " << resources[SOLAR_ID] << endl;
