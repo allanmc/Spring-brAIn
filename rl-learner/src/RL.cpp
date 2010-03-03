@@ -231,7 +231,7 @@ RL_Action RL::Update(int agentId)
 		double energyGain = game->GetTotalProduction(SOLAR_ID) - game->GetUsage(SOLAR_ID);
 
 		float metalValue = (float)(max(-100.0, min(100.0, metalGain ) ) / 100.0); //metal production-usage [-1;1]
-		float energyValue = (float)(max(-300.0, min(300.0, energyGain ) ) / 300.0); //energy production-usage [-1;1]
+		float energyValue = (float)(max(-1000.0, min(1000.0, energyGain ) ) / 1000.0); //energy production-usage [-1;1]
 		float value = min(metalValue, energyValue);
 		//value = 1;
 		reward += 100 * value;

@@ -34,7 +34,7 @@ void PrintAction(bool debug,RL_Action a, unsigned short builder)
 				cerr << "R";
 				break;
 		}
-		//cerr << builder;
+		cerr << builder << " ";
 	}
 }
 
@@ -105,8 +105,8 @@ int main(int argc, char *argv[])
 			g->BuildUnit(a.Action, 1);
 			PrintAction(debug, a, 1);
 
-			bool terminal = false;
-			while( !terminal )
+			bool terminal[] = {false, false};
+			while( !terminal[0] || !terminal[1] )
 			{
 				vector<int> builders;
 				while(true)
@@ -122,11 +122,15 @@ int main(int argc, char *argv[])
 				for(int i = 0; i < (int)builders.size(); i++)
 				{
 					a = r->Update(builders[i]);
-					g->BuildUnit(a.Action, builders[i]);
-					PrintAction(debug, a, builders[i]);
-					if ( a.ID == -1 ) 
+					if ( a.ID != -1 ) 
 					{
-						terminal = true;
+						g->BuildUnit(a.Action, builders[i]);
+						PrintAction(debug, a, builders[i]);
+					}
+					else
+					{
+						if (debug) cerr << "T" << builders[i] << " ";
+						terminal[builders[i]] = true;
 					}
 				}
 			}
@@ -135,7 +139,9 @@ int main(int argc, char *argv[])
 		}
 		if ( debug )
 		{
-			cout << endl;
+			cerr << endl;
+			cerr << "Metal: " << g->resources[MEX_ID] << endl;
+			cerr << "Energy: " << g->resources[SOLAR_ID] << endl;
 		}
 		currentFrame = g->frame;
 		if(currentFrame <= bestFrame)
@@ -174,5 +180,5 @@ int main(int argc, char *argv[])
 		currentEpsilon *= EPSILON_DECAY;
 	}
 
-	cerr << "\nend epsilon" << currentEpsilon << endl;
+	cerr << endl << "End epsilon: " << currentEpsilon << endl;
 }

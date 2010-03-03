@@ -3,7 +3,7 @@
 
 #define RL_SOLAR_INDEX 15
 #define RL_MEX_INDEX 20
-#define RL_LAB_INDEX 15
+#define RL_LAB_INDEX 2
 #define RL_PLANT_INDEX 5
 #define RL_ROCKO_INDEX 40
 
@@ -12,9 +12,9 @@
 #define PRINT_REWARD true
 
 #define USE_QSMDP false
-#define USE_RS_TERMINATION false
-#define USE_RS_TIME true
-#define USE_Q_LAMBDA false
+#define USE_RS_TERMINATION true
+#define USE_RS_TIME false
+#define USE_Q_LAMBDA true
 #define LAMBDA 0.95f
 #define Q_LAMBDA_THRESHOLD 0.00005f
 
