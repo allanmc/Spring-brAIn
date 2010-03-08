@@ -20,17 +20,18 @@
 
 #define GAMMA 0.9f
 #define ALPHA 0.1f
-#define EPSILON_START 1.0f
-#define EPSILON_DECAY 0.9999f
+#define EPSILON_START 0.1f
+#define EPSILON_DECAY 1
 
 //TYPE 0 => normal; 1 => 2 builders;
-#define RL_TYPE 2
+#define RL_TYPE 3
 
 #define RL_FILE_DELETE true
 #define RL_FILE_PATH ""
 #define RL_FILE_1 "qn.bin"
 #define RL_FILE_2_BUILDERS "q2.bin"
 #define RL_FILE_NO_END "qc.dat"
+#define RL_FILE_3 "q3.dat"
 
 #define FILE_HEADER "QB"
 

@@ -6,6 +6,8 @@
 #define MEX_ID 1
 #define LAB_ID 2
 #define ROCKO_ID 3
+#define NOTHING_ID 4
+
 #define COMMANDER_SPEED 300.0f
 #define BUILDER_SPEED 90.0f
 #define LAB_SPEED 100.0f

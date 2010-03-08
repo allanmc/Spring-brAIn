@@ -107,6 +107,65 @@ RL_State::RL_State(Game *g, int agentId)
 			Actions.push_back(RL_Action(SOLAR_ID,1));
 			Actions.push_back(RL_Action(MEX_ID,2));
 		}break;
+	case 3:
+		{
+			terminal = false;
+			//storage
+			double metalStore = game->GetAvailableResources(MEX_ID,0.0f);
+			double energyStore = game->GetAvailableResources(SOLAR_ID,0.0f);
+			//income
+			double metalProduction = game->GetTotalProduction(MEX_ID) - game->GetResourceUsage(MEX_ID);
+			double energyProduction = game->GetTotalProduction(SOLAR_ID) - game->GetResourceUsage(SOLAR_ID);
+			//other agents work
+			int concurrent = (game->UnitBeingBuildByBuilder(0)+1);//only support for two
+			if(concurrent == 0)
+				concurrent += (game->UnitBeingBuildByBuilder(1)+1);
+			//number of labs
+			int labCount = game->units[LAB_ID];
+			if(labCount > lastLabCount)
+			{
+				//this->lastLabCount = labCount; //Moved to main.
+				terminal = true;
+			}
+
+			//set ID
+			ID = concurrent;// concurrent ranges from -1 to max id (-1 for no building)
+			ID = ID*4 + (metalStore > 150 ? (metalStore > 600 ? 3 : 2) : (metalStore > 50 ? 1 : 0) );
+			ID = ID*2 + (energyStore > 500 ? 1 : 0 );
+			ID = ID*4 + (metalProduction > 5 ? (metalProduction > 8 ? 3 : 2) : (metalProduction > 2.5f ? 1 : 0) );
+			ID = ID*3 + (energyProduction > 26 ? 2 : (energyProduction > 15 ? 1 : 0) );
+
+			//set actions available
+			if(game->UnitBeingBuildByBuilder(0) == -1)
+			{
+				if(game->UnitBeingBuildByBuilder(1) != -1)
+				{
+					Actions.push_back(RL_Action(LAB_ID*256 + NOTHING_ID,3));
+					Actions.push_back(RL_Action(SOLAR_ID*256 + NOTHING_ID,7));
+					Actions.push_back(RL_Action(MEX_ID*256 + NOTHING_ID,11));
+				}else{
+					Actions.push_back(RL_Action(LAB_ID*256 + LAB_ID,0));
+					Actions.push_back(RL_Action(LAB_ID*256 + SOLAR_ID,1));
+					Actions.push_back(RL_Action(LAB_ID*256 + MEX_ID,2));
+
+					Actions.push_back(RL_Action(SOLAR_ID*256 + LAB_ID,4));
+					Actions.push_back(RL_Action(SOLAR_ID*256 + SOLAR_ID,5));
+					Actions.push_back(RL_Action(SOLAR_ID*256 + MEX_ID,6));
+
+					Actions.push_back(RL_Action(MEX_ID*256 + LAB_ID,8));
+					Actions.push_back(RL_Action(MEX_ID*256 + SOLAR_ID,9));
+					Actions.push_back(RL_Action(MEX_ID*256 + MEX_ID,10));
+				}
+			}
+			if(game->UnitBeingBuildByBuilder(1) == -1)
+			{
+				Actions.push_back(RL_Action(NOTHING_ID*256 + LAB_ID,12));
+				Actions.push_back(RL_Action(NOTHING_ID*256 + SOLAR_ID,13));
+				Actions.push_back(RL_Action(NOTHING_ID*256 + MEX_ID,14));
+			}else{
+				Actions.push_back(RL_Action(NOTHING_ID*256 + NOTHING_ID,15));//should this be allowed??
+			}
+		}break;
 	default:
 		break;
 	}

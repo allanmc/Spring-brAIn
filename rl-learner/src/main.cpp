@@ -46,8 +46,9 @@ int main(int argc, char *argv[])
 	
 	Game *g = new Game();
 	RL *r;
+	int numLearners = (RL_TYPE == 2 ? 2 : 1);
 
-	bool debug = true;
+	bool debug = false;
 
 	cout << (USE_QSMDP ? "SMDPQ " : "Q ");
 
@@ -73,7 +74,7 @@ int main(int argc, char *argv[])
 	double bestReward = -999999;
 	int currentIndex = 0;
 	int i = 0;
-	int runs = 100000;
+	int runs = 1000000;
 	while(i < runs)
 	{
 		g_currentGame = i;
@@ -87,7 +88,7 @@ int main(int argc, char *argv[])
 			
 		for ( unsigned int cTerm = 0 ; cTerm < (RL_TYPE==2?RL_LAB_INDEX-1:1) ; cTerm++ )
 		{
-			r = new RL(g, currentEpsilon, 2);
+			r = new RL(g, currentEpsilon, numLearners);
 			RL_State::lastLabCount = g->units[LAB_ID];
 			//Delete old Q-file?
 			if ( i == 0 && RL_FILE_DELETE)
@@ -99,12 +100,22 @@ int main(int argc, char *argv[])
 			}
 			
 			RL_Action a;
-			a = r->Update(0);
-			PrintAction(debug, a, 0);
-			g->BuildUnit(a.Action, 0);
-			a = r->Update(1);
-			g->BuildUnit(a.Action, 1);
-			PrintAction(debug, a, 1);
+			for(int x = 0; x < numLearners; x++)
+			{
+				a = r->Update(x);
+				PrintAction(debug, a, x);
+				if(RL_TYPE == 3)
+				{
+					int action = a.Action / 256;
+					if(action != NOTHING_ID)
+						g->BuildUnit(action, 0);
+					action = a.Action % 256;
+					if(action != NOTHING_ID)
+						g->BuildUnit(action, 1);
+				}else{
+					g->BuildUnit(a.Action, x);
+				}
+			}
 
 			bool terminal[] = {false, false};
 			while( !terminal[0] || !terminal[1] )
@@ -122,16 +133,36 @@ int main(int argc, char *argv[])
 				}
 				for(int i = 0; i < (int)builders.size(); i++)
 				{
-					a = r->Update(builders[i]);
+					if(RL_TYPE == 3)
+						a = r->Update(0);
+					else
+						a = r->Update(builders[i]);
 					if ( a.ID != -1 ) 
 					{
-						g->BuildUnit(a.Action, builders[i]);
-						PrintAction(debug, a, builders[i]);
+						if(RL_TYPE == 3)
+						{
+							int action = a.Action / 256;
+							if(action != NOTHING_ID)
+								g->BuildUnit(action, 0);
+							action = a.Action % 256;
+							if(action != NOTHING_ID)
+								g->BuildUnit(action, 1);
+							PrintAction(debug, a, builders[i]);
+						}else{
+							g->BuildUnit(a.Action, builders[i]);
+							PrintAction(debug, a, builders[i]);
+						}
 					}
 					else
 					{
 						if (debug) cerr << "T" << builders[i] << " ";
 						terminal[builders[i]] = true;
+						if(RL_TYPE == 3)
+						{
+							terminal[0] = true;
+							terminal[1] = true;
+						}
+
 					}
 				}
 			}

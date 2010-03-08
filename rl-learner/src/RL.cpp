@@ -59,6 +59,33 @@ RL::RL(Game *g, double epsilon, int numAgents)
 		ValueFunction = new RL_Q( actions, stateVars);
 		RL_State::lastLabCount = 0;//static from .h file
 		break;
+	case 3:
+		stateVars.push_back( QStateVar("ConCur", 4));
+		stateVars.push_back( QStateVar("MStore", 4));
+		stateVars.push_back( QStateVar("EStore", 2));
+		stateVars.push_back( QStateVar("MIncome", 4));
+		stateVars.push_back( QStateVar("EIncome", 3));
+
+		actions.push_back( QAction("LL", 0));
+		actions.push_back( QAction("LS", 1));
+		actions.push_back( QAction("LM", 2));
+		actions.push_back( QAction("LN", 3));
+		actions.push_back( QAction("SL", 4));
+		actions.push_back( QAction("SS", 5));
+		actions.push_back( QAction("SM", 6));
+		actions.push_back( QAction("SN", 7));
+		actions.push_back( QAction("ML", 8));
+		actions.push_back( QAction("MS", 9));
+		actions.push_back( QAction("MM", 10));
+		actions.push_back( QAction("MN", 11));
+		actions.push_back( QAction("NL", 12));
+		actions.push_back( QAction("NS", 13));
+		actions.push_back( QAction("NM", 14));
+		actions.push_back( QAction("NN", 15));
+
+		ValueFunction = new RL_Q( actions, stateVars);
+		RL_State::lastLabCount = 0;//static from .h file
+		break;
 	default:
 		break;
 	}
@@ -118,6 +145,8 @@ char* RL::GetFilePath()
 		break;
 	case 2:
 		strcat(path, RL_FILE_NO_END);
+	case 3:
+		strcat(path, RL_FILE_3);
 	default:
 		break;
 	}
@@ -226,7 +255,7 @@ RL_Action RL::Update(int agentId)
 		reward = (float)(PreviousFrame[agentId] - game->frame);
 	}
 
-	if (USE_RS_TERMINATION && PreviousAction[agentId].Action == LAB_ID)
+	if (USE_RS_TERMINATION && state.IsTerminal() /*PreviousAction[agentId].Action == LAB_ID*/)
 	{
 		double metalGain = game->GetTotalProduction(MEX_ID) - game->GetUsage(MEX_ID);
 		double energyGain = game->GetTotalProduction(SOLAR_ID) - game->GetUsage(SOLAR_ID);
@@ -240,7 +269,7 @@ RL_Action RL::Update(int agentId)
 		//value = 1;
 		reward += value;
 		
-		cerr << "Termination reward:" << game->GetTotalProduction(MEX_ID) << ", " << game->GetUsage(MEX_ID) << " : " << game->GetTotalProduction(SOLAR_ID) << ", " << game->GetUsage(SOLAR_ID) << " => " << value << endl;
+		//cerr << "Termination reward:" << game->GetTotalProduction(MEX_ID) << ", " << game->GetUsage(MEX_ID) << " : " << game->GetTotalProduction(SOLAR_ID) << ", " << game->GetUsage(SOLAR_ID) << " => " << value << endl;
 	}
 
 	double bestFutureValue;
@@ -301,7 +330,7 @@ RL_Action RL::Update(int agentId)
 			}
 		}
 	}
-	cerr << "value: " << value << endl;
+	//cerr << "value: " << value << endl;
 
 	if ( terminal )
 	{
