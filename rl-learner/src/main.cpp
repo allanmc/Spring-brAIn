@@ -11,9 +11,12 @@ using namespace brainSpace;
 
 void ChangeColour(WORD theColour)
 {
+#ifdef WIN32
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);  // Get handle to standard output
     SetConsoleTextAttribute(hConsole,theColour);  // set the text attribute of the previous handle
+#endif
 }
+
 
 void PrintAction(bool debug,RL_Action a, unsigned short builder)
 {
