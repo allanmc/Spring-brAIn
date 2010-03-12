@@ -22,20 +22,39 @@ void PrintAction(bool debug,RL_Action a, unsigned short builder)
 {
 	if (debug)
 	{
-		switch(a.Action)
+		int action;
+		for(int i = 0; i<2; i++)
 		{
-			case LAB_ID:
-				cerr << "L";
-				break;
-			case MEX_ID:
-				cerr << "M";
-				break;
-			case SOLAR_ID:
-				cerr << "S";
-				break;
-			case ROCKO_ID:
-				cerr << "R";
-				break;
+			if(RL_TYPE == 3)
+			{
+				if(i == 0)
+					action = a.Action / 256;
+				else
+					action = a.Action % 256; 
+			}
+			else
+			{
+				action = a.Action;
+			}
+			switch(action)
+			{
+				case LAB_ID:
+					cerr << "L";
+					break;
+				case MEX_ID:
+					cerr << "M";
+					break;
+				case SOLAR_ID:
+					cerr << "S";
+					break;
+				case ROCKO_ID:
+					cerr << "R";
+					break;
+				case NOTHING_ID:
+					cerr << "N";
+					break;
+			}
+			if(RL_TYPE != 3) break;
 		}
 		if (RL_TYPE == 2)
 			cerr << builder << " ";
