@@ -20,6 +20,10 @@ void ChangeColour(WORD theColour)
 
 void PrintAction(bool debug,RL_Action a, unsigned short builder)
 {
+	if(builder == 1)
+	{
+		system("pause");
+	}
 	if (debug)
 	{
 		int action;
@@ -96,7 +100,7 @@ int main(int argc, char *argv[])
 	double bestReward = -999999;
 	int currentIndex = 0;
 	int i = 0;
-	int runs = 100000;
+	int runs = 40000;
 	while(i < runs)
 	{
 		g_currentGame = i;
@@ -134,6 +138,7 @@ int main(int argc, char *argv[])
 					action = a.Action % 256;
 					if(action != NOTHING_ID)
 						g->BuildUnit(action, 1);
+					break;
 				}else{
 					g->BuildUnit(a.Action, x);
 				}
@@ -170,6 +175,7 @@ int main(int argc, char *argv[])
 							if(action != NOTHING_ID)
 								g->BuildUnit(action, 1);
 							PrintAction(debug, a, builders[i]);
+							break;
 						}else{
 							g->BuildUnit(a.Action, builders[i]);
 							PrintAction(debug, a, builders[i]);
@@ -183,6 +189,7 @@ int main(int argc, char *argv[])
 						{
 							terminal[0] = true;
 							terminal[1] = true;
+							//break;
 						}
 
 					}

@@ -9,9 +9,9 @@
 
 #define QBFILE_VERSION 2
 
-#define PRINT_REWARD true
+#define PRINT_REWARD false
 
-#define USE_QSMDP false
+#define USE_QSMDP true
 #define USE_RS_TERMINATION true
 #define USE_RS_TIME false
 #define USE_Q_LAMBDA false
