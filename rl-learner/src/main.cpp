@@ -37,7 +37,8 @@ void PrintAction(bool debug,RL_Action a, unsigned short builder)
 				cerr << "R";
 				break;
 		}
-		cerr << builder << " ";
+		if (RL_TYPE == 2)
+			cerr << builder << " ";
 	}
 }
 
@@ -77,7 +78,9 @@ int main(int argc, char *argv[])
 	double bestReward = -999999;
 	int currentIndex = 0;
 	int i = 0;
-	int runs = 1000000;
+	int runs = 50000;
+	if (TEST_RESULTS)
+		runs = 1;
 	while(i < runs)
 	{
 		g_currentGame = i;
@@ -88,13 +91,22 @@ int main(int argc, char *argv[])
 			debug = true;
 			currentEpsilon = 0.0f;
 		}
-			
+		
 		for ( unsigned int cTerm = 0 ; cTerm < (RL_TYPE==2?RL_LAB_INDEX-1:1) ; cTerm++ )
 		{
+			if (TEST_RESULTS)
+			{
+				cout << endl << endl << " - Building lab " << cTerm << ":" << endl;
+				cout << "Metal Res: " << g->resources[MEX_ID] << endl;
+				cout << "Energy Res: " << g->resources[SOLAR_ID] << endl;
+				cout << "Metal Gain: " << g->GetTotalProduction(MEX_ID) - g->GetResourceUsage(MEX_ID) << endl;
+				cout << "Energy Gain: " << g->GetTotalProduction(SOLAR_ID) - g->GetResourceUsage(SOLAR_ID) << endl;
+			}
+
 			r = new RL(g, currentEpsilon, numLearners);
 			RL_State::lastLabCount = g->units[LAB_ID];
 			//Delete old Q-file?
-			if ( i == 0 && RL_FILE_DELETE)
+			if ( i == 0 && RL_FILE_DELETE && !TEST_RESULTS)
 			{
 				char* path = r->GetFilePath();
 				if(remove(path) != 0)
@@ -169,10 +181,18 @@ int main(int argc, char *argv[])
 					}
 				}
 			}
+			if (TEST_RESULTS)
+			{
+				cout << endl << "Reward ============== " << r->GetTotalReward() << endl;
+				cout << "Metal Res: " << g->resources[MEX_ID] << endl;
+				cout << "Energy Res: " << g->resources[SOLAR_ID] << endl;
+				cout << "Metal Gain: " << g->GetTotalProduction(MEX_ID) - g->GetResourceUsage(MEX_ID) << endl;
+				cout << "Energy Gain: " << g->GetTotalProduction(SOLAR_ID) - g->GetResourceUsage(SOLAR_ID) << endl;
+			}
 			currentReward += r->GetTotalReward();
 			delete r;
 		}
-		if ( debug )
+		if ( debug && !TEST_RESULTS )
 		{
 			cerr << endl;
 			cerr << "Metal: " << g->resources[MEX_ID] << endl;
@@ -189,33 +209,36 @@ int main(int argc, char *argv[])
 		
 		g->ResetGame();
 		
-		if(PRINT_REWARD)
-		{
-			cout << currentReward << "\n" ;
+		if (!TEST_RESULTS) {
+			if(PRINT_REWARD)
+			{
+				cout << currentReward << "\n";
+			}
+			else
+			{
+				cout << currentFrame << (currentFrame == bestFrame && debug ? "*" : "") << "\n" ;
+			}
 		}
-		else
-		{
-			cout << currentFrame << (currentFrame == bestFrame && debug ? "*" : "") << "\n" ;
-		}
+		
 		currentIndex++;
 
 		if(goodNew)
 		{
 			bestFrame = currentFrame;
 			bestReward = currentReward;
-			if (debug) system("pause");
+			if (debug && !TEST_RESULTS) system("pause");
 		}
 
 		currentReward = 0.0;
 		currentFrame = 0.0;
 		ChangeColour(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE); 
 
-		if(runs > 100 && i%(runs/100) == 0)
+		if(runs > 100 && i%(runs/100) == 0 && !TEST_RESULTS)
 			cerr << "Status:" << floor(((i/(double)runs)*100)+0.5) << "%\xd";
 		i++;
 
 		currentEpsilon *= EPSILON_DECAY;
 	}
 
-	cerr << endl << "End epsilon: " << currentEpsilon << endl;
+	//cerr << endl << "End epsilon: " << currentEpsilon << endl;
 }

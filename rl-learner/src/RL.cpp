@@ -60,7 +60,8 @@ RL::RL(Game *g, double epsilon, int numAgents)
 		RL_State::lastLabCount = 0;//static from .h file
 		break;
 	case 3:
-		stateVars.push_back( QStateVar("ConCur", 4));
+		stateVars.push_back( QStateVar("Bilder1", 4));
+		stateVars.push_back( QStateVar("Bilder2", 4));
 		stateVars.push_back( QStateVar("MStore", 4));
 		stateVars.push_back( QStateVar("EStore", 2));
 		stateVars.push_back( QStateVar("MIncome", 4));
@@ -257,11 +258,11 @@ RL_Action RL::Update(int agentId)
 
 	if (USE_RS_TERMINATION && state.IsTerminal() /*PreviousAction[agentId].Action == LAB_ID*/)
 	{
-		double metalGain = game->GetTotalProduction(MEX_ID) - game->GetUsage(MEX_ID);
-		double energyGain = game->GetTotalProduction(SOLAR_ID) - game->GetUsage(SOLAR_ID);
+		double metalGain = game->GetTotalProduction(MEX_ID) - game->GetResourceUsage(MEX_ID);
+		double energyGain = game->GetTotalProduction(SOLAR_ID) - game->GetResourceUsage(SOLAR_ID);
 
-		float metalValue = (float)(max(-10.0, min(10.0, metalGain ) ) / 10.0); //metal production-usage [-1;1]
-		float energyValue = (float)(max(-100.0, min(100.0, energyGain ) ) / 100.0); //energy production-usage [-1;1]
+		float metalValue = (float)((max(REWARD_METAL_MIN, min(REWARD_METAL_MAX, metalGain ) ) - REWARD_METAL_MIN ) / (REWARD_METAL_MAX-REWARD_METAL_MIN)); //metal production-usage [-1;1]
+		float energyValue = (float)((max(REWARD_ENERGY_MIN, min(REWARD_ENERGY_MAX, energyGain ) ) - REWARD_ENERGY_MIN ) / (REWARD_ENERGY_MAX-REWARD_ENERGY_MIN)); //energy production-usage [-1;1]
 		float value = min(metalValue, energyValue);
 		value *= 100;
 		value += (float)((game->resources[MEX_ID]/20.0) + (game->resources[SOLAR_ID]/20.0));
