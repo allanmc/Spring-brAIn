@@ -9,14 +9,21 @@
 
 #define QBFILE_VERSION 2
 
-#define PRINT_REWARD false
+#define TEST_RESULTS true
 
-#define USE_QSMDP true
+#define PRINT_REWARD true
+
+#define USE_QSMDP false
 #define USE_RS_TERMINATION true
 #define USE_RS_TIME false
 #define USE_Q_LAMBDA false
 #define LAMBDA 0.95f
 #define Q_LAMBDA_THRESHOLD 0.00005f
+
+#define REWARD_METAL_MIN 2.5
+#define REWARD_METAL_MAX 8.0
+#define REWARD_ENERGY_MIN 15.0
+#define REWARD_ENERGY_MAX 26.0
 
 #define GAMMA 0.9f
 #define ALPHA 0.1f
@@ -24,7 +31,7 @@
 #define EPSILON_DECAY 1
 
 //TYPE 0 => normal; 1 => 2 builders;
-#define RL_TYPE 3
+#define RL_TYPE 2
 
 #define RL_FILE_DELETE true
 #define RL_FILE_PATH ""
