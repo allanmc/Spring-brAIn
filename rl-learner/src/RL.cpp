@@ -23,30 +23,6 @@ RL::RL(Game *g, double epsilon, int numAgents)
 	switch(RL_TYPE)
 	{
 	case 0:
-		//stateVars.push_back( QStateVar("Rocko", RL_ROCKO_INDEX));
-		stateVars.push_back( QStateVar("Lab", RL_LAB_INDEX));
-		stateVars.push_back( QStateVar("Solar", RL_SOLAR_INDEX));
-		stateVars.push_back( QStateVar("Mex", RL_MEX_INDEX));		
-		actions.push_back( QAction("Lab", 0));
-		actions.push_back( QAction("Solar", 1));
-		actions.push_back( QAction("Mex", 2));
-		//actions.push_back( QAction("Rocko", 3));
-		ValueFunction = new RL_Q( actions, stateVars);
-		break;
-	case 1://two builders
-		stateVars.push_back( QStateVar("ConCur", 4));
-		stateVars.push_back( QStateVar("MStore", 4));
-		stateVars.push_back( QStateVar("EStore", 2));
-		stateVars.push_back( QStateVar("MIncome", 4));
-		stateVars.push_back( QStateVar("EIncome", 3));
-		stateVars.push_back( QStateVar("LabCount", RL_LAB_INDEX));
-		actions.push_back( QAction("Lab", 0));
-		actions.push_back( QAction("Solar", 1));
-		actions.push_back( QAction("Mex", 2));
-
-		ValueFunction = new RL_Q( actions, stateVars); 
-		break;
-	case 2:
 		stateVars.push_back( QStateVar("ConCur", 4));
 		stateVars.push_back( QStateVar("MStore", 4));
 		stateVars.push_back( QStateVar("EStore", 2));
@@ -55,34 +31,6 @@ RL::RL(Game *g, double epsilon, int numAgents)
 		actions.push_back( QAction("Lab", 0));
 		actions.push_back( QAction("Solar", 1));
 		actions.push_back( QAction("Mex", 2));
-
-		ValueFunction = new RL_Q( actions, stateVars);
-		RL_State::lastLabCount = 0;//static from .h file
-		break;
-	case 3:
-		stateVars.push_back( QStateVar("Bilder1", 4));
-		stateVars.push_back( QStateVar("Bilder2", 4));
-		stateVars.push_back( QStateVar("MStore", 4));
-		stateVars.push_back( QStateVar("EStore", 2));
-		stateVars.push_back( QStateVar("MIncome", 4));
-		stateVars.push_back( QStateVar("EIncome", 3));
-
-		actions.push_back( QAction("LL", 0));
-		actions.push_back( QAction("LS", 1));
-		actions.push_back( QAction("LM", 2));
-		actions.push_back( QAction("LN", 3));
-		actions.push_back( QAction("SL", 4));
-		actions.push_back( QAction("SS", 5));
-		actions.push_back( QAction("SM", 6));
-		actions.push_back( QAction("SN", 7));
-		actions.push_back( QAction("ML", 8));
-		actions.push_back( QAction("MS", 9));
-		actions.push_back( QAction("MM", 10));
-		actions.push_back( QAction("MN", 11));
-		actions.push_back( QAction("NL", 12));
-		actions.push_back( QAction("NS", 13));
-		actions.push_back( QAction("NM", 14));
-		actions.push_back( QAction("NN", 15));
 
 		ValueFunction = new RL_Q( actions, stateVars);
 		RL_State::lastLabCount = 0;//static from .h file
@@ -139,15 +87,8 @@ char* RL::GetFilePath()
 	switch(RL_TYPE)
 	{
 	case 0:
-		strcat(path, RL_FILE_1);
-		break;
-	case 1:
-		strcat(path, RL_FILE_2_BUILDERS);
-		break;
-	case 2:
 		strcat(path, RL_FILE_NO_END);
-	case 3:
-		strcat(path, RL_FILE_3);
+		break;
 	default:
 		break;
 	}

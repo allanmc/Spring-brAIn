@@ -23,41 +23,29 @@ void PrintAction(bool debug,RL_Action a, unsigned short builder)
 	if (debug)
 	{
 		int action;
-		for(int i = 0; i<2; i++)
+
+		action = a.Action;
+
+		switch(action)
 		{
-			if(RL_TYPE == 3)
-			{
-				if(i == 0)
-					action = a.Action / 256;
-				else
-					action = a.Action % 256; 
-			}
-			else
-			{
-				action = a.Action;
-			}
-			switch(action)
-			{
-				case LAB_ID:
-					cerr << "L";
-					break;
-				case MEX_ID:
-					cerr << "M";
-					break;
-				case SOLAR_ID:
-					cerr << "S";
-					break;
-				case ROCKO_ID:
-					cerr << "R";
-					break;
-				case NOTHING_ID:
-					cerr << "N";
-					break;
-			}
-			if(RL_TYPE != 3) break;
+			case LAB_ID:
+				cerr << "L";
+				break;
+			case MEX_ID:
+				cerr << "M";
+				break;
+			case SOLAR_ID:
+				cerr << "S";
+				break;
+			case ROCKO_ID:
+				cerr << "R";
+				break;
+			case NOTHING_ID:
+				cerr << "N";
+				break;
 		}
-		if (RL_TYPE == 2)
-			cerr << builder << " ";
+
+		cerr << builder << " ";
 	}
 }
 
@@ -69,7 +57,7 @@ int main(int argc, char *argv[])
 	
 	Game *g = new Game();
 	RL *r;
-	int numLearners = (RL_TYPE == 2 ? 2 : 1);
+	int numLearners = 2;
 
 	bool debug = false;
 
@@ -111,7 +99,7 @@ int main(int argc, char *argv[])
 			currentEpsilon = 0.0f;
 		}
 		
-		for ( unsigned int cTerm = 0 ; cTerm < (RL_TYPE==2?RL_LAB_INDEX-1:1) ; cTerm++ )
+		for ( unsigned int cTerm = 0 ; cTerm < RL_LAB_INDEX ; cTerm++ )
 		{
 			if (TEST_RESULTS)
 			{
@@ -138,17 +126,8 @@ int main(int argc, char *argv[])
 			{
 				a = r->Update(x);
 				PrintAction(debug, a, x);
-				if(RL_TYPE == 3)
-				{
-					int action = a.Action / 256;
-					if(action != NOTHING_ID)
-						g->BuildUnit(action, 0);
-					action = a.Action % 256;
-					if(action != NOTHING_ID)
-						g->BuildUnit(action, 1);
-				}else{
-					g->BuildUnit(a.Action, x);
-				}
+				
+				g->BuildUnit(a.Action, x);
 			}
 
 			bool terminal[] = {false, false};
@@ -167,36 +146,17 @@ int main(int argc, char *argv[])
 				}
 				for(int i = 0; i < (int)builders.size(); i++)
 				{
-					if(RL_TYPE == 3)
-						a = r->Update(0);
-					else
-						a = r->Update(builders[i]);
+					a = r->Update(builders[i]);
+
 					if ( a.ID != -1 ) 
 					{
-						if(RL_TYPE == 3)
-						{
-							int action = a.Action / 256;
-							if(action != NOTHING_ID)
-								g->BuildUnit(action, 0);
-							action = a.Action % 256;
-							if(action != NOTHING_ID)
-								g->BuildUnit(action, 1);
-							PrintAction(debug, a, builders[i]);
-						}else{
-							g->BuildUnit(a.Action, builders[i]);
-							PrintAction(debug, a, builders[i]);
-						}
+						g->BuildUnit(a.Action, builders[i]);
+						PrintAction(debug, a, builders[i]);
 					}
 					else
 					{
 						if (debug) cerr << "T" << builders[i] << " ";
 						terminal[builders[i]] = true;
-						if(RL_TYPE == 3)
-						{
-							terminal[0] = true;
-							terminal[1] = true;
-						}
-
 					}
 				}
 			}

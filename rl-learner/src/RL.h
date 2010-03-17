@@ -2,18 +2,18 @@
 #define _BRAINSPACE_RL_H
 
 #define RL_SOLAR_INDEX 15
-#define RL_MEX_INDEX 20
+#define RL_MEX_INDEX 2
 #define RL_LAB_INDEX 2
 #define RL_PLANT_INDEX 5
 #define RL_ROCKO_INDEX 40
 
 #define QBFILE_VERSION 2
 
-#define TEST_RESULTS true
+#define TEST_RESULTS false
 
 #define PRINT_REWARD true
 
-#define USE_QSMDP false
+#define USE_QSMDP true
 #define USE_RS_TERMINATION true
 #define USE_RS_TIME false
 #define USE_Q_LAMBDA false
@@ -30,8 +30,8 @@
 #define EPSILON_START 0.1f
 #define EPSILON_DECAY 1
 
-//TYPE 0 => normal; 1 => 2 builders;
-#define RL_TYPE 2
+//TYPE 0 => normal; 
+#define RL_TYPE 0
 
 #define RL_FILE_DELETE true
 #define RL_FILE_PATH ""
