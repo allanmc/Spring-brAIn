@@ -468,3 +468,23 @@ int Game::UnitBeingBuildByBuilder(int builder)
 	return UnitId;
 }
 
+int Game::GetPercentRemaining(int builder)
+{
+	int percent = 0;
+	int listId = -1;
+	for(unsigned int i = 0; i<buildList.size(); i++)
+	{
+		if(buildList[i].builder == builder)
+		{
+			listId = i;
+			break;
+		}
+	}
+	if(listId != -1)
+	{
+		double remainingMetal = buildList[listId].remainingMetal;
+		int unit = buildList[listId].unitId;
+		time = (remainingMetal / unitDefs[unit].metalCost) * 100;
+	}
+	return percent;
+}

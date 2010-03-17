@@ -76,6 +76,7 @@ namespace brainSpace {
 		void BuildUnit(int unitId, int agentId = 0);
 		std::vector<int> Update();
 		int UnitBeingBuildByBuilder(int builder);
+		int GetPercentRemaining(int builder);
 
 	private:
 
