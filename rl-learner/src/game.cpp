@@ -8,7 +8,7 @@ Game::Game()
 {
 	unitDefs[MEX_ID] = unitdef(50,521,1800,3.0f,-3.0f);
 	unitDefs[SOLAR_ID] = unitdef(145,0,2845,0.0f,20.0f);
-	unitDefs[LAB_ID] = unitdef(605,1130,6760);
+	unitDefs[LAB_ID] = unitdef(605,1130,6760,-5.0f,-50.0f);
 	unitDefs[ROCKO_ID] = unitdef(97,944,1887);
 	ResetGame();
 }
@@ -484,7 +484,7 @@ int Game::GetPercentRemaining(int builder)
 	{
 		double remainingMetal = buildList[listId].remainingMetal;
 		int unit = buildList[listId].unitId;
-		time = (remainingMetal / unitDefs[unit].metalCost) * 100;
+		percent = (remainingMetal / unitDefs[unit].metalCost) * 100;
 	}
 	return percent;
 }

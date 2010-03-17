@@ -57,11 +57,18 @@ int main(int argc, char *argv[])
 	
 	Game *g = new Game();
 	RL *r;
-	int numLearners = 2;
+	int numLearners = NUM_LEARNERS;
 
 	bool debug = false;
 
-	cout << (USE_QSMDP ? "SMDPQ " : "Q ");
+	cout << (USE_QSMDP ? "SMDPQ" : "Q");
+
+	if (EPSILON_DECAY!=1)
+	{
+		cout << ", decay=" << EPSILON_DECAY;
+	}
+
+	cout << " ";
 
 	if ( USE_Q_LAMBDA )
 		cout << "Q("<< LAMBDA << ") ";
@@ -85,7 +92,7 @@ int main(int argc, char *argv[])
 	double bestReward = -999999;
 	int currentIndex = 0;
 	int i = 0;
-	int runs = 50000;
+	int runs = 200000;
 	if (TEST_RESULTS)
 		runs = 1;
 	while(i < runs)
@@ -174,8 +181,10 @@ int main(int argc, char *argv[])
 		if ( debug && !TEST_RESULTS )
 		{
 			cerr << endl;
-			cerr << "Metal: " << g->resources[MEX_ID] << endl;
-			cerr << "Energy: " << g->resources[SOLAR_ID] << endl;
+			cout << "Metal Res: " << g->resources[MEX_ID] << endl;
+			cout << "Energy Res: " << g->resources[SOLAR_ID] << endl;
+			cout << "Metal Gain: " << g->GetTotalProduction(MEX_ID) - g->GetResourceUsage(MEX_ID) << endl;
+			cout << "Energy Gain: " << g->GetTotalProduction(SOLAR_ID) - g->GetResourceUsage(SOLAR_ID) << endl;
 		}
 		currentFrame = g->frame;
 		bool goodNew = ( PRINT_REWARD ? bestReward <= currentReward : currentFrame <= bestFrame );

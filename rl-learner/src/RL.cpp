@@ -13,6 +13,12 @@ RL::RL(Game *g, double epsilon, int numAgents)
 	vector<QAction> actions;
 	totalReward = 0.0;
 
+	for ( unsigned int i = 0; i < NUM_LEARNERS ; i++ ) 
+	{
+		isTerminated[i] = false;
+	}
+	lastTerminationReward = 0.0;
+
 	for(int i = 0; i<numAgents; i++)
 	{
 		PreviousFrame.push_back(0);
@@ -200,14 +206,24 @@ RL_Action RL::Update(int agentId)
 
 	if (USE_RS_TERMINATION && state.IsTerminal() /*PreviousAction[agentId].Action == LAB_ID*/)
 	{
-		double metalGain = game->GetTotalProduction(MEX_ID) - game->GetResourceUsage(MEX_ID);
-		double energyGain = game->GetTotalProduction(SOLAR_ID) - game->GetResourceUsage(SOLAR_ID);
+		isTerminated[agentId] = true;
+		float value;
+		if (COMMON_TERMINATION_REWARD || !isTerminated[0] || !isTerminated[1])//If we already calculated reward for this ternmination, use that
+		{
+			double metalGain = game->GetTotalProduction(MEX_ID) - game->GetResourceUsage(MEX_ID);
+			double energyGain = game->GetTotalProduction(SOLAR_ID) - game->GetResourceUsage(SOLAR_ID);
 
-		float metalValue = (float)((max(REWARD_METAL_MIN, min(REWARD_METAL_MAX, metalGain ) ) - REWARD_METAL_MIN ) / (REWARD_METAL_MAX-REWARD_METAL_MIN)); //metal production-usage [-1;1]
-		float energyValue = (float)((max(REWARD_ENERGY_MIN, min(REWARD_ENERGY_MAX, energyGain ) ) - REWARD_ENERGY_MIN ) / (REWARD_ENERGY_MAX-REWARD_ENERGY_MIN)); //energy production-usage [-1;1]
-		float value = min(metalValue, energyValue);
-		value *= 100;
-		value += (float)((game->resources[MEX_ID]/20.0) + (game->resources[SOLAR_ID]/20.0));
+			float metalValue = (float)((max(REWARD_METAL_MIN, min(REWARD_METAL_MAX, metalGain ) ) - REWARD_METAL_MIN ) / (REWARD_METAL_MAX-REWARD_METAL_MIN)); //metal production-usage [-1;1]
+			float energyValue = (float)((max(REWARD_ENERGY_MIN, min(REWARD_ENERGY_MAX, energyGain ) ) - REWARD_ENERGY_MIN ) / (REWARD_ENERGY_MAX-REWARD_ENERGY_MIN)); //energy production-usage [-1;1]
+			value = min(metalValue, energyValue);
+			value *= 100;
+			value += (float)( min( game->resources[MEX_ID]/10.0, game->resources[SOLAR_ID]/10.0 ) );
+			lastTerminationReward = value;
+		}
+		else
+		{
+			value = lastTerminationReward;
+		}
 
 		//value = 1;
 		reward += value;

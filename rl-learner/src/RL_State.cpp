@@ -30,7 +30,8 @@ RL_State::RL_State(Game *g, int agentId)
 			double energyProduction = game->GetTotalProduction(SOLAR_ID) - game->GetResourceUsage(SOLAR_ID);
 			//other agents work
 			int concurrent = game->UnitBeingBuildByBuilder((agentId == 0? 1: 0));//only support for two
-			int concurrentCompletionTime = 0;//TODO: Use martin's functions
+			int concurrentCompletionTime = min(game->GetPercentRemaining((agentId == 0? 1: 0)) / (100/5), 4);
+
 			//number of labs
 			int labCount = game->units[LAB_ID];
 			if(labCount > lastLabCount)

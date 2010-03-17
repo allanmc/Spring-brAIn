@@ -3,11 +3,15 @@
 
 #define RL_SOLAR_INDEX 15
 #define RL_MEX_INDEX 2
-#define RL_LAB_INDEX 2
+#define RL_LAB_INDEX 1
 #define RL_PLANT_INDEX 5
 #define RL_ROCKO_INDEX 40
 
 #define QBFILE_VERSION 2
+
+#define COMMON_TERMINATION_REWARD true
+
+#define NUM_LEARNERS 2
 
 #define TEST_RESULTS false
 
@@ -28,7 +32,7 @@
 #define GAMMA 0.9f
 #define ALPHA 0.1f
 #define EPSILON_START 0.1f
-#define EPSILON_DECAY 1
+#define EPSILON_DECAY 0.99999
 
 //TYPE 0 => normal; 
 #define RL_TYPE 0
@@ -86,6 +90,9 @@ namespace brainSpace {
 		vector<DataPoint> dataTrail;
 		RL_State nullState;
 		RL_Action nullAction;
+		bool isTerminated[NUM_LEARNERS];
+		float lastTerminationReward;
+
 
 		bool FileExists( const char* name );
 		RL_Action FindNextAction( RL_State &state );
