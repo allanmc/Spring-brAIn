@@ -30,6 +30,7 @@ RL_State::RL_State(Game *g, int agentId)
 			double energyProduction = game->GetTotalProduction(SOLAR_ID) - game->GetResourceUsage(SOLAR_ID);
 			//other agents work
 			int concurrent = game->UnitBeingBuildByBuilder((agentId == 0? 1: 0));//only support for two
+			int concurrentCompletionTime = 0;//TODO: Use martin's functions
 			//number of labs
 			int labCount = game->units[LAB_ID];
 			if(labCount > lastLabCount)
@@ -40,13 +41,14 @@ RL_State::RL_State(Game *g, int agentId)
 
 			//set ID
 			ID = concurrent + 1;// concurrent ranges from -1 to max id (-1 for no building)
+			ID = ID*5 + concurrentCompletionTime;
 			ID = ID*4 + (metalStore > 150 ? (metalStore > 600 ? 3 : 2) : (metalStore > 50 ? 1 : 0) );
 			ID = ID*2 + (energyStore > 500 ? 1 : 0 );
 			ID = ID*4 + (metalProduction > 5 ? (metalProduction > 8 ? 3 : 2) : (metalProduction > 2.5f ? 1 : 0) );
 			ID = ID*3 + (energyProduction > 26 ? 2 : (energyProduction > 15 ? 1 : 0) );
 
 			//set actions available
-			//if(concurrent != LAB_ID)
+			if(concurrent != LAB_ID)
 				Actions.push_back(RL_Action(LAB_ID,0));
 			Actions.push_back(RL_Action(SOLAR_ID,1));
 			Actions.push_back(RL_Action(MEX_ID,2));

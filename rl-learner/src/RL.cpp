@@ -24,6 +24,7 @@ RL::RL(Game *g, double epsilon, int numAgents)
 	{
 	case 0:
 		stateVars.push_back( QStateVar("ConCur", 4));
+		stateVars.push_back( QStateVar("ConCurTime", 5));
 		stateVars.push_back( QStateVar("MStore", 4));
 		stateVars.push_back( QStateVar("EStore", 2));
 		stateVars.push_back( QStateVar("MIncome", 4));
