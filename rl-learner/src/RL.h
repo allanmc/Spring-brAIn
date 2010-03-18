@@ -9,6 +9,8 @@
 
 #define QBFILE_VERSION 2
 
+#define RUNS_TO_DO 200000
+
 #define COMMON_TERMINATION_REWARD true
 
 #define NUM_LEARNERS 2
@@ -31,8 +33,8 @@
 
 #define GAMMA 0.9f
 #define ALPHA 0.1f
-#define EPSILON_START 0.1f
-#define EPSILON_DECAY 0.99999
+#define EPSILON_START 1.0f
+#define EPSILON_DECAY 1.0f
 
 //TYPE 0 => normal; 
 #define RL_TYPE 0
@@ -43,6 +45,9 @@
 #define RL_FILE_2_BUILDERS "q2.bin"
 #define RL_FILE_NO_END "qc.dat"
 #define RL_FILE_3 "q3.dat"
+
+#define RL_FILE_STATEVISITS "statevisits.dat"
+#define RL_FILE_ACTIONSTATEVISITS "actionstatevisits.dat"
 
 #define FILE_HEADER "QB"
 
@@ -83,6 +88,10 @@ namespace brainSpace {
 		virtual ~RL();
 		float GetTotalReward();
 		char* GetFilePath();
+		unsigned int numActions;
+		unsigned int numStates;
+		int LastActionID;
+		int LastStateID;
 
 		RL_Action Update(int agentId = 0);
 		void SaveToFile(bool doIt = false);
@@ -93,7 +102,6 @@ namespace brainSpace {
 		RL_Action nullAction;
 		bool isTerminated[NUM_LEARNERS];
 		float lastTerminationReward;
-
 
 		bool FileExists( const char* name );
 		RL_Action FindNextAction( RL_State &state );

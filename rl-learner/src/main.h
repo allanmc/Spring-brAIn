@@ -9,3 +9,13 @@
 #define FOREGROUND_BLUE 0
 typedef int WORD;
 #endif
+
+
+unsigned int *actionStateVisits;
+unsigned int *stateVisits;
+unsigned int numActions;
+unsigned int numStates;
+
+void InitStateVisits();
+void SaveStateVisits();
+void UpdateStateVisits(brainSpace::RL *r);
