@@ -79,12 +79,13 @@ namespace brainSpace {
 	class RL
 	{
 	public:
-		RL(Game *g, double epsilon, int numAgents = 1);
+		RL(Game *g, double epsilon, int numAgents = 1, bool load = false);
 		virtual ~RL();
 		float GetTotalReward();
 		char* GetFilePath();
 
 		RL_Action Update(int agentId = 0);
+		void SaveToFile(bool doIt = false);
 	private:
 		Game *game;
 		vector<DataPoint> dataTrail;
@@ -107,8 +108,8 @@ namespace brainSpace {
 		RL_State GetState(int agentId = 0);
 		RL_Action SafeNextAction(RL_State &state);
 		
-		void LoadFromFile();
-		void SaveToFile();
+		void LoadFromFile(bool doIt = false);
+		
 		RL_Q* ValueFunction;
 
 		bool m_greedyChoice;

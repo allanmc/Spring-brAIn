@@ -3,24 +3,7 @@
 
 using namespace brainSpace;
 
-void RL_Q::LoadFromFile(ifstream *readFile)
-{
-	FileHeaderQTable qTable;
-	readFile->read( (char*)&qTable, sizeof(FileHeaderQTable) );//Only 1 in this flat q
-	FileHeaderQAction *qAction = (FileHeaderQAction*)malloc(sizeof(FileHeaderQAction)* qTable.numActions);
-	for(int i = 0; i < qTable.numActions; i++)
-	{
-		qAction[i].LoadFromFile( readFile);
-	}
-	FileHeaderQStateVar *qStateVars = (FileHeaderQStateVar*)malloc(sizeof(FileHeaderQStateVar)*qTable.numStateVars);
-	for(int i = 0; i < qTable.numStateVars; i++)
-	{
-		qStateVars[i].LoadFromFile( readFile);
-	}
-	readFile->read( (char*)actionValueFunction, sizeof(double)*qTable.numActions*qTable.numStates );
-	delete qAction;
-	delete qStateVars;
-}
+double* RL_Q::actionValueFunction = NULL;
 
 RL_Q::RL_Q(vector<QAction> actions, vector<QStateVar> stateVars )
 {
@@ -35,16 +18,19 @@ RL_Q::RL_Q(vector<QAction> actions, vector<QStateVar> stateVars )
 	this->stateVars = stateVars;
 
 	size = this->numStates*this->numActions;
-	actionValueFunction = new double[size];
-	for ( int i = 0 ; i < size ; i++ )
-		actionValueFunction[i] = 0;
+	if(actionValueFunction == NULL)
+	{
+		actionValueFunction = new double[size];
+		for ( int i = 0 ; i < size ; i++ )
+			actionValueFunction[i] = 0;
+	}
 }
 
 RL_Q::~RL_Q()
 {
 
-	delete[] actionValueFunction;
-	actionValueFunction = NULL;
+	//delete[] actionValueFunction;
+	//actionValueFunction = NULL;
 }
 
 void RL_Q::Clear()
@@ -53,29 +39,54 @@ void RL_Q::Clear()
 		actionValueFunction[i] = 0;
 }
 
-void RL_Q::SaveToFile(ofstream *file )
+void RL_Q::LoadFromFile(ifstream *readFile, bool doIt)
 {
-	FileHeaderQTable qTable;
-	FileHeaderQAction *qAction = (FileHeaderQAction*)malloc(sizeof(FileHeaderQAction)* numActions);
-	FileHeaderQStateVar *fileQStateVar = (FileHeaderQStateVar*)malloc(sizeof(FileHeaderQStateVar)*stateVars.size());
-	qTable.numActions = numActions;
-	qTable.numStates = numStates;
-	qTable.numStateVars = stateVars.size();
+	if (doIt)
+	{
+		FileHeaderQTable qTable;
+		readFile->read( (char*)&qTable, sizeof(FileHeaderQTable) );//Only 1 in this flat q
+		FileHeaderQAction *qAction = (FileHeaderQAction*)malloc(sizeof(FileHeaderQAction)* qTable.numActions);
+		for(int i = 0; i < qTable.numActions; i++)
+		{
+			qAction[i].LoadFromFile( readFile);
+		}
+		FileHeaderQStateVar *qStateVars = (FileHeaderQStateVar*)malloc(sizeof(FileHeaderQStateVar)*qTable.numStateVars);
+		for(int i = 0; i < qTable.numStateVars; i++)
+		{
+			qStateVars[i].LoadFromFile( readFile);
+		}
+		readFile->read( (char*)actionValueFunction, sizeof(double)*qTable.numActions*qTable.numStates );
+		delete qAction;
+		delete qStateVars;
+	}
+}
 
-	file->write( (char*)&qTable, sizeof(FileHeaderQTable) );
-	for(int i = 0; i < (int)actions.size(); i++)
+void RL_Q::SaveToFile(ofstream *file, bool doIt )
+{
+	if(doIt)
 	{
-		qAction[i].qAction = actions[i];
-		qAction[i].SaveToFile(file);
+		FileHeaderQTable qTable;
+		FileHeaderQAction *qAction = (FileHeaderQAction*)malloc(sizeof(FileHeaderQAction)* numActions);
+		FileHeaderQStateVar *fileQStateVar = (FileHeaderQStateVar*)malloc(sizeof(FileHeaderQStateVar)*stateVars.size());
+		qTable.numActions = numActions;
+		qTable.numStates = numStates;
+		qTable.numStateVars = stateVars.size();
+
+		file->write( (char*)&qTable, sizeof(FileHeaderQTable) );
+		for(int i = 0; i < (int)actions.size(); i++)
+		{
+			qAction[i].qAction = actions[i];
+			qAction[i].SaveToFile(file);
+		}
+		for(int i = 0; i < (int)stateVars.size(); i++)
+		{
+			fileQStateVar[i].qStateVar = stateVars[i];
+			fileQStateVar[i].SaveToFile(file);
+		}
+		file->write( (char*)actionValueFunction, sizeof(double)*size );
+		delete qAction;
+		delete fileQStateVar;
 	}
-	for(int i = 0; i < (int)stateVars.size(); i++)
-	{
-		fileQStateVar[i].qStateVar = stateVars[i];
-		fileQStateVar[i].SaveToFile(file);
-	}
-	file->write( (char*)actionValueFunction, sizeof(double)*size );
-	delete qAction;
-	delete fileQStateVar;
 }
 
 double RL_Q::GetValue( RL_State &state, RL_Action &action )

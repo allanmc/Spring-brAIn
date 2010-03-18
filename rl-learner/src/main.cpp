@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
 				cout << "Energy Gain: " << g->GetTotalProduction(SOLAR_ID) - g->GetResourceUsage(SOLAR_ID) << endl;
 			}
 
-			r = new RL(g, currentEpsilon, numLearners);
+			r = new RL(g, currentEpsilon, numLearners, i==0);
 			RL_State::lastLabCount = g->units[LAB_ID];
 			//Delete old Q-file?
 			if ( i == 0 && RL_FILE_DELETE && !TEST_RESULTS)
@@ -178,6 +178,7 @@ int main(int argc, char *argv[])
 			currentReward += r->GetTotalReward();
 			delete r;
 		}
+
 		if ( debug && !TEST_RESULTS )
 		{
 			cerr << endl;
@@ -227,6 +228,11 @@ int main(int argc, char *argv[])
 
 		currentEpsilon *= EPSILON_DECAY;
 	}
+	//save to file
+	r = new RL(g, currentEpsilon, numLearners, false);
+	r->SaveToFile(true);
+	delete r;
+	//end save
 
 	//cerr << endl << "End epsilon: " << currentEpsilon << endl;
 }
