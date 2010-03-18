@@ -95,6 +95,7 @@ int main(int argc, char *argv[])
 	int runs = RUNS_TO_DO;
 	if (TEST_RESULTS)
 		runs = 1;
+
 	while(i < runs)
 	{
 		g_currentGame = i;
@@ -128,7 +129,7 @@ int main(int argc, char *argv[])
 
 			RL_State::lastLabCount = g->units[LAB_ID];
 			//Delete old Q-file?
-			if ( i == 0 && RL_FILE_DELETE && !TEST_RESULTS)
+			if ( i == 0 && cTerm == 0 && RL_FILE_DELETE && !TEST_RESULTS)
 			{
 				char* path = r->GetFilePath();
 				if(remove(path) != 0)
@@ -237,6 +238,8 @@ int main(int argc, char *argv[])
 
 		currentEpsilon *= EPSILON_DECAY;
 	}
+
+	PrintStateVisits();
 	SaveStateVisits();
 	//save to file
 	r = new RL(g, currentEpsilon, numLearners, false);
@@ -261,6 +264,36 @@ void UpdateStateVisits(RL *r)
 {
 	stateVisits[r->LastStateID]++;
 	actionStateVisits[r->LastActionID + numActions * r->LastStateID]++;
+}
+
+
+void PrintStateVisits()
+{
+	unsigned int unique_visits = 0;
+	unsigned int total_visits = 0;
+
+	for ( unsigned int i = 0; i < numStates ; i++ )
+	{
+		if (stateVisits[i]>0)
+		{
+			unique_visits++;
+			total_visits += stateVisits[i];
+		}
+	}
+	cerr << "Unique State Visits = " << unique_visits << endl;
+
+
+	unique_visits = 0;
+	for ( unsigned int i = 0; i < numStates*numActions ; i++ )
+	{
+		if (actionStateVisits[i]>0)
+		{
+			unique_visits++;
+		}
+	}
+	cerr << "Unique State-Action Visits = " << unique_visits << endl;
+	cerr << "Total Visits = " << total_visits << endl;
+
 }
 
 void SaveStateVisits()
