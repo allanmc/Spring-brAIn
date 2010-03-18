@@ -263,7 +263,6 @@ void SaveStateVisits()
 	strcpy(path, RL_FILE_PATH);
 	strcat(path, RL_FILE_ACTIONSTATEVISITS);
 	file = new ofstream(path, ios::binary | ios::out);
-	cerr << endl << (sizeof(unsigned int)*numStates*numActions) << endl;
 	file->write( (char*)actionStateVisits, sizeof(unsigned int)*numStates*numActions );
 	file->flush();
 	file->close();
