@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
 	double bestReward = -999999;
 	int currentIndex = 0;
 	int i = 0;
-	int runs = 200000;
+	int runs = RUNS_TO_DO;
 	if (TEST_RESULTS)
 		runs = 1;
 	while(i < runs)
@@ -118,6 +118,14 @@ int main(int argc, char *argv[])
 			}
 
 			r = new RL(g, currentEpsilon, numLearners);
+
+			if ( i == 0 && cTerm == 0 ) //If first run, initialize visit statistics 
+			{
+				numStates = r->numStates;
+				numActions = r->numActions;
+				InitStateVisits();
+			}
+
 			RL_State::lastLabCount = g->units[LAB_ID];
 			//Delete old Q-file?
 			if ( i == 0 && RL_FILE_DELETE && !TEST_RESULTS)
@@ -132,6 +140,7 @@ int main(int argc, char *argv[])
 			for(int x = 0; x < numLearners; x++)
 			{
 				a = r->Update(x);
+				UpdateStateVisits(r);
 				PrintAction(debug, a, x);
 				
 				g->BuildUnit(a.Action, x);
@@ -154,7 +163,7 @@ int main(int argc, char *argv[])
 				for(int i = 0; i < (int)builders.size(); i++)
 				{
 					a = r->Update(builders[i]);
-
+					UpdateStateVisits(r);
 					if ( a.ID != -1 ) 
 					{
 						g->BuildUnit(a.Action, builders[i]);
@@ -227,6 +236,49 @@ int main(int argc, char *argv[])
 
 		currentEpsilon *= EPSILON_DECAY;
 	}
-
+	SaveStateVisits();
 	//cerr << endl << "End epsilon: " << currentEpsilon << endl;
+}
+
+void InitStateVisits()
+{
+	actionStateVisits = new unsigned int[numActions*numStates];
+	stateVisits = new unsigned int[numStates];
+	for ( int i = 0 ; i < numActions*numStates ; i++ )
+		actionStateVisits[i] = 0;
+	for ( int i = 0 ; i < numStates ; i++ )
+		stateVisits[i] = 0;
+}
+
+void UpdateStateVisits(RL *r)
+{
+	stateVisits[r->LastStateID]++;
+	actionStateVisits[r->LastActionID + numActions * r->LastStateID]++;
+}
+
+void SaveStateVisits()
+{
+	ofstream *file;
+	char *path = new char[200];
+	strcpy(path, RL_FILE_PATH);
+	strcat(path, RL_FILE_ACTIONSTATEVISITS);
+	file = new ofstream(path, ios::binary | ios::out);
+	cerr << endl << (sizeof(unsigned int)*numStates*numActions) << endl;
+	file->write( (char*)actionStateVisits, sizeof(unsigned int)*numStates*numActions );
+	file->flush();
+	file->close();
+	delete file;
+
+	
+	delete[] path;
+	path = new char[200];
+	strcpy(path, RL_FILE_PATH);
+	strcat(path, RL_FILE_STATEVISITS);
+	file = new ofstream(path, ios::binary | ios::out);
+	file->write( (char*)stateVisits, sizeof(unsigned int)*numStates );
+	file->flush();
+	file->close();
+	delete file;
+
+	delete[] path;
 }

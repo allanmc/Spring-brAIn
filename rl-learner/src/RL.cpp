@@ -46,6 +46,13 @@ RL::RL(Game *g, double epsilon, int numAgents)
 		break;
 	}
 
+	numActions = actions.size();
+	numStates = 1;
+	for ( unsigned int i = 0; i < stateVars.size() ; i++ )
+	{
+		numStates *= stateVars[i].numStates;
+	}
+
 	dataTrail.clear();
 	LoadFromFile();
 	goalAchieved = false;
@@ -186,6 +193,9 @@ RL_Action RL::Update(int agentId)
 	bool terminal = false;
 	RL_State state = GetState(agentId);
 	RL_Action nextAction = SafeNextAction(state);	
+
+	LastActionID = nextAction.ID;
+	LastStateID = state.GetID();
 
 	//Start state
 	if ( PreviousState[agentId] == nullState )

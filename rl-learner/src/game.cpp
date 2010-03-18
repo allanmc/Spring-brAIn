@@ -484,7 +484,7 @@ int Game::GetPercentRemaining(int builder)
 	{
 		double remainingMetal = buildList[listId].remainingMetal;
 		int unit = buildList[listId].unitId;
-		percent = (remainingMetal / unitDefs[unit].metalCost) * 100;
+		percent = (int)((remainingMetal / unitDefs[unit].metalCost) * 100);
 	}
 	return percent;
 }
