@@ -3,7 +3,7 @@
 using namespace brainSpace;
 using namespace std;
 
-RL::RL(Game *g, double epsilon, int numAgents)
+RL::RL(Game *g, double epsilon, int numAgents, bool load)
 {	
 	EPSILON = epsilon;
 	game = g;
@@ -54,7 +54,7 @@ RL::RL(Game *g, double epsilon, int numAgents)
 	}
 
 	dataTrail.clear();
-	LoadFromFile();
+	LoadFromFile(load);
 	goalAchieved = false;
 }
 
@@ -65,30 +65,33 @@ RL::~RL()
 	dataTrail.clear();
 }
 
-void RL::LoadFromFile()
+void RL::LoadFromFile(bool doIt)
 {
-	char *path = GetFilePath();
-
-	FILE* fp = NULL;
-	fp = fopen( path, "rb" );
-	if( fp != NULL )
+	if (doIt)
 	{
-		fclose( fp );
-		//load stuff
+		char *path = GetFilePath();
 
-		FileHeader fileHeader;
-		ifstream *readFile = new ifstream(path, ios::binary | ios::in);		
-
-		readFile->read( (char*)&fileHeader, sizeof(FileHeader) );
-		if (fileHeader.header[0]==FILE_HEADER[0] &&
-			fileHeader.header[1]==FILE_HEADER[1] &&
-			fileHeader.type==QBFILE_VERSION)
+		FILE* fp = NULL;
+		fp = fopen( path, "rb" );
+		if( fp != NULL )
 		{
-			ValueFunction->LoadFromFile(readFile);
+			fclose( fp );
+			//load stuff
+
+			FileHeader fileHeader;
+			ifstream *readFile = new ifstream(path, ios::binary | ios::in);		
+
+			readFile->read( (char*)&fileHeader, sizeof(FileHeader) );
+			if (fileHeader.header[0]==FILE_HEADER[0] &&
+				fileHeader.header[1]==FILE_HEADER[1] &&
+				fileHeader.type==QBFILE_VERSION)
+			{
+				ValueFunction->LoadFromFile(readFile,doIt);
+			}
+			delete readFile;
 		}
-		delete readFile;
+		delete[] path;
 	}
-	delete[] path;
 }
 
 char* RL::GetFilePath()
@@ -111,27 +114,31 @@ char* RL::GetFilePath()
 
 }
 
-void RL::SaveToFile()
+void RL::SaveToFile(bool doIt)
 {
-	char *path = GetFilePath();
+	if (doIt)
+	{
+		char *path = GetFilePath();
 
-	ofstream *file = new ofstream(path, ios::binary | ios::out);
+		ofstream *file = new ofstream(path, ios::binary | ios::out);
 
-	FileHeader fileHeader;
+		FileHeader fileHeader;
 
-	fileHeader.header[0] = FILE_HEADER[0];
-	fileHeader.header[1] = FILE_HEADER[1];
-	fileHeader.type = QBFILE_VERSION;
-	fileHeader.numQTables = 1;
+		fileHeader.header[0] = FILE_HEADER[0];
+		fileHeader.header[1] = FILE_HEADER[1];
+		fileHeader.type = QBFILE_VERSION;
+		fileHeader.numQTables = 1;
 
-	file->write( (char*)&fileHeader, sizeof(fileHeader) );
+		file->write( (char*)&fileHeader, sizeof(fileHeader) );
+		file->flush();
 
-	ValueFunction->SaveToFile(file);
+		ValueFunction->SaveToFile(file,doIt);
 
-	file->flush();
-	file->close();
-	delete[] path;
-	delete file;
+		file->flush();
+		file->close();
+		delete[] path;
+		delete file;
+	}
 }
 
 RL_State RL::GetState(int agentId)

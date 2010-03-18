@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
 				cout << "Energy Gain: " << g->GetTotalProduction(SOLAR_ID) - g->GetResourceUsage(SOLAR_ID) << endl;
 			}
 
-			r = new RL(g, currentEpsilon, numLearners);
+			r = new RL(g, currentEpsilon, numLearners, i==0);
 
 			if ( i == 0 && cTerm == 0 ) //If first run, initialize visit statistics 
 			{
@@ -187,6 +187,7 @@ int main(int argc, char *argv[])
 			currentReward += r->GetTotalReward();
 			delete r;
 		}
+
 		if ( debug && !TEST_RESULTS )
 		{
 			cerr << endl;
@@ -237,6 +238,12 @@ int main(int argc, char *argv[])
 		currentEpsilon *= EPSILON_DECAY;
 	}
 	SaveStateVisits();
+	//save to file
+	r = new RL(g, currentEpsilon, numLearners, false);
+	r->SaveToFile(true);
+	delete r;
+	//end save
+
 	//cerr << endl << "End epsilon: " << currentEpsilon << endl;
 }
 
