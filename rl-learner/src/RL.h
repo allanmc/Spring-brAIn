@@ -9,7 +9,7 @@
 
 #define QBFILE_VERSION 2
 
-#define RUNS_TO_DO 100000
+#define RUNS_TO_DO 1000000
 
 #define COMMON_TERMINATION_REWARD true
 

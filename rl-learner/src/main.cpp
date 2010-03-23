@@ -107,6 +107,15 @@ int main(int argc, char *argv[])
 			currentEpsilon = 0.0f;
 		}
 		
+		//Delete old Q-file?
+		if ( i == 0 && RL_FILE_DELETE && !TEST_RESULTS)
+		{
+			char* path = r->GetFilePath();
+			if(remove(path) != 0)
+				perror("deletion fail: ");
+			delete[] path;
+		}
+
 		for ( unsigned int cTerm = 0 ; cTerm < RL_LAB_INDEX ; cTerm++ )
 		{
 			if (TEST_RESULTS)
@@ -118,6 +127,8 @@ int main(int argc, char *argv[])
 				cout << "Energy Gain: " << g->GetTotalProduction(SOLAR_ID) - g->GetResourceUsage(SOLAR_ID) << endl;
 			}
 
+
+
 			r = new RL(g, currentEpsilon, numLearners, i==0);
 
 			if ( i == 0 && cTerm == 0 ) //If first run, initialize visit statistics 
@@ -128,14 +139,6 @@ int main(int argc, char *argv[])
 			}
 
 			RL_State::lastLabCount = g->units[LAB_ID];
-			//Delete old Q-file?
-			if ( i == 0 && cTerm == 0 && RL_FILE_DELETE && !TEST_RESULTS)
-			{
-				char* path = r->GetFilePath();
-				if(remove(path) != 0)
-					perror("deletion fail: ");
-				delete[] path;
-			}
 			
 			RL_Action a;
 			for(int x = 0; x < numLearners; x++)
