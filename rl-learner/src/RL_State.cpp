@@ -14,8 +14,8 @@ RL_State::RL_State(Game *g, int agentId)
 {
 	//TODO: use agentId to find out what the other agent is doing right now
 	game = g;
-	int solarCount = game->units[SOLAR_ID];
-	int mexCount = game->units[MEX_ID];
+	//int solarCount = game->units[SOLAR_ID];
+	//int mexCount = game->units[MEX_ID];
 
 	switch (RL_TYPE)
 	{
@@ -33,16 +33,16 @@ RL_State::RL_State(Game *g, int agentId)
 			int concurrent = 0;
 			int value = 0;
 			int time_remaining = 0;
-			bool skipped_agent = false;
-			int agent;
-			for ( unsigned int i = 0; i < NUM_LEARNERS ; i++ )
+			//bool skipped_agent = false;
+			//int agent;
+			for ( int i = 0; i < NUM_LEARNERS ; i++ )
 			{
 				if ( i == agentId )
 				{
-					skipped_agent = true;
+					//skipped_agent = true;
 					continue;
 				}
-				agent = ( skipped_agent ? i - 1 : i );
+				//agent = ( skipped_agent ? i - 1 : i );
 				
 				value = game->UnitBeingBuildByBuilder(i) + 1; // [0;3]
 				if ( value > 0 ) 
@@ -50,7 +50,13 @@ RL_State::RL_State(Game *g, int agentId)
 					time_remaining = min(game->GetPercentRemaining(i) / (100/5), 4); // [0;4]
 					value = (value-1)*5 + time_remaining + 1;
 				}
-				concurrent += agent * 16 + value;
+				concurrent = concurrent*16 + value;
+				if (value>15) {
+					i=i;
+				}
+				if (concurrent>31) {
+					i=i;
+				}
 			}
 			//number of labs
 			int labCount = game->units[LAB_ID];

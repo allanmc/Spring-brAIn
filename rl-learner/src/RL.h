@@ -9,15 +9,13 @@
 
 #define QBFILE_VERSION 2
 
-#define RUNS_TO_DO 1000000
-
 #define COMMON_TERMINATION_REWARD true
 
-#define NUM_LEARNERS 2
+#define NUM_LEARNERS 3
 
 #define TEST_RESULTS false
 
-#define PRINT_REWARD true
+#define PRINT_REWARD false
 
 #define USE_QSMDP true
 #define USE_RS_TERMINATION true
@@ -33,8 +31,8 @@
 
 #define GAMMA 0.9f
 #define ALPHA 0.1f
-#define EPSILON_START 0.1f
-#define EPSILON_DECAY 1.0f
+#define EPSILON_START 0.5f
+#define EPSILON_DECAY 0.99999f
 
 //TYPE 0 => normal; 
 #define RL_TYPE 0
@@ -55,6 +53,7 @@
 #include "RL_Q.h"
 #include "game.h"
 #include <vector>
+#include <cmath>
 #include "RL_Action.h"
 
 using namespace std;
@@ -87,7 +86,7 @@ namespace brainSpace {
 		RL(Game *g, double epsilon, int numAgents = 1, bool load = false);
 		virtual ~RL();
 		float GetTotalReward();
-		char* GetFilePath();
+		static char* GetFilePath();
 		unsigned int numActions;
 		unsigned int numStates;
 		int LastActionID;

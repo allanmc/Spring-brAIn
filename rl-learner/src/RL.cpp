@@ -29,7 +29,7 @@ RL::RL(Game *g, double epsilon, int numAgents, bool load)
 	switch(RL_TYPE)
 	{
 	case 0:
-		stateVars.push_back( QStateVar("ConCur", (3*5+1)*(NUM_LEARNERS-1)));//3 action * 5 time states + 1 null actions
+		stateVars.push_back( QStateVar("ConCur", (int)pow((double)(3*5+1),NUM_LEARNERS-1) ) );//3 action * 5 time states + 1 null actions
 		//stateVars.push_back( QStateVar("ConCurTime", 5));
 		stateVars.push_back( QStateVar("MStore", 4));
 		stateVars.push_back( QStateVar("EStore", 2));

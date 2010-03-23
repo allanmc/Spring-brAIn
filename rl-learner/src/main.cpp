@@ -61,6 +61,8 @@ int main(int argc, char *argv[])
 
 	bool debug = false;
 
+	cout << "x" << NUM_LEARNERS << " ";
+
 	cout << (USE_QSMDP ? "SMDPQ" : "Q");
 
 	if (EPSILON_DECAY!=1)
@@ -92,7 +94,12 @@ int main(int argc, char *argv[])
 	double bestReward = -999999;
 	int currentIndex = 0;
 	int i = 0;
-	int runs = RUNS_TO_DO;
+	int runs = 50000;
+
+	if (argc == 3 && strcmp(argv[1],"-n")==0) {
+		runs = atoi(argv[2]);
+	}
+
 	if (TEST_RESULTS)
 		runs = 1;
 
@@ -110,7 +117,7 @@ int main(int argc, char *argv[])
 		//Delete old Q-file?
 		if ( i == 0 && RL_FILE_DELETE && !TEST_RESULTS)
 		{
-			char* path = r->GetFilePath();
+			char* path = RL::GetFilePath();
 			if(remove(path) != 0)
 				perror("deletion fail: ");
 			delete[] path;
@@ -188,7 +195,9 @@ int main(int argc, char *argv[])
 				cout << "Metal Gain: " << g->GetTotalProduction(MEX_ID) - g->GetResourceUsage(MEX_ID) << endl;
 				cout << "Energy Gain: " << g->GetTotalProduction(SOLAR_ID) - g->GetResourceUsage(SOLAR_ID) << endl;
 			}
-			currentReward += r->GetTotalReward();
+
+			currentReward += r->GetTotalReward() / NUM_LEARNERS;
+
 			delete r;
 		}
 
@@ -257,10 +266,14 @@ void InitStateVisits()
 {
 	actionStateVisits = new unsigned int[numActions*numStates];
 	stateVisits = new unsigned int[numStates];
-	for ( int i = 0 ; i < numActions*numStates ; i++ )
+	for ( unsigned int i = 0 ; i < numActions*numStates ; i++ )
+	{
 		actionStateVisits[i] = 0;
-	for ( int i = 0 ; i < numStates ; i++ )
+	}
+	for ( unsigned int i = 0 ; i < numStates ; i++ )
+	{
 		stateVisits[i] = 0;
+	}
 }
 
 void UpdateStateVisits(RL *r)
