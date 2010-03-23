@@ -20,3 +20,4 @@ void PrintStateVisits();
 void InitStateVisits();
 void SaveStateVisits();
 void UpdateStateVisits(brainSpace::RL *r);
+void LoadConfig(int argc, char *argv[]);

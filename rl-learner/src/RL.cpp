@@ -1,5 +1,11 @@
 #include "RL.h"
 
+int NUM_LEARNERS;
+float GAMMA;
+float ALPHA;
+float EPSILON_START;
+float EPSILON_DECAY;
+
 using namespace brainSpace;
 using namespace std;
 
@@ -13,6 +19,7 @@ RL::RL(Game *g, double epsilon, int numAgents, bool load)
 	vector<QAction> actions;
 	totalReward = 0.0;
 
+	isTerminated = new bool[NUM_LEARNERS];
 	for ( unsigned int i = 0; i < NUM_LEARNERS ; i++ ) 
 	{
 		isTerminated[i] = false;
@@ -63,6 +70,7 @@ RL::~RL()
 	SaveToFile();
 	delete ValueFunction;
 	dataTrail.clear();
+	delete isTerminated;
 }
 
 void RL::LoadFromFile(bool doIt)
@@ -223,9 +231,18 @@ RL_Action RL::Update(int agentId)
 
 	if (USE_RS_TERMINATION && state.IsTerminal() /*PreviousAction[agentId].Action == LAB_ID*/)
 	{
+		bool firstReward = true;
+		for(int i = 0; i<NUM_LEARNERS; i++)
+		{
+			if (isTerminated[i])
+			{
+				firstReward = false;
+				break;
+			}
+		}
 		isTerminated[agentId] = true;
 		float value;
-		if (COMMON_TERMINATION_REWARD || !isTerminated[0] || !isTerminated[1])//If we already calculated reward for this ternmination, use that
+		if (!COMMON_TERMINATION_REWARD || firstReward)//If we already calculated reward for this ternmination, use that
 		{
 			double metalGain = game->GetTotalProduction(MEX_ID) - game->GetResourceUsage(MEX_ID);
 			double energyGain = game->GetTotalProduction(SOLAR_ID) - game->GetResourceUsage(SOLAR_ID);

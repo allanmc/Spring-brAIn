@@ -52,6 +52,8 @@ void PrintAction(bool debug,RL_Action a, unsigned short builder)
 
 int main(int argc, char *argv[])
 {
+	LoadConfig(argc, argv);
+
 	double currentEpsilon = EPSILON_START;
 	srand((unsigned int)time(NULL));
 	
@@ -336,4 +338,29 @@ void SaveStateVisits()
 	delete file;
 
 	delete[] path;
+}
+
+void LoadConfig(int argc, char *argv[])
+{
+	//load default values
+	NUM_LEARNERS = 3;
+	GAMMA = 0.9f;
+	ALPHA = 0.1f;
+	EPSILON_START = 0.5f;
+	EPSILON_DECAY = 0.99999f;
+
+	//load config file
+	ifstream *file = new ifstream("config.txt", ios::binary | ios::in);
+	//read content
+	delete file;
+
+	//load arguments
+	if(argc > 1)
+	{
+		int currentArg = 1;
+		for(int i = 0; i<argc; i++)
+		{
+			//check each argument and stuff
+		}
+	}
 }

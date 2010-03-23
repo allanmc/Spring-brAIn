@@ -11,7 +11,8 @@
 
 #define COMMON_TERMINATION_REWARD true
 
-#define NUM_LEARNERS 3
+//#define NUM_LEARNERS 3
+extern int NUM_LEARNERS;
 
 #define TEST_RESULTS false
 
@@ -29,10 +30,14 @@
 #define REWARD_ENERGY_MIN 15.0
 #define REWARD_ENERGY_MAX 26.0
 
-#define GAMMA 0.9f
-#define ALPHA 0.1f
-#define EPSILON_START 0.5f
-#define EPSILON_DECAY 0.99999f
+//#define GAMMA 0.9f
+extern float GAMMA;
+//#define ALPHA 0.1f
+extern float ALPHA;
+//#define EPSILON_START 0.5f
+extern float EPSILON_START;
+//#define EPSILON_DECAY 0.99999f
+extern float EPSILON_DECAY;
 
 //TYPE 0 => normal; 
 #define RL_TYPE 0
@@ -99,7 +104,7 @@ namespace brainSpace {
 		vector<DataPoint> dataTrail;
 		RL_State nullState;
 		RL_Action nullAction;
-		bool isTerminated[NUM_LEARNERS];
+		bool *isTerminated;
 		float lastTerminationReward;
 
 		bool FileExists( const char* name );
