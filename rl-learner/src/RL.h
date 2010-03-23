@@ -3,13 +3,13 @@
 
 #define RL_SOLAR_INDEX 15
 #define RL_MEX_INDEX 2
-#define RL_LAB_INDEX 1
+#define RL_LAB_INDEX 10
 #define RL_PLANT_INDEX 5
 #define RL_ROCKO_INDEX 40
 
 #define QBFILE_VERSION 2
 
-#define RUNS_TO_DO 200000
+#define RUNS_TO_DO 100000
 
 #define COMMON_TERMINATION_REWARD true
 
@@ -33,7 +33,7 @@
 
 #define GAMMA 0.9f
 #define ALPHA 0.1f
-#define EPSILON_START 1.0f
+#define EPSILON_START 0.1f
 #define EPSILON_DECAY 1.0f
 
 //TYPE 0 => normal; 

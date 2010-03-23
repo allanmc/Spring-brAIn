@@ -16,6 +16,7 @@ unsigned int *stateVisits;
 unsigned int numActions;
 unsigned int numStates;
 
+void PrintStateVisits();
 void InitStateVisits();
 void SaveStateVisits();
 void UpdateStateVisits(brainSpace::RL *r);
