@@ -1,5 +1,6 @@
 #include "RL.h"
 
+int RUNS;
 int NUM_LEARNERS;
 float GAMMA;
 float ALPHA;

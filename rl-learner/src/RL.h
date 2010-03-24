@@ -13,6 +13,7 @@
 
 //#define NUM_LEARNERS 3
 extern int NUM_LEARNERS;
+extern int RUNS;
 
 #define TEST_RESULTS false
 
