@@ -1,126 +1,47 @@
-#include <iostream>
-#include "game.h"
-#include "RL.h"
-#include "RL_Q.h"
-#include "RL_Action.h"
-#include <time.h>
 #include "main.h"
 
 using namespace std;
 using namespace brainSpace;
 
-void ChangeColour(WORD theColour)
-{
-#ifdef WIN32
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);  // Get handle to standard output
-    SetConsoleTextAttribute(hConsole,theColour);  // set the text attribute of the previous handle
-#endif
-}
-
-
-void PrintAction(bool debug,RL_Action a, unsigned short builder)
-{
-	if (debug)
-	{
-		int action;
-
-		action = a.Action;
-
-		switch(action)
-		{
-			case LAB_ID:
-				cerr << "L";
-				break;
-			case MEX_ID:
-				cerr << "M";
-				break;
-			case SOLAR_ID:
-				cerr << "S";
-				break;
-			case ROCKO_ID:
-				cerr << "R";
-				break;
-			case NOTHING_ID:
-				cerr << "N";
-				break;
-		}
-
-		cerr << builder << " ";
-	}
-}
-
-
 int main(int argc, char *argv[])
 {
-	double currentEpsilon = EPSILON_START;
+	LoadConfig(argc, argv);
+	PrintOutputHeader();
 	srand((unsigned int)time(NULL));
-	
+
+	//Delete old Q-file?
+	if (RL_FILE_DELETE && !TEST_RESULTS)
+	{
+		char* path = RL::GetFilePath();
+		if(remove(path) != 0)
+			perror("deletion fail: ");
+		delete[] path;
+	}
+
 	Game *g = new Game();
 	RL *r;
-	int numLearners = NUM_LEARNERS;
 
 	bool debug = false;
 
-	cout << "x" << NUM_LEARNERS << " ";
-
-	cout << (USE_QSMDP ? "SMDPQ" : "Q");
-
-	if (EPSILON_DECAY!=1)
-	{
-		cout << ", decay=" << EPSILON_DECAY;
-	}
-
-	cout << " ";
-
-	if ( USE_Q_LAMBDA )
-		cout << "Q("<< LAMBDA << ") ";
-
-	if (USE_RS_TIME || USE_RS_TERMINATION)
-	{
-		cout << "w/ ";
-		if(USE_RS_TIME)
-		{
-			printf("RS(Time)");
-			if (USE_RS_TERMINATION)
-				cout << " & ";
-		}
-		if (USE_RS_TERMINATION)
-			cout << "RS(Termination)";
-	}
-	cout << " - " << (PRINT_REWARD ? "REWARD":"TIME") << "\n";
+	double currentEpsilon = EPSILON_START;
 	double currentReward = 0.0;
 	double currentFrame = 0.0;
 	double bestFrame = 999999;
 	double bestReward = -999999;
 	int currentIndex = 0;
-	int i = 0;
-	int runs = 50000;
-
-	if (argc == 3 && strcmp(argv[1],"-n")==0) {
-		runs = atoi(argv[2]);
-	}
 
 	if (TEST_RESULTS)
-		runs = 1;
+		RUNS = 1;
 
-	while(i < runs)
+	for(int run = 0; run < RUNS; run++)
 	{
-		g_currentGame = i;
-		//if ( i % 500 == 0 )
+		g_currentGame = run;
+		//if ( run % 500 == 0 )
 		//	cerr << "Eps: " << currentEpsilon << endl;
-		if ( i == runs-1  )
+		if ( run == RUNS-1  )
 		{
 			debug = true;
 			currentEpsilon = 0.0f;
-		}
-		
-		//Delete old Q-file?
-		if ( i == 0 && RL_FILE_DELETE && !TEST_RESULTS)
-		{
-			char* path = RL::GetFilePath();
-			if(remove(path) != 0)
-				perror("deletion fail: ");
-			delete[] path;
 		}
 
 		for ( unsigned int cTerm = 0 ; cTerm < RL_LAB_INDEX ; cTerm++ )
@@ -128,17 +49,12 @@ int main(int argc, char *argv[])
 			if (TEST_RESULTS)
 			{
 				cout << endl << endl << " - Building lab " << cTerm << ":" << endl;
-				cout << "Metal Res: " << g->resources[MEX_ID] << endl;
-				cout << "Energy Res: " << g->resources[SOLAR_ID] << endl;
-				cout << "Metal Gain: " << g->GetTotalProduction(MEX_ID) - g->GetResourceUsage(MEX_ID) << endl;
-				cout << "Energy Gain: " << g->GetTotalProduction(SOLAR_ID) - g->GetResourceUsage(SOLAR_ID) << endl;
+				PrintGameStatus(g);
 			}
 
+			r = new RL(g, currentEpsilon, NUM_LEARNERS, run==0);
 
-
-			r = new RL(g, currentEpsilon, numLearners, i==0);
-
-			if ( i == 0 && cTerm == 0 ) //If first run, initialize visit statistics 
+			if ( run == 0 && cTerm == 0 ) //If first run, initialize visit statistics 
 			{
 				numStates = r->numStates;
 				numActions = r->numActions;
@@ -148,7 +64,7 @@ int main(int argc, char *argv[])
 			RL_State::lastLabCount = g->units[LAB_ID];
 			
 			RL_Action a;
-			for(int x = 0; x < numLearners; x++)
+			for(int x = 0; x < NUM_LEARNERS; x++)
 			{
 				a = r->Update(x);
 				UpdateStateVisits(r);
@@ -157,14 +73,13 @@ int main(int argc, char *argv[])
 				g->BuildUnit(a.Action, x);
 			}
 
-			bool terminal[] = {false, false};
-			while( !terminal[0] || !terminal[1] )
+			int runningAgents = NUM_LEARNERS;
+			while( runningAgents > 0 )
 			{
 				vector<int> builders;
 				while(true)
 				{
 					//game loop
-					g->frame++;
 					builders = g->Update();
 					if(!builders.empty())
 					{
@@ -183,17 +98,14 @@ int main(int argc, char *argv[])
 					else
 					{
 						if (debug) cerr << "T" << builders[i] << " ";
-						terminal[builders[i]] = true;
+						runningAgents--;
 					}
 				}
 			}
 			if (TEST_RESULTS)
 			{
 				cout << endl << "Reward ============== " << r->GetTotalReward() << endl;
-				cout << "Metal Res: " << g->resources[MEX_ID] << endl;
-				cout << "Energy Res: " << g->resources[SOLAR_ID] << endl;
-				cout << "Metal Gain: " << g->GetTotalProduction(MEX_ID) - g->GetResourceUsage(MEX_ID) << endl;
-				cout << "Energy Gain: " << g->GetTotalProduction(SOLAR_ID) - g->GetResourceUsage(SOLAR_ID) << endl;
+				PrintGameStatus(g);
 			}
 
 			currentReward += r->GetTotalReward() / NUM_LEARNERS;
@@ -204,10 +116,7 @@ int main(int argc, char *argv[])
 		if ( debug && !TEST_RESULTS )
 		{
 			cerr << endl;
-			cout << "Metal Res: " << g->resources[MEX_ID] << endl;
-			cout << "Energy Res: " << g->resources[SOLAR_ID] << endl;
-			cout << "Metal Gain: " << g->GetTotalProduction(MEX_ID) - g->GetResourceUsage(MEX_ID) << endl;
-			cout << "Energy Gain: " << g->GetTotalProduction(SOLAR_ID) - g->GetResourceUsage(SOLAR_ID) << endl;
+			PrintGameStatus(g);
 		}
 		currentFrame = g->frame;
 		bool goodNew = ( PRINT_REWARD ? bestReward <= currentReward : currentFrame <= bestFrame );
@@ -244,9 +153,8 @@ int main(int argc, char *argv[])
 		currentFrame = 0.0;
 		ChangeColour(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE); 
 
-		if(runs > 100 && i%(runs/100) == 0 && !TEST_RESULTS)
-			cerr << "Status:" << floor(((i/(double)runs)*100)+0.5) << "%\xd";
-		i++;
+		if(RUNS > 100 && run%(RUNS/100) == 0 && !TEST_RESULTS)
+			cerr << "Status:" << floor(((run/(double)RUNS)*100)+0.5) << "%\xd";
 
 		currentEpsilon *= EPSILON_DECAY;
 	}
@@ -254,12 +162,90 @@ int main(int argc, char *argv[])
 	PrintStateVisits();
 	SaveStateVisits();
 	//save to file
-	r = new RL(g, currentEpsilon, numLearners, false);
+	r = new RL(g, currentEpsilon, NUM_LEARNERS, false);
 	r->SaveToFile(true);
 	delete r;
 	//end save
 
 	//cerr << endl << "End epsilon: " << currentEpsilon << endl;
+}
+
+void ChangeColour(WORD theColour)
+{
+#ifdef WIN32
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);  // Get handle to standard output
+    SetConsoleTextAttribute(hConsole,theColour);  // set the text attribute of the previous handle
+#endif
+}
+
+void PrintGameStatus(Game *g)
+{
+	cout << "Metal Res: " << g->resources[MEX_ID] << endl;
+	cout << "Energy Res: " << g->resources[SOLAR_ID] << endl;
+	cout << "Metal Gain: " << g->GetTotalProduction(MEX_ID) - g->GetResourceUsage(MEX_ID) << endl;
+	cout << "Energy Gain: " << g->GetTotalProduction(SOLAR_ID) - g->GetResourceUsage(SOLAR_ID) << endl;
+}
+
+void PrintAction(bool debug,RL_Action a, unsigned short builder)
+{
+	if (debug)
+	{
+		int action;
+
+		action = a.Action;
+
+		switch(action)
+		{
+			case LAB_ID:
+				cerr << "L";
+				break;
+			case MEX_ID:
+				cerr << "M";
+				break;
+			case SOLAR_ID:
+				cerr << "S";
+				break;
+			case ROCKO_ID:
+				cerr << "R";
+				break;
+			case NOTHING_ID:
+				cerr << "N";
+				break;
+		}
+
+		cerr << builder << " ";
+	}
+}
+
+void PrintOutputHeader()
+{
+	cout << "x" << NUM_LEARNERS << " ";
+
+	cout << (USE_QSMDP ? "SMDPQ" : "Q");
+
+	if (EPSILON_DECAY!=1)
+	{
+		cout << ", decay=" << EPSILON_DECAY;
+	}
+
+	cout << " ";
+
+	if ( USE_Q_LAMBDA )
+		cout << "Q("<< LAMBDA << ") ";
+
+	if (USE_RS_TIME || USE_RS_TERMINATION)
+	{
+		cout << "w/ ";
+		if(USE_RS_TIME)
+		{
+			printf("RS(Time)");
+			if (USE_RS_TERMINATION)
+				cout << " & ";
+		}
+		if (USE_RS_TERMINATION)
+			cout << "RS(Termination)";
+	}
+	cout << " - " << (PRINT_REWARD ? "REWARD":"TIME") << "\n";
 }
 
 void InitStateVisits()
@@ -336,4 +322,33 @@ void SaveStateVisits()
 	delete file;
 
 	delete[] path;
+}
+
+void LoadConfig(int argc, char *argv[])
+{
+	//load default values
+	RUNS = 100000;
+	NUM_LEARNERS = 3;
+	GAMMA = 0.9f;
+	ALPHA = 0.1f;
+	EPSILON_START = 0.5f;
+	EPSILON_DECAY = 0.99999f;
+
+	//load config file
+	ifstream *file = new ifstream("config.txt", ios::binary | ios::in);
+	//read content
+	delete file;
+
+	//load arguments
+	if (argc == 3 && strcmp(argv[1],"-n")==0) {
+		RUNS = atoi(argv[2]);
+	}
+	if(argc > 1)
+	{
+		int currentArg = 1;
+		for(int i = 0; i<argc; i++)
+		{
+			//check each argument and stuff
+		}
+	}
 }

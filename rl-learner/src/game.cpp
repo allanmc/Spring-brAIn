@@ -37,6 +37,8 @@ void Game::BuildUnit(int unitId, int agentId)
 
 vector<int> Game::Update()
 {
+	frame++;
+
 	double metalUse = 0;
 	double energyUse = 0;
 	double energyProd = GetTotalProduction(SOLAR_ID);
