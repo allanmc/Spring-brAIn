@@ -25,7 +25,7 @@ RL::RL(Game *g, double epsilon, int numAgents, bool load)
 		PreviousState.push_back(nullState);
 		PreviousAction.push_back(nullAction);
 	}
-
+int bla;
 	switch(RL_TYPE)
 	{
 	case 0:
