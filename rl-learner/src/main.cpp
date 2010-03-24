@@ -335,9 +335,31 @@ void LoadConfig(int argc, char *argv[])
 	EPSILON_DECAY = 0.99999f;
 
 	//load config file
-	ifstream *file = new ifstream("config.txt", ios::binary | ios::in);
+	//ifstream *file = new ifstream("config.txt", ios::binary | ios::in);
 	//read content
-	delete file;
+	//delete file;
+
+	ptree pt;
+	read_info("config", pt);
+	RUNS = pt.get("runs", RUNS);
+	NUM_LEARNERS = pt.get("num_learners", NUM_LEARNERS);
+	GAMMA = pt.get("gamma", GAMMA);
+	EPSILON_START = pt.get("epsilon_start", EPSILON_START);
+	EPSILON_DECAY = pt.get("epsilon_decay", EPSILON_DECAY);
+
+	po::options_description desc("Allowed options");
+	desc.add_options()
+		("runs", po::value<int>(), "Number of runs to do")
+		("num_learners", po::value<int>(), "Number of learners")
+		("gamma", po::value<float>(), "Gamma value")
+		("alpha", po::value<float>(), "Alpha value")
+		("epsilon_start", po::value<float>(), "Starting epsilon value")
+		("epsilon_decay", po::value<float>(), "Epsilon-decay value")
+	;
+
+	po::variables_map vm;
+	po::store(po::parse_command_line(argc, argv, desc), vm);
+	po::notify(vm);    
 
 	//load arguments
 	if (argc == 3 && strcmp(argv[1],"-n")==0) {
