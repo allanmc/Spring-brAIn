@@ -24,10 +24,6 @@ endif()
 
 FIND_PACKAGE( Boost COMPONENTS program_options REQUIRED  )
 
-message(STATUS "Boost_LIBRARY_DIRS=${Boost_LIBRARY_DIRS}")
-message(STATUS "Boost_INCLUDE_DIRS=${Boost_INCLUDE_DIRS}")
-
-
 link_directories ( ${Boost_LIBRARY_DIRS} )
 include_directories ( ${Boost_INCLUDE_DIRS} )
 
