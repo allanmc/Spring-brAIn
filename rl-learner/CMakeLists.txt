@@ -8,11 +8,11 @@ if(WIN32)
 	endif (NOT EXISTS "${BOOST_ROOT}" OR NOT IS_DIRECTORY "${BOOST_ROOT}")
 
 
-	set(Boost_COMPILER "-vc80")
+	#set(Boost_COMPILER "-vc80")
 endif()
 
 
-#set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_STATIC_LIBS ON)
 #set(Boost_USE_MULTITHREADED OFF)
 
 #set(Boost_FIND_COMPONENTS TRUE)
