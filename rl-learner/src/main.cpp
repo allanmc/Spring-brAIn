@@ -373,7 +373,7 @@ void LoadConfig(int argc, char *argv[])
 			("use_smdpq,s", po::value<bool>(), "Use smdpq?")
 			("use_rs_termination,t", po::value<bool>(), "Use special termination reward?")
 			("use_rs_time,m", po::value<bool>(), "Use TRS?")
-			("use_q_lambda,d", po::value<bool>(), "Use Q-lambda?")
+			("use_q_lambda,a", po::value<bool>(), "Use Q-lambda?")
 		;
 
 		po::variables_map vm;
@@ -395,6 +395,12 @@ void LoadConfig(int argc, char *argv[])
 		}
 		if (vm.count("alpha")) {
 			ALPHA = vm["alpha"].as<float>();
+		}
+		if (vm.count("epsilon_start")) {
+			EPSILON_START = vm["alpha"].as<float>();
+		}
+		if (vm.count("epsilon_decay")) {
+			EPSILON_DECAY = vm["epsilon_decay"].as<float>();
 		}
 		if (vm.count("print_reward")) {
 			PRINT_REWARD = vm["print_reward"].as<bool>();
