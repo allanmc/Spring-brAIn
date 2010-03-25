@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 	Game *g = new Game();
 	RL *r;
 
-	bool debug = false;
+	bool debug = true;
 
 	double currentEpsilon = EPSILON_START;
 	double currentReward = 0.0;
@@ -332,7 +332,7 @@ void LoadConfig(int argc, char *argv[])
 	GAMMA = 0.9f;
 	ALPHA = 0.1f;
 	EPSILON_START = 0.5f;
-	EPSILON_DECAY = 0.99999f;
+	EPSILON_DECAY = 0.999991f;
 
 	PRINT_REWARD  = true;
 
@@ -373,7 +373,7 @@ void LoadConfig(int argc, char *argv[])
 			("use_smdpq,s", po::value<bool>(), "Use smdpq?")
 			("use_rs_termination,t", po::value<bool>(), "Use special termination reward?")
 			("use_rs_time,m", po::value<bool>(), "Use TRS?")
-			("use_q_lambda,a", po::value<bool>(), "Use Q-lambda?")
+			("use_q_lambda,y", po::value<bool>(), "Use Q-lambda?")
 		;
 
 		po::variables_map vm;
@@ -397,7 +397,7 @@ void LoadConfig(int argc, char *argv[])
 			ALPHA = vm["alpha"].as<float>();
 		}
 		if (vm.count("epsilon_start")) {
-			EPSILON_START = vm["alpha"].as<float>();
+			EPSILON_START = vm["epsilon_start"].as<float>();
 		}
 		if (vm.count("epsilon_decay")) {
 			EPSILON_DECAY = vm["epsilon_decay"].as<float>();

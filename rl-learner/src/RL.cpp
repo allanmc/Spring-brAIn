@@ -250,8 +250,10 @@ RL_Action RL::Update(int agentId)
 		float value;
 		if (!COMMON_TERMINATION_REWARD || firstReward)//If we already calculated reward for this ternmination, use that
 		{
-			double metalGain = game->GetTotalProduction(MEX_ID) - game->GetResourceUsage(MEX_ID);
-			double energyGain = game->GetTotalProduction(SOLAR_ID) - game->GetResourceUsage(SOLAR_ID);
+			double metalGain = game->GetTotalProduction(MEX_ID);
+			metalGain -= game->GetResourceUsage(MEX_ID);
+			double energyGain = game->GetTotalProduction(SOLAR_ID);
+			energyGain -= game->GetResourceUsage(SOLAR_ID);
 
 			float metalValue = (float)((max(REWARD_METAL_MIN, min(REWARD_METAL_MAX, metalGain ) ) - REWARD_METAL_MIN ) / (REWARD_METAL_MAX-REWARD_METAL_MIN)); //metal production-usage [-1;1]
 			float energyValue = (float)((max(REWARD_ENERGY_MIN, min(REWARD_ENERGY_MAX, energyGain ) ) - REWARD_ENERGY_MIN ) / (REWARD_ENERGY_MAX-REWARD_ENERGY_MIN)); //energy production-usage [-1;1]
