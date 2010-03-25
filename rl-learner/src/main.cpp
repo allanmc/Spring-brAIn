@@ -344,6 +344,7 @@ void LoadConfig(int argc, char *argv[])
 		RUNS = pt.get("runs", RUNS);
 		NUM_LEARNERS = pt.get("num_learners", NUM_LEARNERS);
 		GAMMA = pt.get("gamma", GAMMA);
+		ALPHA = pt.get("alpha", ALPHA);
 		EPSILON_START = pt.get("epsilon_start", EPSILON_START);
 		EPSILON_DECAY = pt.get("epsilon_decay", EPSILON_DECAY);
 
@@ -355,13 +356,13 @@ void LoadConfig(int argc, char *argv[])
 	try {
 		po::options_description desc("Allowed options");
 		desc.add_options()
-			("help", "Help me!")
-			("runs", po::value<int>(), "Number of runs to do")
-			("num_learners", po::value<int>(), "Number of learners")
-			("gamma", po::value<float>(), "Gamma value")
-			("alpha", po::value<float>(), "Alpha value")
-			("epsilon_start", po::value<float>(), "Starting epsilon value")
-			("epsilon_decay", po::value<float>(), "Epsilon-decay value")
+			("help,h", "Help me!")
+			("runs,n", po::value<int>(), "Number of runs to do")
+			("num_learners,l", po::value<int>(), "Number of learners")
+			("gamma,g", po::value<float>(), "Gamma value")
+			("alpha,a", po::value<float>(), "Alpha value")
+			("epsilon_start,e", po::value<float>(), "Starting epsilon value")
+			("epsilon_decay,d", po::value<float>(), "Epsilon-decay value")
 		;
 
 		po::variables_map vm;
@@ -371,6 +372,24 @@ void LoadConfig(int argc, char *argv[])
 		if (vm.count("help")) {
 			cout << desc << "\n";
 			exit(0);
+		}
+		if (vm.count("runs")) {
+			RUNS = vm["runs"].as<int>();
+		}
+		if (vm.count("num_learners")) {
+			NUM_LEARNERS = vm["num_learners"].as<int>();
+		}
+		if (vm.count("gamma")) {
+			GAMMA = vm["gamma"].as<float>();
+		}
+		if (vm.count("alpha")) {
+			ALPHA = vm["alpha"].as<float>();
+		}
+		if (vm.count("epsilon_start")) {
+			EPSILON_START = vm["epsilon_start"].as<float>();
+		}
+		if (vm.count("epsilon_decay")) {
+			EPSILON_DECAY = vm["epsilon_decay"].as<float>();
 		}
 
 	}
