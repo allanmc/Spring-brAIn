@@ -334,6 +334,13 @@ void LoadConfig(int argc, char *argv[])
 	EPSILON_START = 0.5f;
 	EPSILON_DECAY = 0.99999f;
 
+	PRINT_REWARD  = true;
+
+	USE_QSMDP = true;
+	USE_RS_TERMINATION = true;
+	USE_RS_TIME = false;
+	USE_Q_LAMBDA = false;
+
 	try {
 		ptree pt;
 		read_info("config", pt);
@@ -343,7 +350,11 @@ void LoadConfig(int argc, char *argv[])
 		ALPHA = pt.get("alpha", ALPHA);
 		EPSILON_START = pt.get("epsilon_start", EPSILON_START);
 		EPSILON_DECAY = pt.get("epsilon_decay", EPSILON_DECAY);
-
+		PRINT_REWARD = pt.get("print_reward", PRINT_REWARD);
+		USE_QSMDP = pt.get("use_qsmdp", USE_QSMDP);
+		USE_RS_TERMINATION = pt.get("use_rs_termination", USE_RS_TERMINATION);
+		USE_RS_TIME = pt.get("use_rs_time", USE_RS_TIME);
+		USE_Q_LAMBDA = pt.get("use_q_lambda", USE_Q_LAMBDA);
 	}
     catch(exception& e) {
 		cerr << "Coult not load config: " << e.what() << "\n";
@@ -358,6 +369,11 @@ void LoadConfig(int argc, char *argv[])
 			("alpha,a", po::value<float>(), "Alpha value")
 			("epsilon_start,e", po::value<float>(), "Starting epsilon value")
 			("epsilon_decay,d", po::value<float>(), "Epsilon-decay value")
+			("print_reward,r", po::value<bool>(), "Print reward? Else time is pritned.")
+			("use_smdpq,s", po::value<bool>(), "Use smdpq?")
+			("use_rs_termination,t", po::value<bool>(), "Use special termination reward?")
+			("use_rs_time,m", po::value<bool>(), "Use TRS?")
+			("use_q_lambda,d", po::value<bool>(), "Use Q-lambda?")
 		;
 
 		po::variables_map vm;
@@ -380,11 +396,20 @@ void LoadConfig(int argc, char *argv[])
 		if (vm.count("alpha")) {
 			ALPHA = vm["alpha"].as<float>();
 		}
-		if (vm.count("epsilon_start")) {
-			EPSILON_START = vm["epsilon_start"].as<float>();
+		if (vm.count("print_reward")) {
+			PRINT_REWARD = vm["print_reward"].as<bool>();
 		}
-		if (vm.count("epsilon_decay")) {
-			EPSILON_DECAY = vm["epsilon_decay"].as<float>();
+		if (vm.count("use_qsmdp")) {
+			USE_QSMDP = vm["use_qsmdp"].as<bool>();
+		}
+		if (vm.count("use_rs_termination")) {
+			USE_RS_TERMINATION = vm["use_rs_termination"].as<bool>();
+		}
+		if (vm.count("use_rs_time")) {
+			USE_RS_TIME = vm["use_rs_time"].as<bool>();
+		}
+		if (vm.count("use_q_lambda")) {
+			USE_Q_LAMBDA = vm["use_q_lambda"].as<bool>();
 		}
 
 	}

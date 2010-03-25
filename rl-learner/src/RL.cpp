@@ -6,6 +6,11 @@ float GAMMA;
 float ALPHA;
 float EPSILON_START;
 float EPSILON_DECAY;
+bool PRINT_REWARD;
+bool USE_QSMDP;
+bool USE_RS_TERMINATION;
+bool USE_RS_TIME;
+bool USE_Q_LAMBDA;
 
 using namespace brainSpace;
 using namespace std;

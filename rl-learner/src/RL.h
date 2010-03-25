@@ -17,12 +17,18 @@ extern int RUNS;
 
 #define TEST_RESULTS false
 
-#define PRINT_REWARD true
 
-#define USE_QSMDP true
-#define USE_RS_TERMINATION true
-#define USE_RS_TIME false
-#define USE_Q_LAMBDA false
+//#define PRINT_REWARD true
+extern bool PRINT_REWARD;
+//#define USE_QSMDP true
+extern bool USE_QSMDP;
+//#define USE_RS_TERMINATION true
+extern bool USE_RS_TERMINATION;
+//#define USE_RS_TIME false
+extern bool USE_RS_TIME;
+//#define USE_Q_LAMBDA false
+extern bool USE_Q_LAMBDA;
+
 #define LAMBDA 0.95f
 #define Q_LAMBDA_THRESHOLD 0.00005f
 
