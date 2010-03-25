@@ -17,7 +17,7 @@ extern int RUNS;
 
 #define TEST_RESULTS false
 
-#define PRINT_REWARD false
+#define PRINT_REWARD true
 
 #define USE_QSMDP true
 #define USE_RS_TERMINATION true
