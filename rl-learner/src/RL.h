@@ -32,9 +32,9 @@ extern bool USE_Q_LAMBDA;
 #define LAMBDA 0.95f
 #define Q_LAMBDA_THRESHOLD 0.00005f
 
-#define REWARD_METAL_MIN 2.5
+#define REWARD_METAL_MIN -20.0
 #define REWARD_METAL_MAX 8.0
-#define REWARD_ENERGY_MIN 15.0
+#define REWARD_ENERGY_MIN -100.0
 #define REWARD_ENERGY_MAX 26.0
 
 //#define GAMMA 0.9f
