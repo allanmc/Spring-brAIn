@@ -334,10 +334,6 @@ void LoadConfig(int argc, char *argv[])
 	EPSILON_START = 0.5f;
 	EPSILON_DECAY = 0.99999f;
 
-	//load config file
-	//ifstream *file = new ifstream("config.txt", ios::binary | ios::in);
-	//read content
-	//delete file;
 	try {
 		ptree pt;
 		read_info("config", pt);
@@ -397,16 +393,4 @@ void LoadConfig(int argc, char *argv[])
         cerr << "error: " << e.what() << "\n";
         return;
     }
-	//load arguments
-	if (argc == 3 && strcmp(argv[1],"-n")==0) {
-		RUNS = atoi(argv[2]);
-	}
-	if(argc > 1)
-	{
-		int currentArg = 1;
-		for(int i = 0; i<argc; i++)
-		{
-			//check each argument and stuff
-		}
-	}
 }
