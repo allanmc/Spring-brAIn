@@ -350,8 +350,7 @@ void LoadConfig(int argc, char *argv[])
 
 	}
     catch(exception& e) {
-        cerr << "error: " << e.what() << "\n";
-        return;
+		cerr << "Coult not load config: " << e.what() << "\n";
     }
 	try {
 		po::options_description desc("Allowed options");
@@ -394,8 +393,7 @@ void LoadConfig(int argc, char *argv[])
 
 	}
     catch(exception& e) {
-        cerr << "error: " << e.what() << "\n";
-        return;
+        cerr << "Could not get command options: " << e.what() << "\n";
     }
 	//load arguments
 	if (argc == 3 && strcmp(argv[1],"-n")==0) {
