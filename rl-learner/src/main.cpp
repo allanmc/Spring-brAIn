@@ -332,7 +332,7 @@ void LoadConfig(int argc, char *argv[])
 	GAMMA = 0.9f;
 	ALPHA = 0.1f;
 	EPSILON_START = 0.5f;
-	EPSILON_DECAY = 0.999991f;
+	EPSILON_DECAY = 0.99999f;
 
 	PRINT_REWARD  = true;
 
