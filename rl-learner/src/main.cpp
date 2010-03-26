@@ -182,8 +182,8 @@ void PrintGameStatus(Game *g)
 {
 	cout << "Metal Res: " << g->resources[MEX_ID] << endl;
 	cout << "Energy Res: " << g->resources[SOLAR_ID] << endl;
-	cout << "Metal Gain: " << g->GetTotalProduction(MEX_ID) - g->GetResourceUsage(MEX_ID) << endl;
-	cout << "Energy Gain: " << g->GetTotalProduction(SOLAR_ID) - g->GetResourceUsage(SOLAR_ID) << endl;
+	cout << "Metal Gain: " << g->GetTotalProduction(MEX_ID) - g->GetResourceUsage(MEX_ID) - g->units[LAB_ID]*5 << endl;
+	cout << "Energy Gain: " << g->GetTotalProduction(SOLAR_ID) - g->GetResourceUsage(SOLAR_ID) - g->units[LAB_ID]*50 << endl;
 }
 
 void PrintAction(bool debug,RL_Action a, unsigned short builder)

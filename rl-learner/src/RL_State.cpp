@@ -70,8 +70,8 @@ RL_State::RL_State(Game *g, int agentId)
 			ID = concurrent;
 			ID = ID*4 + (metalStore > 150 ? (metalStore > 600 ? 3 : 2) : (metalStore > 50 ? 1 : 0) );
 			ID = ID*2 + (energyStore > 500 ? 1 : 0 );
-			ID = ID*4 + (metalProduction > 5 ? (metalProduction > 8 ? 3 : 2) : (metalProduction > 2.5f ? 1 : 0) );
-			ID = ID*3 + (energyProduction > 26 ? 2 : (energyProduction > 15 ? 1 : 0) );
+			ID = ID*4 + (metalProduction > 8 ? (metalProduction > 13 ? 3 : 2) : (metalProduction > 3 ? 1 : 0) );
+			ID = ID*3 + (energyProduction > 60 ? 2 : (energyProduction > 30 ? 1 : 0) );
 
 			//set actions available
 			Actions.push_back(RL_Action(LAB_ID,0));

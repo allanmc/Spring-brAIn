@@ -38,16 +38,6 @@ void Game::BuildUnit(int unitId, int agentId)
 vector<int> Game::Update()
 {
 	frame++;
-	if(units[MEX_ID] > 5 && units[SOLAR_ID] == 0 && units[LAB_ID] == 0)
-	{
-		for(unsigned int i = 0; i < buildList.size(); i++)
-		{
-			if(buildList[i].unitId == LAB_ID)
-			{
-				int hest= 1;
-			}
-		}
-	}
 
 	double metalUse = 0;
 	double energyUse = 0;
