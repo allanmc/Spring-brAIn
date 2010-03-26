@@ -8,7 +8,7 @@ Game::Game()
 {
 	unitDefs[MEX_ID] = unitdef(50,521,1800,3.0f,-3.0f);
 	unitDefs[SOLAR_ID] = unitdef(145,0,2845,0.0f,20.0f);
-	unitDefs[LAB_ID] = unitdef(605,1130,6760,-5.0f,-50.0f);
+	unitDefs[LAB_ID] = unitdef(605,1130,6760);
 	unitDefs[ROCKO_ID] = unitdef(97,944,1887);
 	ResetGame();
 }
@@ -38,13 +38,25 @@ void Game::BuildUnit(int unitId, int agentId)
 vector<int> Game::Update()
 {
 	frame++;
+	if(units[MEX_ID] > 5 && units[SOLAR_ID] == 0 && units[LAB_ID] == 0)
+	{
+		for(unsigned int i = 0; i < buildList.size(); i++)
+		{
+			if(buildList[i].unitId == LAB_ID)
+			{
+				int hest= 1;
+			}
+		}
+	}
 
 	double metalUse = 0;
 	double energyUse = 0;
 	double energyProd = GetTotalProduction(SOLAR_ID);
 	double energyUsageForBuildings = GetResourceUsage(SOLAR_ID);
+	double metalUsageForBuildings = GetResourceUsage(MEX_ID);
 	double metalProd = GetBaseProduction(MEX_ID);
 	double metalProductionFactor = 0.0;
+	double lowestUsageFactor = 0.0;
 
 	if ( metalProd < 0 || energyProd < 0 )
 	{
@@ -54,9 +66,6 @@ vector<int> Game::Update()
 		cerr << "Solars: " << units[SOLAR_ID]<< endl;
 	}
 
-	
-	double TotalMetalCost = 0;
-	double TotalEnergyCost = 0;
 	bool discount = false;
 
 	for(unsigned int i = 0; i < buildList.size(); i++)
@@ -64,23 +73,26 @@ vector<int> Game::Update()
 		double time = GetBuildTime(buildList[i].unitId, false);
 		energyUse += unitDefs[buildList[i].unitId].energyCost/time;
 		metalUse += unitDefs[buildList[i].unitId].metalCost/time;
-		TotalEnergyCost += unitDefs[buildList[i].unitId].energyCost;
-		TotalMetalCost += unitDefs[buildList[i].unitId].metalCost;
 	}
 
-	if ( (energyUse + energyUsageForBuildings) > energyProd && ((energyUse + energyUsageForBuildings) - energyProd) > resources[SOLAR_ID])
+	if ( (energyUse+energyUsageForBuildings) > energyProd && ((energyUse+energyUsageForBuildings) - energyProd) > resources[SOLAR_ID])
 	{
-		metalProductionFactor = energyProd/(energyUsageForBuildings+energyUse);
+		metalProductionFactor = (energyProd+resources[SOLAR_ID])/(energyUse+energyUsageForBuildings);
+		energyUsageForBuildings *= metalProductionFactor;
+		metalUsageForBuildings *= metalProductionFactor;
 		metalProd *= metalProductionFactor;
-		energyUse *= metalProductionFactor;
-		metalUse *= metalProductionFactor;
+		//energyUse *= metalProductionFactor;
+		//metalUse *= metalProductionFactor;
 		discount = true;
 	}
 
+	//Metal from commander, will always be 1.5!
 	metalProd += 1.5;
 
-	resources[MEX_ID] += metalProd;
-	resources[SOLAR_ID] += energyProd;
+	resources[MEX_ID] += metalProd - metalUsageForBuildings;
+	resources[SOLAR_ID] += energyProd - energyUsageForBuildings;
+
+
 	
 
 	if(metalUse < resources[MEX_ID] && energyUse < resources[SOLAR_ID])
@@ -94,8 +106,10 @@ vector<int> Game::Update()
 			double time = GetBuildTime(buildList[i].unitId, false);
 			double e = unitDefs[buildList[i].unitId].energyCost/time;
 			double m = unitDefs[buildList[i].unitId].metalCost/time;
+			
 			if ( discount )
 			{
+				//should never go here :P
 				e *= metalProductionFactor;
 				m *= metalProductionFactor;
 			}
@@ -175,7 +189,8 @@ vector<int> Game::Update()
 			resources[MEX_ID] -= pe*metalUse;
 		}
 	}
-
+	
+	int rockosToAdd = 0;
 	//anyone finished?
 	vector<int> finished;
 	for(unsigned int i = 0; i < buildList.size(); i++)
@@ -185,15 +200,22 @@ vector<int> Game::Update()
 			resources[MEX_ID] -= buildList[i].remainingMetal;
 			resources[SOLAR_ID] -= buildList[i].remainingEnergy;
 
-			if ( buildList[i].unitId == LAB_ID )
+			if ( buildList[i].unitId == LAB_ID || buildList[i].unitId == ROCKO_ID )
 			{
-				//cerr << "Remaining metal: " << resources[MEX_ID] << " Remaining energy: " << resources[SOLAR_ID] << endl;
+				rockosToAdd++;
 			}
 			units[buildList[i].unitId]++;
-			finished.push_back(buildList[i].builder);
+			if(buildList[i].builder >= 0)
+			{
+				finished.push_back(buildList[i].builder);
+			}
 			buildList.erase(buildList.begin() + i);
 			i--;			
 		}
+	}
+	for(int i = 0; i < rockosToAdd; i++)
+	{
+		BuildUnit(ROCKO_ID, -1);
 	}
 
 	if(resources[SOLAR_ID] > 1000)
@@ -202,10 +224,6 @@ vector<int> Game::Update()
 	if(resources[MEX_ID] > 1000)
 		resources[MEX_ID] = 1000;
 
-	if(resources[MEX_ID] < 0)
-	{
-		//resources[MEX_ID] = 0;
-	}
 	return finished;
 
 }

@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 	Game *g = new Game();
 	RL *r;
 
-	bool debug = true;
+	bool debug = false;
 
 	double currentEpsilon = EPSILON_START;
 	double currentReward = 0.0;
