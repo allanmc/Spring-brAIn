@@ -31,6 +31,7 @@ RL::RL(Game *g, double epsilon, int numAgents, bool load)
 		isTerminated[i] = false;
 	}
 	lastTerminationReward = 0.0;
+	lastReward = 0.0;
 
 	for(int i = 0; i<numAgents; i++)
 	{
@@ -45,9 +46,9 @@ int bla;
 		stateVars.push_back( QStateVar("ConCur", (int)pow((double)(3*5+1),NUM_LEARNERS-1) ) );//3 action * 5 time states + 1 null actions
 		//stateVars.push_back( QStateVar("ConCurTime", 5));
 		stateVars.push_back( QStateVar("MStore", 4));
-		stateVars.push_back( QStateVar("EStore", 2));
+		stateVars.push_back( QStateVar("EStore", 4));
 		stateVars.push_back( QStateVar("MIncome", 4));
-		stateVars.push_back( QStateVar("EIncome", 3));
+		stateVars.push_back( QStateVar("EIncome", 4));
 		actions.push_back( QAction("Lab", 0));
 		actions.push_back( QAction("Solar", 1));
 		actions.push_back( QAction("Mex", 2));
@@ -288,6 +289,7 @@ RL_Action RL::Update(int agentId)
 	}
 
 	totalReward += reward;
+	lastReward = reward;
 
 	float value;
 	//modify gamme according to use_qmsdp
@@ -353,4 +355,8 @@ RL_Action RL::Update(int agentId)
 float RL::GetTotalReward()
 {
 	return totalReward;
+}
+float RL::GetLastReward()
+{
+	return lastReward;
 }

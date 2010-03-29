@@ -98,6 +98,7 @@ namespace brainSpace {
 		RL(Game *g, double epsilon, int numAgents = 1, bool load = false);
 		virtual ~RL();
 		float GetTotalReward();
+		float GetLastReward();
 		static char* GetFilePath();
 		unsigned int numActions;
 		unsigned int numStates;
@@ -126,6 +127,7 @@ namespace brainSpace {
 		int Epsilon;
 		RL_State GetState(int agentId = 0);
 		RL_Action SafeNextAction(RL_State &state);
+		float lastReward;
 		
 		void LoadFromFile(bool doIt = false);
 		

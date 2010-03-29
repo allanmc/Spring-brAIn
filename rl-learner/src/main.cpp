@@ -6,6 +6,7 @@ using namespace brainSpace;
 int main(int argc, char *argv[])
 {
 	LoadConfig(argc, argv);
+	cerr << EPSILON_DECAY << endl;
 	PrintOutputHeader();
 	srand((unsigned int)time(NULL));
 
@@ -41,6 +42,7 @@ int main(int argc, char *argv[])
 		if ( run == RUNS-1  )
 		{
 			debug = true;
+			cerr << "Eps: " << currentEpsilon << endl;
 			currentEpsilon = 0.0f;
 		}
 
@@ -97,7 +99,12 @@ int main(int argc, char *argv[])
 					}
 					else
 					{
-						if (debug) cerr << "T" << builders[i] << " ";
+						if (debug) 
+						{
+							cerr << "LastReward: " << r->GetLastReward() << " ";
+							cerr << "StateID: " << r->LastStateID << " " << endl;
+							cerr << "T" << builders[i] << " ";
+						}
 						runningAgents--;
 					}
 				}
@@ -146,7 +153,7 @@ int main(int argc, char *argv[])
 		{
 			bestFrame = currentFrame;
 			bestReward = currentReward;
-			if (debug && !TEST_RESULTS) system("pause");
+			//if (debug && !TEST_RESULTS) system("pause");
 		}
 
 		currentReward = 0.0;
@@ -180,10 +187,10 @@ void ChangeColour(WORD theColour)
 
 void PrintGameStatus(Game *g)
 {
-	cout << "Metal Res: " << g->resources[MEX_ID] << endl;
-	cout << "Energy Res: " << g->resources[SOLAR_ID] << endl;
-	cout << "Metal Gain: " << g->GetTotalProduction(MEX_ID) - g->GetResourceUsage(MEX_ID) - g->units[LAB_ID]*5 << endl;
-	cout << "Energy Gain: " << g->GetTotalProduction(SOLAR_ID) - g->GetResourceUsage(SOLAR_ID) - g->units[LAB_ID]*50 << endl;
+	cerr << "Metal Res: " << g->resources[MEX_ID] << endl;
+	cerr << "Energy Res: " << g->resources[SOLAR_ID] << endl;
+	cerr << "Metal Gain: " << g->GetTotalProduction(MEX_ID) - g->GetResourceUsage(MEX_ID) - g->units[LAB_ID]*5 << endl;
+	cerr << "Energy Gain: " << g->GetTotalProduction(SOLAR_ID) - g->GetResourceUsage(SOLAR_ID) - g->units[LAB_ID]*50 << endl;
 }
 
 void PrintAction(bool debug,RL_Action a, unsigned short builder)
@@ -350,6 +357,14 @@ void LoadConfig(int argc, char *argv[])
 		ALPHA = pt.get("alpha", ALPHA);
 		EPSILON_START = pt.get("epsilon_start", EPSILON_START);
 		EPSILON_DECAY = pt.get("epsilon_decay", EPSILON_DECAY);
+		float epsilon_end = pt.get("epsilon_end", 0.0);
+		if(epsilon_end != 0.0)
+		{
+			double first = (double)epsilon_end/(double)EPSILON_START;
+			double second = 1.0/(double)RUNS;
+			cerr << "first: " << first << " second " << second << endl;
+			EPSILON_DECAY = pow(first, second);
+		}
 		PRINT_REWARD = pt.get("print_reward", PRINT_REWARD);
 		USE_QSMDP = pt.get("use_qsmdp", USE_QSMDP);
 		USE_RS_TERMINATION = pt.get("use_rs_termination", USE_RS_TERMINATION);
@@ -369,6 +384,7 @@ void LoadConfig(int argc, char *argv[])
 			("alpha,a", po::value<float>(), "Alpha value")
 			("epsilon_start,e", po::value<float>(), "Starting epsilon value")
 			("epsilon_decay,d", po::value<float>(), "Epsilon-decay value")
+			("epsilon_end,f", po::value<float>(), "Epsilon-end value(overwrites decay)")
 			("print_reward,r", po::value<bool>(), "Print reward? Else time is pritned.")
 			("use_smdpq,s", po::value<bool>(), "Use smdpq?")
 			("use_rs_termination,t", po::value<bool>(), "Use special termination reward?")
@@ -401,6 +417,10 @@ void LoadConfig(int argc, char *argv[])
 		}
 		if (vm.count("epsilon_decay")) {
 			EPSILON_DECAY = vm["epsilon_decay"].as<float>();
+		}
+		if (vm.count("epsilon_end")) {
+			float epsilon_end = vm["epsilon_end"].as<float>();
+			EPSILON_DECAY = pow((double)epsilon_end/(double)EPSILON_START, 1.0/(double)RUNS);
 		}
 		if (vm.count("print_reward")) {
 			PRINT_REWARD = vm["print_reward"].as<bool>();

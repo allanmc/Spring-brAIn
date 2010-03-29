@@ -22,12 +22,13 @@ RL_State::RL_State(Game *g, int agentId)
 	case 0://continueos construction
 		{
 			terminal = false;
+			int labCount = game->units[LAB_ID];
 			//storage
 			double metalStore = game->GetAvailableResources(MEX_ID,0.0f);
 			double energyStore = game->GetAvailableResources(SOLAR_ID,0.0f);
 			//income
-			double metalProduction = game->GetTotalProduction(MEX_ID) - game->GetResourceUsage(MEX_ID);
-			double energyProduction = game->GetTotalProduction(SOLAR_ID) - game->GetResourceUsage(SOLAR_ID);
+			double metalProduction = game->GetTotalProduction(MEX_ID) - labCount*5;
+			double energyProduction = game->GetTotalProduction(SOLAR_ID) - game->GetResourceUsage(SOLAR_ID) - labCount*50;
 			//other agents work
 			
 			int concurrent = 0;
@@ -59,7 +60,7 @@ RL_State::RL_State(Game *g, int agentId)
 				}
 			}
 			//number of labs
-			int labCount = game->units[LAB_ID];
+			
 			if(labCount > lastLabCount)
 			{
 				//this->lastLabCount = labCount; //Moved to main.
@@ -68,10 +69,10 @@ RL_State::RL_State(Game *g, int agentId)
 
 			//set ID
 			ID = concurrent;
-			ID = ID*4 + (metalStore > 150 ? (metalStore > 600 ? 3 : 2) : (metalStore > 50 ? 1 : 0) );
-			ID = ID*2 + (energyStore > 500 ? 1 : 0 );
-			ID = ID*4 + (metalProduction > 8 ? (metalProduction > 13 ? 3 : 2) : (metalProduction > 3 ? 1 : 0) );
-			ID = ID*3 + (energyProduction > 60 ? 2 : (energyProduction > 30 ? 1 : 0) );
+			ID = ID*4 + (metalStore > 600 ? (metalStore > 900 ? 3 : 2) : (metalStore > 300 ? 1 : 0) );
+			ID = ID*4 + (energyStore > 600 ? (energyStore > 900 ? 3 : 2) : (energyStore > 300 ? 1 : 0) );
+			ID = ID*4 + (metalProduction > 6 ? (metalProduction > 13 ? 3 : 2) : (metalProduction > 0 ? 1 : 0) );
+			ID = ID*4 + (energyProduction > 26 ? (energyProduction > 76 ? 3 : 2) : (energyProduction > 0 ? 1 : 0) );
 
 			//set actions available
 			Actions.push_back(RL_Action(LAB_ID,0));
