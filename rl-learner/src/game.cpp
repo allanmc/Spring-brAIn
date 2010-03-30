@@ -154,7 +154,13 @@ vector<int> Game::Update()
 	{
 		//run out of something.. find out what
 		double pm = resources[MEX_ID]/metalUse;
-		double pe = resources[SOLAR_ID]/energyUse;
+		double pe;
+		if(energyUse <= 0)
+		{
+			pe = 99999999; // we will never run out of energy
+		}else{
+			pe = resources[SOLAR_ID]/energyUse;
+		}
 
 		if(pm < pe)
 		{
