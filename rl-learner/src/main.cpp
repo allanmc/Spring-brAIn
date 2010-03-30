@@ -46,7 +46,8 @@ int main(int argc, char *argv[])
 			currentEpsilon = 0.0f;
 		}
 
-		for ( unsigned int cTerm = 0 ; cTerm < RL_LAB_INDEX ; cTerm++ )
+		int numTerm = 1;//RL_LAB_INDEX
+		for ( unsigned int cTerm = 0 ; cTerm < numTerm ; cTerm++ )
 		{
 			if (TEST_RESULTS)
 			{

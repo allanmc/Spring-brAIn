@@ -34,40 +34,36 @@ RL_State::RL_State(Game *g, int agentId)
 			int concurrent = 0;
 			int value = 0;
 			int time_remaining = 0;
-			//bool skipped_agent = false;
-			//int agent;
+
+			isBuildingLab = false;
 			for ( int i = 0; i < NUM_LEARNERS ; i++ )
 			{
 				if ( i == agentId )
 				{
-					//skipped_agent = true;
 					continue;
 				}
-				//agent = ( skipped_agent ? i - 1 : i );
 				
 				value = game->UnitBeingBuildByBuilder(i) + 1; // [0;3]
 				if ( value > 0 ) 
 				{
+					if(value-1 == LAB_ID)
+					{
+						isBuildingLab = true;
+					}
 					time_remaining = min(game->GetPercentRemaining(i) / (100/5), 4); // [0;4]
 					value = (value-1)*5 + time_remaining + 1;
 				}
 				concurrent = concurrent*16 + value;
-				if (value>15) {
-					i=i;
-				}
-				if (concurrent>31) {
-					i=i;
-				}
 			}
 			//number of labs
 			
-			if(labCount > lastLabCount)
+			if(labCount > RL_LAB_INDEX - 1)
 			{
 				//this->lastLabCount = labCount; //Moved to main.
 				terminal = true;
 			}
 
-			//set ID
+			//set ID --- Update RL::RL() when changing the ID calculation
 			ID = concurrent;
 			ID = ID*4 + (metalStore > 600 ? (metalStore > 900 ? 3 : 2) : (metalStore > 300 ? 1 : 0) );
 			ID = ID*4 + (energyStore > 600 ? (energyStore > 900 ? 3 : 2) : (energyStore > 300 ? 1 : 0) );
@@ -98,6 +94,24 @@ vector<RL_Action> RL_State::GetActions()
 {
 	return Actions;
 }
+
+//Update This when changing the ID calculation
+/*
+bool RL_State::isBuildingLab()
+{
+	bool buildingLab = false;
+	int conCur = ID / (4*4*4*4);
+	for (int i = 0; i<NUM_LEARNERS-1; i++) {
+		int building = (conCur / (16*i)) % 16
+		if (building != 0) {
+			int id = building / 5;
+			if (id == LAB_ID) {
+				buildingLab = true;
+			}
+		}
+	}
+	return buildingLab;
+}*/
 
 void RL_State::DeleteAction(int actionID)
 {

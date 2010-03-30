@@ -22,6 +22,7 @@ namespace brainSpace {
 		RL_State & operator=(const RL_State &rhs);
 		
 		static int lastLabCount;//hack for type = 2
+		bool isBuildingLab;
 	protected:
 		Game *game;
 		bool terminal;
