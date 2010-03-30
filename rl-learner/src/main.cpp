@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 	if (TEST_RESULTS)
 		RUNS = 1;
 
-	for(int run = 0; run < RUNS; run++)
+	for(unsigned int run = 0; run < RUNS; run++)
 	{
 		g_currentGame = run;
 		//if ( run % 500 == 0 )
@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 			currentEpsilon = 0.0f;
 		}
 
-		int numTerm = 1;//RL_LAB_INDEX
+		unsigned int numTerm = 1;//RL_LAB_INDEX
 		for ( unsigned int cTerm = 0 ; cTerm < numTerm ; cTerm++ )
 		{
 			if (TEST_RESULTS)
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 			RL_State::lastLabCount = g->units[LAB_ID];
 			
 			RL_Action a;
-			for(int x = 0; x < NUM_LEARNERS; x++)
+			for(unsigned int x = 0; x < NUM_LEARNERS; x++)
 			{
 				a = r->Update(x);
 				UpdateStateVisits(r);
@@ -358,7 +358,7 @@ void LoadConfig(int argc, char *argv[])
 		ALPHA = pt.get("alpha", ALPHA);
 		EPSILON_START = pt.get("epsilon_start", EPSILON_START);
 		EPSILON_DECAY = pt.get("epsilon_decay", EPSILON_DECAY);
-		float epsilon_end = pt.get("epsilon_end", 0.0);
+		float epsilon_end = (float)pt.get("epsilon_end", 0.0);
 		if(epsilon_end != 0.0)
 		{
 			double first = (double)epsilon_end/(double)EPSILON_START;
@@ -383,9 +383,9 @@ void LoadConfig(int argc, char *argv[])
 			("num_learners,l", po::value<int>(), "Number of learners")
 			("gamma,g", po::value<float>(), "Gamma value")
 			("alpha,a", po::value<float>(), "Alpha value")
-			("epsilon_start,e", po::value<float>(), "Starting epsilon value")
-			("epsilon_decay,d", po::value<float>(), "Epsilon-decay value")
-			("epsilon_end,f", po::value<float>(), "Epsilon-end value(overwrites decay)")
+			("epsilon_start,e", po::value<double>(), "Starting epsilon value")
+			("epsilon_decay,d", po::value<double>(), "Epsilon-decay value")
+			("epsilon_end,f", po::value<double>(), "Epsilon-end value(overwrites decay)")
 			("print_reward,r", po::value<bool>(), "Print reward? Else time is pritned.")
 			("use_smdpq,s", po::value<bool>(), "Use smdpq?")
 			("use_rs_termination,t", po::value<bool>(), "Use special termination reward?")
@@ -414,13 +414,13 @@ void LoadConfig(int argc, char *argv[])
 			ALPHA = vm["alpha"].as<float>();
 		}
 		if (vm.count("epsilon_start")) {
-			EPSILON_START = vm["epsilon_start"].as<float>();
+			EPSILON_START = vm["epsilon_start"].as<double>();
 		}
 		if (vm.count("epsilon_decay")) {
-			EPSILON_DECAY = vm["epsilon_decay"].as<float>();
+			EPSILON_DECAY = vm["epsilon_decay"].as<double>();
 		}
 		if (vm.count("epsilon_end")) {
-			float epsilon_end = vm["epsilon_end"].as<float>();
+			double epsilon_end = vm["epsilon_end"].as<double>();
 			EPSILON_DECAY = pow((double)epsilon_end/(double)EPSILON_START, 1.0/(double)RUNS);
 		}
 		if (vm.count("print_reward")) {

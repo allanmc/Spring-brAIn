@@ -36,7 +36,7 @@ RL_State::RL_State(Game *g, int agentId)
 			int time_remaining = 0;
 
 			isBuildingLab = false;
-			for ( int i = 0; i < NUM_LEARNERS ; i++ )
+			for ( unsigned int i = 0; i < NUM_LEARNERS ; i++ )
 			{
 				if ( i == agentId )
 				{
