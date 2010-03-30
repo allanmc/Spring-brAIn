@@ -207,6 +207,18 @@ vector<int> Game::Update()
 	{
 		BuildUnit(ROCKO_ID, -1);
 	}
+	if(resources[SOLAR_ID] < 0 || resources[MEX_ID] < 0 || metalUse <= 0 || energyUse < 0)
+	{
+		cerr << " resources[SOLAR_ID] " << resources[SOLAR_ID] << " resources[MEX_ID] " << resources[MEX_ID] << " metalUse " << metalUse << " energyUse " << energyUse << " discount " << discount << " metalProductionFactor " << metalProductionFactor << endl;
+	}
+	for(int i = 0; i < buildList.size(); i++)
+	{
+		if(buildList[i].remainingEnergy < 0 || buildList[i].remainingMetal < 0)
+		{
+			cerr << " resources[SOLAR_ID] " << resources[SOLAR_ID] << " resources[MEX_ID] " << resources[MEX_ID] << " metalUse " << metalUse << " energyUse " << energyUse << " discount " << discount << " metalProductionFactor " << metalProductionFactor << endl;
+			cerr << " buildList[i].remainingEnergy " << buildList[i].remainingEnergy << " buildList[i].remainingMetal " << buildList[i].remainingMetal << endl;
+		}
+	}
 
 	if(resources[SOLAR_ID] > 1000)
 		resources[SOLAR_ID] = 1000;

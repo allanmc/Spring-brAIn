@@ -46,12 +46,12 @@ RL_State::RL_State(Game *g, int agentId)
 				//agent = ( skipped_agent ? i - 1 : i );
 				
 				value = game->UnitBeingBuildByBuilder(i) + 1; // [0;3]
-				if ( value > 0 ) 
-				{
-					time_remaining = min(game->GetPercentRemaining(i) / (100/5), 4); // [0;4]
-					value = (value-1)*5 + time_remaining + 1;
-				}
-				concurrent = concurrent*16 + value;
+				//if ( value > 0 ) 
+				//{
+				//	time_remaining = min(game->GetPercentRemaining(i) / (100/5), 4); // [0;4]
+				//	value = (value-1)*5 + time_remaining + 1;
+				//}
+				concurrent = concurrent*4 + value;
 				if (value>15) {
 					i=i;
 				}
