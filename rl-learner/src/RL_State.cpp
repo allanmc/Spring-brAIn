@@ -50,10 +50,10 @@ RL_State::RL_State(Game *g, int agentId)
 					{
 						isBuildingLab = true;
 					}
-					time_remaining = min(game->GetPercentRemaining(i) / (100/5), 4); // [0;4]
-					value = (value-1)*5 + time_remaining + 1;
+					//time_remaining = min(game->GetPercentRemaining(i) / (100/5), 4); // [0;4]
+					//value = (value-1)*5 + time_remaining + 1;
 				}
-				concurrent = concurrent*16 + value;
+				concurrent = concurrent*4 + value;
 			}
 			//number of labs
 			
