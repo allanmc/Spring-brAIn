@@ -211,7 +211,7 @@ vector<int> Game::Update()
 	{
 		cerr << " resources[SOLAR_ID] " << resources[SOLAR_ID] << " resources[MEX_ID] " << resources[MEX_ID] << " metalUse " << metalUse << " energyUse " << energyUse << " discount " << discount << " metalProductionFactor " << metalProductionFactor << endl;
 	}
-	for(int i = 0; i < buildList.size(); i++)
+	for(unsigned int i = 0; i < buildList.size(); i++)
 	{
 		if(buildList[i].remainingEnergy < 0 || buildList[i].remainingMetal < 0)
 		{

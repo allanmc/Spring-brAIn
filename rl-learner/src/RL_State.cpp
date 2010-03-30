@@ -36,6 +36,7 @@ RL_State::RL_State(Game *g, int agentId)
 			int time_remaining = 0;
 
 			isBuildingLab = false;
+			unsigned int actionCount[] = {0,0,0};
 			for ( unsigned int i = 0; i < NUM_LEARNERS ; i++ )
 			{
 				if ( i == agentId )
@@ -43,17 +44,12 @@ RL_State::RL_State(Game *g, int agentId)
 					continue;
 				}
 				
-				value = game->UnitBeingBuildByBuilder(i) + 1; // [0;3]
-				if ( value > 0 ) 
+				value = game->UnitBeingBuildByBuilder(i); // [-1;2]
+				if ( value >= 0 ) 
 				{
-					if(value-1 == LAB_ID)
-					{
-						isBuildingLab = true;
-					}
-					//time_remaining = min(game->GetPercentRemaining(i) / (100/5), 4); // [0;4]
-					//value = (value-1)*5 + time_remaining + 1;
+					actionCount[value]++;
 				}
-				concurrent = concurrent*4 + value;
+				//concurrent = concurrent*4 + value;
 			}
 			//number of labs
 			
@@ -64,7 +60,10 @@ RL_State::RL_State(Game *g, int agentId)
 			}
 
 			//set ID --- Update RL::RL() when changing the ID calculation
-			ID = concurrent;
+			//ID = concurrent;
+			ID = (actionCount[0] > 2? 3 : actionCount[0]);
+			ID = ID*4 + (actionCount[1] > 2? 3 : actionCount[1]);
+			ID = ID*4 + (actionCount[2] > 2? 3 : actionCount[2]);
 			ID = ID*4 + (metalStore > 600 ? (metalStore > 900 ? 3 : 2) : (metalStore > 300 ? 1 : 0) );
 			ID = ID*4 + (energyStore > 600 ? (energyStore > 900 ? 3 : 2) : (energyStore > 300 ? 1 : 0) );
 			ID = ID*4 + (metalProduction > 6 ? (metalProduction > 13 ? 3 : 2) : (metalProduction > 0 ? 1 : 0) );
