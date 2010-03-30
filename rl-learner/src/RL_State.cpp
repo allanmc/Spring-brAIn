@@ -145,5 +145,6 @@ RL_State & RL_State::operator=(const RL_State &rhs)
 	Actions = rhs.Actions;
 	ID = rhs.ID;
 	terminal = rhs.terminal;
+	isBuildingLab = rhs.isBuildingLab;
 	return *this;
 }

@@ -254,7 +254,7 @@ RL_Action RL::Update(int agentId)
 		reward += (double)(PreviousFrame[agentId] - game->frame);
 	}
 
-//#define USE_NEW_REWARD_CODE
+#define USE_NEW_REWARD_CODE
 #ifdef USE_NEW_REWARD_CODE
 	//new reward code 
 	if(PreviousAction[agentId].Action == LAB_ID)
