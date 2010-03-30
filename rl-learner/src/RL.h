@@ -127,6 +127,7 @@ namespace brainSpace {
 		int Epsilon;
 		RL_State GetState(int agentId = 0);
 		RL_Action SafeNextAction(RL_State &state);
+		double GetReward();
 		float lastReward;
 		
 		void LoadFromFile(bool doIt = false);

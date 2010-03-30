@@ -210,6 +210,24 @@ RL_Action RL::SafeNextAction(RL_State &state)
 	return nullAction;
 }
 
+double RL::GetReward()
+{
+	double value;
+	double metalGain = game->GetTotalProduction(MEX_ID);
+	//metalGain -= game->GetResourceUsage(MEX_ID);
+	metalGain -= game->units[LAB_ID]*5;
+	double energyGain = game->GetTotalProduction(SOLAR_ID);
+	energyGain -= game->GetResourceUsage(SOLAR_ID);
+	energyGain -= game->units[LAB_ID]*50;
+	
+	float metalValue = (float)((max(REWARD_METAL_MIN, min(REWARD_METAL_MAX, metalGain ) ) - REWARD_METAL_MIN ) / (REWARD_METAL_MAX-REWARD_METAL_MIN)); //metal production-usage [-1;1]
+	float energyValue = (float)((max(REWARD_ENERGY_MIN, min(REWARD_ENERGY_MAX, energyGain ) ) - REWARD_ENERGY_MIN ) / (REWARD_ENERGY_MAX-REWARD_ENERGY_MIN)); //energy production-usage [-1;1]
+	value = min(metalValue, energyValue);
+	value *= 100;
+	value += ( min( game->resources[MEX_ID]/10.0, game->resources[SOLAR_ID]/10.0 ) );
+	return value;
+}
+
 RL_Action RL::Update(int agentId)
 {
 	bool terminal = false;
@@ -230,12 +248,35 @@ RL_Action RL::Update(int agentId)
 	//else continue
 
 	//Reward
-	float reward = 0.0;
+	double reward = 0.0;
 	if (USE_RS_TIME)
 	{
-		reward = (float)(PreviousFrame[agentId] - game->frame);
+		reward += (double)(PreviousFrame[agentId] - game->frame);
 	}
 
+#define USE_NEW_REWARD_CODE
+#ifdef USE_NEW_REWARD_CODE
+	//new reward code 
+	if(PreviousAction[agentId].Action == LAB_ID)
+	{
+		double value = GetReward();
+		lastTerminationReward = value;
+		reward += value;
+	}
+	else
+	{
+		if (PreviousState[agentId].isBuildingLab && !state.isBuildingLab)
+		{
+			if (COMMON_TERMINATION_REWARD) {
+				reward += lastTerminationReward;
+			}else {
+				reward += GetReward();
+			}
+		}
+	}
+#else
+	
+	//old reward code
 	if (USE_RS_TERMINATION && state.IsTerminal() /*PreviousAction[agentId].Action == LAB_ID*/)
 	{
 		bool firstReward = true;
@@ -248,21 +289,10 @@ RL_Action RL::Update(int agentId)
 			}
 		}
 		isTerminated[agentId] = true;
-		float value;
+		double value;
 		if (!COMMON_TERMINATION_REWARD || firstReward)//If we already calculated reward for this ternmination, use that
 		{
-			double metalGain = game->GetTotalProduction(MEX_ID);
-			//metalGain -= game->GetResourceUsage(MEX_ID); test
-			metalGain -= game->units[LAB_ID]*5;
-			double energyGain = game->GetTotalProduction(SOLAR_ID);
-			energyGain -= game->GetResourceUsage(SOLAR_ID);
-			energyGain -= game->units[LAB_ID]*50;
-
-			float metalValue = (float)((max(REWARD_METAL_MIN, min(REWARD_METAL_MAX, metalGain ) ) - REWARD_METAL_MIN ) / (REWARD_METAL_MAX-REWARD_METAL_MIN)); //metal production-usage [-1;1]
-			float energyValue = (float)((max(REWARD_ENERGY_MIN, min(REWARD_ENERGY_MAX, energyGain ) ) - REWARD_ENERGY_MIN ) / (REWARD_ENERGY_MAX-REWARD_ENERGY_MIN)); //energy production-usage [-1;1]
-			value = min(metalValue, energyValue);
-			value *= 100;
-			value += (float)( min( game->resources[MEX_ID]/10.0, game->resources[SOLAR_ID]/10.0 ) );
+			value = GetReward();
 			lastTerminationReward = value;
 		}
 		else
@@ -276,6 +306,8 @@ RL_Action RL::Update(int agentId)
 		//cerr << "Termination reward:" << game->GetTotalProduction(MEX_ID) << ", " << game->GetUsage(MEX_ID) << " : " << game->GetTotalProduction(SOLAR_ID) << ", " << game->GetUsage(SOLAR_ID) << " => " << value << endl;
 	}
 
+#endif
+	
 	double bestFutureValue;
 	if ( state.IsTerminal() )
 	{
@@ -291,17 +323,17 @@ RL_Action RL::Update(int agentId)
 	totalReward += reward;
 	lastReward = reward;
 
-	float value;
-	//modify gamme according to use_qmsdp
+	double value;
+	//modify game according to use_qmsdp
 	float gamma = (float)pow((double)GAMMA, (USE_QSMDP?0:1)+(USE_QSMDP?1:0)*(0.01*((double)game->frame - (double)PreviousFrame[agentId])));
 
 	if(!USE_Q_LAMBDA)
 	{
 		//update own value function
-		value = (float)(ValueFunction->GetValue(PreviousState[agentId],PreviousAction[agentId]) 
+		value = ValueFunction->GetValue(PreviousState[agentId],PreviousAction[agentId])
 			+ ALPHA*(
 			reward + gamma*bestFutureValue 
-			- ValueFunction->GetValue(PreviousState[agentId],PreviousAction[agentId]) ));
+			- ValueFunction->GetValue(PreviousState[agentId],PreviousAction[agentId]) );
 
 		ValueFunction->SetValue(PreviousState[agentId],PreviousAction[agentId], value);
 	}
@@ -316,11 +348,11 @@ RL_Action RL::Update(int agentId)
 				dataTrail.erase(dataTrail.begin());
 		}
 
-		float delta = (float)(reward + gamma*bestFutureValue - ValueFunction->GetValue( PreviousState[agentId], PreviousAction[agentId] ));
+		double delta = reward + gamma*bestFutureValue - ValueFunction->GetValue( PreviousState[agentId], PreviousAction[agentId] );
 
-		for(int i = dataTrail.size()-1; i>=0; i--)
+		for (int i = dataTrail.size()-1; i>=0; i--)
 		{
-			value = (float)ValueFunction->GetValue(dataTrail[i].prevState, dataTrail[i].prevAction)
+			value = ValueFunction->GetValue(dataTrail[i].prevState, dataTrail[i].prevAction)
 				+ ALPHA*delta*dataTrail[i].eligibilityTrace;
 
 			ValueFunction->SetValue(dataTrail[i].prevState, dataTrail[i].prevAction, value);
