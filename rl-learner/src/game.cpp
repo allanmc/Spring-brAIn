@@ -180,9 +180,12 @@ vector<int> Game::Update()
 				buildList[i].remainingEnergy -= pm*unitDefs[buildList[i].unitId].energyCost/time;
 				buildList[i].remainingMetal -= pm*unitDefs[buildList[i].unitId].metalCost/time;
 			}
-
-			resources[SOLAR_ID] -= pm*energyUse;
-			if(pm*energyUse > 999)	cerr << "pm*energyUse <=0  " << endl;
+			if(pm*energyUse > resources[SOLAR_ID])
+			{
+				cerr << "pm " << pm << " pe " << pe << " energyUse " << energyUse << " metalUse " << metalUse << endl;
+				cerr << "resources[MEX_ID] " << resources[MEX_ID] << " resources[SOLAR_ID] " << resources[SOLAR_ID]
+			}
+			resources[SOLAR_ID] -= pm*energyUse;			
 			resources[MEX_ID] = 0;
 		}
 		else 
