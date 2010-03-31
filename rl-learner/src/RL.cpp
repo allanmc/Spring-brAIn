@@ -4,8 +4,8 @@ int RUNS;
 int NUM_LEARNERS;
 float GAMMA;
 float ALPHA;
-float EPSILON_START;
-float EPSILON_DECAY;
+double EPSILON_START;
+double EPSILON_DECAY;
 bool PRINT_REWARD;
 bool USE_QSMDP;
 bool USE_RS_TERMINATION;
@@ -26,7 +26,7 @@ RL::RL(Game *g, double epsilon, int numAgents, bool load)
 	totalReward = 0.0;
 
 	isTerminated = new bool[NUM_LEARNERS];
-	for ( unsigned int i = 0; i < NUM_LEARNERS ; i++ ) 
+	for ( int i = 0; i < NUM_LEARNERS ; i++ ) 
 	{
 		isTerminated[i] = false;
 	}
@@ -39,11 +39,15 @@ RL::RL(Game *g, double epsilon, int numAgents, bool load)
 		PreviousState.push_back(nullState);
 		PreviousAction.push_back(nullAction);
 	}
-int bla;
+
 	switch(RL_TYPE)
 	{
 	case 0:
-		stateVars.push_back( QStateVar("ConCur", (int)pow((double)(3+1),NUM_LEARNERS-1) ) );//3 action * 5 time states + 1 null actions
+#ifdef USE_TIME_IN_SP
+		stateVars.push_back( QStateVar("ConCur", (int)pow((double)(3*5+1),(int)NUM_LEARNERS-1) ) );//3 action * 5 time states + 1 null actions
+#else
+		stateVars.push_back( QStateVar("ConCur", (int)pow((double)(3+1),(int)NUM_LEARNERS-1) ) );//3 action * 5 time states + 1 null actions
+#endif
 		//stateVars.push_back( QStateVar("ConCurTime", 5));
 		stateVars.push_back( QStateVar("MStore", 4));
 		stateVars.push_back( QStateVar("EStore", 4));
@@ -383,11 +387,11 @@ RL_Action RL::Update(int agentId)
 	}
 }
 
-float RL::GetTotalReward()
+double RL::GetTotalReward()
 {
 	return totalReward;
 }
-float RL::GetLastReward()
+double RL::GetLastReward()
 {
 	return lastReward;
 }
