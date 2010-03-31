@@ -51,12 +51,12 @@ RL_State::RL_State(Game *g, int agentId)
 						isBuildingLab = true;
 					}
 					#ifdef USE_TIME_IN_SP
-					time_remaining = min(game->GetPercentRemaining(i) / (100/5), 4); // [0;4]
-					value = (value-1)*5 + time_remaining + 1;
+					time_remaining = min(game->GetPercentRemaining(i) / (100/TIME_STATES), TIME_STATES-1); // [0;4]
+					value = (value-1)*TIME_STATES + time_remaining + 1;
 					#endif
 				}
 				#ifdef USE_TIME_IN_SP
-				concurrent = concurrent*16 + value;
+				concurrent = concurrent*(3*TIME_STATES+1) + value;
 				#else
 				concurrent = concurrent*4 + value;
 				#endif

@@ -44,7 +44,7 @@ RL::RL(Game *g, double epsilon, int numAgents, bool load)
 	{
 	case 0:
 #ifdef USE_TIME_IN_SP
-		stateVars.push_back( QStateVar("ConCur", (int)pow((double)(3*5+1),(int)NUM_LEARNERS-1) ) );//3 action * 5 time states + 1 null actions
+		stateVars.push_back( QStateVar("ConCur", (int)pow((double)(3*TIME_STATES+1),(int)NUM_LEARNERS-1) ) );//3 action * 5 time states + 1 null actions
 #else
 		stateVars.push_back( QStateVar("ConCur", (int)pow((double)(3+1),(int)NUM_LEARNERS-1) ) );//3 action * 5 time states + 1 null actions
 #endif

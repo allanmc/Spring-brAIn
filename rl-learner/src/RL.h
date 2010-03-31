@@ -9,6 +9,8 @@
 
 #define QBFILE_VERSION 2
 
+#define TIME_STATES 3
+
 #define COMMON_TERMINATION_REWARD true
 
 //#define NUM_LEARNERS 3
