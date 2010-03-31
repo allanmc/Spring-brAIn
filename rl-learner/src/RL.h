@@ -12,10 +12,11 @@
 #define COMMON_TERMINATION_REWARD true
 
 //#define NUM_LEARNERS 3
-extern unsigned int NUM_LEARNERS;
-extern unsigned int RUNS;
+extern int NUM_LEARNERS;
+extern int RUNS;
 
 #define TEST_RESULTS false
+//#define USE_NEW_REWARD_CODE
 
 
 //#define PRINT_REWARD true
@@ -42,9 +43,9 @@ extern float GAMMA;
 //#define ALPHA 0.1f
 extern float ALPHA;
 //#define EPSILON_START 0.5f
-extern double EPSILON_START;
+extern float EPSILON_START;
 //#define EPSILON_DECAY 0.99999f
-extern double EPSILON_DECAY;
+extern float EPSILON_DECAY;
 
 //TYPE 0 => normal; 
 #define RL_TYPE 0
@@ -77,11 +78,11 @@ namespace brainSpace {
 		RL_State prevState;
 		RL_Action prevAction;
 		RL_State resultState;
-		double reward;
+		float reward;
 		float duration;
 		float eligibilityTrace;
 
-		DataPoint(RL_State ps, RL_Action pa, RL_State rs, double r, float d)
+		DataPoint(RL_State ps, RL_Action pa, RL_State rs, float r, float d)
 		{
 			prevState = ps;
 			prevAction = pa;
@@ -97,8 +98,8 @@ namespace brainSpace {
 	public:
 		RL(Game *g, double epsilon, int numAgents = 1, bool load = false);
 		virtual ~RL();
-		double GetTotalReward();
-		double GetLastReward();
+		float GetTotalReward();
+		float GetLastReward();
 		static char* GetFilePath();
 		unsigned int numActions;
 		unsigned int numStates;
@@ -113,7 +114,7 @@ namespace brainSpace {
 		RL_State nullState;
 		RL_Action nullAction;
 		bool *isTerminated;
-		double lastTerminationReward;
+		float lastTerminationReward;
 
 		bool FileExists( const char* name );
 		RL_Action FindNextAction( RL_State &state );
@@ -122,13 +123,13 @@ namespace brainSpace {
 		vector<RL_State> PreviousState;
 		vector<RL_Action> PreviousAction;
 		vector<double> PreviousFrame;
-		double totalReward;
+		float totalReward;
 		bool goalAchieved;
 		int Epsilon;
 		RL_State GetState(int agentId = 0);
 		RL_Action SafeNextAction(RL_State &state);
 		double GetReward();
-		double lastReward;
+		float lastReward;
 		
 		void LoadFromFile(bool doIt = false);
 		

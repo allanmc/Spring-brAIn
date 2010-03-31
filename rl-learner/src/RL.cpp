@@ -1,11 +1,11 @@
 #include "RL.h"
 
-unsigned int RUNS;
-unsigned int NUM_LEARNERS;
+int RUNS;
+int NUM_LEARNERS;
 float GAMMA;
 float ALPHA;
-double EPSILON_START;
-double EPSILON_DECAY;
+float EPSILON_START;
+float EPSILON_DECAY;
 bool PRINT_REWARD;
 bool USE_QSMDP;
 bool USE_RS_TERMINATION;
@@ -39,12 +39,11 @@ RL::RL(Game *g, double epsilon, int numAgents, bool load)
 		PreviousState.push_back(nullState);
 		PreviousAction.push_back(nullAction);
 	}
-	
+int bla;
 	switch(RL_TYPE)
 	{
 	case 0:
-		//stateVars.push_back( QStateVar("ConCur", (int)pow((double)(3+1),NUM_LEARNERS-1) ) );//3 action * 5 time states + 1 null actions
-		stateVars.push_back( QStateVar("ConCur", 4*4*4 ) );//3 action * 4 state-values
+		stateVars.push_back( QStateVar("ConCur", (int)pow((double)(3+1),NUM_LEARNERS-1) ) );//3 action * 5 time states + 1 null actions
 		//stateVars.push_back( QStateVar("ConCurTime", 5));
 		stateVars.push_back( QStateVar("MStore", 4));
 		stateVars.push_back( QStateVar("EStore", 4));
@@ -255,7 +254,6 @@ RL_Action RL::Update(int agentId)
 		reward += (double)(PreviousFrame[agentId] - game->frame);
 	}
 
-#define USE_NEW_REWARD_CODE
 #ifdef USE_NEW_REWARD_CODE
 	//new reward code 
 	if(PreviousAction[agentId].Action == LAB_ID)
@@ -385,11 +383,11 @@ RL_Action RL::Update(int agentId)
 	}
 }
 
-double RL::GetTotalReward()
+float RL::GetTotalReward()
 {
 	return totalReward;
 }
-double RL::GetLastReward()
+float RL::GetLastReward()
 {
 	return lastReward;
 }

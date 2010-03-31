@@ -36,38 +36,47 @@ RL_State::RL_State(Game *g, int agentId)
 			int time_remaining = 0;
 
 			isBuildingLab = false;
-			unsigned int actionCount[] = {0,0,0};
-			for ( unsigned int i = 0; i < NUM_LEARNERS ; i++ )
+			for ( int i = 0; i < NUM_LEARNERS ; i++ )
 			{
 				if ( i == agentId )
 				{
 					continue;
 				}
 				
-				value = game->UnitBeingBuildByBuilder(i); // [-1;2]
-				if ( value >= 0 ) 
+				value = game->UnitBeingBuildByBuilder(i) + 1; // [0;3]
+				if ( value > 0 ) 
 				{
-					actionCount[value]++;
+					if(value-1 == LAB_ID)
+					{
+						isBuildingLab = true;
+						cerr << "pik" << endl;
+						exit(0);
+					}
+					//time_remaining = min(game->GetPercentRemaining(i) / (100/5), 4); // [0;4]
+					//value = (value-1)*5 + time_remaining + 1;
 				}
-				//concurrent = concurrent*4 + value;
+				concurrent = concurrent*4 + value;
 			}
 			//number of labs
-			
-			if(labCount > RL_LAB_INDEX - 1)
+			#ifdef USE_NEW_REWARD_CODE
+			if(labCount > RL_LAB_INDEX-1)
 			{
 				//this->lastLabCount = labCount; //Moved to main.
 				terminal = true;
 			}
-
+#else
+			if(labCount > lastLabCount)
+			{
+				//this->lastLabCount = labCount; //Moved to main.
+				terminal = true;
+			}
+#endif
 			//set ID --- Update RL::RL() when changing the ID calculation
-			//ID = concurrent;
-			ID = (actionCount[0] > 2? 3 : actionCount[0]);
-			ID = ID*4 + (actionCount[1] > 2? 3 : actionCount[1]);
-			ID = ID*4 + (actionCount[2] > 2? 3 : actionCount[2]);
+			ID = concurrent;
 			ID = ID*4 + (metalStore > 600 ? (metalStore > 900 ? 3 : 2) : (metalStore > 300 ? 1 : 0) );
 			ID = ID*4 + (energyStore > 600 ? (energyStore > 900 ? 3 : 2) : (energyStore > 300 ? 1 : 0) );
-			ID = ID*4 + (metalProduction > 6 ? (metalProduction > 13 ? 3 : 2) : (metalProduction > 0 ? 1 : 0) );
-			ID = ID*4 + (energyProduction > 26 ? (energyProduction > 76 ? 3 : 2) : (energyProduction > 0 ? 1 : 0) );
+			ID = ID*4 + (metalProduction > REWARD_METAL_MAX ? (metalProduction > REWARD_METAL_MAX+5 ? 3 : 2) : (metalProduction > 0 ? 1 : 0) );
+			ID = ID*4 + (energyProduction > REWARD_ENERGY_MAX ? (energyProduction > REWARD_ENERGY_MAX+50 ? 3 : 2) : (energyProduction > 0 ? 1 : 0) );
 
 			//set actions available
 			Actions.push_back(RL_Action(LAB_ID,0));
