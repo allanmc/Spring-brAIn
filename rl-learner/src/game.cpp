@@ -183,7 +183,7 @@ vector<int> Game::Update()
 			if(pm*energyUse > resources[SOLAR_ID])
 			{
 				cerr << "pm " << pm << " pe " << pe << " energyUse " << energyUse << " metalUse " << metalUse << endl;
-				cerr << "resources[MEX_ID] " << resources[MEX_ID] << " resources[SOLAR_ID] " << resources[SOLAR_ID]
+				cerr << "resources[MEX_ID] " << resources[MEX_ID] << " resources[SOLAR_ID] " << resources[SOLAR_ID];
 			}
 			resources[SOLAR_ID] -= pm*energyUse;			
 			resources[MEX_ID] = 0;
