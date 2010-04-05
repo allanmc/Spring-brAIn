@@ -68,11 +68,19 @@ int main(int argc, char *argv[])
 			}
 
 			RL_State::lastLabCount = g->units[LAB_ID];
-			
+			bool* isBuildingLab = new bool[NUM_LEARNERS];
 			RL_Action a;
 			for(int x = 0; x < NUM_LEARNERS; x++)
 			{
 				a = r->Update(x);
+				if(a.Action == LAB_ID)
+				{
+					isBuildingLab[x] = true;
+				}
+				else
+				{
+					isBuildingLab[x] = false;
+				}
 				UpdateStateVisits(r);
 				PrintAction(debug, a, x);
 				
@@ -95,8 +103,9 @@ int main(int argc, char *argv[])
 				for(int i = 0; i < (int)builders.size(); i++)
 				{
 					bool print = false;
-					if(debug && a.Action == LAB_ID)
+					if(debug && isBuildingLab[builders[i]])
 					{
+						isBuildingLab[builders[i]] = false;
 						print = true;
 					}
 					a = r->Update(builders[i]);
