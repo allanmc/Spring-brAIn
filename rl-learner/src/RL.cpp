@@ -38,6 +38,7 @@ RL::RL(Game *g, double epsilon, int numAgents, bool load)
 		PreviousFrame.push_back(0);
 		PreviousState.push_back(nullState);
 		PreviousAction.push_back(nullAction);
+		TempReward.push_back(0);
 	}
 
 	switch(RL_TYPE)
@@ -263,20 +264,14 @@ RL_Action RL::Update(int agentId)
 	if(PreviousAction[agentId].Action == LAB_ID)
 	{
 		double value = GetReward();
-		lastTerminationReward = value;
-		reward += value;
-	}
-	else
-	{
-		if (PreviousState[agentId].isBuildingLab && !state.isBuildingLab)
+		for(int i = 0; i < NUM_LEARNERS; i++)
 		{
-			if (COMMON_TERMINATION_REWARD) {
-				reward += lastTerminationReward;
-			}else {
-				reward += GetReward();
-			}
+			TempReward[i] += value;
 		}
 	}
+	assert(COMMON_TERMINATION_REWARD);
+	reward += TempReward[agentId];
+	TempReward[agentId] = 0;
 #else
 	
 	//old reward code

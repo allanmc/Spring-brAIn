@@ -18,8 +18,8 @@ extern int NUM_LEARNERS;
 extern int RUNS;
 
 #define TEST_RESULTS false
-//#define USE_NEW_REWARD_CODE
-#define USE_TIME_IN_SP
+#define USE_NEW_REWARD_CODE
+//#define USE_TIME_IN_SP
 
 //#define PRINT_REWARD true
 extern bool PRINT_REWARD;
@@ -69,6 +69,7 @@ extern double EPSILON_DECAY;
 #include "game.h"
 #include <vector>
 #include <cmath>
+#include <cassert>
 #include "RL_Action.h"
 
 using namespace std;
@@ -125,6 +126,7 @@ namespace brainSpace {
 		vector<RL_State> PreviousState;
 		vector<RL_Action> PreviousAction;
 		vector<double> PreviousFrame;
+		vector<double> TempReward;
 		double totalReward;
 		bool goalAchieved;
 		int Epsilon;

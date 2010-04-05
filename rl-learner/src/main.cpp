@@ -119,6 +119,10 @@ int main(int argc, char *argv[])
 					{
 						g->BuildUnit(a.Action, builders[i]);
 						PrintAction(debug, a, builders[i]);
+						if(a.Action == LAB_ID)
+						{
+							isBuildingLab[builders[i]] = true;
+						}
 					}
 					else
 					{
