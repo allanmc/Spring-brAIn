@@ -310,7 +310,7 @@ RL_Action RL::Update(int agentId)
 	if ( state.IsTerminal() )
 	{
 		terminal = true;
-		bestFutureValue = reward;//no future actions to take
+		bestFutureValue = 0;//reward;//no future actions to take
 	}
 	else
 	{
@@ -322,7 +322,7 @@ RL_Action RL::Update(int agentId)
 	lastReward = reward;
 
 	double value;
-	//modify game according to use_qmsdp
+	//modify gamma according to use_qmsdp
 	float gamma = (float)pow((double)GAMMA, (USE_QSMDP?0:1)+(USE_QSMDP?1:0)*(0.01*((double)game->frame - (double)PreviousFrame[agentId])));
 
 	if(!USE_Q_LAMBDA)
@@ -337,6 +337,15 @@ RL_Action RL::Update(int agentId)
 	}
 	else if(USE_Q_LAMBDA )
 	{
+		//remove any doubles before adding a new
+		for ( int i = 0 ; i < (int)dataTrail.size() ; i++ )
+		{
+			if( dataTrail[i].prevState == PreviousState[agentId] && dataTrail[i].prevAction == PreviousAction[agentId] )
+			{
+				dataTrail.erase(dataTrail.begin()+i);
+				break;
+			}
+		}
 		//add the current to the dataTrail
 		dataTrail.push_back(DataPoint(PreviousState[agentId], PreviousAction[agentId], state, reward, (float)(game->frame - PreviousFrame[agentId])));
 
