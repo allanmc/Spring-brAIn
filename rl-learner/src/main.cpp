@@ -100,13 +100,16 @@ int main(int argc, char *argv[])
 						break;
 					}
 				}
+				if (builders.size() > 1) {
+					int i = 0;
+				}
 				for(int i = 0; i < (int)builders.size(); i++)
 				{
 					bool print = false;
 					if(debug && isBuildingLab[builders[i]])
 					{
 						isBuildingLab[builders[i]] = false;
-						print = true;
+						//print = true;
 					}
 					a = r->Update(builders[i]);
 					if(print)

@@ -5,6 +5,10 @@ using namespace brainSpace;
 
 int RL_State::lastLabCount;//static from .h file
 
+int sumrange(int max, int min, int num){
+	return (max + min)*num/2;
+}
+
 RL_State::RL_State()
 {
 	ID = -1;
@@ -34,7 +38,10 @@ RL_State::RL_State(Game *g, int agentId)
 			int concurrent = 0;
 			int value = 0;
 			int time_remaining = 0;
-
+			int actionCount[CONCURRENT_A];
+			for ( int i = 0; i < CONCURRENT_A ; i++ ) {
+				actionCount[i] = 0;
+			}
 			isBuildingLab = false;
 			for ( int i = 0; i < NUM_LEARNERS ; i++ )
 			{
@@ -43,24 +50,34 @@ RL_State::RL_State(Game *g, int agentId)
 					continue;
 				}
 				
-				value = game->UnitBeingBuildByBuilder(i) + 1; // [0;3]
-				if ( value > 0 ) 
+				value = game->UnitBeingBuildByBuilder(i); // [0;3]
+				if ( value >= 0 ) 
 				{
-					if(value-1 == LAB_ID)
+					actionCount[value]++;
+					if(value == LAB_ID)
 					{
 						isBuildingLab = true;
 					}
-					#ifdef USE_TIME_IN_SP
-					time_remaining = min(game->GetPercentRemaining(i) / (100/TIME_STATES), TIME_STATES-1); // [0;4]
-					value = (value-1)*TIME_STATES + time_remaining + 1;
-					#endif
+					if (CONCURRENT_SS==2) {
+						time_remaining = min(game->GetPercentRemaining(i) / (100/CONCURRENT_T), CONCURRENT_T-1); // [0;4]
+						value = value*CONCURRENT_T + time_remaining + 1;
+					}
 				}
-				#ifdef USE_TIME_IN_SP
-				concurrent = concurrent*(3*TIME_STATES+1) + value;
-				#else
-				concurrent = concurrent*4 + value;
-				#endif
-				
+				if (CONCURRENT_SS==1) {
+					concurrent = concurrent*(CONCURRENT_A+1) + (value + 1);
+				} else if (CONCURRENT_SS==2) {
+					concurrent = concurrent*(CONCURRENT_A*CONCURRENT_T+1) + (value + 1);
+				}
+			}
+
+			if ( CONCURRENT_SS==3 || CONCURRENT_SS==4 ) {
+				for ( int i = 0; i < CONCURRENT_A ; i++ ) {
+					if (CONCURRENT_SS==3) {
+						concurrent = GetConCurId(actionCount);  
+					} else if (CONCURRENT_SS==4) {
+						concurrent = concurrent*CONCURRENT_T + max(actionCount[i], min(actionCount[i], CONCURRENT_T));
+					}
+				}
 			}
 
 			//number of labs
@@ -103,6 +120,25 @@ int RL_State::GetID()
 {
 	return ID;
 }
+
+int RL_State::GetConCurId(int* actionCount)
+{
+		int id = 0;
+		
+		assert(CONCURRENT_A==3);
+
+		//action1
+		for (int i = 0; i < actionCount[0]; i++) {
+			id += sumrange(NUM_LEARNERS - i, 1, NUM_LEARNERS - i);
+		}
+		//action2
+		id += sumrange(NUM_LEARNERS - actionCount[0], NUM_LEARNERS - actionCount[1] + 1, actionCount[1]-actionCount[0] );
+		//action3
+		id += actionCount[2] - actionCount[1];
+
+		return id;
+}
+
 
 vector<RL_Action> RL_State::GetActions()
 {

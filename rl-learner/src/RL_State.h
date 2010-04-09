@@ -28,6 +28,7 @@ namespace brainSpace {
 		bool terminal;
 		int ID;
 		vector<RL_Action> Actions;
+		int GetConCurId(int* actionCount);
 	};
 }
 

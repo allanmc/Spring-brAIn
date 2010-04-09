@@ -15,6 +15,17 @@ bool USE_Q_LAMBDA;
 using namespace brainSpace;
 using namespace std;
 
+int factorial(int n)
+{
+	if (n<=1)
+		return(1);
+	else
+		n=n*factorial(n-1);
+	return(n);
+}
+
+
+
 RL::RL(Game *g, double epsilon, int numAgents, bool load)
 {	
 	EPSILON = epsilon;
@@ -44,11 +55,24 @@ RL::RL(Game *g, double epsilon, int numAgents, bool load)
 	switch(RL_TYPE)
 	{
 	case 0:
-#ifdef USE_TIME_IN_SP
-		stateVars.push_back( QStateVar("ConCur", (int)pow((double)(3*TIME_STATES+1),(int)NUM_LEARNERS-1) ) );//3 action * 5 time states + 1 null actions
-#else
-		stateVars.push_back( QStateVar("ConCur", (int)pow((double)(3+1),(int)NUM_LEARNERS-1) ) );//3 action * 5 time states + 1 null actions
-#endif
+		switch (CONCURRENT_SS) {
+			case 1:
+				stateVars.push_back( QStateVar("ConCur", (int)pow((double)(CONCURRENT_A+1),(int)NUM_LEARNERS-1) ) );//3 action * 5 time states + 1 null actions
+				break;
+			case 2:
+				stateVars.push_back( QStateVar("ConCur", (int)pow((double)(CONCURRENT_A*CONCURRENT_T+1),(int)NUM_LEARNERS-1) ) );//3 action * 5 time states + 1 null actions
+				break;
+			case 3:
+				/*
+				pascal(n,k) &= \frac{k!}{n!(n-k)!} \\
+				f3(a,n) &= pascal(n+a-1, a)
+				*/
+				stateVars.push_back( QStateVar("ConCur", factorial(CONCURRENT_A)/(factorial(NUM_LEARNERS+CONCURRENT_A-1)*factorial(NUM_LEARNERS-1)) ) );
+				break;
+			case 4:
+				stateVars.push_back( QStateVar("ConCur", (int)pow((float)CONCURRENT_I, (int)CONCURRENT_A) ) );
+				break;
+		}
 		//stateVars.push_back( QStateVar("ConCurTime", 5));
 		stateVars.push_back( QStateVar("MStore", 4));
 		stateVars.push_back( QStateVar("EStore", 4));

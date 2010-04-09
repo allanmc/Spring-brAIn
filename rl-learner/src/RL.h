@@ -3,13 +3,13 @@
 
 #define RL_SOLAR_INDEX 15
 #define RL_MEX_INDEX 2
-#define RL_LAB_INDEX 10
+#define RL_LAB_INDEX 5
 #define RL_PLANT_INDEX 5
 #define RL_ROCKO_INDEX 40
 
 #define QBFILE_VERSION 2
 
-#define TIME_STATES 3
+
 
 #define COMMON_TERMINATION_REWARD true
 
@@ -18,8 +18,14 @@ extern int NUM_LEARNERS;
 extern int RUNS;
 
 #define TEST_RESULTS false
-#define USE_NEW_REWARD_CODE
+//#define USE_NEW_REWARD_CODE
 //#define USE_TIME_IN_SP
+
+#define CONCURRENT_A 3
+#define CONCURRENT_I 2
+#define CONCURRENT_T 3
+#define CONCURRENT_SS 1
+//CONCURRENT_SS = 1-4
 
 //#define PRINT_REWARD true
 extern bool PRINT_REWARD;
@@ -144,5 +150,6 @@ namespace brainSpace {
 		double EPSILON;
 	};
 }
+
 
 #endif
