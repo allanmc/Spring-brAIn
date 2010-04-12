@@ -67,7 +67,7 @@ RL::RL(Game *g, double epsilon, int numAgents, bool load)
 				pascal(n,k) &= \frac{k!}{n!(n-k)!} \\
 				f3(a,n) &= pascal(n+a-1, a)
 				*/
-				stateVars.push_back( QStateVar("ConCur", factorial(CONCURRENT_A)/(factorial(NUM_LEARNERS+CONCURRENT_A-1)*factorial(NUM_LEARNERS-1)) ) );
+				stateVars.push_back( QStateVar("ConCur", factorial(NUM_LEARNERS+CONCURRENT_A-1)/(factorial(CONCURRENT_A)*factorial(NUM_LEARNERS-1)) ) );
 				break;
 			case 4:
 				stateVars.push_back( QStateVar("ConCur", (int)pow((float)CONCURRENT_I, (int)CONCURRENT_A) ) );

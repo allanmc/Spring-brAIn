@@ -50,7 +50,7 @@ RL_State::RL_State(Game *g, int agentId)
 					continue;
 				}
 				
-				value = game->UnitBeingBuildByBuilder(i); // [0;3]
+				value = game->UnitBeingBuildByBuilder(i); // [-1;2]
 				if ( value >= 0 ) 
 				{
 					actionCount[value]++;
@@ -58,25 +58,35 @@ RL_State::RL_State(Game *g, int agentId)
 					{
 						isBuildingLab = true;
 					}
-					if (CONCURRENT_SS==2) {
+					if (CONCURRENT_SS==2)
+					{
 						time_remaining = min(game->GetPercentRemaining(i) / (100/CONCURRENT_T), CONCURRENT_T-1); // [0;4]
-						value = value*CONCURRENT_T + time_remaining + 1;
+						value = value*CONCURRENT_T + time_remaining;
 					}
 				}
-				if (CONCURRENT_SS==1) {
+				if (CONCURRENT_SS==1)
+				{
 					concurrent = concurrent*(CONCURRENT_A+1) + (value + 1);
-				} else if (CONCURRENT_SS==2) {
+				}
+				else if (CONCURRENT_SS==2)
+				{
 					concurrent = concurrent*(CONCURRENT_A*CONCURRENT_T+1) + (value + 1);
 				}
 			}
 
-			if ( CONCURRENT_SS==3 || CONCURRENT_SS==4 ) {
-				for ( int i = 0; i < CONCURRENT_A ; i++ ) {
-					if (CONCURRENT_SS==3) {
-						concurrent = GetConCurId(actionCount);  
-					} else if (CONCURRENT_SS==4) {
-						concurrent = concurrent*CONCURRENT_T + max(actionCount[i], min(actionCount[i], CONCURRENT_T));
-					}
+			if ( CONCURRENT_SS==3)
+			{
+				concurrent = GetConCurId(actionCount); 
+				if (concurrent==5) {
+					int i = 0;
+				}
+			}
+			else if (CONCURRENT_SS==4 )
+			{
+				for ( int i = 0; i < CONCURRENT_A ; i++ )
+				{
+					value = min(actionCount[i], CONCURRENT_I-1);
+					concurrent = concurrent*CONCURRENT_I + value;
 				}
 			}
 
@@ -132,9 +142,10 @@ int RL_State::GetConCurId(int* actionCount)
 			id += sumrange(NUM_LEARNERS - i, 1, NUM_LEARNERS - i);
 		}
 		//action2
-		id += sumrange(NUM_LEARNERS - actionCount[0], NUM_LEARNERS - actionCount[1] + 1, actionCount[1]-actionCount[0] );
+		//id += SumRange(num_units - unit1, num_units - unit2 + 1, unit2-unit1 );
+		id += sumrange(NUM_LEARNERS - actionCount[0], NUM_LEARNERS - actionCount[1] + 1, actionCount[1] );
 		//action3
-		id += actionCount[2] - actionCount[1];
+		id += actionCount[2];
 
 		return id;
 }
