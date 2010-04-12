@@ -31,8 +31,8 @@ RL_State::RL_State(Game *g, int agentId)
 			double metalStore = game->GetAvailableResources(MEX_ID,0.0f);
 			double energyStore = game->GetAvailableResources(SOLAR_ID,0.0f);
 			//income
-			double metalProduction = game->GetTotalProduction(MEX_ID) - labCount*5;
-			double energyProduction = game->GetTotalProduction(SOLAR_ID) - game->GetResourceUsage(SOLAR_ID) - labCount*50;
+			double metalProduction = game->GetTotalProduction(MEX_ID) - game->GetBuildersUsage(MEX_ID);//- labCount*5;
+			double energyProduction = game->GetTotalProduction(SOLAR_ID) - game->GetResourceUsage(SOLAR_ID) - game->GetBuildersUsage(SOLAR_ID);//- labCount*50;
 			//other agents work
 			
 			int concurrent = 0;

@@ -3,7 +3,7 @@
 
 #define RL_SOLAR_INDEX 15
 #define RL_MEX_INDEX 2
-#define RL_LAB_INDEX 5
+#define RL_LAB_INDEX 10
 #define RL_PLANT_INDEX 5
 #define RL_ROCKO_INDEX 40
 

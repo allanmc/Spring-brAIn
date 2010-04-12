@@ -77,6 +77,7 @@ namespace brainSpace {
 		std::vector<int> Update();
 		int UnitBeingBuildByBuilder(int builder);
 		int GetPercentRemaining(int builder);
+		double GetBuildersUsage( int resourceId );
 
 	private:
 
