@@ -29,6 +29,7 @@ namespace brainSpace {
 		int ID;
 		vector<RL_Action> Actions;
 		int GetConCurId(int* actionCount);
+		short unsigned int GetDiscrete(double min, double max, unsigned short int states, double value);
 	};
 }
 

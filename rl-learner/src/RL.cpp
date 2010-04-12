@@ -74,10 +74,10 @@ RL::RL(Game *g, double epsilon, int numAgents, bool load)
 				break;
 		}
 		//stateVars.push_back( QStateVar("ConCurTime", 5));
-		stateVars.push_back( QStateVar("MStore", 4));
-		stateVars.push_back( QStateVar("EStore", 4));
-		stateVars.push_back( QStateVar("MIncome", 4));
-		stateVars.push_back( QStateVar("EIncome", 4));
+		stateVars.push_back( QStateVar("MStore", REWARD_METAL_STORE_STATES));
+		stateVars.push_back( QStateVar("EStore", REWARD_ENERGY_STORE_STATES));
+		stateVars.push_back( QStateVar("MIncome", REWARD_METAL_STATES));
+		stateVars.push_back( QStateVar("EIncome", REWARD_ENERGY_STATES));
 		actions.push_back( QAction("Lab", 0));
 		actions.push_back( QAction("Solar", 1));
 		actions.push_back( QAction("Mex", 2));

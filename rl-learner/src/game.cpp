@@ -503,7 +503,7 @@ double Game::GetResourceUsage( int resourceId )
 double Game::GetBuildersUsage( int resourceId )
 {
 	double usage = 0.0;
-	for(int i=0; i<buildList.size(); i++)
+	for(unsigned int i=0; i<buildList.size(); i++)
 	{
 		int uid = buildList[i].unitId;
 		if(resourceId == 0)

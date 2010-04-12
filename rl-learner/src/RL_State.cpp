@@ -106,10 +106,10 @@ RL_State::RL_State(Game *g, int agentId)
 #endif
 			//set ID --- Update RL::RL() when changing the ID calculation
 			ID = concurrent;
-			ID = ID*4 + (metalStore > 600 ? (metalStore > 900 ? 3 : 2) : (metalStore > 300 ? 1 : 0) );
-			ID = ID*4 + (energyStore > 600 ? (energyStore > 900 ? 3 : 2) : (energyStore > 300 ? 1 : 0) );
-			ID = ID*4 + (metalProduction > REWARD_METAL_MAX ? (metalProduction > REWARD_METAL_MAX+5 ? 3 : 2) : (metalProduction > 0 ? 1 : 0) );
-			ID = ID*4 + (energyProduction > REWARD_ENERGY_MAX ? (energyProduction > REWARD_ENERGY_MAX+50 ? 3 : 2) : (energyProduction > 0 ? 1 : 0) );
+			ID = ID*REWARD_METAL_STORE_STATES	+ GetDiscrete(REWARD_METAL_STORE_MIN, REWARD_METAL_STORE_MAX, REWARD_METAL_STORE_STATES, metalStore); //*4 + (metalStore > 600 ? (metalStore > 900 ? 3 : 2) : (metalStore > 300 ? 1 : 0) );
+			ID = ID*REWARD_ENERGY_STORE_STATES	+ GetDiscrete(REWARD_ENERGY_STORE_MIN, REWARD_ENERGY_STORE_MAX, REWARD_ENERGY_STORE_STATES, energyStore); //*4 + (energyStore > 600 ? (energyStore > 900 ? 3 : 2) : (energyStore > 300 ? 1 : 0) );
+			ID = ID*REWARD_METAL_STATES			+ GetDiscrete(REWARD_METAL_MIN, REWARD_METAL_MAX, REWARD_METAL_STATES, metalProduction); //*4 + (metalProduction > REWARD_METAL_MAX ? (metalProduction > REWARD_METAL_MAX+5 ? 3 : 2) : (metalProduction > 0 ? 1 : 0) );
+			ID = ID*REWARD_ENERGY_STATES		+ GetDiscrete(REWARD_ENERGY_MIN, REWARD_ENERGY_MAX, REWARD_ENERGY_STATES, energyProduction); //*4 + (energyProduction > REWARD_ENERGY_MAX ? (energyProduction > REWARD_ENERGY_MAX+50 ? 3 : 2) : (energyProduction > 0 ? 1 : 0) );
 
 			//set actions available
 			Actions.push_back(RL_Action(LAB_ID,0));
@@ -191,6 +191,15 @@ void RL_State::DeleteAction(int actionID)
 bool RL_State::IsTerminal()
 {
 	return terminal;
+}
+
+short unsigned int RL_State::GetDiscrete(double minv, double maxv, unsigned short int states, double value)
+{
+	int result = ( (max( minv,min(value, maxv))-minv) / (maxv - minv))*(states-1);
+	//if (result < 0 || result > states-1 ) {
+	//int crap = 2;
+	//}
+	return result;
 }
 
 bool RL_State::operator==(const RL_State &other) const
