@@ -500,6 +500,22 @@ double Game::GetResourceUsage( int resourceId )
 	return -production;
 }
 
+double Game::GetBuildersUsage( int resourceId )
+{
+	double usage = 0.0;
+	for(int i=0; i<buildList.size(); i++)
+	{
+		int uid = buildList[i].unitId;
+		if(resourceId == 0)
+		{
+			usage += unitDefs[uid].energyCost / GetBuildTime(uid,false);
+		}else{
+			usage += unitDefs[uid].metalCost / GetBuildTime(uid,false);
+		}
+	}
+	return usage;
+}
+
 int Game::UnitBeingBuildByBuilder(int builder)
 {
 	int UnitId = -1;
