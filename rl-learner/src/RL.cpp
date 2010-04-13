@@ -11,6 +11,9 @@ bool USE_QSMDP;
 bool USE_RS_TERMINATION;
 bool USE_RS_TIME;
 bool USE_Q_LAMBDA;
+int CONCURRENT_I;
+int CONCURRENT_T;
+int CONCURRENT_SS;
 
 using namespace brainSpace;
 using namespace std;

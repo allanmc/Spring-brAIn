@@ -256,6 +256,8 @@ void PrintAction(bool debug,RL_Action a, unsigned short builder)
 
 void PrintOutputHeader()
 {
+	cout << "S" << CONCURRENT_SS << " ";
+
 	cout << "x" << NUM_LEARNERS << " ";
 
 	cout << (USE_QSMDP ? "SMDPQ" : "Q");
@@ -370,7 +372,9 @@ void LoadConfig(int argc, char *argv[])
 	ALPHA = 0.1f;
 	EPSILON_START = 0.5f;
 	EPSILON_DECAY = 0.99999f;
-
+	CONCURRENT_I = 2;
+	CONCURRENT_T = 3;
+	CONCURRENT_SS = 4;
 	PRINT_REWARD  = true;
 
 	USE_QSMDP = true;
@@ -419,6 +423,9 @@ void LoadConfig(int argc, char *argv[])
 			("use_rs_termination,t", po::value<bool>(), "Use special termination reward?")
 			("use_rs_time,m", po::value<bool>(), "Use TRS?")
 			("use_q_lambda,y", po::value<bool>(), "Use Q-lambda?")
+			("c_ss", po::value<int>(), "CONCURRENT_SS")
+			("c_i", po::value<int>(), "CONCURRENT_I")
+			("c_t", po::value<int>(), "CONCURRENT_T")
 		;
 
 		po::variables_map vm;
@@ -434,6 +441,16 @@ void LoadConfig(int argc, char *argv[])
 		}
 		if (vm.count("num_learners")) {
 			NUM_LEARNERS = vm["num_learners"].as<int>();
+		}
+		if (vm.count("c_ss")) {
+			CONCURRENT_SS = vm["c_ss"].as<int>();
+		}
+		if (vm.count("c_i")) {
+			CONCURRENT_I = vm["c_i"].as<int>();
+		}
+		//cerr << endl << "crap: " << CONCURRENT_I << endl;
+		if (vm.count("c_t")) {
+			CONCURRENT_T = vm["c_t"].as<int>();
 		}
 		if (vm.count("gamma")) {
 			GAMMA = vm["gamma"].as<float>();
