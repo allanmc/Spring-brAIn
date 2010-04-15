@@ -106,11 +106,16 @@ RL_State::RL_State(Game *g, int agentId)
 #endif
 			//set ID --- Update RL::RL() when changing the ID calculation
 			ID = concurrent;
+#ifdef USE_BUILDING_COUNT
+			ID = ID*RL_SOLAR_INDEX + min(game->units[SOLAR_ID], RL_SOLAR_INDEX-1);
+			ID = ID*RL_MEX_INDEX + min(game->units[MEX_ID], RL_MEX_INDEX-1);
+			ID = ID*RL_LAB_INDEX + min(game->units[LAB_ID], RL_LAB_INDEX-1);
+#else
 			ID = ID*REWARD_METAL_STORE_STATES	+ GetDiscrete(REWARD_METAL_STORE_MIN, REWARD_METAL_STORE_MAX, REWARD_METAL_STORE_STATES, metalStore); //*4 + (metalStore > 600 ? (metalStore > 900 ? 3 : 2) : (metalStore > 300 ? 1 : 0) );
 			ID = ID*REWARD_ENERGY_STORE_STATES	+ GetDiscrete(REWARD_ENERGY_STORE_MIN, REWARD_ENERGY_STORE_MAX, REWARD_ENERGY_STORE_STATES, energyStore); //*4 + (energyStore > 600 ? (energyStore > 900 ? 3 : 2) : (energyStore > 300 ? 1 : 0) );
 			ID = ID*REWARD_METAL_STATES			+ GetDiscrete(REWARD_METAL_MIN, REWARD_METAL_MAX, REWARD_METAL_STATES, metalProduction); //*4 + (metalProduction > REWARD_METAL_MAX ? (metalProduction > REWARD_METAL_MAX+5 ? 3 : 2) : (metalProduction > 0 ? 1 : 0) );
 			ID = ID*REWARD_ENERGY_STATES		+ GetDiscrete(REWARD_ENERGY_MIN, REWARD_ENERGY_MAX, REWARD_ENERGY_STATES, energyProduction); //*4 + (energyProduction > REWARD_ENERGY_MAX ? (energyProduction > REWARD_ENERGY_MAX+50 ? 3 : 2) : (energyProduction > 0 ? 1 : 0) );
-
+#endif
 			//set actions available
 			Actions.push_back(RL_Action(LAB_ID,0));
 			Actions.push_back(RL_Action(SOLAR_ID,1));
@@ -195,7 +200,11 @@ bool RL_State::IsTerminal()
 
 short unsigned int RL_State::GetDiscrete(double minv, double maxv, unsigned short int states, double value)
 {
-	int result = ( (max( minv,min(value, maxv))-minv) / (maxv - minv))*(states-1);
+	if(value < minv) return 0; //below minv is state 0
+	if(value >= maxv) return states-1;
+	if(states <= 2) return states-1; //if we have too few states 
+	int result = 1; // first state in the middle is 1
+	result += floor( ((value - minv) / (maxv - minv))*(states-2) );
 	//if (result < 0 || result > states-1 ) {
 	//int crap = 2;
 	//}

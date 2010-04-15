@@ -17,14 +17,18 @@ using namespace std;
 
 int factorial(int n)
 {
-	if (n<=1)
-		return(1);
-	else
-		n=n*factorial(n-1);
-	return(n);
+	int result = 1;
+	for(int i = 1; i <= n; i++)
+	{
+		result *= i;
+	}
+	return result;
+	//if (n<=1)
+	//	return(1);
+	//else
+	//	n=n*factorial(n-1);
+	//return(n);
 }
-
-
 
 RL::RL(Game *g, double epsilon, int numAgents, bool load)
 {	
@@ -74,10 +78,16 @@ RL::RL(Game *g, double epsilon, int numAgents, bool load)
 				break;
 		}
 		//stateVars.push_back( QStateVar("ConCurTime", 5));
+#ifdef USE_BUILDING_COUNT
+		stateVars.push_back( QStateVar("SOLAR", RL_SOLAR_INDEX));
+		stateVars.push_back( QStateVar("MEX", RL_MEX_INDEX));
+		stateVars.push_back( QStateVar("LAB", RL_LAB_INDEX));
+#else
 		stateVars.push_back( QStateVar("MStore", REWARD_METAL_STORE_STATES));
 		stateVars.push_back( QStateVar("EStore", REWARD_ENERGY_STORE_STATES));
 		stateVars.push_back( QStateVar("MIncome", REWARD_METAL_STATES));
 		stateVars.push_back( QStateVar("EIncome", REWARD_ENERGY_STATES));
+#endif
 		actions.push_back( QAction("Lab", 0));
 		actions.push_back( QAction("Solar", 1));
 		actions.push_back( QAction("Mex", 2));
