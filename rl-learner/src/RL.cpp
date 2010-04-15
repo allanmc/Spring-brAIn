@@ -266,7 +266,7 @@ double RL::GetReward()
 	float energyValue = (float)((max(REWARD_ENERGY_MIN, min(REWARD_ENERGY_MAX, energyGain ) ) - REWARD_ENERGY_MIN ) / (REWARD_ENERGY_MAX-REWARD_ENERGY_MIN)); //energy production-usage [-1;1]
 	value = min(metalValue, energyValue);
 	value *= 100;
-	value += ( min( game->resources[MEX_ID]/100.0, game->resources[SOLAR_ID]/100.0 ) );
+	value += ( min( game->resources[MEX_ID]/10.0, game->resources[SOLAR_ID]/10.0 ) );
 
 	
 	return value;
