@@ -18,15 +18,19 @@ extern int NUM_LEARNERS;
 extern int RUNS;
 
 #define TEST_RESULTS false
-#define USE_NEW_REWARD_CODE
+//#define USE_NEW_REWARD_CODE
 //#define USE_TIME_IN_SP
 #define USE_BUILDING_COUNT
 
 #define CONCURRENT_A 3
-#define CONCURRENT_I 2
-#define CONCURRENT_T 3
-#define CONCURRENT_SS 1
+//#define CONCURRENT_I 2
+//#define CONCURRENT_T 3
+//#define CONCURRENT_SS 4
+extern int CONCURRENT_I;
+extern int CONCURRENT_T;
+extern int CONCURRENT_SS;
 //CONCURRENT_SS = 1-4
+
 
 //#define PRINT_REWARD true
 extern bool PRINT_REWARD;
