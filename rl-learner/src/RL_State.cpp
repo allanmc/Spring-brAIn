@@ -113,8 +113,8 @@ RL_State::RL_State(Game *g, int agentId)
 #else
 			ID = ID*REWARD_METAL_STORE_STATES	+ GetDiscrete(REWARD_METAL_STORE_MIN, REWARD_METAL_STORE_MAX, REWARD_METAL_STORE_STATES, metalStore); //*4 + (metalStore > 600 ? (metalStore > 900 ? 3 : 2) : (metalStore > 300 ? 1 : 0) );
 			ID = ID*REWARD_ENERGY_STORE_STATES	+ GetDiscrete(REWARD_ENERGY_STORE_MIN, REWARD_ENERGY_STORE_MAX, REWARD_ENERGY_STORE_STATES, energyStore); //*4 + (energyStore > 600 ? (energyStore > 900 ? 3 : 2) : (energyStore > 300 ? 1 : 0) );
-			ID = ID*REWARD_METAL_STATES			+ GetDiscrete(REWARD_METAL_MIN, REWARD_METAL_MAX, REWARD_METAL_STATES, metalProduction); //*4 + (metalProduction > REWARD_METAL_MAX ? (metalProduction > REWARD_METAL_MAX+5 ? 3 : 2) : (metalProduction > 0 ? 1 : 0) );
-			ID = ID*REWARD_ENERGY_STATES		+ GetDiscrete(REWARD_ENERGY_MIN, REWARD_ENERGY_MAX, REWARD_ENERGY_STATES, energyProduction); //*4 + (energyProduction > REWARD_ENERGY_MAX ? (energyProduction > REWARD_ENERGY_MAX+50 ? 3 : 2) : (energyProduction > 0 ? 1 : 0) );
+			ID = ID*REWARD_METAL_STATES			+ GetDiscrete(STATE_METAL_MIN, STATE_METAL_MAX, REWARD_METAL_STATES, metalProduction); //*4 + (metalProduction > REWARD_METAL_MAX ? (metalProduction > REWARD_METAL_MAX+5 ? 3 : 2) : (metalProduction > 0 ? 1 : 0) );
+			ID = ID*REWARD_ENERGY_STATES		+ GetDiscrete(STATE_ENERGY_MIN, STATE_ENERGY_MAX, REWARD_ENERGY_STATES, energyProduction); //*4 + (energyProduction > REWARD_ENERGY_MAX ? (energyProduction > REWARD_ENERGY_MAX+50 ? 3 : 2) : (energyProduction > 0 ? 1 : 0) );
 #endif
 			//set actions available
 			Actions.push_back(RL_Action(LAB_ID,0));
