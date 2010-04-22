@@ -45,11 +45,15 @@ int main(int argc, char *argv[])
 			cerr << "Eps: " << currentEpsilon << endl;
 			currentEpsilon = 0.0f;
 		}
-#ifdef USE_NEW_REWARD_CODE
-		unsigned int numTerm = 1;
-#else
-		unsigned int numTerm = RL_LAB_INDEX; //1
-#endif
+		unsigned int numTerm;
+		if(USE_NEW_REWARD_CODE)
+		{
+			numTerm = 1;
+		}
+		else
+		{
+			numTerm = RL_LAB_INDEX; //1
+		}
 		for ( unsigned int cTerm = 0 ; cTerm < numTerm ; cTerm++ )
 		{
 			if (TEST_RESULTS)
@@ -284,7 +288,9 @@ void PrintOutputHeader()
 		if (USE_RS_TERMINATION)
 			cout << "RS(Termination)";
 	}
-	cout << " - " << (PRINT_REWARD ? "REWARD":"TIME") << "\n";
+	cout << " - " << (PRINT_REWARD ? "REWARD":"TIME");
+	cout << (USE_NEW_REWARD_CODE ? " +pipelining":" -pipelining");
+	cout << endl;
 }
 
 void InitStateVisits()
@@ -382,6 +388,8 @@ void LoadConfig(int argc, char *argv[])
 	USE_RS_TIME = false;
 	USE_Q_LAMBDA = false;
 
+	USE_NEW_REWARD_CODE = false;
+
 	try {
 		ptree pt;
 		read_info("config", pt);
@@ -403,6 +411,7 @@ void LoadConfig(int argc, char *argv[])
 		USE_RS_TERMINATION = pt.get("use_rs_termination", USE_RS_TERMINATION);
 		USE_RS_TIME = pt.get("use_rs_time", USE_RS_TIME);
 		USE_Q_LAMBDA = pt.get("use_q_lambda", USE_Q_LAMBDA);
+		USE_NEW_REWARD_CODE = pt.get("use_new_reward_code",USE_NEW_REWARD_CODE);
 	}
     catch(exception& e) {
 		cerr << "Coult not load config: " << e.what() << "\n";
@@ -426,6 +435,7 @@ void LoadConfig(int argc, char *argv[])
 			("c_ss", po::value<int>(), "CONCURRENT_SS")
 			("c_i", po::value<int>(), "CONCURRENT_I")
 			("c_t", po::value<int>(), "CONCURRENT_T")
+			("use_new_reward_code,p", po::value<bool>(), "Use Pipe-lining?")
 		;
 
 		po::variables_map vm;
@@ -482,6 +492,9 @@ void LoadConfig(int argc, char *argv[])
 		}
 		if (vm.count("use_q_lambda")) {
 			USE_Q_LAMBDA = vm["use_q_lambda"].as<bool>();
+		}
+		if (vm.count("use_new_reward_code")) {
+			USE_NEW_REWARD_CODE = vm["use_new_reward_code"].as<bool>();
 		}
 
 	}

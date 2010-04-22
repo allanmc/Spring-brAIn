@@ -91,19 +91,23 @@ RL_State::RL_State(Game *g, int agentId)
 			}
 
 			//number of labs
-#ifdef USE_NEW_REWARD_CODE
-			if(labCount > RL_LAB_INDEX-1)
+			if(USE_NEW_REWARD_CODE)
 			{
-				//this->lastLabCount = labCount; //Moved to main.
-				terminal = true;
+				if(labCount > RL_LAB_INDEX-1)
+				{
+					//this->lastLabCount = labCount; //Moved to main.
+					terminal = true;
+				}
 			}
-#else
-			if(labCount > lastLabCount)
+			else
 			{
-				//this->lastLabCount = labCount; //Moved to main.
-				terminal = true;
+				if(labCount > lastLabCount)
+				{
+					//this->lastLabCount = labCount; //Moved to main.
+					terminal = true;
+				}
 			}
-#endif
+			
 			//set ID --- Update RL::RL() when changing the ID calculation
 			ID = concurrent;
 #ifdef USE_BUILDING_COUNT

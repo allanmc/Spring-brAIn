@@ -14,6 +14,7 @@ bool USE_Q_LAMBDA;
 int CONCURRENT_I;
 int CONCURRENT_T;
 int CONCURRENT_SS;
+bool USE_NEW_REWARD_CODE;
 
 using namespace brainSpace;
 using namespace std;
@@ -298,52 +299,54 @@ RL_Action RL::Update(int agentId)
 		reward += (double)(PreviousFrame[agentId] - game->frame);
 	}
 
-#ifdef USE_NEW_REWARD_CODE
-	//new reward code 
-	if(PreviousAction[agentId].Action == LAB_ID)
+	if (USE_NEW_REWARD_CODE)
 	{
-		double value = GetReward();
-		for(int i = 0; i < NUM_LEARNERS; i++)
+		//new reward code 
+		if(PreviousAction[agentId].Action == LAB_ID)
 		{
-			TempReward[i] += value;
-		}
-	}
-	assert(COMMON_TERMINATION_REWARD);
-	reward += TempReward[agentId];
-	TempReward[agentId] = 0;
-#else
-	
-	//old reward code
-	if (USE_RS_TERMINATION && state.IsTerminal() /*PreviousAction[agentId].Action == LAB_ID*/)
-	{
-		bool firstReward = true;
-		for(int i = 0; i<NUM_LEARNERS; i++)
-		{
-			if (isTerminated[i])
+			double value = GetReward();
+			for(int i = 0; i < NUM_LEARNERS; i++)
 			{
-				firstReward = false;
-				break;
+				TempReward[i] += value;
 			}
 		}
-		isTerminated[agentId] = true;
-		double value;
-		if (!COMMON_TERMINATION_REWARD || firstReward)//If we already calculated reward for this ternmination, use that
-		{
-			value = GetReward();
-			lastTerminationReward = value;
-		}
-		else
-		{
-			value = lastTerminationReward;
-		}
-
-		//value = 1;
-		reward += value;
-		
-		//cerr << "Termination reward:" << game->GetTotalProduction(MEX_ID) << ", " << game->GetUsage(MEX_ID) << " : " << game->GetTotalProduction(SOLAR_ID) << ", " << game->GetUsage(SOLAR_ID) << " => " << value << endl;
+		assert(COMMON_TERMINATION_REWARD);
+		reward += TempReward[agentId];
+		TempReward[agentId] = 0;
 	}
+	else
+	{
+	
+		//old reward code
+		if (USE_RS_TERMINATION && state.IsTerminal() /*PreviousAction[agentId].Action == LAB_ID*/)
+		{
+			bool firstReward = true;
+			for(int i = 0; i<NUM_LEARNERS; i++)
+			{
+				if (isTerminated[i])
+				{
+					firstReward = false;
+					break;
+				}
+			}
+			isTerminated[agentId] = true;
+			double value;
+			if (!COMMON_TERMINATION_REWARD || firstReward)//If we already calculated reward for this ternmination, use that
+			{
+				value = GetReward();
+				lastTerminationReward = value;
+			}
+			else
+			{
+				value = lastTerminationReward;
+			}
 
-#endif
+			//value = 1;
+			reward += value;
+			
+			//cerr << "Termination reward:" << game->GetTotalProduction(MEX_ID) << ", " << game->GetUsage(MEX_ID) << " : " << game->GetTotalProduction(SOLAR_ID) << ", " << game->GetUsage(SOLAR_ID) << " => " << value << endl;
+		}
+	}
 	
 	double bestFutureValue;
 	if ( state.IsTerminal() )

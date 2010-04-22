@@ -19,6 +19,7 @@ extern int RUNS;
 
 #define TEST_RESULTS false
 //#define USE_NEW_REWARD_CODE
+extern bool USE_NEW_REWARD_CODE;
 //#define USE_TIME_IN_SP
 //#define USE_BUILDING_COUNT
 
