@@ -94,6 +94,7 @@ double RL_Q::GetValue( RL_State &state, RL_Action &action )
 	int stateID = state.GetID();
 	int actionID = action.ID;
 	int index = stateID * numActions + actionID;
+	//assert(index < size);
 	double retVal = actionValueFunction[ index ];
 	return retVal;
 }

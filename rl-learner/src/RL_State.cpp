@@ -121,6 +121,7 @@ RL_State::RL_State(Game *g, int agentId)
 			ID = ID*REWARD_ENERGY_STATES		+ GetDiscrete(STATE_ENERGY_MIN, STATE_ENERGY_MAX, REWARD_ENERGY_STATES, energyProduction); //*4 + (energyProduction > REWARD_ENERGY_MAX ? (energyProduction > REWARD_ENERGY_MAX+50 ? 3 : 2) : (energyProduction > 0 ? 1 : 0) );
 #endif
 			//set actions available
+
 			Actions.push_back(RL_Action(LAB_ID,0));
 			Actions.push_back(RL_Action(SOLAR_ID,1));
 			Actions.push_back(RL_Action(MEX_ID,2));
@@ -152,10 +153,9 @@ int RL_State::GetConCurId(int* actionCount)
 		}
 		//action2
 		//id += SumRange(num_units - unit1, num_units - unit2 + 1, unit2-unit1 );
-		id += sumrange(NUM_LEARNERS - actionCount[0], NUM_LEARNERS - actionCount[1] + 1, actionCount[1] );
+		id += sumrange(NUM_LEARNERS - actionCount[0], NUM_LEARNERS - actionCount[0] - actionCount[1] + 1, actionCount[1] );
 		//action3
 		id += actionCount[2];
-
 		return id;
 }
 
