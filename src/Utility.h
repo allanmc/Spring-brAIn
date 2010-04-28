@@ -80,7 +80,6 @@ namespace brainSpace
 		std::vector<springai::Unit*> GetNearestEnemyUnits( MilitaryUnitGroup* group, int numArgs, ... );
 		void WriteToStateVisitFile( std::fstream* file, int val, int offset = -1 );
 		int ReadFromStateVisitFile( std::fstream* file, int offset = -1 );
-
 	};
 }
 #endif

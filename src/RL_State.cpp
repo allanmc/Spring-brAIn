@@ -266,9 +266,7 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 		}
 		else
 			it++;
-		//ai->utility->ChatMsg("RL_STATE: Erasing from possible states");
 	}
-	//ai->utility->ChatMsg("RL_STATE: DONE!!!");
 }
 
 RL_State::~RL_State()

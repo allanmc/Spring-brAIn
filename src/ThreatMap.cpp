@@ -100,7 +100,7 @@ void ThreatMap::Update()
 		//We are using the OverrideCache to move some friendly units
 		if ( OverrideCache != NULL && OverrideCacheFriendly )
 		{
-			for ( int i = 0 ; i < OverrideCache->units.size() ; i++ )
+			for ( unsigned int i = 0 ; i < OverrideCache->units.size() ; i++ )
 			{
 				if ( u->GetUnitId() == OverrideCache->units[i] )
 				{
@@ -227,7 +227,7 @@ void ThreatMap::EffectCell(int index, float value )
 
 		if ( CalcThreatForEnemy )//Calc threat for enemy units against friendly units
 		{
-			for ( int i = 0 ; i < FriendlyUnitInfoCache.size() ; i++ )
+			for ( unsigned int i = 0 ; i < FriendlyUnitInfoCache.size() ; i++ )
 			{
 				if ( FriendlyUnitInfoCache[i]->xCell == tmpX && FriendlyUnitInfoCache[i]->yCell == tmpZ )
 				{
@@ -239,7 +239,7 @@ void ThreatMap::EffectCell(int index, float value )
 		}
 		else //Calc threat for friendly units against enemy units
 		{
-			for ( int i = 0 ; i < EnemyUnitInfoCache.size() ; i++ )
+			for ( unsigned int i = 0 ; i < EnemyUnitInfoCache.size() ; i++ )
 			{
 				if ( EnemyUnitInfoCache[i]->xCell == tmpX && EnemyUnitInfoCache[i]->yCell == tmpZ )
 				{
@@ -370,7 +370,7 @@ Superiority ThreatMap::GetImaginarySuperiorityAtPos(SAIFloat3 pos, brainSpace::M
 
 	vector<int> uIDs = group->GetUnits();
 	vector<Unit*> groupUnits;
-	for ( int i = 0 ; i < uIDs.size() ; i++ )
+	for ( unsigned int i = 0 ; i < uIDs.size() ; i++ )
 		groupUnits.push_back( Unit::GetInstance( ai->callback, uIDs[i] ) );
 
 	int x = pos.x/Resolution;
@@ -391,7 +391,7 @@ Superiority ThreatMap::GetImaginarySuperiorityAtPos(SAIFloat3 pos, brainSpace::M
 		unitsInTile = ai->knowledge->selfInfo->armyInfo->RangeQuery( TLX, TLZ, BRX, BRZ );
 	}
 
-	for ( int i = 0 ; i < unitsInTile.size() ; i++ )
+	for ( unsigned int i = 0 ; i < unitsInTile.size() ; i++ )
 	{
 		for ( int j = 0 ; j < group->GetSize() ; j++ )
 		{
@@ -407,7 +407,7 @@ Superiority ThreatMap::GetImaginarySuperiorityAtPos(SAIFloat3 pos, brainSpace::M
 	}
 
 
-	for ( int i = 0 ; i < groupUnits.size() ; i++ )
+	for ( unsigned int i = 0 ; i < groupUnits.size() ; i++ )
 		unitsInTile.push_back( groupUnits[i] );
 
 	bool makeNewCache = true;
@@ -417,10 +417,10 @@ Superiority ThreatMap::GetImaginarySuperiorityAtPos(SAIFloat3 pos, brainSpace::M
 		{
 			if ( unitsInTile.size() == OverrideCache->units.size() )
 			{
-				for ( int i = 0 ; i < unitsInTile.size() ; i++ )
+				for ( unsigned int i = 0 ; i < unitsInTile.size() ; i++ )
 				{
 					bool found = false;
-					for ( int j = 0 ; j < OverrideCache->units.size() ; j++ )
+					for ( unsigned int j = 0 ; j < OverrideCache->units.size() ; j++ )
 					{
 						if ( unitsInTile[i]->GetUnitId() == OverrideCache->units[j] )
 						{
@@ -472,7 +472,7 @@ UnitInfoCache* ThreatMap::MakeUnitInfoCache( std::vector<springai::Unit*> units,
 {
 	map<int, pair<int, bool> > armorTypesInCell;
 
-	for ( int i = 0 ; i < units.size() ; i++ )
+	for ( unsigned int i = 0 ; i < units.size() ; i++ )
 	{
 		UnitDef* d = units[i]->GetDef();
 		if ( d == NULL )
