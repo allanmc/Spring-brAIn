@@ -481,8 +481,8 @@ void LoadConfig(int argc, char *argv[])
 		if (vm.count("print_reward")) {
 			PRINT_REWARD = vm["print_reward"].as<bool>();
 		}
-		if (vm.count("use_qsmdp")) {
-			USE_QSMDP = vm["use_qsmdp"].as<bool>();
+		if (vm.count("use_smdpq")) {
+			USE_QSMDP = vm["use_smdpq"].as<bool>();
 		}
 		if (vm.count("use_rs_termination")) {
 			USE_RS_TERMINATION = vm["use_rs_termination"].as<bool>();
