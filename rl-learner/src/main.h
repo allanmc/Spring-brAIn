@@ -8,6 +8,11 @@
 #include "RL_Action.h"
 #include <time.h>
 
+#include <boost/property_tree/ptree.hpp>
+//#include <boost/property_tree/xml_parser.hpp>
+#include <boost/property_tree/info_parser.hpp>
+#include <boost/program_options.hpp>
+
 #ifdef WIN32
 #include <windows.h>
 #endif
@@ -19,6 +24,9 @@
 #define FOREGROUND_BLUE 0
 typedef int WORD;
 #endif
+
+using boost::property_tree::ptree;
+namespace po = boost::program_options;
 
 
 unsigned int *actionStateVisits;

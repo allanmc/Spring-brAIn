@@ -5,6 +5,10 @@ using namespace brainSpace;
 
 int RL_State::lastLabCount;//static from .h file
 
+int sumrange(int max, int min, int num){
+	return (max + min)*num/2;
+}
+
 RL_State::RL_State()
 {
 	ID = -1;
@@ -22,58 +26,102 @@ RL_State::RL_State(Game *g, int agentId)
 	case 0://continueos construction
 		{
 			terminal = false;
+			int labCount = game->units[LAB_ID];
 			//storage
 			double metalStore = game->GetAvailableResources(MEX_ID,0.0f);
 			double energyStore = game->GetAvailableResources(SOLAR_ID,0.0f);
 			//income
-			double metalProduction = game->GetTotalProduction(MEX_ID) - game->GetResourceUsage(MEX_ID);
-			double energyProduction = game->GetTotalProduction(SOLAR_ID) - game->GetResourceUsage(SOLAR_ID);
+			double metalProduction = game->GetTotalProduction(MEX_ID) - game->GetBuildersUsage(MEX_ID);//- labCount*5;
+			double energyProduction = game->GetTotalProduction(SOLAR_ID) - game->GetResourceUsage(SOLAR_ID) - game->GetBuildersUsage(SOLAR_ID);//- labCount*50;
 			//other agents work
 			
 			int concurrent = 0;
 			int value = 0;
 			int time_remaining = 0;
-			//bool skipped_agent = false;
-			//int agent;
+			int actionCount[CONCURRENT_A];
+			for ( int i = 0; i < CONCURRENT_A ; i++ ) {
+				actionCount[i] = 0;
+			}
+			isBuildingLab = false;
 			for ( int i = 0; i < NUM_LEARNERS ; i++ )
 			{
 				if ( i == agentId )
 				{
-					//skipped_agent = true;
 					continue;
 				}
-				//agent = ( skipped_agent ? i - 1 : i );
 				
-				value = game->UnitBeingBuildByBuilder(i) + 1; // [0;3]
-				if ( value > 0 ) 
+				value = game->UnitBeingBuildByBuilder(i); // [-1;2]
+				if ( value >= 0 ) 
 				{
-					time_remaining = min(game->GetPercentRemaining(i) / (100/5), 4); // [0;4]
-					value = (value-1)*5 + time_remaining + 1;
+					actionCount[value]++;
+					if(value == LAB_ID)
+					{
+						isBuildingLab = true;
+					}
+					if (CONCURRENT_SS==2)
+					{
+						time_remaining = min(game->GetPercentRemaining(i) / (100/CONCURRENT_T), CONCURRENT_T-1); // [0;4]
+						value = value*CONCURRENT_T + time_remaining;
+					}
 				}
-				concurrent = concurrent*16 + value;
-				if (value>15) {
-					i=i;
+				if (CONCURRENT_SS==1)
+				{
+					concurrent = concurrent*(CONCURRENT_A+1) + (value + 1);
 				}
-				if (concurrent>31) {
-					i=i;
+				else if (CONCURRENT_SS==2)
+				{
+					concurrent = concurrent*(CONCURRENT_A*CONCURRENT_T+1) + (value + 1);
 				}
 			}
-			//number of labs
-			int labCount = game->units[LAB_ID];
-			if(labCount > lastLabCount)
+
+			if ( CONCURRENT_SS==3)
 			{
-				//this->lastLabCount = labCount; //Moved to main.
-				terminal = true;
+				concurrent = GetConCurId(actionCount); 
+				if (concurrent==5) {
+					int i = 0;
+				}
+			}
+			else if (CONCURRENT_SS==4 )
+			{
+				for ( int i = 0; i < CONCURRENT_A ; i++ )
+				{
+					value = min(actionCount[i], CONCURRENT_I-1);
+					concurrent = concurrent*CONCURRENT_I + value;
+				}
 			}
 
-			//set ID
+			//number of labs
+			if(USE_NEW_REWARD_CODE)
+			{
+				if(labCount > RL_LAB_INDEX-1)
+				{
+					//this->lastLabCount = labCount; //Moved to main.
+					terminal = true;
+				}
+			}
+			else
+			{
+				if(labCount > lastLabCount)
+				{
+					//this->lastLabCount = labCount; //Moved to main.
+					terminal = true;
+				}
+			}
+			
+			//set ID --- Update RL::RL() when changing the ID calculation
 			ID = concurrent;
-			ID = ID*4 + (metalStore > 150 ? (metalStore > 600 ? 3 : 2) : (metalStore > 50 ? 1 : 0) );
-			ID = ID*2 + (energyStore > 500 ? 1 : 0 );
-			ID = ID*4 + (metalProduction > 5 ? (metalProduction > 8 ? 3 : 2) : (metalProduction > 2.5f ? 1 : 0) );
-			ID = ID*3 + (energyProduction > 26 ? 2 : (energyProduction > 15 ? 1 : 0) );
-
+#ifdef USE_BUILDING_COUNT
+			ID = ID*RL_SOLAR_INDEX + min(game->units[SOLAR_ID], RL_SOLAR_INDEX-1);
+			ID = ID*RL_MEX_INDEX + min(game->units[MEX_ID], RL_MEX_INDEX-1);
+			ID = ID*RL_LAB_INDEX + min(game->units[LAB_ID], RL_LAB_INDEX-1);
+#else
+			ID = ID*REWARD_METAL_STORE_STATES	+ GetDiscrete(REWARD_METAL_STORE_MIN, REWARD_METAL_STORE_MAX, REWARD_METAL_STORE_STATES, metalStore); //*4 + (metalStore > 600 ? (metalStore > 900 ? 3 : 2) : (metalStore > 300 ? 1 : 0) );
+			ID = ID*REWARD_ENERGY_STORE_STATES	+ GetDiscrete(REWARD_ENERGY_STORE_MIN, REWARD_ENERGY_STORE_MAX, REWARD_ENERGY_STORE_STATES, energyStore); //*4 + (energyStore > 600 ? (energyStore > 900 ? 3 : 2) : (energyStore > 300 ? 1 : 0) );
+			ID = ID*REWARD_METAL_STATES			+ GetDiscrete(STATE_METAL_MIN, STATE_METAL_MAX, REWARD_METAL_STATES, metalProduction); //*4 + (metalProduction > REWARD_METAL_MAX ? (metalProduction > REWARD_METAL_MAX+5 ? 3 : 2) : (metalProduction > 0 ? 1 : 0) );
+			ID = ID*REWARD_ENERGY_STATES		+ GetDiscrete(STATE_ENERGY_MIN, STATE_ENERGY_MAX, REWARD_ENERGY_STATES, energyProduction); //*4 + (energyProduction > REWARD_ENERGY_MAX ? (energyProduction > REWARD_ENERGY_MAX+50 ? 3 : 2) : (energyProduction > 0 ? 1 : 0) );
+#endif
 			//set actions available
+
 			Actions.push_back(RL_Action(LAB_ID,0));
 			Actions.push_back(RL_Action(SOLAR_ID,1));
 			Actions.push_back(RL_Action(MEX_ID,2));
@@ -93,10 +141,47 @@ int RL_State::GetID()
 	return ID;
 }
 
+int RL_State::GetConCurId(int* actionCount)
+{
+		int id = 0;
+		
+		assert(CONCURRENT_A==3);
+
+		//action1
+		for (int i = 0; i < actionCount[0]; i++) {
+			id += sumrange(NUM_LEARNERS - i, 1, NUM_LEARNERS - i);
+		}
+		//action2
+		//id += SumRange(num_units - unit1, num_units - unit2 + 1, unit2-unit1 );
+		id += sumrange(NUM_LEARNERS - actionCount[0], NUM_LEARNERS - actionCount[0] - actionCount[1] + 1, actionCount[1] );
+		//action3
+		id += actionCount[2];
+		return id;
+}
+
+
 vector<RL_Action> RL_State::GetActions()
 {
 	return Actions;
 }
+
+//Update This when changing the ID calculation
+/*
+bool RL_State::isBuildingLab()
+{
+	bool buildingLab = false;
+	int conCur = ID / (4*4*4*4);
+	for (int i = 0; i<NUM_LEARNERS-1; i++) {
+		int building = (conCur / (16*i)) % 16
+		if (building != 0) {
+			int id = building / 5;
+			if (id == LAB_ID) {
+				buildingLab = true;
+			}
+		}
+	}
+	return buildingLab;
+}*/
 
 void RL_State::DeleteAction(int actionID)
 {
@@ -117,6 +202,19 @@ bool RL_State::IsTerminal()
 	return terminal;
 }
 
+short unsigned int RL_State::GetDiscrete(double minv, double maxv, unsigned short int states, double value)
+{
+	if(value < minv) return 0; //below minv is state 0
+	if(value >= maxv) return states-1;
+	if(states <= 2) return states-1; //if we have too few states 
+	int result = 1; // first state in the middle is 1
+	result += floor( ((value - minv) / (maxv - minv))*(states-2) );
+	//if (result < 0 || result > states-1 ) {
+	//int crap = 2;
+	//}
+	return result;
+}
+
 bool RL_State::operator==(const RL_State &other) const
 {
 	return (ID == other.ID);
@@ -130,5 +228,6 @@ RL_State & RL_State::operator=(const RL_State &rhs)
 	Actions = rhs.Actions;
 	ID = rhs.ID;
 	terminal = rhs.terminal;
+	isBuildingLab = rhs.isBuildingLab;
 	return *this;
 }

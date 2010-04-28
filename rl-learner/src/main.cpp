@@ -6,6 +6,7 @@ using namespace brainSpace;
 int main(int argc, char *argv[])
 {
 	LoadConfig(argc, argv);
+	cerr << EPSILON_DECAY << endl;
 	PrintOutputHeader();
 	srand((unsigned int)time(NULL));
 
@@ -41,10 +42,19 @@ int main(int argc, char *argv[])
 		if ( run == RUNS-1  )
 		{
 			debug = true;
+			cerr << "Eps: " << currentEpsilon << endl;
 			currentEpsilon = 0.0f;
 		}
-
-		for ( unsigned int cTerm = 0 ; cTerm < RL_LAB_INDEX ; cTerm++ )
+		unsigned int numTerm;
+		if(USE_NEW_REWARD_CODE)
+		{
+			numTerm = 1;
+		}
+		else
+		{
+			numTerm = RL_LAB_INDEX; //1
+		}
+		for ( unsigned int cTerm = 0 ; cTerm < numTerm ; cTerm++ )
 		{
 			if (TEST_RESULTS)
 			{
@@ -62,11 +72,19 @@ int main(int argc, char *argv[])
 			}
 
 			RL_State::lastLabCount = g->units[LAB_ID];
-			
+			bool* isBuildingLab = new bool[NUM_LEARNERS];
 			RL_Action a;
 			for(int x = 0; x < NUM_LEARNERS; x++)
 			{
 				a = r->Update(x);
+				if(a.Action == LAB_ID)
+				{
+					isBuildingLab[x] = true;
+				}
+				else
+				{
+					isBuildingLab[x] = false;
+				}
 				UpdateStateVisits(r);
 				PrintAction(debug, a, x);
 				
@@ -86,18 +104,41 @@ int main(int argc, char *argv[])
 						break;
 					}
 				}
+				if (builders.size() > 1) {
+					int i = 0;
+				}
 				for(int i = 0; i < (int)builders.size(); i++)
 				{
+					bool print = false;
+					if(debug && isBuildingLab[builders[i]])
+					{
+						isBuildingLab[builders[i]] = false;
+						//print = true;
+					}
 					a = r->Update(builders[i]);
+					if(print)
+					{
+						cerr << "LastReward: " << r->GetLastReward() << " ";
+						cerr << "StateID: " << r->LastStateID << " " << endl;
+					}
 					UpdateStateVisits(r);
 					if ( a.ID != -1 ) 
 					{
 						g->BuildUnit(a.Action, builders[i]);
 						PrintAction(debug, a, builders[i]);
+						if(a.Action == LAB_ID)
+						{
+							isBuildingLab[builders[i]] = true;
+						}
 					}
 					else
 					{
-						if (debug) cerr << "T" << builders[i] << " ";
+						if (debug) 
+						{
+							cerr << "LastReward: " << r->GetLastReward() << " ";
+							cerr << "StateID: " << r->LastStateID << " " << endl;
+							cerr << "T" << builders[i] << " ";
+						}
 						runningAgents--;
 					}
 				}
@@ -146,7 +187,7 @@ int main(int argc, char *argv[])
 		{
 			bestFrame = currentFrame;
 			bestReward = currentReward;
-			if (debug && !TEST_RESULTS) system("pause");
+			//if (debug && !TEST_RESULTS) system("pause");
 		}
 
 		currentReward = 0.0;
@@ -180,10 +221,10 @@ void ChangeColour(WORD theColour)
 
 void PrintGameStatus(Game *g)
 {
-	cout << "Metal Res: " << g->resources[MEX_ID] << endl;
-	cout << "Energy Res: " << g->resources[SOLAR_ID] << endl;
-	cout << "Metal Gain: " << g->GetTotalProduction(MEX_ID) - g->GetResourceUsage(MEX_ID) << endl;
-	cout << "Energy Gain: " << g->GetTotalProduction(SOLAR_ID) - g->GetResourceUsage(SOLAR_ID) << endl;
+	cerr << "Metal Res: " << g->resources[MEX_ID] << endl;
+	cerr << "Energy Res: " << g->resources[SOLAR_ID] << endl;
+	cerr << "Metal Gain: " << g->GetTotalProduction(MEX_ID) - g->GetResourceUsage(MEX_ID) - g->units[LAB_ID]*5 << endl;
+	cerr << "Energy Gain: " << g->GetTotalProduction(SOLAR_ID) - g->GetResourceUsage(SOLAR_ID) - g->units[LAB_ID]*50 << endl;
 }
 
 void PrintAction(bool debug,RL_Action a, unsigned short builder)
@@ -219,6 +260,8 @@ void PrintAction(bool debug,RL_Action a, unsigned short builder)
 
 void PrintOutputHeader()
 {
+	cout << "S" << CONCURRENT_SS << " ";
+
 	cout << "x" << NUM_LEARNERS << " ";
 
 	cout << (USE_QSMDP ? "SMDPQ" : "Q");
@@ -245,7 +288,9 @@ void PrintOutputHeader()
 		if (USE_RS_TERMINATION)
 			cout << "RS(Termination)";
 	}
-	cout << " - " << (PRINT_REWARD ? "REWARD":"TIME") << "\n";
+	cout << " - " << (PRINT_REWARD ? "REWARD":"TIME");
+	cout << (USE_NEW_REWARD_CODE ? " +pipelining":" -pipelining");
+	cout << endl;
 }
 
 void InitStateVisits()
@@ -332,23 +377,128 @@ void LoadConfig(int argc, char *argv[])
 	GAMMA = 0.9f;
 	ALPHA = 0.1f;
 	EPSILON_START = 0.5f;
-	EPSILON_DECAY = 0.99999f;
+	EPSILON_DECAY = 1.0f;
+	CONCURRENT_I = 2;
+	CONCURRENT_T = 3;
+	CONCURRENT_SS = 4;
+	PRINT_REWARD  = true;
 
-	//load config file
-	ifstream *file = new ifstream("config.txt", ios::binary | ios::in);
-	//read content
-	delete file;
+	USE_QSMDP = true;
+	USE_RS_TERMINATION = true;
+	USE_RS_TIME = false;
+	USE_Q_LAMBDA = false;
 
-	//load arguments
-	if (argc == 3 && strcmp(argv[1],"-n")==0) {
-		RUNS = atoi(argv[2]);
-	}
-	if(argc > 1)
-	{
-		int currentArg = 1;
-		for(int i = 0; i<argc; i++)
+	USE_NEW_REWARD_CODE = false;
+
+	try {
+		ptree pt;
+		read_info("config", pt);
+		RUNS = pt.get("runs", RUNS);
+		NUM_LEARNERS = pt.get("num_learners", NUM_LEARNERS);
+		GAMMA = pt.get("gamma", GAMMA);
+		ALPHA = pt.get("alpha", ALPHA);
+		EPSILON_START = pt.get("epsilon_start", EPSILON_START);
+		EPSILON_DECAY = pt.get("epsilon_decay", EPSILON_DECAY);
+		double epsilon_end = pt.get("epsilon_end", 0.0);
+		if(epsilon_end != 0.0)
 		{
-			//check each argument and stuff
+			double first = (double)epsilon_end/(double)EPSILON_START;
+			double second = 1.0/(double)RUNS;			
+			EPSILON_DECAY = pow(first, second);
 		}
+		PRINT_REWARD = pt.get("print_reward", PRINT_REWARD);
+		USE_QSMDP = pt.get("use_qsmdp", USE_QSMDP);
+		USE_RS_TERMINATION = pt.get("use_rs_termination", USE_RS_TERMINATION);
+		USE_RS_TIME = pt.get("use_rs_time", USE_RS_TIME);
+		USE_Q_LAMBDA = pt.get("use_q_lambda", USE_Q_LAMBDA);
+		USE_NEW_REWARD_CODE = pt.get("use_new_reward_code",USE_NEW_REWARD_CODE);
 	}
+    catch(exception& e) {
+		cerr << "Coult not load config: " << e.what() << "\n";
+    }
+	try {
+		po::options_description desc("Allowed options");
+		desc.add_options()
+			("help,h", "Help me!")
+			("runs,n", po::value<int>(), "Number of runs to do")
+			("num_learners,l", po::value<int>(), "Number of learners")
+			("gamma,g", po::value<float>(), "Gamma value")
+			("alpha,a", po::value<float>(), "Alpha value")
+			("epsilon_start,e", po::value<double>(), "Starting epsilon value")
+			("epsilon_decay,d", po::value<double>(), "Epsilon-decay value")
+			("epsilon_end,f", po::value<double>(), "Epsilon-end value(overwrites decay)")
+			("print_reward,r", po::value<bool>(), "Print reward? Else time is pritned.")
+			("use_smdpq,s", po::value<bool>(), "Use smdpq?")
+			("use_rs_termination,t", po::value<bool>(), "Use special termination reward?")
+			("use_rs_time,m", po::value<bool>(), "Use TRS?")
+			("use_q_lambda,y", po::value<bool>(), "Use Q-lambda?")
+			("c_ss", po::value<int>(), "CONCURRENT_SS")
+			("c_i", po::value<int>(), "CONCURRENT_I")
+			("c_t", po::value<int>(), "CONCURRENT_T")
+			("use_new_reward_code,p", po::value<bool>(), "Use Pipe-lining?")
+		;
+
+		po::variables_map vm;
+		po::store(po::parse_command_line(argc, argv, desc), vm);
+		po::notify(vm);    
+
+		if (vm.count("help")) {
+			cout << desc << "\n";
+			exit(0);
+		}
+		if (vm.count("runs")) {
+			RUNS = vm["runs"].as<int>();
+		}
+		if (vm.count("num_learners")) {
+			NUM_LEARNERS = vm["num_learners"].as<int>();
+		}
+		if (vm.count("c_ss")) {
+			CONCURRENT_SS = vm["c_ss"].as<int>();
+		}
+		if (vm.count("c_i")) {
+			CONCURRENT_I = vm["c_i"].as<int>();
+		}
+		//cerr << endl << "crap: " << CONCURRENT_I << endl;
+		if (vm.count("c_t")) {
+			CONCURRENT_T = vm["c_t"].as<int>();
+		}
+		if (vm.count("gamma")) {
+			GAMMA = vm["gamma"].as<float>();
+		}
+		if (vm.count("alpha")) {
+			ALPHA = vm["alpha"].as<float>();
+		}
+		if (vm.count("epsilon_start")) {
+			EPSILON_START = vm["epsilon_start"].as<double>();
+		}
+		if (vm.count("epsilon_decay")) {
+			EPSILON_DECAY = vm["epsilon_decay"].as<double>();
+		}
+		if (vm.count("epsilon_end")) {
+			double epsilon_end = vm["epsilon_end"].as<double>();
+			EPSILON_DECAY = pow((double)epsilon_end/(double)EPSILON_START, 1.0/(double)RUNS);
+		}
+		if (vm.count("print_reward")) {
+			PRINT_REWARD = vm["print_reward"].as<bool>();
+		}
+		if (vm.count("use_qsmdp")) {
+			USE_QSMDP = vm["use_qsmdp"].as<bool>();
+		}
+		if (vm.count("use_rs_termination")) {
+			USE_RS_TERMINATION = vm["use_rs_termination"].as<bool>();
+		}
+		if (vm.count("use_rs_time")) {
+			USE_RS_TIME = vm["use_rs_time"].as<bool>();
+		}
+		if (vm.count("use_q_lambda")) {
+			USE_Q_LAMBDA = vm["use_q_lambda"].as<bool>();
+		}
+		if (vm.count("use_new_reward_code")) {
+			USE_NEW_REWARD_CODE = vm["use_new_reward_code"].as<bool>();
+		}
+
+	}
+    catch(exception& e) {
+        cerr << "Could not get command options: " << e.what() << "\n";
+    }
 }
