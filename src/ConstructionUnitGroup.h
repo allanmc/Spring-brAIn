@@ -30,6 +30,8 @@ namespace brainSpace
 		void AssignBuildOrder( SBuildUnitCommand order );
 		void QueueBuildOrder( SBuildUnitCommand order );
 		int GetBuildQueueSize();
+
+		bool AddUnit( Unit* unit );
 	private:
 		SAIFloat3 FindClosestMetalExtractionSite(SAIFloat3 pos, bool checkIfItBlocks = true );
 		SAIFloat3 FindClosestNonConflictingBuildSite(UnitDef *unitDef, SAIFloat3 buildPos, float searchRadius, int minDist, int facing);

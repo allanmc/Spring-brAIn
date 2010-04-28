@@ -36,15 +36,22 @@ int brainSpace::GroupController::GetAmountOfBuildOrders()
 }
 void GroupController::AddUnit(Unit *unit)
 {
-	if ( unit->GetDef()->IsBuilder() )
+	UnitDef* d = unit->GetDef();
+	if ( d->IsBuilder() )
 	{
 		ConstructionGroupMgr->AddUnit( unit );
 	}
-	else if ( unit->GetDef()->IsAbleToAttack() )
+	else if ( d->IsAbleToAttack() )
 	{
+
+		if ( d->IsCommander() ) 
+		{
+			delete d;
+			return;
+		}
 		MilitaryGroupMgr->AddUnit( unit );
 	}
-
+	delete d;
 }
 
 void GroupController::RemoveUnit(Unit *unit)
@@ -56,7 +63,6 @@ void GroupController::RemoveUnit(Unit *unit)
 	}
 	else if ( unit->GetDef()->IsAbleToAttack() )
 	{
-		ai->utility->Log(ALL, MISC, "MilitaryGroupMgr RemoveUnit ");
 		MilitaryGroupMgr->RemoveUnit( unit );
 	}
 }
@@ -74,19 +80,33 @@ bool GroupController::ConstructionGroupIsIdle()
 	return ConstructionGroupMgr->IsIdle();
 }
 
-void GroupController::UnitIdle( Unit* unit )
+bool GroupController::UnitIdle( Unit* unit )
 {
+	bool allIdle = false;
 	ai->utility->Log(ALL, MISC, "GroupController::UnitIdle()");
 	UnitDef *def = unit->GetDef();
 	if ( def->IsBuilder() )
 	{
 		ConstructionGroupMgr->UnitIdle( unit );
+		return false;//TODO: CORRECT THIS
 	}
 	else
 	{
-		MilitaryGroupMgr->UnitIdle(unit);
+		allIdle = MilitaryGroupMgr->UnitIdle(unit);
 	}
 	delete def;
+	return allIdle;
+}
+
+///finds an idle group to attack the target.
+void GroupController::AttackWithGroup(vector<int> enemies)
+{
+	ai->utility->Log(ALL, MISC, "AttackWithGroup::IsAttackGroupAvailable()");
+	if(MilitaryGroupMgr->IsAttackGroupAvailable())
+	{
+		ai->utility->Log(ALL, MISC, "AttackWithGroup::IsAttackGroupAvailable() TRUE");
+		MilitaryGroupMgr->GiveAttackOrder(MilitaryGroupMgr->GetIdleAttackGroups()[0], enemies);
+	}
 }
 
 ///finds an idle group to attack the target.

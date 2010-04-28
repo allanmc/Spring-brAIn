@@ -2,14 +2,14 @@
 #include "global.h"
 #include <stdio.h>
 #include <sstream>
-
+#include "Battle.h"
+#include <map>
 using namespace std;
 using namespace springai;
 using namespace brainSpace;
 
 Utility::Utility( AIClasses* aiClasses )
 {
-	;
 	debug = true;
 	ai = aiClasses;
 	char filename[200];
@@ -78,8 +78,8 @@ void Utility::LaterInitialization()
 	mexDef = GetUnitDef("armmex");
 	solarDef = GetUnitDef("armsolar");
 	lltDef = GetUnitDef("armllt");
-	Log(ALL, MISC, "LaterInitialization()");
 	isMetalMap = map->GetResourceMapSpotsPositions(*ai->utility->GetResource("Metal"), NULL).size() > 200;	
+	Log(ALL, MISC, "Done calling LaterInitialization()");
 }
 
 bool Utility::IsMetalMap()
@@ -204,6 +204,26 @@ UnitDef* Utility::GetLLTDef()
 	return lltDef;
 }
 
+
+UnitDef* Utility::GetUnitDef(unsigned int id)
+{
+	if(ai->frame > 0)
+	{
+		for ( int i = 0 ; i < (int)defs.size() ; i++ )
+		{
+			if ( defs[i]->GetUnitDefId() == id )
+			{
+				return defs[i];
+			}
+		}
+	}
+	else
+	{
+		Log(ALL, MISC, "Could not GetUnitDef, because frame==0, CRITICAL ERROR!");
+	}
+	return NULL;
+}
+
 ///@return the UnitDef of with a given name, or NULL if the UnitDef does not exists
 UnitDef* Utility::GetUnitDef(const char* unitDefName)
 {
@@ -211,6 +231,7 @@ UnitDef* Utility::GetUnitDef(const char* unitDefName)
 	{
 		for ( int i = 0 ; i < (int)defs.size() ; i++ )
 		{
+			//ai->utility->ChatMsg(defs[i]->GetName());
 			if ( strcmp( defs[i]->GetName(), unitDefName ) == 0 )
 			{
 				return defs[i];
@@ -221,6 +242,7 @@ UnitDef* Utility::GetUnitDef(const char* unitDefName)
 	{
 		Log(ALL, MISC, "Could not GetUnitDef, because frame==0, CRITICAL ERROR!");
 	}
+	ai->utility->ChatMsg("GETUNITDEF: Could not find unitdef %s. Defs size %d", unitDefName, defs.size());
 	return NULL;
 }
 
@@ -245,19 +267,23 @@ SAIFloat3 Utility::GoTo(int unitId, SAIFloat3 pos, bool simulate)
 	ai->utility->Log(ALL, MISC, "GoTo: I am now going to find a path..");
 	Unit* unit = Unit::GetInstance(ai->callback, unitId);
 	UnitDef *def = unit->GetDef();
-	list<SAIFloat3> wayPoints;
+	vector<SAIFloat3> wayPoints;
 	bool goToward = true;
 	if (ai->utility->EuclideanDistance(unit->GetPos(), pos) < def->GetBuildDistance())
 	{
 		//wayPoints.push_back(pos);
-		wayPoints = ai->knowledge->mapInfo->pathfindingMap->FindPathTo(def, unit->GetPos(), GetSafePosition());
+		Path* p = ai->knowledge->mapInfo->pathfindingMap->FindPathTo(def, unit->GetPos(), GetSafePosition());
 		ai->utility->Log(ALL, MISC, "GoTo: I am going backwards!");
 		goToward = false;
+		wayPoints = p->GetPoints();
+		delete p;
 	}
 	else
 	{
-		wayPoints = ai->knowledge->mapInfo->pathfindingMap->FindPathTo(def, unit->GetPos(), pos);
+		Path* p = ai->knowledge->mapInfo->pathfindingMap->FindPathTo(def, unit->GetPos(), pos);
 		ai->utility->Log(ALL, MISC, "GoTo: I am going towards buildlocation!");
+		wayPoints = p->GetPoints();
+		delete p;
 	}
 	SAIFloat3 retPos = (SAIFloat3){0,-1,0};
 	if(wayPoints.size() == 0)
@@ -277,7 +303,7 @@ SAIFloat3 Utility::GoTo(int unitId, SAIFloat3 pos, bool simulate)
 	}
 	int toWalk = 0;
 	//for (int i = 0; i < wayPoints.size(); i++)
-	for (list<SAIFloat3>::const_iterator it = wayPoints.begin(); it != wayPoints.end(); ++it)
+	for (vector<SAIFloat3>::const_iterator it = wayPoints.begin(); it != wayPoints.end(); ++it)
 	{
 		
 		if ( (goToward && (def->GetBuildDistance() > ai->utility->EuclideanDistance(*it, pos))) ||
@@ -465,13 +491,12 @@ void Utility::ResetGame(RL **rl)
 	Log(IMPORTANT, MISC, "Resetting RL...");
 	delete *rl;
 	*rl = NULL;
-	*rl = new RL( ai,0,EPSILON_START );//FY!
+	*rl = new RL( ai, EPSILON_START );//FY!
 
+	/*
 	Log(IMPORTANT, MISC, "Creating new commander..."); 
 	//Give me a new commander
 	//int newCommanderId = 0;
-	Cheats *c = ai->callback->GetCheats();
-	c->SetEnabled(true);	
 	SGiveMeNewUnitCheatCommand giveUnitOrder;
 	giveUnitOrder.pos = (SAIFloat3){10,200, 10};
 	giveUnitOrder.unitDefId = ai->utility->GetUnitDef("armcom")->GetUnitDefId();
@@ -497,15 +522,10 @@ void Utility::ResetGame(RL **rl)
 	engine->HandleCommand(0, -1, COMMAND_CHEATS_GIVE_ME_RESOURCE, &resourceCommand);
 	Log(IMPORTANT, MISC, "Killing all units besides the commander..."); 
 	//Delete all units besides out new commander
-	
-	Suicide(ai->commander->GetUnitId(), true);
-	c->SetEnabled(false);
-	delete c;
-
-	Log(IMPORTANT, MISC, "brAIn has been reset!"); 
+	*/
 }
 
-void Utility::Suicide(int unitToSurvive, bool stopAll)
+void Utility::Suicide(int unitToSurvive, bool killAll, bool stopAll)
 {
 	Log(IMPORTANT, MISC, "Bye Cruel world!!...."); 
 	vector<Unit*> units = ai->callback->GetFriendlyUnits();
@@ -513,7 +533,15 @@ void Utility::Suicide(int unitToSurvive, bool stopAll)
 	vector<Unit*>::iterator it;
 	for(it = units.begin(); it != units.end(); it++)
 	{
-		if ((*it)->GetUnitId() == unitToSurvive) continue; //Don't kill our new commander
+		UnitDef* d = (*it)->GetDef();
+		if ( !killAll )
+		{
+			if ( d->IsCommander() )
+			{
+				continue;
+			}
+		}
+		//if ((*it)->GetUnitId() == unitToSurvive) continue; //Don't kill our new commander
 		/*if (stopAll)
 		{
 			SStopUnitCommand stopCommand;
@@ -529,4 +557,91 @@ void Utility::Suicide(int unitToSurvive, bool stopAll)
 		engine->HandleCommand(0,-1, COMMAND_UNIT_SELF_DESTROY, &command);
 		delete (*it);
 	}
+}
+
+
+Unit* Utility::GiveUnit(const char* defName, SAIFloat3 pos )
+{
+	UnitDef* d = GetUnitDef(defName);
+	SGiveMeNewUnitCheatCommand giveUnitOrder;
+	giveUnitOrder.pos = pos;
+	giveUnitOrder.unitDefId = d->GetUnitDefId();
+	engine->HandleCommand(0,-1, COMMAND_CHEATS_GIVE_ME_NEW_UNIT, &giveUnitOrder);
+	return Unit::GetInstance(ai->callback, giveUnitOrder.ret_newUnitId);
+}
+
+Unit* Utility::GiveUnit(unsigned int defID, SAIFloat3 pos)
+{
+	SGiveMeNewUnitCheatCommand giveUnitOrder;
+	giveUnitOrder.pos = pos;
+	giveUnitOrder.unitDefId = defID;
+	engine->HandleCommand(0,-1, COMMAND_CHEATS_GIVE_ME_NEW_UNIT, &giveUnitOrder);
+	return Unit::GetInstance(ai->callback, giveUnitOrder.ret_newUnitId);
+}
+
+
+bool Utility::CanHit( WeaponMount* mount, UnitDef* u )
+{
+	unsigned int cat = u->GetCategory();
+	return ( ( mount->GetBadTargetCategory() & cat ) == 0 );
+}
+
+
+vector<Unit*> Utility::GetNearestEnemyUnits( MilitaryUnitGroup* group, int numArgs, ... )
+{
+	std::map<int, UnitInformationContainer> units = ai->knowledge->enemyInfo->baseInfo->GetUnits();
+	vector<Unit*> retUnits;
+	va_list ap;
+	va_start( ap, numArgs );
+	vector<const char*> names;
+	vector<double> nearest;
+	for ( int i = 0 ; i < numArgs ; i++ )
+	{
+		const char* name = va_arg(ap, const char* );
+		names.push_back(name);
+		retUnits.push_back( NULL );
+		nearest.push_back( 1000000.0 );
+	}
+
+	for ( std::map<int, UnitInformationContainer>::iterator it = units.begin() ; it != units.end() ; it++ )
+	{
+		Unit *u = Unit::GetInstance( ai->callback, it->first );
+		UnitDef* d = u->GetDef();
+		delete d;
+		delete u;
+		for ( int i = 0 ; i < names.size() ; i++ )
+		{
+			if ( strcmp( it->second.def->GetName(), names[i] ) == 0 )
+			{
+				double dist = ai->utility->EuclideanDistance( it->second.pos, group->GetPos() );
+				if ( dist < nearest[i] )
+				{
+					nearest[i] = dist;
+					if ( retUnits[i] != NULL )
+						delete retUnits[i];
+					retUnits[i] = Unit::GetInstance( ai->callback, it->first );
+				}
+			}
+		}
+	}
+	return retUnits;
+}
+
+
+void Utility::WriteToStateVisitFile( fstream* file, int val, int offset )
+{
+	if ( offset != -1 )
+		file->seekp(sizeof(int)*offset, ios::beg);
+	file->write( (char*)&val, sizeof(int) );
+	file->flush();
+}
+
+
+int Utility::ReadFromStateVisitFile( fstream* file, int offset )
+{
+	int val;
+	if ( offset != -1 )
+		file->seekg(sizeof(int)*offset, ios::beg);
+	file->read( (char*)&val, sizeof(int) );
+	return val;
 }

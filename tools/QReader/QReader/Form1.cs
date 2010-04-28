@@ -59,7 +59,6 @@ namespace QReader
             }
 
             ushort numQTables = br.ReadUInt16();
-
             Console.WriteLine("numQTables: " + numQTables);
 
             StringBuilder sb = new StringBuilder();
@@ -102,6 +101,10 @@ namespace QReader
                 
                 for (int i = 0; i < numStates; i++)
                 {
+                    if ((i % 5000) == 0)
+                        Console.WriteLine("Svend");
+                    if (i == numStates - 1)
+                        Console.WriteLine();
                     sb.AppendFormat("{0,5}|", i);
 
                     //sb.AppendFormat(" {1,2} {2,2} {3,2}", (i % (400*20)) / 400, (i % 400) / 20, (i % 20) / 1);
@@ -156,6 +159,10 @@ namespace QReader
             richTextBox1.Hide();
             Font ourFont = new Font(richTextBox1.Font, FontStyle.Bold | FontStyle.Italic);
             for (int i = 0 ; i < highlights.Count;i++) {
+                if (i == highlights.Count - 1)
+                    Console.WriteLine();
+                if ((i % 1000) == 0)
+                    Console.WriteLine();
                 int[] highlight = (int[])highlights[i];
                 //richTextBox1.Select(highlight[0], highlight[1]);
                 richTextBox1.SelectionStart = highlight[0];

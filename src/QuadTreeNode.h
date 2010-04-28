@@ -9,7 +9,7 @@
 
 using namespace std;
 
-#define BUCKET_SIZE 1
+#define BUCKET_SIZE 10
 
 namespace brainSpace
 {

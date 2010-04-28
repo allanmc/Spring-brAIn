@@ -6,12 +6,14 @@
 #include "global.h"
 #include "BattlesInfo.h"
 #include "ThreatMap.h"
-//#include "huginTest.h"
-#include "bayesianNetwork.h"
+#include "Scenario.h"
+#include "BrAIn.h"
 
 using namespace springai;
 
+
 namespace brainSpace {
+
 ///This class has the responsibillty to choose the apropriate actions, when an event occurs.
 class Decision
 {
@@ -34,18 +36,20 @@ public:
 	void BuildSomethingUsefull();
 	Decision(AIClasses* aiClasses);
 	~Decision(void);
+
+	bool MayResetVariable;
+	bool ScenarioFuckedUpVariable;
 private:
 	void Reset();
-	void UpdateRL();
 	BattlesInfo* BattleInfoInstance;
 	AIClasses* ai;
-	BayesianNetwork *bn;
 	RL* rl;
-	bool resettingGame;
-	bool waitingForCommander;
-	bool extraMoveSent;
-	int remainingUnits;
-	int gameCounter;
+	bool ResettingGame;
+	int LastResetFrame;
+
+	Scenario* m_Scenario;
+	MilitaryUnitGroup* Group;
+	int GameCounter;
 };
 
 }

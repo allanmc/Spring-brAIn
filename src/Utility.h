@@ -16,6 +16,7 @@ const SAIFloat3 TEAM_7_COLOR = { 0, 0, 0 };
 
 namespace brainSpace
 {
+	class MilitaryUnitGroup;
 	///A collection of functions that provide shortcuts to commonly used functionallity
 	class Utility
 	{
@@ -35,6 +36,8 @@ namespace brainSpace
 		springai::Map *map;
 		std::vector<springai::Resource*> resources;
 
+		//Added!
+		std::fstream* bfs;
 
 	public:
 		Utility( AIClasses* aiClasses );
@@ -45,7 +48,12 @@ namespace brainSpace
 		void LogNN(int logLevel, int logType, const char* msg, ...);
 		void ChatMsg(const char* msg, ...);
 		void ChatMsg(std::string msg);
+		
 		springai::UnitDef* GetUnitDef(const char* unitDefName);
+
+		//Added!!!
+		springai::UnitDef* GetUnitDef(unsigned int id);
+
 		springai::Resource* GetResource(const char* resourceName);
 		int DrawCircle(SAIFloat3 pos, float radius );
 		int DrawCircle(SAIFloat3 pos, float radius, int figureId);
@@ -55,7 +63,7 @@ namespace brainSpace
 		bool FileExists( const char* FileName );
 		bool IsMetalMap();
 		void LaterInitialization();
-		void Suicide(int unitToSurvive=0, bool stopAll=false);
+		void Suicide(int unitToSurvive=0, bool killAll = false, bool stopAll=false);
 		void ResetGame(RL **rl);
 		SAIFloat3 GoTo(int unitId, SAIFloat3 pos, bool simulate = false);
 		SAIFloat3 GetSafePosition();
@@ -63,6 +71,15 @@ namespace brainSpace
 		springai::UnitDef* GetSolarDef();
 		springai::UnitDef* GetLLTDef();
 		float GetDpsFromUnitDef(springai::UnitDef* def);
+
+		springai::Unit* GiveUnit(const char* defName, SAIFloat3 pos);
+		springai::Unit* GiveUnit(unsigned int defID, SAIFloat3 pos);
+
+		//Added!!!
+		bool CanHit( springai::WeaponMount* m, springai::UnitDef* u );
+		std::vector<springai::Unit*> GetNearestEnemyUnits( MilitaryUnitGroup* group, int numArgs, ... );
+		void WriteToStateVisitFile( std::fstream* file, int val, int offset = -1 );
+		int ReadFromStateVisitFile( std::fstream* file, int offset = -1 );
 	};
 }
 #endif

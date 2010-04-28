@@ -3,6 +3,8 @@
 
 #include "types.h"
 #include "BrainMap.h"
+#include "Path.h"
+
 
 namespace brainSpace {
 
@@ -36,15 +38,12 @@ namespace brainSpace {
 				n1.XIndex == XIndex &&
 				n1.ZIndex == ZIndex );
 		}
-
-
-
 	};
+
 
 	class PathfindingMap : public BrainMap
 	{
 	public:
-
 
 		PathfindingMap( AIClasses* aiClasses );
 		
@@ -56,7 +55,9 @@ namespace brainSpace {
 
 		void RemoveBuilding( springai::Unit* unit );
 
-		std::list<SAIFloat3> FindPathTo( springai::UnitDef* pathfinder, SAIFloat3 source, SAIFloat3 destination, bool debug = false );
+		Path* FindPathTo( springai::UnitDef* pathfinder, SAIFloat3 source, SAIFloat3 destination, bool debug = false );
+
+		Path* FindSuperiorPathTo( MilitaryUnitGroup* group, SAIFloat3 source, SAIFloat3 destination, bool debug = false );
 
 		bool IsPossibleToEscapeFrom( springai::UnitDef* pathfinder, springai::UnitDef* building, SAIFloat3 buildPosition, SAIFloat3 escapeFrom, SAIFloat3 escapeTo );
 
@@ -72,8 +73,7 @@ namespace brainSpace {
 
 		void AddHypotheticalBuilding(springai::UnitDef* unit, SAIFloat3 pos);
 
-		std::list<SAIFloat3>  ReconstructPath( PathfindingNode* currentNode );
-		std::vector<SAIFloat3>  ReconstructPathVector( PathfindingNode* currentNode );
+		std::vector<SAIFloat3>  ReconstructPath( PathfindingNode* currentNode, bool scale = false, int scaleFactor = 0);
 
 		void EffectCell(int index, float value);
 

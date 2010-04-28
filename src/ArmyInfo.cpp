@@ -85,17 +85,24 @@ void ArmyInfo::RemoveUnit(int unit)
 			}
 		}
 		delete unitDef;
+		delete u;
 	}	
 }
 
 //updates the position of the unit in the QuadTree.
 void ArmyInfo::UpdateUnit(Unit* unit)
 {
-	if(unit == NULL)
+	UnitDef* unitDef = unit->GetDef();
+	vector<WeaponMount*> wpmt = unitDef->GetWeaponMounts();
+	if ( wpmt.size() == 0 )
+	{
+		delete unitDef;
 		return;
+	}
+	wpmt.clear();
+	
 	SAIFloat3 new_pos = unit->GetPos();
 	int i = quadTree->UpdateUnit( unit->GetUnitId(), unit->GetPos() );
-	UnitDef* unitDef = unit->GetDef();
 	unitCount += i;
 	if (unitDef == NULL) {
 		return;//we dont know this unit?!
@@ -116,6 +123,7 @@ void ArmyInfo::UpdateUnit(Unit* unit)
 			defensiveDps += ai->utility->GetDpsFromUnitDef(unitDef);
 		}
 	}
+	delete unitDef;
 }
 
 ///@return the UnitDef of a unit in the army, or NULL if we have never seen the unit

@@ -1,47 +1,36 @@
 #ifndef _BRAINSPACE_RL_H
 #define _BRAINSPACE_RL_H
 
-#define NEWSCENARIO false
-
-#define RL_SOLAR_INDEX ( NEWSCENARIO ? 10 : 20 )
-#define RL_MEX_INDEX ( NEWSCENARIO ? 15 : 20)
-#define RL_LAB_INDEX ( NEWSCENARIO ? 4:  5 )
-#define RL_PLANT_INDEX 5
-#define RL_ROCKO_INDEX 20
-#define RL_ATTACK_ACTION -2
-
 #define QBFILE_VERSION 2
-
-#define RL_NUM_NODES 1
 
 #define PRINT_REWARD false
 
 #define USE_QSMDP false
-#define USE_RS_TIME true
-#define USE_RS_LABS false
-#define USE_BACKTRACKING false
-#define USE_N_STEP false
-#define USE_Q_LAMBDA true
-#define LAMBDA 0.95
-#define Q_LAMBDA_THRESHOLD 0.00005
+#define USE_RS_TIME false
+#define USE_Q_LAMBDA false
+#define LAMBDA 0.95f
+#define Q_LAMBDA_THRESHOLD 0.00005f
 
+#define GAMMA 0.9f
+#define ALPHA 0.1f
+#define EPSILON_START 0.1f
+#define EPSILON_DECAY 1.0f
 
+//TYPE 0 => normal; 1 => 2 builders;
+#define RL_TYPE 0
 
-//zero means infinite (Used both for backtracking and n-step)
-#define BACKTRACKING_STEPS 5
-#define EPSILON_START -1.0
-#define GAMMA 0.9
-#define ALPHA 0.1
-#define EPSILON_DECAY 1
-
+#define RL_FILE_DELETE true
+#define RL_FILE_PATH ""
+#define RL_FILE_ATTACK "qattack.dat"
 #define FILE_HEADER "QB"
 
-#include "global.h"
+#define RL_UPDATE_TIMEOUT 2400
+using namespace std;
+
+#include "types.h"
+#include "RL_Action.h"
 #include "RL_State.h"
 #include "RL_Q.h"
-
-using namespace springai;
-using namespace std;
 
 namespace brainSpace {	
 
@@ -68,45 +57,51 @@ namespace brainSpace {
 	class RL
 	{
 	public:
-		RL(AIClasses* aiClasses, unsigned short int type, double epsilon);
+		RL( AIClasses* aiClasses, double epsilon, int numAgents = 1);
 		virtual ~RL();
 		float GetTotalReward();
+		char* GetFilePath();
 
-		void setDesireToBuild(int buildingId);
-		RL_Action Update();
-		bool ShouldIUpdate();
-		vector<RL_Action> PreviousAction;
+		RL_Action* Update(MilitaryUnitGroup* group );
+
+		void SetMayUpdate(bool mayUpdate );
+		bool MayUpdate();
+
 	private:
 		AIClasses* ai;
-		RL_State nullState;
-		RL_Action nullAction;
-		int buildingToBuild;
-		unsigned short int type;
+		vector<DataPoint> dataTrail;
+		RL_State* nullState;
+		//RL_Action* nullAction;
 
 		bool FileExists( const char* name );
-		RL_Action FindNextAction( RL_State &state );
-		RL_Action FindBestAction( RL_State &state );
+		RL_Action* FindNextAction( RL_State &state );
+		RL_Action* FindBestAction( RL_State &state );
 
-		int currentNode;
-		vector<RL_State> PreviousState;
-		vector<float> PreviousFrame;
-		vector<DataPoint> dataTrail;
-		vector<int> ParentNode;
-
-
+		RL_State* PreviousState;
+		RL_Action* PreviousAction;
+		float PreviousFrame;
 		float totalReward;
 		bool goalAchieved;
 		int Epsilon;
-		RL_State GetState(int node);
-		RL_Action SafeNextAction(RL_State &state);
-		void TakeAction(RL_Action &action);
-		void ClearAllNodes();
+		RL_State* GetState(MilitaryUnitGroup* group, vector<pair<int, SAIFloat3> > mexCluster );
+		RL_Action* SafeNextAction(RL_State &state);
+
 		void LoadFromFile();
 		void SaveToFile();
-		vector<RL_Q*> ValueFunction;
+
+		void SaveToStateVisitsFile( int stateIDe );
+
+		RL_Q* ValueFunction;
+
 		bool m_greedyChoice;
 
 		double EPSILON;
+
+		//DefID, count
+		map<int,int> StartGroup;
+		vector<QStateVar> StateVars;
+		vector<QAction> Actions;
+		bool MayUpdateVar;
 	};
 }
 
