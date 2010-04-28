@@ -68,7 +68,7 @@ void BuildingController::RemoveBuilding(springai::Unit *unit)
 
 	if (def->GetWeaponMounts().size() > 0)
 	{
-		for(int i = 0; i < DefenceBuildings.size(); i++)
+		for(unsigned int i = 0; i < DefenceBuildings.size(); i++)
 		{
 			if(unit->GetUnitId() == DefenceBuildings[i]->GetUnitId())
 			{
@@ -81,7 +81,7 @@ void BuildingController::RemoveBuilding(springai::Unit *unit)
 	}
 	else if (isResource)
 	{
-		for(int i = 0; i < ResourceBuildings.size(); i++)
+		for(unsigned int i = 0; i < ResourceBuildings.size(); i++)
 		{
 			if(unit->GetUnitId() == ResourceBuildings[i]->GetUnitId())
 			{
@@ -94,7 +94,7 @@ void BuildingController::RemoveBuilding(springai::Unit *unit)
 	}
 	else
 	{
-		for(int i = 0; i < ConstructionBuildings.size(); i++)
+		for(unsigned int i = 0; i < ConstructionBuildings.size(); i++)
 		{
 			if(unit->GetUnitId() == ConstructionBuildings[i]->GetUnitId())
 			{

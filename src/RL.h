@@ -83,7 +83,7 @@ namespace brainSpace {
 		float totalReward;
 		bool goalAchieved;
 		int Epsilon;
-		RL_State* GetState(MilitaryUnitGroup* group, vector<pair<int, SAIFloat3> > mexCluster );
+		RL_State* GetState(MilitaryUnitGroup* group, vector<pair<int, SAIFloat3> > resourceBuildings );
 		RL_Action* SafeNextAction(RL_State &state);
 
 		void LoadFromFile();

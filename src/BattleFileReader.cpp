@@ -69,13 +69,13 @@ int BattleFileReader::GetClosestGame( MilitaryUnitGroup* friendlyMiliGroup, Mili
 	vector<Unit*> friendlies;
 	vector<Unit*> enemies;
 
-	for ( int i = 0 ; i < friendlyIDs.size() ; i++ )
+	for ( unsigned int i = 0 ; i < friendlyIDs.size() ; i++ )
 	{
 		Unit* u = Unit::GetInstance(ai->callback, friendlyIDs[i] );
 		friendlies.push_back(u);
 		delete u;
 	}
-	for ( int i = 0 ; i < enemyIDs.size() ; i++ )
+	for ( unsigned int i = 0 ; i < enemyIDs.size() ; i++ )
 	{
 		Unit* u = Unit::GetInstance(ai->callback, enemyIDs[i] );
 		enemies.push_back(u);

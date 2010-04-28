@@ -52,7 +52,7 @@ namespace brainSpace
 		springai::UnitDef* GetUnitDef(const char* unitDefName);
 
 		//Added!!!
-		springai::UnitDef* GetUnitDef(unsigned int id);
+		springai::UnitDef* GetUnitDef(int id);
 
 		springai::Resource* GetResource(const char* resourceName);
 		int DrawCircle(SAIFloat3 pos, float radius );

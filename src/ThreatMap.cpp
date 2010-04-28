@@ -65,7 +65,7 @@ void ThreatMap::Update()
 		//We are using the OverrideCache to move some enemy units
 		if ( OverrideCache != NULL && !OverrideCacheFriendly )
 		{
-			for ( int i = 0 ; i < OverrideCache->units.size() ; i++ )
+			for ( unsigned int i = 0 ; i < OverrideCache->units.size() ; i++ )
 			{
 				if ( u->GetUnitId() == OverrideCache->units[i] )
 				{
@@ -463,7 +463,7 @@ Superiority ThreatMap::GetImaginarySuperiorityAtPos(SAIFloat3 pos, brainSpace::M
 		else OurThreat[j] = backUp[j];
 	}
 	delete[] backUp;
-	for ( int i = 0 ; i < groupUnits.size() ; i++ )
+	for ( unsigned int i = 0 ; i < groupUnits.size() ; i++ )
 		delete groupUnits[i];
 	return s;
 }
@@ -499,7 +499,7 @@ UnitInfoCache* ThreatMap::MakeUnitInfoCache( std::vector<springai::Unit*> units,
 		delete d;
 	}
 	std::vector<int> a;
-	for ( int i = 0 ; i < units.size() ; i++ )
+	for ( unsigned int i = 0 ; i < units.size() ; i++ )
 	{
 		a.push_back( units[i]->GetUnitId() );
 	}

@@ -69,7 +69,7 @@ void MilitaryUnitGroup::Attack(vector<int> enemies)
 	for ( map<int, bool>::iterator it = Units.begin() ; it != Units.end() ; it++ )
 	{
 		com.unitId = it->first;
-		for ( int i = 0 ; i < enemies.size() ; i++ )
+		for ( unsigned int i = 0 ; i < enemies.size() ; i++ )
 		{
 			com.toAttackUnitId = enemies[i];
 			ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_ATTACK, &com);
@@ -89,7 +89,7 @@ bool MilitaryUnitGroup::IsIdle()
 		if(u->GetCurrentCommands().size() > 0)
 		{
 			ai->utility->Log(ALL,MISC, "unit %d, size of commands: %d", it->first, u->GetCurrentCommands().size());
-			for(int i = 0; i < u->GetCurrentCommands().size(); i++)
+			for(unsigned int i = 0; i < u->GetCurrentCommands().size(); i++)
 			{
 				ai->utility->Log(ALL,MISC, "command: %d", u->GetCurrentCommands()[i]->GetCommandId());
 			}

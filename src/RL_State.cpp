@@ -11,50 +11,46 @@ RL_State::RL_State()
 	Reader = NULL;
 }
 
-RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<QStateVar> stateVars, vector<pair<int, SAIFloat3> > mexCluster, RL_Q* valueFunction )
+RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<QStateVar> stateVars, vector<pair<int, SAIFloat3> > resourceBuildings, RL_Q* valueFunction )
 {
 	ai = aiClasses;
-	//ai->utility->ChatMsg("RL_State Started!!!!");
-	Reader = new BattleFileReader(ai);
+	//Reader = new BattleFileReader(ai);
 	vector< vector< pair< int, SAIFloat3> > > groups(4);
 
-	//This one holds the real mex clusters
-	//Even though two mexes are inside a short range of the group, does not mean they should belong to the same cluster
+	//This one holds the real building clusters
+	//Even though two buildings are inside a short range of the group, does not mean they should belong to the same cluster
 	vector< vector<pair<int, SAIFloat3> > > realClusters;
 
-
-
-	//ai->utility->ChatMsg("RL_STATE: MexPositions: %d", mexCluster.size() );
-	for ( unsigned int i = 0 ; i < mexCluster.size() ; i++ )
+	for ( unsigned int i = 0 ; i < resourceBuildings.size() ; i++ )
 	{
-		double distance = ai->utility->EuclideanDistance( mexCluster[i].second, group->GetPos() );
-		if ( distance < 400 )
+		double distance = ai->utility->EuclideanDistance( resourceBuildings[i].second, group->GetPos() );
+		if ( distance < 700 )
 		{
-			groups[0].push_back( mexCluster[i] );
+			groups[0].push_back( resourceBuildings[i] );
 			//ai->utility->ChatMsg("RL_STATE: Group DistInterval 0 new size %d", groups[0].size() );
 		}
-		else if ( distance < 1000 )
+		else if ( distance < 1400 )
 		{
-			groups[1].push_back( mexCluster[i] );
+			groups[1].push_back( resourceBuildings[i] );
 			//ai->utility->ChatMsg("RL_STATE: Group DistInterval 1 new size %d", groups[1].size() );
 		}
-		else if ( distance < 2000 )
+		else if ( distance < 2500 )
 		{
-			groups[2].push_back( mexCluster[i] );
+			groups[2].push_back( resourceBuildings[i] );
 			//ai->utility->ChatMsg("RL_STATE: Group DistInterval 2 new size %d", groups[2].size() );
 		}
 		else
 		{
-			groups[3].push_back( mexCluster[i] );
+			groups[3].push_back( resourceBuildings[i] );
 			//ai->utility->ChatMsg("RL_STATE: Group DistInterval 3 new size %d", groups[3].size() );
 		}
 	}
 
-	//Mex-independent statevars
+	//Building-independent statevars
 	bool AirGroup = group->IsAirGroup();
 	float GroupSpeed = 0.0f;
 	vector<int> uIDs = group->GetUnits();	
-	for ( unsigned int i = 0 ; i < group->GetSize() ; i++ )
+	for ( int i = 0 ; i < group->GetSize() ; i++ )
 	{
 		Unit* u = Unit::GetInstance(ai->callback, uIDs[i] );
 		UnitDef* d = u->GetDef();
@@ -75,7 +71,7 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 		for ( unsigned int j = 0 ; j < groups[i].size() ; j++ )
 		{
 			//ai->utility->ChatMsg("RL_STATE: Group %d not empty. Size %d", i, groups[i].size() );
-			bool mexGood = true;
+			bool buildingGood = true;
 			bool inserted = false;
 			for ( unsigned int k = 0 ; k < realClusters.size() ; k++ )
 			{
@@ -84,45 +80,41 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 				{
 					double dist = ai->utility->EuclideanDistance( groups[i][j].second, realClusters[k][l].second );
 					//ai->utility->ChatMsg("RL_STATE: Dist %f between group[%d][%d] and clustermex[%d][%d]", dist, i, j, k, l );
-					if ( dist > MEX_GROUP_TOLERANCE )
+					if ( dist > RESOURCE_BUILDING_GROUP_TOLERANCE )
 					{
 						/*
-						The mex specified by groups[i][j] was too far away from 
-						one of the mexes in the cluster specified by realClusters[k]
+						The building specified by groups[i][j] was too far away from 
+						a building in the cluster specified by realClusters[k][l]
 						*/
-						mexGood = false;
+						buildingGood = false;
 						//ai->utility->ChatMsg("RL_STATE: MexSpot was false");
 						break;//no need to iterate the rest of this cluster, so move to the next one
 					}
 				}
-				if ( mexGood )
+				if ( buildingGood )
 				{
 					realClusters[k].push_back( groups[i][j] );
 					inserted = true;
-					//ai->utility->ChatMsg("RL_STATE: MexSpot was good");
 				}
 			}
 			//We have now iterated all the currently created clusters
 
 			/*
-			This means that the mex was too far away from any existing mexes, or no clusters yet exist.
+			This means that the building was too far away from any existing buildings, or no clusters yet exist.
 			In any case, create a new cluster
 			*/
 			if ( !inserted )
 			{
-				//ai->utility->ChatMsg("RL_STATE: All clusters iterated. Still not inserted");
 				realClusters.push_back( vector<pair<int, SAIFloat3> >() );
 				realClusters.back().push_back( groups[i][j] );
-				//ai->utility->ChatMsg("RL_STATE: Mex inserted in cluster %d. New size: %d", realClusters.size(), realClusters.back().size() );
 			}
 		}
 	}
 
 	/*
-	So we finally grouped all mexes in the specified distance from the current militarygroup
+	So we finally grouped all buildings in the specified distance from the current militarygroup
 	We now need to figure out what is the best cluster to consider for RL
 	*/
-	int optimalClusterIndex = -1;
 	float optimalClusterReward = -10000000.0f;
 	int optimalStateID = -1;
 	vector<int> optimalUnitIDs;
@@ -130,16 +122,15 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 
 
 	//StateID, pair<Action, ExpectedReward > >
-	map<int, pair< RL_Action*, double > > possibleStates;
+	map<unsigned int, pair< RL_Action*, double > > possibleStates;
 
 
 	//Iterate through clusters
 	//ai->utility->ChatMsg("RL_STATE: %d clusters", realClusters.size());
 	for ( unsigned int j = 0 ; j < realClusters.size() ; j++ )
 	{
-		unsigned int MexCount = realClusters[j].size();
-		float DistMexSpot = 0.0f;
-		Superiority MexSpotInf, MexSpotImaginaryInf, CurrentSpotInf;
+		float DistBuildingSpot = 0.0f;
+		Superiority BuildingSpotImaginaryInf, CurrentSpotInf;
 		int SuperiorPathLength = -1;
 
 		vector<int> unitIDs;
@@ -171,33 +162,22 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 		average.y /= realClusters[j].size();
 		average.z /= realClusters[j].size();
 
-		DistMexSpot = ai->utility->EuclideanDistance( average, group->GetPos() );
+		DistBuildingSpot = ai->utility->EuclideanDistance( average, group->GetPos() );
 
-		//ai->utility->ChatMsg("RL_STATE: MexCount %d. MexDist: %f. MexSpot: (%f,%f). Group (%f,%f)", MexCount, DistMexSpot, average.x, average.z, group->GetPos().x, group->GetPos().z );
-		
-		//MexSpotInf = ai->knowledge->mapInfo->threatMap->GetSuperiorityAtPos( average );
-		//ai->utility->ChatMsg("RL_STATE: MexSpotInf: %f (%f,%f)", (float)MexSpotInf, average.x, average.z );
-		
-		MexSpotImaginaryInf = ai->knowledge->mapInfo->threatMap->GetImaginarySuperiorityAtPos( average, group, false );
+		BuildingSpotImaginaryInf = ai->knowledge->mapInfo->threatMap->GetImaginarySuperiorityAtPos( average, group, false );
 
 		CurrentSpotInf = ai->knowledge->mapInfo->threatMap->GetSuperiorityAtPos( group->GetPos() );
 		//ai->utility->ChatMsg("RL_STATE: Imaginary inf at mexspot (%f,%f) %f", average.x, average.z, (float)MexSpotImaginaryInf);
 		
 		
 		Path* p = NULL;
-		if ( MexSpotImaginaryInf == INFERIOR || MexSpotImaginaryInf == EQUAL )
+		if ( BuildingSpotImaginaryInf == INFERIOR || BuildingSpotImaginaryInf == EQUAL )
 		{
 			SuperiorPathLength = 0;
 		}
 		else
 		{
-			//ai->utility->ChatMsg("RL_STATE: Finding superior path from (%f,%f) to (%f,%f)", group->GetPos().x, group->GetPos().z, average.x, average.z );
-
 			p = ai->knowledge->mapInfo->pathfindingMap->FindSuperiorPathTo( group, group->GetPos(), average, true );
-			//if ( p != NULL )
-			//	ai->utility->ChatMsg("Path length: %f", p->GetLength() );
-			//else ai->utility->ChatMsg( "RL_STATE: We are inferior at source");
-			//ai->utility->ChatMsg("RL_STATE: Done finding superior path");
 			SuperiorPathLength = (p == NULL || p->GetLength() == 0 ) ? 0 : 1;
 		}
 
@@ -210,9 +190,9 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 			switch( m )
 			{
 			case 0: current = ( realClusters[j].size() < 2 ) ? 0 : ( realClusters[j].size() < 3 ) ? 1 : 2 ; break;
-			case 1: current = ( DistMexSpot < 700 ) ? 0 : ( DistMexSpot < 1400 ) ? 1 : ( DistMexSpot < 2500 ) ? 2 : 3; break;
+			case 1: current = ( DistBuildingSpot < 700 ) ? 0 : ( DistBuildingSpot < 1400 ) ? 1 : ( DistBuildingSpot < 2500 ) ? 2 : 3; break;
 			//case 2: current = MexSpotInf; break;
-			case 2: current = MexSpotImaginaryInf; break;
+			case 2: current = BuildingSpotImaginaryInf; break;
 			case 3: current = AirGroup; break;
 				//Slow = kbots, medium = tanks and slow aircrafts, fast = fighters, bombers
 			case 4: current = ( GroupSpeed < 70 ) ? 0 : ( GroupSpeed < 190 ) ? 1 : 2; break;
@@ -232,29 +212,29 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 	}
 
 
-	//ai->utility->ChatMsg("RL_STATE: Possible States: %d", possibleStates.size() );
-	int fewestVisits = 100000;
-	int fewestVisitsIndex = -1;
 	if ( possibleStates.size() > 0 )
 	{
-		for ( map<int, pair<RL_Action*, double> >::iterator it = possibleStates.begin() ; it != possibleStates.end() ; it++ )
+		for ( map<unsigned int, pair<RL_Action*, double> >::iterator it = possibleStates.begin() ; it != possibleStates.end() ; it++ )
 		{
-			int v = GetVisitsTo(it->first );
-			if ( v < fewestVisits )
+			if ( it->second.second > optimalClusterReward )
 			{
-				fewestVisits = v;
-				fewestVisitsIndex = it->first;
+				optimalPath = it->second.first->Path;
+				optimalStateID = it->first;
+				optimalUnitIDs = it->second.first->unitIDs;
+				optimalClusterReward = it->second.second;
 			}
 		}
-		ID = fewestVisitsIndex;	
+		ID = optimalStateID;
+		ExpectedReward = optimalClusterReward;
 		Actions.push_back( possibleStates.find(ID)->second.first );
-		if ( fewestVisits == 0 )
-			ai->utility->ChatMsg("RL_STATE ID: %d", ID );
 	}
 	else
+	{
+		//The current environment could not be represented in a valid state
 		ID = -1;
-
-	map<int, pair<RL_Action*, double> >::iterator it = possibleStates.begin() ;
+		ExpectedReward = 0;
+	}
+	map<unsigned int, pair<RL_Action*, double> >::iterator it = possibleStates.begin() ;
 	while(  it != possibleStates.end() )
 	{
 		if ( it->first != ID )
@@ -288,7 +268,7 @@ std::vector<RL_Action*> RL_State::GetActions()
 
 void RL_State::DeleteAction(int actionID)
 {
-	for (int i = 0; i < Actions.size(); i++)
+	for (unsigned int i = 0; i < Actions.size(); i++)
 	{
 		if(Actions[i]->Action == actionID)
 		{

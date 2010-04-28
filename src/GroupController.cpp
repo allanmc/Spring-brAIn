@@ -23,7 +23,7 @@ brainSpace::GroupController::~GroupController(void)
 void brainSpace::GroupController::AttackPositionWithAllGroups( SAIFloat3 pos )
 {
 	vector<MilitaryUnitGroup*> groups = MilitaryGroupMgr->GetAllAttackGroups();
-	for(int i = 0; i < groups.size(); i++)
+	for(unsigned int i = 0; i < groups.size(); i++)
 	{		
 		MilitaryGroupMgr->GiveMoveOrder(groups[i], pos);
 		groups[i]->SetStatus(MilitaryUnitGroup::MILI_UNIT_GRP_ATTACKING);

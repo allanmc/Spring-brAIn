@@ -62,7 +62,7 @@ Scenario::Scenario( AIClasses* aiClasses )
 				double dist = ai->utility->EuclideanDistance( metalSpots[i], metalSpots[j] );
 				//ai->utility->ChatMsg("To spot %d (%.2f,%.2f,%.2f): %.2f", j, metalSpots[j].x, metalSpots[j].y, metalSpots[j].z, dist );
 
-				if ( dist < MEX_GROUP_TOLERANCE )
+				if ( dist < RESOURCE_BUILDING_GROUP_TOLERANCE )
 				{
 					count++;
 					//ai->utility->ChatMsg("i: %d. j: %d", i, j );
@@ -86,7 +86,7 @@ Scenario::Scenario( AIClasses* aiClasses )
 			clusters = 1;
 
 		//ai->utility->ChatMsg("SCENARIO: Starting %d clusters", clusters );
-		for ( unsigned int i = 0 ; i < clusters ; i++ )
+		for ( int i = 0 ; i < clusters ; i++ )
 		{
 			int size = (rand()%SCENARIO_MEX_CLUSTER_SIZE_MAX+1);
 			if ( size < SCENARIO_MEX_CLUSTER_SIZE_MIN )
@@ -96,7 +96,7 @@ Scenario::Scenario( AIClasses* aiClasses )
 		}
 	}
 
-	for ( unsigned int i = 0 ; i < numGroups ; i++ )
+	for ( int i = 0 ; i < numGroups ; i++ )
 	{
 		bool air = rand()%2;
 		bool ok = false;
@@ -200,7 +200,7 @@ void Scenario::MakeMexCluster( unsigned int size )
 		currentCluster.push_back( thisClustersPos );
 		for ( unsigned int k = 1 ; k < size ; k++ )
 		{		
-			int iterations = 0;
+			unsigned int iterations = 0;
 			for ( unsigned int i = rand()%metalSpots.size() ; iterations < metalSpots.size() ; (i == metalSpots.size()-1 ) ? i = 0 : i++ )
 			{
 				iterations++;
@@ -215,7 +215,7 @@ void Scenario::MakeMexCluster( unsigned int size )
 						thisMetalSpotIsGood = false;
 
 					//Check for minimum distance between units in cluster
-					if ( ai->utility->EuclideanDistance( currentCluster[j], metalSpots[i] ) >  MEX_GROUP_TOLERANCE || 
+					if ( ai->utility->EuclideanDistance( currentCluster[j], metalSpots[i] ) >  RESOURCE_BUILDING_GROUP_TOLERANCE || 
 						ai->utility->EuclideanDistance( currentCluster[j], metalSpots[i] ) <  100
 						)
 					{
@@ -285,7 +285,7 @@ void Scenario::MakeMexCluster( unsigned int size )
 
 			if ( ok )
 			{
-				int count = 0;
+				unsigned int count = 0;
 				//ai->utility->ChatMsg("SCENARIO: Spawning %d of %d mexes", size, metalSpotClusters[i].size() );
 				for ( unsigned int j = 0 ; j < metalSpotClusters[i].size() ; j++ )
 				{

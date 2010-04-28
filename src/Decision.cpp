@@ -397,7 +397,7 @@ void Decision::Update(int frame)
 	{
 		//ai->utility->ChatMsg("TEAM 1: FIRE AT WILL");
 		vector<MilitaryUnitGroup*> m = ai->knowledge->groupManager->GetMilitaryGroupMgr()->GetAllAttackGroups();
-		for ( int i = 0 ; i < m.size() ; i++ )
+		for ( unsigned int i = 0 ; i < m.size() ; i++ )
 		{
 			m[i]->FireAtWill();
 		}
@@ -421,7 +421,7 @@ void Decision::Update(int frame)
 			else 
 			{
 				//ai->utility->ChatMsg("Decision: MiliGroupSize: %d", m.size() );
-				RL_Action* a = rl->Update( m[0] );
+				rl->Update( m[0] );
 			}
 		}
 		Reset();

@@ -38,7 +38,7 @@ RL_Q::RL_Q(AIClasses* aiClasses, vector<QAction> actions, vector<QStateVar> stat
 
 	size = numStates*numActions;
 	actionValueFunction = new double[size];
-	for ( int i = 0 ; i < size ; i++ )
+	for ( unsigned int i = 0 ; i < size ; i++ )
 		actionValueFunction[i] = 0;
 
 
@@ -52,7 +52,7 @@ RL_Q::~RL_Q()
 
 void RL_Q::Clear()
 {
-	for ( int i = 0 ; i < size ; i++ )
+	for ( unsigned int i = 0 ; i < size ; i++ )
 		actionValueFunction[i] = 0;
 }
 

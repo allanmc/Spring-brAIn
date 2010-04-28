@@ -145,7 +145,7 @@ void RL::SaveToStateVisitsFile( int stateID )
 	//file did not exist!! Create it with all zeros!
 	if ( !file->is_open() )
 	{
-		int maxState = 1;
+		unsigned int maxState = 1;
 		for ( unsigned int i = 0 ; i < StateVars.size() ; i++ )
 		{
 			maxState *= StateVars[i].numStates;
@@ -184,9 +184,9 @@ void RL::SaveToStateVisitsFile( int stateID )
 }
 
 
-RL_State* RL::GetState(MilitaryUnitGroup* group, vector<pair<int, SAIFloat3> > mexCluster )
+RL_State* RL::GetState(MilitaryUnitGroup* group, vector<pair<int, SAIFloat3> > resourceBuildings )
 {
-	return new RL_State(ai, group, StateVars, mexCluster, ValueFunction );
+	return new RL_State(ai, group, StateVars, resourceBuildings, ValueFunction );
 }
 
 RL_Action* RL::FindNextAction( RL_State &state )
@@ -214,7 +214,7 @@ RL_Action* RL::FindBestAction( RL_State &state )
 	RL_Action* action = stateActions[0]; //unitdefID
 	float bestValue = ValueFunction->GetValue(state, *action);
 
-	for ( unsigned int i = 1 ; i < (int)stateActions.size() ; i++ )
+	for ( unsigned int i = 1 ; i < stateActions.size() ; i++ )
 	{
 		RL_Action* tempAction = stateActions[i];
 		float tempValue = ValueFunction->GetValue(state, *tempAction);
@@ -241,36 +241,105 @@ RL_Action* RL::SafeNextAction(RL_State &state)
 RL_Action* RL::Update(MilitaryUnitGroup* group)
 {
 	bool terminal = false;
-	const map<int, UnitInformationContainer> units = ai->knowledge->enemyInfo->baseInfo->GetUnits();
-
-	vector<Unit*> uni = ai->callback->GetEnemyUnits();
+	vector<Unit*> units = ai->callback->GetEnemyUnits();
 	vector< pair<int, SAIFloat3> > mexPositions;
-	/*
-	for ( map<int, UnitInformationContainer>::const_iterator i = units.begin() ; i != units.end() ; i++ )
+	vector< pair<int, SAIFloat3> > solarPositions;
+	vector< pair<int, SAIFloat3> > windGenePositions;
+
+	for ( unsigned int i = 0 ; i < units.size() ; i++ )
 	{
-		if ( !strcmp( i->second.def->GetName(), "armmex" ) )
-		{
-			mexPositions.push_back( make_pair( i->first, i->second.pos ) );
-		}
-	}
-	*/
-	for ( unsigned int i = 0 ; i < uni.size() ; i++ )
-	{
-		UnitDef* d = uni[i]->GetDef();
+		UnitDef* d = units[i]->GetDef();
 		if ( strcmp( "armmex", d->GetName() ) == 0 )
-			mexPositions.push_back( make_pair( uni[i]->GetUnitId(), uni[i]->GetPos() ) );
+			mexPositions.push_back( make_pair( units[i]->GetUnitId(), units[i]->GetPos() ) );
+		else if ( strcmp( "armsolar", d->GetName() ) == 0 )
+			solarPositions.push_back( make_pair( units[i]->GetUnitId(), units[i]->GetPos() ) );
+		else if ( strcmp( "armwin", d->GetName() ) == 0 )
+			windGenePositions.push_back( make_pair( units[i]->GetUnitId(), units[i]->GetPos() ) );
+		
 		delete d;
-		delete uni[i];
+		delete units[i];
 	}
 
 
 	RL_State* state = NULL;
+
 	RL_Action* nextAction = NULL;
 
 	if ( group != NULL )
 	{
-		state = GetState( group, mexPositions );
-		nextAction = SafeNextAction(*state);	
+		RL_State* mexState = NULL;
+		RL_State* solarState = NULL;
+		RL_State* windState = NULL;
+		int chosenOne = 0;
+
+		if ( mexPositions.size() > 0 )
+			mexState = GetState( group, mexPositions );
+		if ( solarPositions.size() > 0 )
+			solarState = GetState( group, solarPositions );
+		if ( windGenePositions.size() > 0 )
+			windState = GetState( group, windGenePositions );
+
+		double bestVal = -1000000000;
+
+		if ( mexState != NULL && mexState->GetID() != -1 )
+		{
+			if ( mexState->ExpectedReward > bestVal )
+			{
+				bestVal = mexState->ExpectedReward;
+				state = mexState;
+			}
+		}
+		if ( solarState != NULL && solarState->GetID() != -1 )
+		{
+			if ( solarState->ExpectedReward > bestVal )
+			{
+				bestVal = solarState->ExpectedReward;
+				state = solarState;
+				chosenOne = 1;
+			}
+		}
+
+		if ( windState != NULL && windState->GetID() != -1 )
+		{
+			if ( windState->ExpectedReward > bestVal )
+			{
+				bestVal = windState->ExpectedReward;
+				state = windState;
+				chosenOne = 2;
+			}
+		}
+
+		nextAction = SafeNextAction(*state);
+		if ( state != NULL )
+		{
+			switch(chosenOne)
+			{
+			case 0:
+				{
+					if ( solarState != NULL )
+						delete solarState;
+					if ( windState != NULL )
+						delete windState;
+					break;
+				}
+			case 1:
+				{
+					if ( mexState != NULL )
+						delete mexState;
+					if ( windState != NULL )
+						delete windState;
+					break;
+				}
+			case 2:
+				{	
+					if ( mexState != NULL )
+						delete mexState;
+					if ( solarState != NULL )
+						delete solarState;
+					break;
+				}
+			}
+		}
 	}
 
 	//Start state
@@ -300,7 +369,7 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 
 	map<int, UnitInformationContainer> existingUnits = ai->knowledge->enemyInfo->baseInfo->GetUnits();
 	map<int, UnitInformationContainer> ourUnits = ai->knowledge->selfInfo->armyInfo->GetUnits();
-	int mexKilledCounter = 0;
+	unsigned int mexKilledCounter = 0;
 	float unitLossReward = 0.0f;
 
 	float totalHealth = 0.0f;
@@ -313,7 +382,7 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 	}
 	if ( group != NULL )
 	{
-		for ( unsigned int i = 0 ; i < group->GetSize() ; i++ )
+		for ( int i = 0 ; i < group->GetSize() ; i++ )
 		{
 			Unit* u = Unit::GetInstance(ai->callback, group->GetUnits()[i] );
 
@@ -387,7 +456,7 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 		//add the current to the dataTrail
 		dataTrail.push_back(DataPoint(*PreviousState, *PreviousAction, *state, reward, ai->frame - PreviousFrame));
 
-		for ( unsigned int i = 0 ; i < (int)dataTrail.size() ; i++ )
+		for ( unsigned int i = 0 ; i < dataTrail.size() ; i++ )
 		{
 			if( dataTrail[i].eligibilityTrace < Q_LAMBDA_THRESHOLD)
 				dataTrail.erase(dataTrail.begin());

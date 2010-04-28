@@ -51,7 +51,7 @@ namespace brainSpace
 	private:
 		
 		//If we get asked for our position several times during one frame, return the cached info
-		unsigned int LastFrameGetPos;
+		int LastFrameGetPos;
 		vector< vector< SAIFloat3 > > CachedPosition;
 	};
 }

@@ -9,7 +9,7 @@
 using namespace springai;
 using namespace std;
 
-#define MEX_GROUP_TOLERANCE 400.0f
+#define RESOURCE_BUILDING_GROUP_TOLERANCE 400.0f
 
 namespace brainSpace {
 
@@ -26,6 +26,8 @@ namespace brainSpace {
 		bool IsTerminal();
 		bool operator==(const RL_State &other) const;
 		RL_State & operator=(const RL_State &rhs);
+
+		double ExpectedReward;
 		
 	protected:
 		bool terminal;
