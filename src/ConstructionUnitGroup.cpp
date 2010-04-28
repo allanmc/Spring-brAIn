@@ -24,13 +24,15 @@ vector<UnitDef*> ConstructionUnitGroup::IsAbleToBuild()
 	set<UnitDef*> buildableUnits;
 	vector<UnitDef*> returnVals;
 
-	for ( map<Unit*, bool>::iterator it = Units.begin() ; it != Units.end() ; it++ )
+	for ( map<int, bool>::iterator it = Units.begin() ; it != Units.end() ; it++ )
 	{
-		vector<UnitDef*> units = it->first->GetDef()->GetBuildOptions();
+		Unit* u = Unit::GetInstance(ai->callback, it->first );
+		vector<UnitDef*> units = u->GetDef()->GetBuildOptions();
 		for (unsigned int j = 0 ; j < units.size() ; j++ )
 		{
 			buildableUnits.insert( units[j] );
 		}
+		delete u;
 	}
 
 	set<UnitDef*>::iterator iter;
@@ -43,9 +45,10 @@ vector<UnitDef*> ConstructionUnitGroup::IsAbleToBuild()
 
 bool ConstructionUnitGroup::IsAbleToBuild(UnitDef* unit)
 {
-	for ( map<Unit*, bool>::iterator it = Units.begin() ; it != Units.end() ; it++ )
+	for ( map<int, bool>::iterator it = Units.begin() ; it != Units.end() ; it++ )
 	{
-		vector<UnitDef*> units = it->first->GetDef()->GetBuildOptions();
+		Unit* u = Unit::GetInstance(ai->callback, it->first );
+		vector<UnitDef*> units = u->GetDef()->GetBuildOptions();
 
 		for (unsigned int j = 0 ; j < units.size() ; j++ )
 		{
@@ -53,6 +56,7 @@ bool ConstructionUnitGroup::IsAbleToBuild(UnitDef* unit)
 				return true;
 			}
 		}
+		delete u;
 	}
 	return false;
 }
@@ -594,4 +598,10 @@ SAIFloat3 ConstructionUnitGroup::FindGoodBuildSite(SAIFloat3 builderPos, UnitDef
 int brainSpace::ConstructionUnitGroup::GetBuildQueueSize()
 {
 	return BuildQueue.size();
+}
+
+bool brainSpace::ConstructionUnitGroup::AddUnit( Unit* unit )
+{
+	Units[unit->GetUnitId()] = true;
+	return true;
 }

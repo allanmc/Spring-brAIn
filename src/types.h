@@ -28,6 +28,7 @@
 #include "ExternalAI/Interface/AISCommands.h"
 #include "Point.h"
 #include "MoveData.h"
+#include "Cheats.h"
 
 namespace brainSpace {
 enum LogTypes {
@@ -44,7 +45,8 @@ enum LogTypes {
 	MISC		= 1<<10,
 	SLOPEMAP	= 1<<11,
 	LOG_RL		= 1<<12,
-	PATHFIND	= 1<<13
+	PATHFIND	= 1<<13,
+	SCENARIO	= 1<<14
 };
 
 
@@ -71,6 +73,11 @@ namespace brainSpace {
 	class BrainMath;
 	struct CBoundingBox;
 	class BrainMap;
+	struct CBoundingBox;
+	class QuadTreeNode;
+	class QuadTree;
+	class RL;
+	class BrAIn;
 }
 
 namespace brainSpace {
@@ -83,48 +90,15 @@ namespace brainSpace {
 		int frame;
 		springai::Unit *commander;
 		int commanderDead;
+		std::map<int, brainSpace::BrAIn*>* AIs;
 		AIClasses()
 		{
 			commander = NULL;
 			commanderDead = 0;
 		}
 	};
-	
-	struct CBoundingBox;
-	class QuadTreeNode;
-	class QuadTree;
-	class RL;
-	class ReinforcementLearningNode;
-	struct RL_Action
-	{
-		ReinforcementLearningNode* Node;
-		int Action;
-		int ID;
-		bool Complex;
-		RL_Action( int action, int id, bool complex)
-		{
-			Action = action;
-			ID = id;
-			Complex = complex;
-		}
-
-		RL_Action( int action, ReinforcementLearningNode* node, bool complex)
-		{
-			Action = action;
-			Node = node;
-			Complex = complex;
-		}
-
-		RL_Action() {}
-		
-		bool operator==(const RL_Action &other) const {
-			return (ID == other.ID);
-		}
-
-	};
 
 }
 
 #include "Utility.h"
-
 #endif

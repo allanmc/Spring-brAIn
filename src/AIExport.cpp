@@ -51,7 +51,7 @@ EXPORT(int) init(int teamId, const struct SSkirmishAICallback* innerCallback) {
 
 	try {
 		springai::AICallback* clb = springai::AICallback::GetInstance(innerCallback, teamId);
-		brainSpace::BrAIn* ai = new brainSpace::BrAIn(clb);
+		brainSpace::BrAIn* ai = new brainSpace::BrAIn(clb, &myAIs);
 
 		myAIs[teamId] = ai;
 		myAICallbacks[teamId] = clb;

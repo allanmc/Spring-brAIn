@@ -10,28 +10,20 @@ BrainGroup::BrainGroup( AIClasses* aiClasses, int groupID )
 	Idle = true;
 	ai = aiClasses;
 	GroupID = groupID;
+	LastFrameGetPos = 0;
 }
 
 BrainGroup::~BrainGroup()
 {
 }
 
-void BrainGroup::AddUnit( Unit *unit)
-{
-	if (ai->commander==NULL && unit->GetDef()->IsCommander())
-	{
-		ai->commander = unit;
-	}
-	Units[unit] = true;
-}
 
 void BrainGroup::RemoveUnit( Unit *unit)
 {
-	for ( map<Unit*, bool>::iterator it = Units.begin() ; it != Units.end() ; it++ )
+	for ( map<int, bool>::iterator it = Units.begin() ; it != Units.end() ; it++ )
 	{
-		if (it->first->GetUnitId() == unit->GetUnitId())
+		if (it->first == unit->GetUnitId())
 		{
-			delete it->first;
 			Units.erase(it);
 			break;
 		}
@@ -53,19 +45,39 @@ bool BrainGroup::IsIdle()
 SAIFloat3 BrainGroup::GetPos()
 {
 
+	if ( LastFrameGetPos == ai->frame )
+		return CachedPosition[0][0];
+
 	KMedoids k( ai );
 	vector<SAIFloat3> points;
-	for ( map<Unit*, bool>::iterator it = Units.begin() ; it != Units.end() ; it++ )
+	for ( map<int, bool>::iterator it = Units.begin() ; it != Units.end() ; it++ )
 	{
-		points.push_back( it->first->GetPos() );
+		Unit* u = Unit::GetInstance( ai->callback, it->first );
+		points.push_back( u->GetPos() );
+		delete u;
 	}
 	k.AddPoints( points );
-	vector<vector<SAIFloat3> > clusters = k.GetClusters( 1 );
-	
-	return clusters[0][0];
+	CachedPosition = k.GetClusters( 1 );
+	LastFrameGetPos = ai->frame;
+	return CachedPosition[0][0];
 }
 
 int BrainGroup::GetGroupID()
 {
 	return GroupID;
+}
+
+std::vector<int> BrainGroup::GetUnits()
+{
+	vector<int> retVal;
+	for ( map<int, bool>::iterator it = Units.begin() ;it != Units.end() ; it++)
+	{
+		retVal.push_back( it->first );
+	}
+	return retVal;
+}
+
+bool BrainGroup::Contains(int unitID)
+{
+	return ( Units.find(unitID) == Units.end() ) ? false : true;
 }

@@ -17,6 +17,8 @@ using namespace springai;
 using namespace std;
 using namespace brainSpace;
 
+#define GROUP_PROXIMITY 500
+
 namespace brainSpace
 {
 
@@ -29,14 +31,17 @@ namespace brainSpace
 		MilitaryGroupManager( AIClasses* aiClasses );
 		virtual ~MilitaryGroupManager();
 		void GuardUnit(Unit* unit);
-		void AddUnit( Unit* unit );
+		bool AddUnit( Unit* unit );
 		void RemoveUnit( Unit* unit );
+
 		void GiveScoutOrder(MilitaryUnitGroup* group);
 		void GiveAttackOrder(MilitaryUnitGroup* group, int enemy );
+		void GiveAttackOrder(MilitaryUnitGroup* group, vector<int> enemies );
+
 		vector<MilitaryUnitGroup*> GetAllAttackGroups();
 		vector<MilitaryUnitGroup*> GetIdleAttackGroups();
 		vector<MilitaryUnitGroup*> GetIdleScoutGroups();
-		void UnitIdle(Unit* unit );
+		bool UnitIdle(Unit* unit );
 		bool IsAttackGroupAvailable();
 		bool IsScoutGroupAvailable();
 		void GiveMoveOrder(MilitaryUnitGroup* group, SAIFloat3 pos);
@@ -44,6 +49,7 @@ namespace brainSpace
 		int GetNumScoutingGroups();
 		bool IsAllAttackGroupsIdle();
 		bool IsAllScoutGroupsIdle();
+		MilitaryUnitGroup* GetNearestGroup( MilitaryUnitGroup* group );
 		
 	private:
 		vector<MilitaryUnitGroup*> UnitGroups;

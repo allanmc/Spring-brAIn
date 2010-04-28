@@ -81,7 +81,6 @@ vector< vector<SAIFloat3> > KMedoids::GetClusters( unsigned short numClusters )
 	int tmp_index = 0;
 	vector<int>::iterator it;
 
-	srand((unsigned)time(NULL));
 	ai->utility->Log(ALL, KMEDOIDS, "Initializing kmedoids...");
 
 	if (points.size()==0)

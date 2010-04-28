@@ -18,11 +18,13 @@ namespace brainSpace {
 		void RemoveUnit( Unit* unit );
 		int ErectBuilding( SBuildUnitCommand order );
 		
-		void UnitIdle( Unit* unit );
+		bool UnitIdle( Unit* unit );
 		bool ConstructionGroupIsIdle();
 
 		void ScoutWithIdleGroup();
 		void AttackWithGroup(int enemy);
+		void AttackWithGroup(std::vector<int> enemies);
+
 		void MoveGroupToPosition(SAIFloat3 pos);
 		void AttackPositionWithAllGroups(SAIFloat3 pos);
 		int GetAmountOfBuildOrders();

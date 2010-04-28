@@ -49,14 +49,19 @@ QuadTreeNode* QuadTreeNode::GetContainingNode( SAIFloat3 pos )
 {
 
 	if ( !IsInsideBoundingBox( pos, BoundingBox ) )
+	{
+		//ai->utility->ChatMsg("x: %f, z: %f, X: %f, Z: %f. Pos: (%f, %f)", BoundingBox.bottomRight.x, BoundingBox.bottomRight.z, BoundingBox.topLeft.x, BoundingBox.topLeft.z, pos.x, pos.z );
+		//ai->utility->ChatMsg("PIKSVIN");
 		return NULL;
-
+	}
 	if ( !IsLeafNode() )
 	{
 		for ( int i = 0 ; i < 4 ; i++ )
 		{
 			if ( IsInsideBoundingBox( pos, Children[i]->GetBoundingBox() ) )
+			{
 				return Children[i];
+			}
 		}
 	}
 
@@ -151,9 +156,10 @@ void QuadTreeNode::InsertUnit( int unitID, SAIFloat3 pos, UnitDef* def )
 	map<int, struct UnitInformationContainer>::iterator iter;
 	for ( iter = UnitsContained.begin() ; iter != UnitsContained.end() ; iter ++ )
 	{
+		UnitDef* d = iter->second.def;
 		if (( *iter).second.pos.x == pos.x && (*iter).second.pos.z == pos.z )
 		{
-			pos.z += 5.0f;
+			pos.z += 0.0005f;
 		}
 	}
 	struct UnitInformationContainer c;

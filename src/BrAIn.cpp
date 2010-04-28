@@ -4,16 +4,14 @@ using namespace std;
 using namespace springai;
 using namespace brainSpace;
 
-brainSpace::BrAIn::BrAIn(springai::AICallback* cb)
+brainSpace::BrAIn::BrAIn(springai::AICallback* cb, std::map<int, brainSpace::BrAIn*>* AIs )
 {
 	ai = new AIClasses();
 	ai->callback = cb;
 	ai->utility = new Utility(ai);
-	ai->utility->Log(ALL, MISC, "Utility loaded...");
 	ai->knowledge = new Knowledge(ai);
-	ai->utility->Log(ALL, MISC, "Knowledge loaded...");
 	ai->math = new BrainMath( ai );
-	ai->utility->Log(ALL, MISC, "BrainMath loaded...");
+	ai->AIs = AIs;
 	teamId = (ai->callback != NULL ? ai->callback->GetTeamId() : -1);
 
 	decision = new Decision(ai);
@@ -22,17 +20,19 @@ brainSpace::BrAIn::BrAIn(springai::AICallback* cb)
 	//ai->utility->Log(ALL, MISC, "Hello world i am team: %d",teamId);
 	srand(0);
 }
+
 brainSpace::BrAIn::~BrAIn() 
 {
+	//ai->utility->ChatMsg("Deleting decision");
 	delete decision;
 	decision = NULL;
-	ai->utility->Log(ALL, MISC, "Decision delete...");
+	//ai->utility->ChatMsg("Deleting knowledge");
 	delete ai->knowledge;
 	ai->knowledge = NULL;
-	ai->utility->Log(ALL, MISC, "knowledge delete...");
+	//ai->utility->ChatMsg("Deleting math");
 	delete ai->math;
 	ai->math = NULL;
-	ai->utility->Log(ALL, MISC, "math delete...");
+	//ai->utility->ChatMsg("Deleting utility");
 	delete ai->utility;
 	ai->utility = NULL;
 	delete ai;
@@ -50,7 +50,6 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 	switch (topic) {
 		case EVENT_INIT:
 			//ai->utility->Log(ALL, MISC, "THE BEGINNING! LOG_LEVEL: %i, LOG_TYPE: %i, EVENT: %i", LOG_LEVEL, LOG_TYPE);
-			ai->utility->Log(ALL, CHAT|DECISION, "Logging started...");
 			//do i really need to do anything here? (i allready have a teamId and a callback)
 			break;
 		case EVENT_RELEASE:
@@ -69,7 +68,6 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 			}
 		case EVENT_MESSAGE:
 			{
-				ai->utility->Log(ALL,MISC,"message");
 				struct SMessageEvent* evt = (struct SMessageEvent*) data;
 				ai->utility->Log(ALL,MISC,evt->message);
 				//why are you talking to me? im a bot!
@@ -77,7 +75,6 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 			}
 		case EVENT_UNIT_CREATED:
 			{
-				ai->utility->Log(LOG_DEBUG,EVENT,"unit created");
 				struct SUnitCreatedEvent* evt = (struct SUnitCreatedEvent*) data;
 				int unitId = evt->unit;
 				int builder = evt->builder;
@@ -208,4 +205,19 @@ int brainSpace::BrAIn::HandleEvent(int topic, const void* data) {
 	//ai->utility->Log(ALL,EVENT,"Im done switching..."); 
 	// signal: everything went OK
 	return 0;
+}
+
+
+bool brainSpace::BrAIn::MayReset()
+{
+	if ( decision == NULL )
+		return false;
+	return decision->MayResetVariable;
+}
+
+bool brainSpace::BrAIn::ScenarioFuckedUp()
+{
+	if ( decision == NULL )
+		return false;
+	return decision->ScenarioFuckedUpVariable;
 }

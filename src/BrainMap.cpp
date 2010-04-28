@@ -11,8 +11,8 @@ BrainMap::BrainMap( AIClasses* aiClasses, int resolution )
 	Resolution = resolution*8; //real world size of a map tile
 	Map *map = ai->callback->GetMap();
 
-	MapWidth = (map->GetWidth()*8)/Resolution;
-	MapHeight = (map->GetHeight()*8)/Resolution;
+	MapWidth = (map->GetWidth()*8)/Resolution; //how many tiles do we need on the x-axis
+	MapHeight = (map->GetHeight()*8)/Resolution; //and the y-axis
 
 	MapArray = new float[MapWidth*MapHeight];
 	mapData = new MapData(MapArray, MapWidth, MapHeight, Resolution);
@@ -122,7 +122,9 @@ void BrainMap::EffectCircle( SAIFloat3 center, float radius, float value )
 void BrainMap::Reset()
 {
 	for ( int i = 0 ; i < MapWidth*MapHeight ; i++ )
+	{
 		MapArray[i] = 0;
+	}
 }
 
 ///draws the grid on the map
@@ -134,12 +136,12 @@ void BrainMap::DrawGrid()
 	{
 		SAIFloat3 start, end;
 		start.x = 0;
-		start.y = 50;
+		start.y = 80.0f;
 		start.z = i*Resolution;
-		end.x = MapWidth*Resolution;
-		end.y = 50;
+		end.x = MapWidth*(float)Resolution;
+		end.y = 80.0f;
 		end.z = i*Resolution;
-		int id = ai->utility->DrawLine( start, end, false, 5, GridFigureID );
+		int id = ai->utility->DrawLine( start, end, false, 20.0f, GridFigureID );
 		if(GridFigureID == 0) GridFigureID = id;
 	}
 
@@ -147,12 +149,12 @@ void BrainMap::DrawGrid()
 	{		
 		SAIFloat3 start, end;
 		start.x = i*Resolution;
-		start.y = 50;
+		start.y = 80.0f;
 		start.z = 0;
 		end.x = i*Resolution;
-		end.y = 50;
+		end.y = 80.0f;
 		end.z = MapHeight*Resolution;
 
-		ai->utility->DrawLine( start, end, false, 5 , GridFigureID );
+		ai->utility->DrawLine( start, end, false, 20.0f, GridFigureID );
 	}
 }

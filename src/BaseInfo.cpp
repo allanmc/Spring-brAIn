@@ -10,8 +10,8 @@ BaseInfo::BaseInfo( AIClasses* aiClasses )
 	CBoundingBox bbox;
 	bbox.topLeft = (SAIFloat3){0,0,0};
 	bbox.bottomRight = (SAIFloat3){	ai->callback->GetMap()->GetWidth()*8,
-									0,
-									ai->callback->GetMap()->GetHeight()*8};
+		0,
+		ai->callback->GetMap()->GetHeight()*8};
 	quadTree = new QuadTree( ai, bbox );
 	buildingCount = 0;
 	resourceBuildings = 0;
@@ -27,23 +27,32 @@ BaseInfo::~BaseInfo()
 
 void BaseInfo::AddBuilding(Unit* building)
 {
+	UnitDef* d = building->GetDef();
 	//check for builder units
-	if(building->GetDef()->GetSpeed() > 0) return;
-
+	if(building->GetDef()->GetSpeed() > 0)
+	{
+		return;
+	}
 	//ai->utility->Log(ALL, MISC, "Adding base unit...");
-	quadTree->InsertUnit(building->GetUnitId(), building->GetPos());
+	map<int, UnitInformationContainer> units = quadTree->GetUnits();
 
-	buildingCount++;
-	if(building->GetDef()->IsBuilder())
+	if ( units.find(building->GetUnitId()) == units.end())
 	{
-		productionBuildings++;
-	}
-	else
-	{
-		resourceBuildings++;
-	}
+		quadTree->InsertUnit(building->GetUnitId(), building->GetPos());
 
-	ai->knowledge->mapInfo->pathfindingMap->AddBuilding( building );
+		buildingCount++;
+		if(building->GetDef()->IsBuilder())
+		{
+			productionBuildings++;
+		}
+		else
+		{
+			resourceBuildings++;
+		}
+
+		ai->knowledge->mapInfo->pathfindingMap->AddBuilding( building );
+
+	}
 }
 
 void BaseInfo::RemoveBuilding(int building)
@@ -89,14 +98,14 @@ int BaseInfo::CountProductionBuildings()
 	return productionBuildings;
 }
 
- void BaseInfo::DrawBasePerimiter()
+void BaseInfo::DrawBasePerimiter()
 {
 	KMedoids *km = new KMedoids( ai );
 	vector<SAIFloat3> points;
-	
+
 	map<int, UnitInformationContainer> units = quadTree->GetUnits();
 	map<int, UnitInformationContainer>::iterator iter;
-	
+
 	for ( iter = units.begin() ; iter != units.end() ; iter++ )
 	{
 		SAIFloat3 pos = (*iter).second.pos;
@@ -108,7 +117,7 @@ int BaseInfo::CountProductionBuildings()
 	vector< vector<SAIFloat3> > clusters = km->GetConvexHulls();
 	delete km;
 	km = NULL;
-	
+
 	if (basePerimiterDrawID>0) 
 	{
 		ai->utility->RemoveGraphics(basePerimiterDrawID);
@@ -171,10 +180,10 @@ vector< vector<SAIFloat3> > BaseInfo::GetBases()
 {
 	KMedoids *km = new KMedoids( ai );
 	vector<SAIFloat3> points;
-	
+
 	map<int, UnitInformationContainer> units = quadTree->GetUnits();
 	map<int, UnitInformationContainer>::iterator iter;
-	
+
 	for ( iter = units.begin() ; iter != units.end() ; iter++ )
 	{
 		SAIFloat3 pos = (*iter).second.pos;
@@ -194,14 +203,14 @@ Unit* BaseInfo::GetWeakestBaseBuilding()
 	vector< vector<SAIFloat3> > bases = GetBases();
 	SAIFloat3 startpos = ai->callback->GetMap()->GetStartPos();
 	SAIFloat3 best;
-	float bestthreat = 99999;
-	
-	for(int i = 0; i < bases.size(); i++)
+	brainSpace::Superiority bestthreat = INFERIOR;
+
+	for(unsigned int i = 0; i < bases.size(); i++)
 	{
-		for(int j = 0; j < bases[i].size(); j++)
+		for(unsigned int j = 0; j < bases[i].size(); j++)
 		{
-			float current = ai->knowledge->mapInfo->threatMap->GetThreatAtPos(bases[i][j]);
-			if(current < bestthreat)
+			Superiority current = ai->knowledge->mapInfo->threatMap->GetSuperiorityAtPos(bases[i][j]);
+			if(current > bestthreat)
 			{
 				best = bases[i][j];
 				bestthreat = current;
@@ -219,9 +228,9 @@ Unit* BaseInfo::GetNearestBaseBuilding()
 	SAIFloat3 startpos = ai->callback->GetMap()->GetStartPos();
 	SAIFloat3 best;
 	double bestdist = 99999;
-	for(int i = 0; i < bases.size(); i++)
+	for(unsigned int i = 0; i < bases.size(); i++)
 	{
-		for(int j = 0; j < bases[i].size(); j++)
+		for(unsigned int j = 0; j < bases[i].size(); j++)
 		{
 			double current = ai->utility->EuclideanDistance(bases[i][j], startpos);
 			if(current < bestdist)
@@ -245,4 +254,10 @@ const map<int, struct UnitInformationContainer> BaseInfo::GetUnits()
 UnitDef* BaseInfo::GetUnitDef(int unitID)
 {
 	return quadTree->GetUnitDef(unitID);
+}
+
+
+vector<Unit*> BaseInfo::RangeQuery(SAIFloat3 topLeft, SAIFloat3 bottomRight)
+{
+	return quadTree->RangeQuery(topLeft, bottomRight);
 }

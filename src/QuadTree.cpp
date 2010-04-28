@@ -95,8 +95,7 @@ void QuadTree::InsertUnit( int unitID, SAIFloat3 pos )
 	UnitDef* def = u->GetDef();
 	if((pos.x == 0 && pos.z == 0) || def == NULL)
 		return;
-
-	RemoveUnit(unitID);
+	//RemoveUnit(unitID);
 
 	if (!QuadTreeNode::IsInsideBoundingBox(pos, RootNode->GetBoundingBox()) )
 	{
@@ -222,12 +221,18 @@ void QuadTree::Print()
 void QuadTree::Print( QuadTreeNode* iter)
 {
 	CBoundingBox box = iter->GetBoundingBox();
-	ai->utility->Log(ALL, MISC, "Level: %d", iter->GetLevel());
-	ai->utility->Log(ALL, MISC, "BBox topleft: ( %f, %f )", box.topLeft.x, box.topLeft.z);
-	ai->utility->Log(ALL, MISC, "BBox bottomright: ( %f, %f )", box.bottomRight.x, box.bottomRight.z);
-	ai->utility->Log(ALL, MISC, "Units contained: %d", iter->GetNumberOfUnits());
+	ai->utility->ChatMsg("Level: %d", iter->GetLevel());
+	ai->utility->ChatMsg("BBox topleft: ( %f, %f )", box.topLeft.x, box.topLeft.z);
+	ai->utility->ChatMsg("BBox bottomright: ( %f, %f )", box.bottomRight.x, box.bottomRight.z);
+	ai->utility->ChatMsg("Units contained: %d", iter->GetNumberOfUnits());
+
+	map<int, UnitInformationContainer> pik = iter->UnitsContained;
+	for ( map<int, UnitInformationContainer>::iterator it = pik.begin() ; it != pik.end() ; it++ )
+	{
+		ai->utility->ChatMsg( "UnitID: %d", it->first );
+	}
 	if ( iter->IsLeafNode() )
-		ai->utility->Log(ALL, MISC, "Current node is leaf");
+		ai->utility->ChatMsg("Current node is leaf");
 	else
 	{
 		for ( int i = 0 ; i < 4 ; i++ )

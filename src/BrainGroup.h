@@ -17,11 +17,11 @@ namespace brainSpace
 		virtual ~BrainGroup();
 
 		///Adds a unit to the group.
-		void AddUnit( Unit* unit );
+		virtual bool AddUnit( Unit* unit ) = 0;
 
 		///Removes a unit from the group.
 		void RemoveUnit( Unit* unit );
-		
+
 		///Get the size of the group.
 		int GetSize();
 
@@ -32,10 +32,13 @@ namespace brainSpace
 
 		///Gets the GroupID. IDs are only unique for groups of the same type (construction or military).
 		int GetGroupID();
+		
+		vector<int> GetUnits();
 
+		bool Contains( int unitID );
 	protected:
-		///Unit*, boolean map. The boolean flag indicates if the unit is idle.
-		map<Unit*, bool> Units;
+		///int = unitID. The boolean flag indicates if the unit is idle.
+		map<int, bool> Units;
 
 		///Is the group idle?
 		bool Idle;
@@ -45,6 +48,11 @@ namespace brainSpace
 
 		///The ID of the group.
 		int GroupID;
+	private:
+		
+		//If we get asked for our position several times during one frame, return the cached info
+		unsigned int LastFrameGetPos;
+		vector< vector< SAIFloat3 > > CachedPosition;
 	};
 }
 

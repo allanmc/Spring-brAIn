@@ -2,53 +2,52 @@
 #include "RL.h"
 
 using namespace brainSpace;
+using namespace std;
 
 void RL_Q::LoadFromFile(ifstream *readFile)
 {
 	FileHeaderQTable qTable;
 	readFile->read( (char*)&qTable, sizeof(FileHeaderQTable) );//Only 1 in this flat q
-	ai->utility->Log(ALL, LOG_RL, "FileHeaderQTable, numStates: %i", qTable.numStates);
-	ai->utility->Log(ALL, LOG_RL, "FileHeaderQTable, numActions: %i", qTable.numActions);
-	FileHeaderQAction qAction[qTable.numActions];
+	FileHeaderQAction *qAction = (FileHeaderQAction*)malloc(sizeof(FileHeaderQAction)* qTable.numActions);
 	for(int i = 0; i < qTable.numActions; i++)
 	{
-		ai->utility->Log(ALL, LOG_RL, "Loading qAction[%i]", i);
-		qAction[i].LoadFromFile(ai, readFile);
+		qAction[i].LoadFromFile( readFile, ai);
 	}
-	FileHeaderQStateVar qStateVars[qTable.numStateVars];
+	FileHeaderQStateVar *qStateVars = (FileHeaderQStateVar*)malloc(sizeof(FileHeaderQStateVar)*qTable.numStateVars);
 	for(int i = 0; i < qTable.numStateVars; i++)
 	{
-		ai->utility->Log(ALL, LOG_RL, "Loading qStateVar[%i]", i);
-		qStateVars[i].LoadFromFile(ai, readFile);
+		qStateVars[i].LoadFromFile( readFile, ai);
 	}
-	ai->utility->Log(ALL, LOG_RL, "Done reading qActions");
-	readFile->read( (char*)actionValueFunction, sizeof(float)*qTable.numActions*qTable.numStates );
+	readFile->read( (char*)actionValueFunction, sizeof(double)*qTable.numActions*qTable.numStates );
+	delete qAction;
+	delete qStateVars;
 }
 
-RL_Q::RL_Q( AIClasses *aiClasses, vector<QAction> actions, vector<QStateVar> stateVars )
+RL_Q::RL_Q(AIClasses* aiClasses, vector<QAction> actions, vector<QStateVar> stateVars )
 {
 	ai = aiClasses;
-
-	this->numActions = actions.size();
+	numActions = actions.size();
 	int states = 1;
-	for (int i = 0; i < (int)stateVars.size(); i++)
+	for (unsigned int i = 0; i < stateVars.size(); i++)
 	{
 		states *= stateVars[i].numStates;
 	}
-	this->numStates =  states;
-	this->actions = actions;
-	this->stateVars = stateVars;
-	
-	size = this->numStates*this->numActions;
-	actionValueFunction = new float[size];
+	numStates =  states;
+	Actions = actions;
+	StateVars = stateVars;
+
+	size = numStates*numActions;
+	actionValueFunction = new double[size];
+	for ( int i = 0 ; i < size ; i++ )
+		actionValueFunction[i] = 0;
+
+
 }
 
 RL_Q::~RL_Q()
 {
-
 	delete[] actionValueFunction;
 	actionValueFunction = NULL;
-	ai->utility->Log(ALL, LOG_RL, "Done deleting RL_Q");
 }
 
 void RL_Q::Clear()
@@ -58,42 +57,47 @@ void RL_Q::Clear()
 }
 
 void RL_Q::SaveToFile(ofstream *file )
-{
+{	
 	FileHeaderQTable qTable;
-	FileHeaderQAction qAction[numActions];
-	FileHeaderQStateVar fileQStateVar[stateVars.size()];
+	FileHeaderQAction *qAction = (FileHeaderQAction*)malloc(sizeof(FileHeaderQAction)* numActions);
+	FileHeaderQStateVar *fileQStateVar = (FileHeaderQStateVar*)malloc(sizeof(FileHeaderQStateVar)*StateVars.size());
 	qTable.numActions = numActions;
 	qTable.numStates = numStates;
-	qTable.numStateVars = stateVars.size();
-
+	qTable.numStateVars = StateVars.size();
 	file->write( (char*)&qTable, sizeof(FileHeaderQTable) );
-	for(int i = 0; i < (int)actions.size(); i++)
-	{
-		qAction[i].qAction = actions[i];
-		qAction[i].SaveToFile(file);
+	for(int i = 0; i < (int)Actions.size(); i++)
+	{	
+		qAction[i].qAction = Actions[i];
+		qAction[i].SaveToFile(file, ai);
 	}
-	for(int i = 0; i < (int)stateVars.size(); i++)
+	for(int i = 0; i < (int)StateVars.size(); i++)
 	{
-		fileQStateVar[i].qStateVar = stateVars[i];
-		fileQStateVar[i].SaveToFile(file);
+		fileQStateVar[i].qStateVar = StateVars[i];
+		fileQStateVar[i].SaveToFile(file, ai);
 	}
-	file->write( (char*)actionValueFunction, sizeof(float)*size );
-
+	file->write( (char*)actionValueFunction, sizeof(double)*size );
+	delete qAction;
+	delete fileQStateVar;
 }
 
-float RL_Q::GetValue( RL_State &state, RL_Action &action )
+double RL_Q::GetValue( int stateID, RL_Action &action )
 {
-	int stateID = state.GetID();
-	int actionID = action.ID;
-	int index = stateID * numActions + actionID;
-	float retVal = actionValueFunction[ index ];
+	int index = stateID * numActions + action.Action;
+	double retVal = actionValueFunction[ index ];
 	return retVal;
 }
 
-void RL_Q::SetValue( RL_State &state, RL_Action &action, float value )
+
+double RL_Q::GetValue( RL_State &state, RL_Action &action )
 {
 	int stateID = state.GetID();
-	int actionID = action.ID;
+	int actionID = action.Action;
 	int index = stateID * numActions + actionID;
-	actionValueFunction[ index ] = value;
+	double retVal = actionValueFunction[ index ];
+	return retVal;
+}
+
+void RL_Q::SetValue( RL_State &state, RL_Action &action, double value )
+{
+	actionValueFunction[ (state.GetID()) * numActions + (action.Action) ] = value;
 }

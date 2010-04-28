@@ -19,6 +19,9 @@ namespace brainSpace {
  * 
  * @author	Group d513a, at Aalborg University (d513a@cs.aau.dk)
  */
+
+	class Decision;
+
 class BrAIn {
 
 private:
@@ -28,10 +31,13 @@ private:
 	Decision *decision;
 
 public:
-	BrAIn(springai::AICallback* callback);
+	BrAIn(springai::AICallback* callback, std::map<int, brainSpace::BrAIn*>* AIs );
 	~BrAIn();
 
 	int HandleEvent(int topic, const void* data);
+
+	bool MayReset();
+	bool ScenarioFuckedUp();
 
 }; // class BrAIn
 

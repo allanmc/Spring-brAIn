@@ -4,6 +4,7 @@
 #include "global.h"
 #include "QuadTree.h"
 #include "KMedoids.h"
+#include "MilitaryUnitGroup.h"
 
 using namespace std;
 using namespace springai;
@@ -34,6 +35,7 @@ namespace brainSpace
 		bool IsBuildingInRange(SAIFloat3 pos, float radius);
 		const map<int, struct UnitInformationContainer> GetUnits();
 		UnitDef* GetUnitDef(int unitID);
+		vector<Unit*> RangeQuery(SAIFloat3 topLeft, SAIFloat3 bottomRight);
 
 	private:
 		AIClasses* ai;
