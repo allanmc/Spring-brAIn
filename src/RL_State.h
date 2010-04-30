@@ -18,7 +18,7 @@ namespace brainSpace {
 	{
 	public:
 		RL_State();
-		RL_State(AIClasses* aiClasses, MilitaryUnitGroup* currentGroup, std::vector<QStateVar> stateVars, vector< pair<int, SAIFloat3> > mexCluster, RL_Q* valueFunction );
+		RL_State(AIClasses* aiClasses, MilitaryUnitGroup* currentGroup, std::vector<QStateVar> stateVars, vector< pair<int, SAIFloat3> > buildings, RL_Q* valueFunction, double epsilon );
 		virtual ~RL_State();
 		int GetID();
 		std::vector<RL_Action*> GetActions();
@@ -34,7 +34,6 @@ namespace brainSpace {
 		unsigned int ID;
 		std::vector<RL_Action*> Actions;
 		AIClasses* ai;
-		BattleFileReader* Reader;
 
 	private:
 

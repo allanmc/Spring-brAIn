@@ -23,16 +23,16 @@ brainSpace::BrAIn::BrAIn(springai::AICallback* cb, std::map<int, brainSpace::BrA
 
 brainSpace::BrAIn::~BrAIn() 
 {
-	//ai->utility->ChatMsg("Deleting decision");
+	ai->utility->ChatMsg("Brain; Deleting decision");
 	delete decision;
 	decision = NULL;
-	//ai->utility->ChatMsg("Deleting knowledge");
+	ai->utility->ChatMsg("Brain;Deleting knowledge");
 	delete ai->knowledge;
 	ai->knowledge = NULL;
-	//ai->utility->ChatMsg("Deleting math");
+	ai->utility->ChatMsg("Brain;Deleting math");
 	delete ai->math;
 	ai->math = NULL;
-	//ai->utility->ChatMsg("Deleting utility");
+	ai->utility->ChatMsg("Brain; Deleting utility");
 	delete ai->utility;
 	ai->utility = NULL;
 	delete ai;
@@ -213,11 +213,4 @@ bool brainSpace::BrAIn::MayReset()
 	if ( decision == NULL )
 		return false;
 	return decision->MayResetVariable;
-}
-
-bool brainSpace::BrAIn::ScenarioFuckedUp()
-{
-	if ( decision == NULL )
-		return false;
-	return decision->ScenarioFuckedUpVariable;
 }

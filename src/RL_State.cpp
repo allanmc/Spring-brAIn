@@ -8,10 +8,9 @@ using namespace brainSpace;
 
 RL_State::RL_State()
 {
-	Reader = NULL;
 }
 
-RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<QStateVar> stateVars, vector<pair<int, SAIFloat3> > resourceBuildings, RL_Q* valueFunction )
+RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<QStateVar> stateVars, vector<pair<int, SAIFloat3> > resourceBuildings, RL_Q* valueFunction, double epsilon )
 {
 	ai = aiClasses;
 	//Reader = new BattleFileReader(ai);
@@ -214,14 +213,32 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 
 	if ( possibleStates.size() > 0 )
 	{
-		for ( map<unsigned int, pair<RL_Action*, double> >::iterator it = possibleStates.begin() ; it != possibleStates.end() ; it++ )
+		//EPSILON-GREEDY STATE CHOICE
+		float r = rand()/(float)RAND_MAX;
+		if ( r <= epsilon ) //non-greedy
 		{
-			if ( it->second.second > optimalClusterReward )
+			int index = rand()%possibleStates.size();
+			ai->utility->ChatMsg("Non-greedy state choice: %d out of %d", index, possibleStates.size() );
+			map<unsigned int, pair<RL_Action*, double> >::iterator it = possibleStates.begin();
+			for ( int i = 0 ; i < index ; i++ )
+				it++;
+
+			optimalClusterReward = it->second.second;
+			optimalPath = it->second.first->Path;
+			optimalStateID = it->first;
+			optimalUnitIDs = it->second.first->unitIDs;
+		}
+		else
+		{
+			for ( map<unsigned int, pair<RL_Action*, double> >::iterator it = possibleStates.begin() ; it != possibleStates.end() ; it++ )
 			{
-				optimalPath = it->second.first->Path;
-				optimalStateID = it->first;
-				optimalUnitIDs = it->second.first->unitIDs;
-				optimalClusterReward = it->second.second;
+				if ( it->second.second > optimalClusterReward )
+				{
+					optimalPath = it->second.first->Path;
+					optimalStateID = it->first;
+					optimalUnitIDs = it->second.first->unitIDs;
+					optimalClusterReward = it->second.second;
+				}
 			}
 		}
 		ID = optimalStateID;
@@ -252,8 +269,6 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 RL_State::~RL_State()
 {
 	Actions.clear();
-	if ( Reader != NULL )
-		delete Reader;
 }
 
 int RL_State::GetID()

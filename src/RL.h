@@ -21,7 +21,12 @@
 
 #define RL_FILE_DELETE true
 #define RL_FILE_PATH ""
-#define RL_FILE_ATTACK "qattack.dat"
+
+#define NUM_Q_TABLES 3
+#define RL_FILE_ATTACK_MEX "qattackmex.dat"
+#define RL_FILE_ATTACK_SOL "qattacksol.dat"
+#define RL_FILE_ATTACK_WIN "qattackwin.dat"
+
 #define FILE_HEADER "QB"
 
 #define RL_UPDATE_TIMEOUT 2400
@@ -60,7 +65,7 @@ namespace brainSpace {
 		RL( AIClasses* aiClasses, double epsilon, int numAgents = 1);
 		virtual ~RL();
 		float GetTotalReward();
-		char* GetFilePath();
+		char* GetFilePath(int type = 0);
 
 		RL_Action* Update(MilitaryUnitGroup* group );
 
@@ -74,8 +79,8 @@ namespace brainSpace {
 		//RL_Action* nullAction;
 
 		bool FileExists( const char* name );
-		RL_Action* FindNextAction( RL_State &state );
-		RL_Action* FindBestAction( RL_State &state );
+		RL_Action* FindNextAction( RL_State *state, int type = 0 );
+		RL_Action* FindBestAction( RL_State *state, int type = 0 );
 
 		RL_State* PreviousState;
 		RL_Action* PreviousAction;
@@ -83,15 +88,11 @@ namespace brainSpace {
 		float totalReward;
 		bool goalAchieved;
 		int Epsilon;
-		RL_State* GetState(MilitaryUnitGroup* group, vector<pair<int, SAIFloat3> > resourceBuildings );
-		RL_Action* SafeNextAction(RL_State &state);
+		RL_State* GetState(MilitaryUnitGroup* group, vector<pair<int, SAIFloat3> > resourceBuildings, int type = 0 );
+		RL_Action* SafeNextAction(RL_State *state, int type = 0);
 
-		void LoadFromFile();
-		void SaveToFile();
-
-		void SaveToStateVisitsFile( int stateIDe );
-
-		RL_Q* ValueFunction;
+		void LoadFromFile(int type = 0 );
+		void SaveToFile( int type = 0);
 
 		bool m_greedyChoice;
 
@@ -99,8 +100,11 @@ namespace brainSpace {
 
 		//DefID, count
 		map<int,int> StartGroup;
-		vector<QStateVar> StateVars;
-		vector<QAction> Actions;
+		vector<vector<QStateVar> > StateVars;
+		vector<vector<QAction> > Actions;
+		vector<RL_Q*> ValueFunction;
+		int CurrentQTable;
+
 		bool MayUpdateVar;
 	};
 }

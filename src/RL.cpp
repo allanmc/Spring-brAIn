@@ -17,22 +17,55 @@ RL::RL(AIClasses* aiClasses, double epsilon, int numAgents)
 	PreviousFrame = 0;
 	PreviousState = NULL;
 	PreviousAction = NULL;
+	CurrentQTable = -1;
 
 	switch(RL_TYPE)
 	{
 	case 0:
 		{
-			StateVars.push_back( QStateVar( "MexSpotCount", 3 ) );
-			StateVars.push_back( QStateVar( "DistMexSpot", 4 ) );
-			StateVars.push_back( QStateVar( "ImgMexSpotInf", 4 ) );
-			StateVars.push_back( QStateVar( "AirGroup", 2 ) );
-			StateVars.push_back( QStateVar( "GroupSpeed", 3 ) );
-			StateVars.push_back( QStateVar( "SuperiorPathLength", 2 ) );
-			StateVars.push_back( QStateVar( "CurrentSpotInf", 4 ) );
+			StateVars.resize(3);
+			Actions.resize(3);
+			ValueFunction.resize(3);
 
-			Actions.push_back( QAction( "AttackMexSpot", 0 ) );
+			StateVars[0].push_back( QStateVar( "MexSpotCount", 3 ) );
+			StateVars[0].push_back( QStateVar( "DistMexSpot", 4 ) );
+			StateVars[0].push_back( QStateVar( "ImgMexSpotInf", 4 ) );
+			StateVars[0].push_back( QStateVar( "AirGroup", 2 ) );
+			StateVars[0].push_back( QStateVar( "GroupSpeed", 3 ) );
+			StateVars[0].push_back( QStateVar( "SuperiorPathLength", 2 ) );
+			StateVars[0].push_back( QStateVar( "CurrentSpotInf", 4 ) );
 
-			ValueFunction = new RL_Q( ai, Actions, StateVars);
+			Actions[0].push_back( QAction( "AttackMexSpot", 0 ) );
+
+			ValueFunction[0] = new RL_Q( ai, Actions[0], StateVars[0]);
+
+
+			/************************/
+			StateVars[1].push_back( QStateVar( "SolarSpotCount", 3 ) );
+			StateVars[1].push_back( QStateVar( "DistSolarSpot", 4 ) );
+			StateVars[1].push_back( QStateVar( "ImgSolarSpotInf", 4 ) );
+			StateVars[1].push_back( QStateVar( "AirGroup", 2 ) );
+			StateVars[1].push_back( QStateVar( "GroupSpeed", 3 ) );
+			StateVars[1].push_back( QStateVar( "SuperiorPathLength", 2 ) );
+			StateVars[1].push_back( QStateVar( "CurrentSpotInf", 4 ) );
+
+			Actions[1].push_back( QAction( "AttackSolarSpot", 0 ) );
+
+			ValueFunction[1] = new RL_Q( ai, Actions[1], StateVars[1]);
+
+
+			/************************/
+			StateVars[2].push_back( QStateVar( "WindSpotCount", 3 ) );
+			StateVars[2].push_back( QStateVar( "DistWindSpot", 4 ) );
+			StateVars[2].push_back( QStateVar( "ImgWindSpotInf", 4 ) );
+			StateVars[2].push_back( QStateVar( "AirGroup", 2 ) );
+			StateVars[2].push_back( QStateVar( "GroupSpeed", 3 ) );
+			StateVars[2].push_back( QStateVar( "SuperiorPathLength", 2 ) );
+			StateVars[2].push_back( QStateVar( "CurrentSpotInf", 4 ) );
+
+			Actions[2].push_back( QAction( "AttackWindSpot", 0 ) );
+
+			ValueFunction[2] = new RL_Q( ai, Actions[2], StateVars[2]);
 			break;
 		}
 	default:
@@ -40,27 +73,30 @@ RL::RL(AIClasses* aiClasses, double epsilon, int numAgents)
 	}
 
 	dataTrail.clear();
-	LoadFromFile();	
+	for ( int i = 0 ; i < NUM_Q_TABLES ; i++ )
+		LoadFromFile(i);	
 	goalAchieved = false;
 }
 
 RL::~RL()
 {
-	SaveToFile();
-	//ai->utility->ChatMsg("RL:About to delete valuefunc");
-	delete ValueFunction;
+	ai->utility->ChatMsg("RL:About to savetofile");
+	SaveToFile(CurrentQTable);
+	ai->utility->ChatMsg("RL:About to delete valuefunc");
+	for (int i = 0 ; i < 3 ; i++ )
+		delete ValueFunction[i];
 
-	//ai->utility->ChatMsg("RL:About to clear datatrail");
+	ai->utility->ChatMsg("RL:About to clear datatrail");
 	dataTrail.clear();
-	//ai->utility->ChatMsg("RL:About to delete prevstate");
+	ai->utility->ChatMsg("RL:About to delete prevstate");
 	delete PreviousState;
-	//ai->utility->ChatMsg("RL: Deleted prevstate");
+	ai->utility->ChatMsg("RL: Deleted prevstate");
 	//delete nullState;
 }
 
-void RL::LoadFromFile()
+void RL::LoadFromFile(int type)
 {
-	char *path = GetFilePath();
+	char *path = GetFilePath(type);
 
 	FILE* fp = NULL;
 	fp = fopen( path, "rb" );
@@ -76,7 +112,7 @@ void RL::LoadFromFile()
 			fileHeader.header[1]==FILE_HEADER[1] &&
 			fileHeader.type==QBFILE_VERSION)
 		{
-			ValueFunction->LoadFromFile(readFile);
+			ValueFunction[type]->LoadFromFile(readFile);
 		}
 		delete readFile;
 	}
@@ -84,7 +120,7 @@ void RL::LoadFromFile()
 	delete[] path;
 }
 
-char* RL::GetFilePath()
+char* RL::GetFilePath(int type)
 {
 	DataDirs *dirs = ai->callback->GetDataDirs();
 	const char* dir = dirs->GetWriteableDir();
@@ -96,7 +132,18 @@ char* RL::GetFilePath()
 	{
 	case 0:
 		{
-			strcat(path, RL_FILE_ATTACK);
+			switch( type )
+			{
+			case 0:
+				strcat(path, RL_FILE_ATTACK_MEX);
+				break;
+			case 1:
+				strcat(path, RL_FILE_ATTACK_SOL);
+				break;
+			case 2:
+				strcat(path, RL_FILE_ATTACK_WIN);
+				break;
+			}
 			break;
 		}
 	default:
@@ -107,9 +154,9 @@ char* RL::GetFilePath()
 
 }
 
-void RL::SaveToFile()
+void RL::SaveToFile(int type)
 {
-	char *path = GetFilePath();
+	char *path = GetFilePath(type);
 
 	ofstream *file = new ofstream(path, ios::binary | ios::out);
 
@@ -121,7 +168,7 @@ void RL::SaveToFile()
 	fileHeader.numQTables = 1;
 
 	file->write( (char*)&fileHeader, sizeof(fileHeader) );
-	ValueFunction->SaveToFile(file);
+	ValueFunction[type]->SaveToFile(file);
 	file->flush();
 	file->close();
 	delete[] path;
@@ -129,69 +176,14 @@ void RL::SaveToFile()
 }
 
 
-void RL::SaveToStateVisitsFile( int stateID )
+RL_State* RL::GetState(MilitaryUnitGroup* group, vector<pair<int, SAIFloat3> > resourceBuildings, int type )
 {
-	DataDirs *dirs = ai->callback->GetDataDirs();
-	const char* dir = dirs->GetWriteableDir();
-
-	char *path = new char[200];
-	strcpy(path, dir);
-	strcat(path, "visits.dat");
-
-	fstream *file = new fstream();
-	file->open(path, ios::in | ios::binary );
-
-
-	//file did not exist!! Create it with all zeros!
-	if ( !file->is_open() )
-	{
-		unsigned int maxState = 1;
-		for ( unsigned int i = 0 ; i < StateVars.size() ; i++ )
-		{
-			maxState *= StateVars[i].numStates;
-		}
-
-		for ( unsigned int i = 0 ; i < Actions.size() ; i++ )
-			maxState *= (i+1);
-
-		file->close();
-		file = new fstream();
-		ai->utility->ChatMsg( "Making new file");
-		file->open( path, ios::binary | ios::out );
-
-		long a = file->tellp();
-		ai->utility->ChatMsg( "p start: %d", a);
-
-		for ( unsigned int i = 0 ; i < maxState ; i++ )
-		{
-			ai->utility->WriteToStateVisitFile( file, 0 );
-		}
-
-		a = file->tellp();
-		ai->utility->ChatMsg( "p end: %d", a);
-	}
-
-	file->close();
-	file->open( path, ios::out | ios::binary | ios::in );
-	int d = ai->utility->ReadFromStateVisitFile( file, stateID );
-	//ai->utility->ChatMsg("RL: Old visits to %d. %d", stateID, d );
-	ai->utility->WriteToStateVisitFile( file, d+1, stateID );
-	ai->utility->ChatMsg("RL: New visits to %d. %d", stateID, ai->utility->ReadFromStateVisitFile(file, stateID ) );
-	file->close();
-	delete dirs;
-	delete[] path;
-	delete file;
+	return new RL_State(ai, group, StateVars[type], resourceBuildings, ValueFunction[type], Epsilon );
 }
 
-
-RL_State* RL::GetState(MilitaryUnitGroup* group, vector<pair<int, SAIFloat3> > resourceBuildings )
+RL_Action* RL::FindNextAction( RL_State *state, int type )
 {
-	return new RL_State(ai, group, StateVars, resourceBuildings, ValueFunction );
-}
-
-RL_Action* RL::FindNextAction( RL_State &state )
-{
-	vector<RL_Action*> stateActions = state.GetActions();
+	vector<RL_Action*> stateActions = state->GetActions();
 	RL_Action* action = stateActions[0]; //unitdefID
 
 	float r = rand()/(float)RAND_MAX;
@@ -203,21 +195,21 @@ RL_Action* RL::FindNextAction( RL_State &state )
 	else //greedy
 	{
 		m_greedyChoice = true;
-		action = FindBestAction(state);
+		action = FindBestAction(state, type);
 	}
 	return action;
 }
 
-RL_Action* RL::FindBestAction( RL_State &state )
+RL_Action* RL::FindBestAction( RL_State *state, int type )
 {
-	vector<RL_Action*> stateActions = state.GetActions();
+	vector<RL_Action*> stateActions = state->GetActions();
 	RL_Action* action = stateActions[0]; //unitdefID
-	float bestValue = ValueFunction->GetValue(state, *action);
+	float bestValue = ValueFunction[type]->GetValue(*state, *action);
 
 	for ( unsigned int i = 1 ; i < stateActions.size() ; i++ )
 	{
 		RL_Action* tempAction = stateActions[i];
-		float tempValue = ValueFunction->GetValue(state, *tempAction);
+		float tempValue = ValueFunction[type]->GetValue(*state, *tempAction);
 
 		if ( tempValue > bestValue )
 		{
@@ -229,17 +221,22 @@ RL_Action* RL::FindBestAction( RL_State &state )
 	return action;
 }
 
-RL_Action* RL::SafeNextAction(RL_State &state)
+RL_Action* RL::SafeNextAction(RL_State* state, int type )
 {
-	if(state.GetActions().size() > 0)
+	if ( state != NULL )
 	{
-		return FindNextAction( state );
-	}	
+		vector<RL_Action*> a = state->GetActions();
+		if(a.size() > 0)
+		{
+			return FindNextAction( state, type );
+		}
+	}
 	return NULL;
 }
 
 RL_Action* RL::Update(MilitaryUnitGroup* group)
 {
+	ai->utility->ChatMsg("RL: UPDATE");
 	bool terminal = false;
 	vector<Unit*> units = ai->callback->GetEnemyUnits();
 	vector< pair<int, SAIFloat3> > mexPositions;
@@ -262,7 +259,6 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 
 
 	RL_State* state = NULL;
-
 	RL_Action* nextAction = NULL;
 
 	if ( group != NULL )
@@ -270,14 +266,22 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 		RL_State* mexState = NULL;
 		RL_State* solarState = NULL;
 		RL_State* windState = NULL;
-		int chosenOne = 0;
 
 		if ( mexPositions.size() > 0 )
+		{
+			ai->utility->ChatMsg("Getting mexstate");
 			mexState = GetState( group, mexPositions );
+		}
 		if ( solarPositions.size() > 0 )
+		{
+			ai->utility->ChatMsg("Getting solarstate");
 			solarState = GetState( group, solarPositions );
+		}
 		if ( windGenePositions.size() > 0 )
+		{
+			ai->utility->ChatMsg("Getting windstate");
 			windState = GetState( group, windGenePositions );
+		}
 
 		double bestVal = -1000000000;
 
@@ -287,6 +291,7 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 			{
 				bestVal = mexState->ExpectedReward;
 				state = mexState;
+				CurrentQTable = 0;
 			}
 		}
 		if ( solarState != NULL && solarState->GetID() != -1 )
@@ -295,7 +300,7 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 			{
 				bestVal = solarState->ExpectedReward;
 				state = solarState;
-				chosenOne = 1;
+				CurrentQTable = 1;
 			}
 		}
 
@@ -305,14 +310,15 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 			{
 				bestVal = windState->ExpectedReward;
 				state = windState;
-				chosenOne = 2;
+				CurrentQTable = 2;
 			}
 		}
 
-		nextAction = SafeNextAction(*state);
+		nextAction = SafeNextAction(state);
+		ai->utility->ChatMsg("RL Update currentQTable: %d", CurrentQTable );
 		if ( state != NULL )
 		{
-			switch(chosenOne)
+			switch(CurrentQTable)
 			{
 			case 0:
 				{
@@ -340,6 +346,7 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 				}
 			}
 		}
+		ai->utility->ChatMsg("RL: Cleaned up");
 	}
 
 	//Start state
@@ -348,11 +355,6 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 		PreviousState = state;
 		PreviousAction = nextAction;
 		PreviousFrame = ai->frame;
-		if ( state != NULL && state->GetID() != -1 )
-		{
-			//ai->utility->ChatMsg("RL: About to do something unsafe!");
-			//ai->utility->ChatMsg("RL: Done something unsafe!");
-		}
 		return nextAction;
 	}
 	//else continue
@@ -369,7 +371,7 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 
 	map<int, UnitInformationContainer> existingUnits = ai->knowledge->enemyInfo->baseInfo->GetUnits();
 	map<int, UnitInformationContainer> ourUnits = ai->knowledge->selfInfo->armyInfo->GetUnits();
-	unsigned int mexKilledCounter = 0;
+	unsigned int buildingsKilledCounter = 0;
 	float unitLossReward = 0.0f;
 
 	float totalHealth = 0.0f;
@@ -378,7 +380,7 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 	for ( unsigned int i = 0 ; i < PreviousAction->unitIDs.size() ; i++ )
 	{
 		if ( existingUnits.find(PreviousAction->unitIDs[i] ) == existingUnits.end() )
-			mexKilledCounter++;
+			buildingsKilledCounter++;
 	}
 	if ( group != NULL )
 	{
@@ -416,18 +418,18 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 		}
 		else
 		{
-			RL_Action* bestAction = FindBestAction( *state );
-			bestFutureValue = ValueFunction->GetValue(*state, *bestAction);
+			RL_Action* bestAction = FindBestAction( state );
+			bestFutureValue = ValueFunction[CurrentQTable]->GetValue(*state, *bestAction);
 		}
 	}
 
-	if ( PreviousAction->unitIDs.size() == mexKilledCounter )
+	if ( PreviousAction->unitIDs.size() == buildingsKilledCounter )
 	{
 		reward = 100;
 	}
 	else
 	{
-		reward = mexKilledCounter/PreviousAction->unitIDs.size()*100;
+		reward = buildingsKilledCounter/PreviousAction->unitIDs.size()*100;
 	}
 
 	reward *= unitLossReward;
@@ -442,13 +444,12 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 	if(!USE_Q_LAMBDA)
 	{
 		//update own value function
-		value = ValueFunction->GetValue(*PreviousState,*PreviousAction);
+		value = ValueFunction[CurrentQTable]->GetValue(*PreviousState,*PreviousAction);
 		//	+ ALPHA*(
 		//	reward + gamma*bestFutureValue 
 		//	- ValueFunction->GetValue(*PreviousState,*PreviousAction) );
 		//ai->utility->ChatMsg("Old Value: %f", value );
-		SaveToStateVisitsFile( PreviousState->GetID() );
-		ValueFunction->SetValue(*PreviousState,*PreviousAction, value+reward);
+		ValueFunction[CurrentQTable]->SetValue(*PreviousState,*PreviousAction, value+reward);
 		return NULL;
 	}
 	else if(USE_Q_LAMBDA )
@@ -462,14 +463,14 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 				dataTrail.erase(dataTrail.begin());
 		}
 
-		double delta = reward + gamma*bestFutureValue - ValueFunction->GetValue( *PreviousState, *PreviousAction );
+		double delta = reward + gamma*bestFutureValue - ValueFunction[CurrentQTable]->GetValue( *PreviousState, *PreviousAction );
 
 		for(int i = dataTrail.size()-1; i>=0; i--)
 		{
-			value = ValueFunction->GetValue(dataTrail[i].prevState, dataTrail[i].prevAction)
+			value = ValueFunction[CurrentQTable]->GetValue(dataTrail[i].prevState, dataTrail[i].prevAction)
 				+ ALPHA*delta*dataTrail[i].eligibilityTrace;
 
-			ValueFunction->SetValue(dataTrail[i].prevState, dataTrail[i].prevAction, value);
+			ValueFunction[CurrentQTable]->SetValue(dataTrail[i].prevState, dataTrail[i].prevAction, value);
 
 			if ( m_greedyChoice )
 			{

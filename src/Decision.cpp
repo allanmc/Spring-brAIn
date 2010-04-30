@@ -28,19 +28,19 @@ Decision::Decision(AIClasses* aiClasses)
 	m_Scenario = NULL;
 
 	MayResetVariable = false;
-	ScenarioFuckedUpVariable = false;
 }
 
 Decision::~Decision(void)
 {
-	//ai->utility->ChatMsg("Deleting bc");
+	ai->utility->ChatMsg("Deleting bc");
 	delete bc;
 	bc = NULL;
 	if ( ai->callback->GetTeamId() == 0 )
 	{
-		//ai->utility->ChatMsg("Deleting rl");
+		ai->utility->ChatMsg("Deleting rl");
 		delete rl;
 		rl = NULL;
+		ai->utility->ChatMsg("Deleted RL");
 	}
 	//ai->utility->ChatMsg("Deleting BI");
 	//delete BattleInfoInstance;
@@ -131,6 +131,11 @@ void Decision::UnitDestroyed(int unit, int attacker)
 	//BattleInfoInstance->UnitDestroyed( unit, attacker );
 	UnitDef* d = destroyee->GetDef();
 
+	if ( d->IsCommander() )
+	{
+		ai->utility->ChatMsg("Our commander destroyed");
+	}
+
 	if(d->GetSpeed() > 0)
 	{
 		//remove from groupController
@@ -182,13 +187,23 @@ void Decision::EnemyEnterLOS(int enemy)
 ///called when an enemy have been destroyed
 void Decision::EnemyDestroyed(int enemy, int attacker)
 {
+	ai->utility->ChatMsg("EnemyDestroyed");
+	bool b = false;
 	if (ResettingGame)
 	{
+		ai->utility->ChatMsg("EnemyDestroyed, but returning");
 		return;
 	}
 	//good job!
 	Unit* unit = Unit::GetInstance(ai->callback, enemy);
 	UnitDef* d = unit->GetDef();
+
+	if ( d->IsCommander() )
+	{
+		ai->utility->ChatMsg("Their commander destroyed");
+		b = true;
+	}
+
 	if ( d == NULL )
 	{
 		d = ai->knowledge->enemyInfo->armyInfo->GetUnitDef( unit->GetUnitId() );
@@ -207,6 +222,8 @@ void Decision::EnemyDestroyed(int enemy, int attacker)
 		ai->utility->Log( LOG_DEBUG, DECISION, "EnemyDestroyed: Unitdef was %s",d->GetName() );
 	}
 	//BattleInfoInstance->EnemyDestroyed( enemy, attacker );
+	if ( b )
+		ai->utility->ChatMsg("PIKSVIN");
 }
 
 ///used to update the positions of all friendly units in the ArmyInfo
@@ -241,7 +258,7 @@ void Decision::UpdateFrindlyPositions()
 
 void Decision::Reset()
 {
-	//ai->utility->ChatMsg("Decision::Reset()");
+	ai->utility->ChatMsg("Decision::Reset()");
 	GameCounter++;
 	if ( ai->callback->GetTeamId() == 0 )
 		ai->utility->ChatMsg("DECISION: Resetting to game: %d", GameCounter );
@@ -250,7 +267,7 @@ void Decision::Reset()
 	if ( ai->callback->GetTeamId() == 0 )
 	{
 		ai->utility->ResetGame(&rl);
-		//ai->utility->ChatMsg("Reset RL");
+		ai->utility->ChatMsg("Just Reset RL");
 	}
 
 	if ( GameCounter == 500 )
@@ -260,10 +277,9 @@ void Decision::Reset()
 	}
 	else ai->utility->Suicide( COMMANDERID, false, true );
 
-	//ai->utility->ChatMsg("Starting game #%i", gameCounter++);
 	delete ai->knowledge;
 	ai->knowledge = NULL;
-	//ai->utility->ChatMsg("Deleted ai->knowledge");
+	ai->utility->ChatMsg("Deleted ai->knowledge");
 	
 	ai->knowledge = new Knowledge( ai );
 	delete ai->utility;
@@ -271,18 +287,19 @@ void Decision::Reset()
 	ai->utility = new Utility( ai );
 	ai->utility->LaterInitialization();
 	delete ai->math;
-	//ai->utility->ChatMsg("Deleted ai->math");
+	ai->utility->ChatMsg("Deleted ai->math");
 	ai->math = NULL;
 	ai->math = new BrainMath( ai );
 	delete bc;
-	//ai->utility->ChatMsg("Deleted bc");
+	ai->utility->ChatMsg("Deleted bc");
 	bc = NULL;
 	bc = new BuildingController( ai );
-	//ai->utility->ChatMsg("Reset() done");
+	ai->utility->ChatMsg("Reset() done");
 }
 
 void Decision::Update(int frame)
 {
+	ai->utility->ChatMsg("UPD-START");
 	if(frame == 1)
 	{
 		ai->utility->ChatMsg("Frame 1!!");
@@ -307,18 +324,25 @@ void Decision::Update(int frame)
 
 	if ( ResettingGame && frame > 1 && frame == LastResetFrame+SCENARIO_DELAY )
 	{
+		ai->utility->ChatMsg("ANAL1");
 		LastResetFrame = frame;
 		ResettingGame = false;
 		//ai->utility->ChatMsg("New scenario");
 		if ( m_Scenario != NULL )
+		{		
+			ai->utility->ChatMsg("ANAL2");
 			delete m_Scenario;
+		}
+		ai->utility->ChatMsg("ANAL3");
 		m_Scenario = new Scenario(ai);
+		ai->utility->ChatMsg("ANAL4");
 		if ( ai->callback->GetTeamId() == 0 )
 			ai->utility->ChatMsg("Scenario started");
 	}
 
 	if ( ai->callback->GetTeamId() == 0 && frame == LastResetFrame+50  && !ResettingGame )
 	{
+		ai->utility->ChatMsg("SVEND1");
 		vector<Unit*> enemyUnits = ai->callback->GetEnemyUnits();
 		for ( vector<Unit*>::iterator it = enemyUnits.begin() ; it != enemyUnits.end() ; it++ )
 		{
@@ -329,40 +353,36 @@ void Decision::Update(int frame)
 		UpdateFrindlyPositions();
 
 		ai->knowledge->mapInfo->threatMap->Update();
-		//ai->knowledge->mapInfo->threatMap->DrawGrid();
-		//ai->utility->ChatMsg("About to attack");
 		vector<MilitaryUnitGroup*> m = ai->knowledge->groupManager->GetMilitaryGroupMgr()->GetAllAttackGroups();
-		//ai->utility->ChatMsg("AttackGroups: %d", m.size() );
 
-
+		ai->utility->ChatMsg("SVEND2");
 		if ( m.size() > 0 )
 		{
+			ai->utility->ChatMsg("SVEND3");
 			RL_Action* a = rl->Update( m[0] );
-
+			ai->utility->ChatMsg("SVEND4");
 			//ai->utility->ChatMsg("TEAM 0: FIRE AT WILL");
 			if ( a != NULL )
 			{
-				ScenarioFuckedUpVariable = false;
+				ai->utility->ChatMsg("SVEND5");
 				m[0]->FireAtWill();
+				ai->utility->ChatMsg("SVEND6");
 				if ( a->Path != NULL )
 				{
 					if ( a->Path->GetLength() > 0 )
-					{//do not move to the last spot, but attack instead
-						//ai->utility->ChatMsg("DECISION: Following path");
+					{
 						for ( int i =  a->Path->GetPoints().size()-1 ; i >= 1 ; i-- )
 						{
 							m[0]->Scout( a->Path->GetPoints()[i] );
 						}
 					}
-					//else
-					//	ai->utility->ChatMsg("DECISION: Path length zero");
-				}//else ai->utility->ChatMsg("DECISION: Path was null");
+				}
+				ai->utility->ChatMsg("SVEND7");
 				m[0]->Attack( a->unitIDs );
 			}
 			else
 			{
 				ai->utility->ChatMsg("DECISION: We got a state with no actions!");
-				ScenarioFuckedUpVariable = true;
 			}
 		}
 		else
@@ -373,64 +393,42 @@ void Decision::Update(int frame)
 
 	if ( !ResettingGame )
 	{
-		if ( ai->callback->GetTeamId() == 0 )
-		{
-			if ( !ScenarioFuckedUpVariable )
-				MayResetVariable = rl->MayUpdate();
-		}
-		else 
-		{
-			if ( ai->AIs->find(0)->second != NULL )
-			{
-				MayResetVariable = ai->AIs->find(0)->second->MayReset();
-				ScenarioFuckedUpVariable = ai->AIs->find(0)->second->ScenarioFuckedUp();
-			}
-		}
+		ai->utility->ChatMsg("GERT1");
+		MayResetVariable = rl->MayUpdate();
+		ai->utility->ChatMsg("GERT2");
 	}
-
-	if ( ScenarioFuckedUpVariable )
-	{
-		ai->utility->ChatMsg("DECISION: Scenario Fucked up");
-	}
-	//Give team 0 aircrafts a chance to take off before allowing any nearby team 1 units to shoot them
-	if ( ai->callback->GetTeamId() == 1 && frame == LastResetFrame+170 && !ResettingGame && !ScenarioFuckedUpVariable )
-	{
-		//ai->utility->ChatMsg("TEAM 1: FIRE AT WILL");
-		vector<MilitaryUnitGroup*> m = ai->knowledge->groupManager->GetMilitaryGroupMgr()->GetAllAttackGroups();
-		for ( unsigned int i = 0 ; i < m.size() ; i++ )
-		{
-			m[i]->FireAtWill();
-		}
-	}
-
-
 	
 	//Timeout or all units killed, so initiate a reset
-	if ( frame > 1 && !ResettingGame && !ScenarioFuckedUpVariable && ( frame == LastResetFrame+RL_UPDATE_TIMEOUT || MayResetVariable ))
+	if ( frame > 1 && !ResettingGame && ( frame == LastResetFrame+RL_UPDATE_TIMEOUT || MayResetVariable ))
 	{
+		ai->utility->ChatMsg("HANS1");
 		ResettingGame = true;
 		LastResetFrame = frame;
 		if ( ai->callback->GetTeamId() == 0 )
 		{
+			ai->utility->ChatMsg("HANS2");
 			vector<MilitaryUnitGroup*> m = ai->knowledge->groupManager->GetMilitaryGroupMgr()->GetAllAttackGroups();
 			if ( m.size() == 0 )
-			{
+			{		
+				ai->utility->ChatMsg("HANS3");
 				//ai->utility->ChatMsg("Decision: MiliGroup empty" );
 				rl->Update( NULL );
+				ai->utility->ChatMsg("HANS-PIK");
 			}
 			else 
 			{
+				ai->utility->ChatMsg("HANS4");
 				//ai->utility->ChatMsg("Decision: MiliGroupSize: %d", m.size() );
 				rl->Update( m[0] );
+				ai->utility->ChatMsg("HANS5");
 			}
 		}
+		ai->utility->ChatMsg("HANS6");
 		Reset();
+		ai->utility->ChatMsg("HANS7");
 	}
-	if ( ScenarioFuckedUpVariable )
-	{
-		ai->utility->ChatMsg("DECISION: Scenario Fucked up");
-		Reset();
-	}
+
+	ai->utility->ChatMsg("UPD-END");
 }
 
 void Decision::UnitIdle( int id )
