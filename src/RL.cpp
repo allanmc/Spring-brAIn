@@ -81,7 +81,8 @@ RL::RL(AIClasses* aiClasses, double epsilon, int numAgents)
 RL::~RL()
 {
 	ai->utility->ChatMsg("RL:About to savetofile");
-	SaveToFile(CurrentQTable);
+	for ( int i = 0 ; i < NUM_Q_TABLES ; i++ )
+		SaveToFile(i);
 	ai->utility->ChatMsg("RL:About to delete valuefunc");
 	for (int i = 0 ; i < 3 ; i++ )
 		delete ValueFunction[i];
@@ -419,7 +420,9 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 		else
 		{
 			RL_Action* bestAction = FindBestAction( state );
-			bestFutureValue = ValueFunction[CurrentQTable]->GetValue(*state, *bestAction);
+			if ( CurrentQTable != -1 )
+				bestFutureValue = ValueFunction[CurrentQTable]->GetValue(*state, *bestAction);
+			else ai->utility->ChatMsg("RL: CRAP!");
 		}
 	}
 
@@ -444,12 +447,16 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 	if(!USE_Q_LAMBDA)
 	{
 		//update own value function
-		value = ValueFunction[CurrentQTable]->GetValue(*PreviousState,*PreviousAction);
-		//	+ ALPHA*(
-		//	reward + gamma*bestFutureValue 
-		//	- ValueFunction->GetValue(*PreviousState,*PreviousAction) );
-		//ai->utility->ChatMsg("Old Value: %f", value );
-		ValueFunction[CurrentQTable]->SetValue(*PreviousState,*PreviousAction, value+reward);
+		if ( CurrentQTable != -1 )
+		{
+			value = ValueFunction[CurrentQTable]->GetValue(*PreviousState,*PreviousAction);
+			//	+ ALPHA*(
+			//	reward + gamma*bestFutureValue 
+			//	- ValueFunction->GetValue(*PreviousState,*PreviousAction) );
+			//ai->utility->ChatMsg("Old Value: %f", value );
+			ValueFunction[CurrentQTable]->SetValue(*PreviousState,*PreviousAction, value+reward);
+		}
+		else ai->utility->ChatMsg("RL:CRAP2");
 		return NULL;
 	}
 	else if(USE_Q_LAMBDA )
@@ -463,24 +470,28 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 				dataTrail.erase(dataTrail.begin());
 		}
 
-		double delta = reward + gamma*bestFutureValue - ValueFunction[CurrentQTable]->GetValue( *PreviousState, *PreviousAction );
-
-		for(int i = dataTrail.size()-1; i>=0; i--)
+		if ( CurrentQTable != -1 )
 		{
-			value = ValueFunction[CurrentQTable]->GetValue(dataTrail[i].prevState, dataTrail[i].prevAction)
-				+ ALPHA*delta*dataTrail[i].eligibilityTrace;
+			double delta = reward + gamma*bestFutureValue - ValueFunction[CurrentQTable]->GetValue( *PreviousState, *PreviousAction );
 
-			ValueFunction[CurrentQTable]->SetValue(dataTrail[i].prevState, dataTrail[i].prevAction, value);
-
-			if ( m_greedyChoice )
+			for(int i = dataTrail.size()-1; i>=0; i--)
 			{
-				dataTrail[i].eligibilityTrace *= gamma*LAMBDA;
-			}
-			else 
-			{	
-				dataTrail[i].eligibilityTrace = 0;
+				value = ValueFunction[CurrentQTable]->GetValue(dataTrail[i].prevState, dataTrail[i].prevAction)
+					+ ALPHA*delta*dataTrail[i].eligibilityTrace;
+
+				ValueFunction[CurrentQTable]->SetValue(dataTrail[i].prevState, dataTrail[i].prevAction, value);
+
+				if ( m_greedyChoice )
+				{
+					dataTrail[i].eligibilityTrace *= gamma*LAMBDA;
+				}
+				else 
+				{	
+					dataTrail[i].eligibilityTrace = 0;
+				}
 			}
 		}
+		else ai->utility->ChatMsg("RL:CRAP3");
 	}
 
 

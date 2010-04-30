@@ -52,7 +52,15 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 	for ( int i = 0 ; i < group->GetSize() ; i++ )
 	{
 		Unit* u = Unit::GetInstance(ai->callback, uIDs[i] );
+		if ( u == NULL )
+		{
+			ai->utility->ChatMsg("RL_State: NULL UNIT");
+		}
 		UnitDef* d = u->GetDef();
+		if ( d == NULL )
+		{
+			ai->utility->ChatMsg("RL_State: NULL DEF");
+		}
 		GroupSpeed += d->GetSpeed();
 		delete d;
 		delete u;
