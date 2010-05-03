@@ -38,7 +38,6 @@ public:
 	~Decision(void);
 
 	bool MayResetVariable;
-	bool ScenarioFuckedUpVariable;
 private:
 	void Reset();
 	BattlesInfo* BattleInfoInstance;

@@ -29,10 +29,12 @@ void BaseInfo::AddBuilding(Unit* building)
 {
 	UnitDef* d = building->GetDef();
 	//check for builder units
-	if(building->GetDef()->GetSpeed() > 0)
+	if(d->GetSpeed() > 0)
 	{
+		delete d;
 		return;
 	}
+	delete d;
 	//ai->utility->Log(ALL, MISC, "Adding base unit...");
 	map<int, UnitInformationContainer> units = quadTree->GetUnits();
 

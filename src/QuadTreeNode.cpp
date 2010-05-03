@@ -156,7 +156,6 @@ void QuadTreeNode::InsertUnit( int unitID, SAIFloat3 pos, UnitDef* def )
 	map<int, struct UnitInformationContainer>::iterator iter;
 	for ( iter = UnitsContained.begin() ; iter != UnitsContained.end() ; iter ++ )
 	{
-		UnitDef* d = iter->second.def;
 		if (( *iter).second.pos.x == pos.x && (*iter).second.pos.z == pos.z )
 		{
 			pos.z += 0.0005f;

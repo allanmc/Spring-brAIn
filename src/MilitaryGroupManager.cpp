@@ -270,7 +270,7 @@ bool MilitaryGroupManager::UnitIdle(Unit* unit)
 
 bool MilitaryGroupManager::IsAllAttackGroupsIdle()
 {
-	for(int i = 0; i < UnitGroups.size(); i++)
+	for(unsigned int i = 0; i < UnitGroups.size(); i++)
 	{
 		if(!UnitGroups[i]->IsIdle())
 			return false;
@@ -280,7 +280,7 @@ bool MilitaryGroupManager::IsAllAttackGroupsIdle()
 
 bool MilitaryGroupManager::IsAllScoutGroupsIdle()
 {
-	for(int i = 0; i < ScoutGroups.size(); i++)
+	for(unsigned int i = 0; i < ScoutGroups.size(); i++)
 	{
 		if(!ScoutGroups[i]->IsIdle())
 			return false;
@@ -350,7 +350,7 @@ MilitaryUnitGroup* MilitaryGroupManager::GetNearestGroup( MilitaryUnitGroup* gro
 {
 	double closest = 100000.0f;
 	MilitaryUnitGroup* ret = NULL;
-	for ( int i = 0 ; i < UnitGroups.size() ; i++ )
+	for ( unsigned int i = 0 ; i < UnitGroups.size() ; i++ )
 	{
 		if ( UnitGroups[i]->GetGroupID() != group->GetGroupID() )
 		{

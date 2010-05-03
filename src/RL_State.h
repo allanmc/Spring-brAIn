@@ -9,7 +9,7 @@
 using namespace springai;
 using namespace std;
 
-#define MEX_GROUP_TOLERANCE 400.0f
+#define RESOURCE_BUILDING_GROUP_TOLERANCE 400.0f
 
 namespace brainSpace {
 
@@ -18,7 +18,7 @@ namespace brainSpace {
 	{
 	public:
 		RL_State();
-		RL_State(AIClasses* aiClasses, MilitaryUnitGroup* currentGroup, std::vector<QStateVar> stateVars, vector< pair<int, SAIFloat3> > mexCluster, RL_Q* valueFunction );
+		RL_State(AIClasses* aiClasses, MilitaryUnitGroup* currentGroup, std::vector<QStateVar> stateVars, vector< pair<int, SAIFloat3> > buildings, RL_Q* valueFunction, double epsilon );
 		virtual ~RL_State();
 		int GetID();
 		std::vector<RL_Action*> GetActions();
@@ -26,13 +26,14 @@ namespace brainSpace {
 		bool IsTerminal();
 		bool operator==(const RL_State &other) const;
 		RL_State & operator=(const RL_State &rhs);
+
+		double ExpectedReward;
 		
 	protected:
 		bool terminal;
 		unsigned int ID;
 		std::vector<RL_Action*> Actions;
 		AIClasses* ai;
-		BattleFileReader* Reader;
 
 	private:
 

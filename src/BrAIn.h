@@ -37,7 +37,6 @@ public:
 	int HandleEvent(int topic, const void* data);
 
 	bool MayReset();
-	bool ScenarioFuckedUp();
 
 }; // class BrAIn
 

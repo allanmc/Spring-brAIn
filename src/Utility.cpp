@@ -205,7 +205,7 @@ UnitDef* Utility::GetLLTDef()
 }
 
 
-UnitDef* Utility::GetUnitDef(unsigned int id)
+UnitDef* Utility::GetUnitDef(int id)
 {
 	if(ai->frame > 0)
 	{
@@ -609,7 +609,7 @@ vector<Unit*> Utility::GetNearestEnemyUnits( MilitaryUnitGroup* group, int numAr
 		UnitDef* d = u->GetDef();
 		delete d;
 		delete u;
-		for ( int i = 0 ; i < names.size() ; i++ )
+		for ( unsigned int i = 0 ; i < names.size() ; i++ )
 		{
 			if ( strcmp( it->second.def->GetName(), names[i] ) == 0 )
 			{
