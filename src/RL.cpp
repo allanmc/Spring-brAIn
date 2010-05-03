@@ -237,7 +237,6 @@ RL_Action* RL::SafeNextAction(RL_State* state, int type )
 
 RL_Action* RL::Update(MilitaryUnitGroup* group)
 {
-	ai->utility->ChatMsg("RL: UPDATE");
 	bool terminal = false;
 	vector<Unit*> units = ai->callback->GetEnemyUnits();
 	vector< pair<int, SAIFloat3> > mexPositions;
@@ -343,6 +342,11 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 						delete mexState;
 					if ( solarState != NULL )
 						delete solarState;
+					break;
+				}
+			default:
+				{
+					ai->utility->ChatMsg("RL:CurrentQTable is fucked!CRAP!");
 					break;
 				}
 			}

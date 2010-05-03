@@ -40,23 +40,19 @@ namespace brainSpace
 
 		void LoadFromFile(std::ifstream *file, AIClasses* aiClasses) 
 		{
-			aiClasses->utility->ChatMsg("Before Load HeaderQAction");
 			file->read( (char*)&nameSize, sizeof(short unsigned int) );
 			qAction.name = new char[nameSize];
 			file->read( (char*)(qAction.name), sizeof(char)*nameSize );
 			file->read( (char*)&(qAction.id), sizeof(short unsigned int) );
 			delete[] qAction.name;
-			aiClasses->utility->ChatMsg("After Load HeaderQAction");
 		}
 
 		void SaveToFile(std::ofstream *file, AIClasses* aiClasses)
 		{
-			aiClasses->utility->ChatMsg("Before Save HeaderQAction");
 			nameSize = strlen(qAction.name)+1;
 			file->write( (char*)&nameSize, sizeof(short unsigned int) );
 			file->write( (char*)(qAction.name), sizeof(char)*nameSize );
 			file->write( (char*)&(qAction.id), sizeof(short unsigned int) );
-			aiClasses->utility->ChatMsg("After Save HeaderQAction");
 		}
 	};
 
@@ -67,23 +63,19 @@ namespace brainSpace
 
 		void LoadFromFile(std::ifstream *file, AIClasses* aiClasses) 
 		{
-			aiClasses->utility->ChatMsg("Before Load HeaderQStateVar");
 			file->read( (char*)&nameSize, sizeof(short unsigned int) );
 			qStateVar.name = new char[nameSize];
 			file->read( (char*)(qStateVar.name), sizeof(char)*nameSize );
 			file->read( (char*)&(qStateVar.numStates), sizeof(short unsigned int) );
 			delete[] qStateVar.name;
-			aiClasses->utility->ChatMsg("After Load HeaderQStateVar");
 		}
 
 		void SaveToFile(std::ofstream *file, AIClasses* aiClasses)
 		{
-			aiClasses->utility->ChatMsg("BeforeSave HeaderQStateVar");
 			nameSize = strlen(qStateVar.name)+1;
 			file->write( (char*)&nameSize, sizeof(short unsigned int) );
 			file->write( (char*)(qStateVar.name), sizeof(char)*nameSize );
 			file->write( (char*)&(qStateVar.numStates), sizeof(short unsigned int) );
-			aiClasses->utility->ChatMsg("After Save HeaderQStateVar");
 		}
 	};
 

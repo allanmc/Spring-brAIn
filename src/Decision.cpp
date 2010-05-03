@@ -299,7 +299,6 @@ void Decision::Reset()
 
 void Decision::Update(int frame)
 {
-	ai->utility->ChatMsg("UPD-START");
 	if(frame == 1)
 	{
 		ai->utility->ChatMsg("Frame 1!!");
@@ -324,25 +323,20 @@ void Decision::Update(int frame)
 
 	if ( ResettingGame && frame > 1 && frame == LastResetFrame+SCENARIO_DELAY )
 	{
-		ai->utility->ChatMsg("ANAL1");
 		LastResetFrame = frame;
 		ResettingGame = false;
 		//ai->utility->ChatMsg("New scenario");
 		if ( m_Scenario != NULL )
 		{		
-			ai->utility->ChatMsg("ANAL2");
 			delete m_Scenario;
 		}
-		ai->utility->ChatMsg("ANAL3");
 		m_Scenario = new Scenario(ai);
-		ai->utility->ChatMsg("ANAL4");
 		if ( ai->callback->GetTeamId() == 0 )
 			ai->utility->ChatMsg("Scenario started");
 	}
 
 	if ( ai->callback->GetTeamId() == 0 && frame == LastResetFrame+50  && !ResettingGame )
 	{
-		ai->utility->ChatMsg("SVEND1");
 		vector<Unit*> enemyUnits = ai->callback->GetEnemyUnits();
 		for ( vector<Unit*>::iterator it = enemyUnits.begin() ; it != enemyUnits.end() ; it++ )
 		{
@@ -355,18 +349,13 @@ void Decision::Update(int frame)
 		ai->knowledge->mapInfo->threatMap->Update();
 		vector<MilitaryUnitGroup*> m = ai->knowledge->groupManager->GetMilitaryGroupMgr()->GetAllAttackGroups();
 
-		ai->utility->ChatMsg("SVEND2");
 		if ( m.size() > 0 )
 		{
-			ai->utility->ChatMsg("SVEND3");
 			RL_Action* a = rl->Update( m[0] );
-			ai->utility->ChatMsg("SVEND4");
 			//ai->utility->ChatMsg("TEAM 0: FIRE AT WILL");
 			if ( a != NULL )
 			{
-				ai->utility->ChatMsg("SVEND5");
 				m[0]->FireAtWill();
-				ai->utility->ChatMsg("SVEND6");
 				if ( a->Path != NULL )
 				{
 					if ( a->Path->GetLength() > 0 )
@@ -377,7 +366,6 @@ void Decision::Update(int frame)
 						}
 					}
 				}
-				ai->utility->ChatMsg("SVEND7");
 				m[0]->Attack( a->unitIDs );
 			}
 			else
@@ -393,42 +381,30 @@ void Decision::Update(int frame)
 
 	if ( !ResettingGame )
 	{
-		ai->utility->ChatMsg("GERT1");
 		MayResetVariable = rl->MayUpdate();
-		ai->utility->ChatMsg("GERT2");
 	}
 	
 	//Timeout or all units killed, so initiate a reset
 	if ( frame > 1 && !ResettingGame && ( frame == LastResetFrame+RL_UPDATE_TIMEOUT || MayResetVariable ))
 	{
-		ai->utility->ChatMsg("HANS1");
 		ResettingGame = true;
 		LastResetFrame = frame;
 		if ( ai->callback->GetTeamId() == 0 )
 		{
-			ai->utility->ChatMsg("HANS2");
 			vector<MilitaryUnitGroup*> m = ai->knowledge->groupManager->GetMilitaryGroupMgr()->GetAllAttackGroups();
 			if ( m.size() == 0 )
 			{		
-				ai->utility->ChatMsg("HANS3");
 				//ai->utility->ChatMsg("Decision: MiliGroup empty" );
 				rl->Update( NULL );
-				ai->utility->ChatMsg("HANS-PIK");
 			}
 			else 
 			{
-				ai->utility->ChatMsg("HANS4");
 				//ai->utility->ChatMsg("Decision: MiliGroupSize: %d", m.size() );
 				rl->Update( m[0] );
-				ai->utility->ChatMsg("HANS5");
 			}
 		}
-		ai->utility->ChatMsg("HANS6");
 		Reset();
-		ai->utility->ChatMsg("HANS7");
 	}
-
-	ai->utility->ChatMsg("UPD-END");
 }
 
 void Decision::UnitIdle( int id )
