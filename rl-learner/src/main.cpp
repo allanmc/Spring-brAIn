@@ -225,6 +225,7 @@ void PrintGameStatus(Game *g)
 	cerr << "Energy Res: " << g->resources[SOLAR_ID] << endl;
 	cerr << "Metal Gain: " << g->GetTotalProduction(MEX_ID) - g->GetResourceUsage(MEX_ID) - g->units[LAB_ID]*5 << endl;
 	cerr << "Energy Gain: " << g->GetTotalProduction(SOLAR_ID) - g->GetResourceUsage(SOLAR_ID) - g->units[LAB_ID]*50 << endl;
+	cerr << "Game Frame: " << g->frame;
 }
 
 void PrintAction(bool debug,RL_Action a, unsigned short builder)
