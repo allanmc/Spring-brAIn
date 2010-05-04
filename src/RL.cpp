@@ -345,6 +345,11 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 						delete solarState;
 					break;
 				}
+			default:
+				{
+					ai->utility->ChatMsg("RL:CurrentQTable is fucked!CRAP!");
+					break;
+				}
 			}
 		}
 		ai->utility->ChatMsg("RL: Cleaned up");
