@@ -6,10 +6,10 @@ using namespace std;
 int g_currentGame = 0;
 Game::Game()
 {
-	unitDefs[MEX_ID] = unitdef(50,521,1800,3.0f,-3.0f);
-	unitDefs[SOLAR_ID] = unitdef(145,0,2845,0.0f,20.0f);
-	unitDefs[LAB_ID] = unitdef(605,1130,6760);
-	unitDefs[ROCKO_ID] = unitdef(97,944,1887);
+	unitDefs[MEX_ID] = unitdef(50,521,1800,1800/(double)BUILDER_SPEED,3.0f,-3.0f);
+	unitDefs[SOLAR_ID] = unitdef(145,0,2845,2845/(double)BUILDER_SPEED,0.0f,20.0f);
+	unitDefs[LAB_ID] = unitdef(605,1130,6760,6760/(double)BUILDER_SPEED);
+	unitDefs[ROCKO_ID] = unitdef(97,944,1887,1887/(double)LAB_SPEED);
 	ResetGame();
 }
 
@@ -47,18 +47,11 @@ vector<int> Game::Update()
 	double metalProd = GetBaseProduction(MEX_ID);
 	double metalProductionFactor = 0.0;
 	double lowestUsageFactor = 0.0;
-
-	if ( metalProd < 0 || energyProd < 0 )
-	{
-		cerr << "EProd: " << energyProd << endl;
-		cerr << "MProd: " << metalProd << endl;
-		cerr << "Mexes: " << units[MEX_ID]<< endl;
-		cerr << "Solars: " << units[SOLAR_ID]<< endl;
-	}
+	unsigned int buildListSize = buildList.size();
 
 	bool discount = false;
 
-	for(unsigned int i = 0; i < buildList.size(); i++)
+	for(unsigned int i = 0; i < buildListSize; i++)
 	{
 		double time = GetBuildTime(buildList[i].unitId, false);
 		energyUse += unitDefs[buildList[i].unitId].energyCost/time;
@@ -68,10 +61,7 @@ vector<int> Game::Update()
 	if ( (energyUse+energyUsageForBuildings) > energyProd && ((energyUse+energyUsageForBuildings) - energyProd) > resources[SOLAR_ID])
 	{
 		metalProductionFactor = (energyProd+resources[SOLAR_ID])/(energyUse+energyUsageForBuildings);
-		if(energyUse+energyUsageForBuildings <= 0.0)
-		{
-			cerr << "energyUse+energyUsageForBuildings <=0 " << endl;			
-		}
+
 		energyUsageForBuildings *= metalProductionFactor;
 		metalUsageForBuildings *= metalProductionFactor;
 		metalProd *= metalProductionFactor;
@@ -97,10 +87,9 @@ vector<int> Game::Update()
 		resources[SOLAR_ID] -= energyUse;
 		resources[MEX_ID] -= metalUse;
 		
-		for(unsigned int i = 0; i < buildList.size(); i++)
+		for(unsigned int i = 0; i < buildListSize; i++)
 		{
 			double time = GetBuildTime(buildList[i].unitId, false);
-			if(time <= 0.0)	cerr << "time1 <=0  " << endl;
 			double e = unitDefs[buildList[i].unitId].energyCost/time;
 			double m = unitDefs[buildList[i].unitId].metalCost/time;
 			
@@ -117,12 +106,9 @@ vector<int> Game::Update()
 	{
 		//run out of energy
 		double p = resources[SOLAR_ID]/energyUse;
-		if(energyUse <= 0.0)	cerr << "energyUse1 <=0  " << endl;
-		for(unsigned int i = 0; i < buildList.size(); i++)
+		for(unsigned int i = 0; i < buildListSize; i++)
 		{
 			double time = GetBuildTime(buildList[i].unitId, false);
-			if(time <= 0.0)	cerr << "time2 <=0  " << endl;
-
 			double e = p*unitDefs[buildList[i].unitId].energyCost/time;
 			double m = p*unitDefs[buildList[i].unitId].metalCost/time;
 	/*		if ( discount )
@@ -140,12 +126,9 @@ vector<int> Game::Update()
 	{
 		//run out of metal
 		double p = resources[MEX_ID]/metalUse;
-		if(metalUse <= 0.0)	cerr << "metalUse1 <=0  " << endl;
-		for(unsigned int i = 0; i < buildList.size(); i++)
+		for(unsigned int i = 0; i < buildListSize; i++)
 		{
 			double time = GetBuildTime(buildList[i].unitId, false);
-			if(time <= 0.0)	cerr << "time3 <=0  " << endl;
-
 			double e = p*unitDefs[buildList[i].unitId].energyCost/time;
 			double m = p*unitDefs[buildList[i].unitId].metalCost/time;
 	/*		if ( discount )
@@ -173,33 +156,26 @@ vector<int> Game::Update()
 
 		if(pm < pe || zeroen)
 		{
-			for(unsigned int i = 0; i < buildList.size(); i++)
+			for(unsigned int i = 0; i < buildListSize; i++)
 			{
 				double time = GetBuildTime(buildList[i].unitId, false);
-				if(time <= 0.0)	cerr << "time4 <=0  " << endl;
 				buildList[i].remainingEnergy -= pm*unitDefs[buildList[i].unitId].energyCost/time;
 				buildList[i].remainingMetal -= pm*unitDefs[buildList[i].unitId].metalCost/time;
 			}
-			if(pm*energyUse > resources[SOLAR_ID])
-			{
-				cerr << "pm " << pm << " pe " << pe << " energyUse " << energyUse << " metalUse " << metalUse << endl;
-				cerr << "resources[MEX_ID] " << resources[MEX_ID] << " resources[SOLAR_ID] " << resources[SOLAR_ID];
-			}
+
 			resources[SOLAR_ID] -= pm*energyUse;			
 			resources[MEX_ID] = 0;
 		}
 		else 
 		{
-			for(unsigned int i = 0; i < buildList.size(); i++)
+			for(unsigned int i = 0; i < buildListSize; i++)
 			{
 				double time = GetBuildTime(buildList[i].unitId, false);
-				if(time <= 0.0)	cerr << "time5 <=0  " << endl;
 				buildList[i].remainingEnergy -= pe*unitDefs[buildList[i].unitId].energyCost/time;
 				buildList[i].remainingMetal -= pe*unitDefs[buildList[i].unitId].metalCost/time;
 			}
 			resources[SOLAR_ID] = 0;
 			resources[MEX_ID] -= pe*metalUse;		
-			if(pe*metalUse > 999)	cerr << "pe*metalUse <=0  " << endl;
 			
 		}
 	}
@@ -207,7 +183,7 @@ vector<int> Game::Update()
 	int rockosToAdd = 0;
 	//anyone finished?
 	vector<int> finished;
-	for(unsigned int i = 0; i < buildList.size(); i++)
+	for(unsigned int i = 0; i < buildListSize; i++)
 	{
 		if( buildList[i].remainingEnergy <= 0 && buildList[i].remainingMetal <= 0)
 		{
@@ -224,24 +200,13 @@ vector<int> Game::Update()
 				finished.push_back(buildList[i].builder);
 			}
 			buildList.erase(buildList.begin() + i);
-			i--;			
+			i--;
+			buildListSize--;
 		}
 	}
 	for(int i = 0; i < rockosToAdd; i++)
 	{
 		BuildUnit(ROCKO_ID, -1);
-	}
-	if(resources[SOLAR_ID] < 0 || resources[MEX_ID] < 0 || metalUse <= 0 || energyUse < 0)
-	{
-		cerr << " resources[SOLAR_ID] " << resources[SOLAR_ID] << " resources[MEX_ID] " << resources[MEX_ID] << " metalUse " << metalUse << " energyUse " << energyUse << " discount " << discount << " metalProductionFactor " << metalProductionFactor << endl;
-	}
-	for(unsigned int i = 0; i < buildList.size(); i++)
-	{
-		if(buildList[i].remainingEnergy < 0 || buildList[i].remainingMetal < 0)
-		{
-			cerr << " resources[SOLAR_ID] " << resources[SOLAR_ID] << " resources[MEX_ID] " << resources[MEX_ID] << " metalUse " << metalUse << " energyUse " << energyUse << " discount " << discount << " metalProductionFactor " << metalProductionFactor << endl;
-			cerr << " buildList[i].remainingEnergy " << buildList[i].remainingEnergy << " buildList[i].remainingMetal " << buildList[i].remainingMetal << endl;
-		}
 	}
 
 	if(resources[SOLAR_ID] > 1000)
@@ -391,7 +356,7 @@ double Game::GetBuildTime(int unitId, bool commander)
 {
 	if (unitId == ROCKO_ID)
 	{
-		return unitDefs[unitId].buildTime/(double)LAB_SPEED;
+		return unitDefs[unitId].realbuildTime;
 	} 
 	else if(commander)
 	{
@@ -399,7 +364,7 @@ double Game::GetBuildTime(int unitId, bool commander)
 	}
 	else
 	{
-		return unitDefs[unitId].buildTime/(double)BUILDER_SPEED;
+		return unitDefs[unitId].realbuildTime;
 	}
 	
 }

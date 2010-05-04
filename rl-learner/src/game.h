@@ -29,14 +29,16 @@ namespace brainSpace {
 		int metalCost;
 		int energyCost;
 		int buildTime;
+		double realbuildTime;
 		double production[2];
-		unitdef( int metal, int energy, int time, double metalProduction = 0, double energyProduction = 0)
+		unitdef( int metal, int energy, int time, double realtime, double metalProduction = 0, double energyProduction = 0)
 		{
 			metalCost = metal;
 			energyCost = energy;
 			buildTime = time;
 			production[MEX_ID] = metalProduction;
 			production[SOLAR_ID] = energyProduction;
+			realbuildTime = realtime;
 		}
 		unitdef() {}
 	};

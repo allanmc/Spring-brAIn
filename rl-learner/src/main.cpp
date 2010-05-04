@@ -174,6 +174,7 @@ int main(int argc, char *argv[])
 			if(PRINT_REWARD)
 			{
 				cout << currentReward << "\n";
+				cerr << currentFrame << (currentFrame == bestFrame && debug ? "*" : "") << "\n" ;
 			}
 			else
 			{
@@ -195,7 +196,7 @@ int main(int argc, char *argv[])
 		ChangeColour(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE); 
 
 		if(RUNS > 100 && run%(RUNS/100) == 0 && !TEST_RESULTS)
-			cerr << "Status:" << floor(((run/(double)RUNS)*100)+0.5) << "%\xd";
+			//cerr << "Status:" << floor(((run/(double)RUNS)*100)+0.5) << "%\xd";
 
 		currentEpsilon *= EPSILON_DECAY;
 	}
