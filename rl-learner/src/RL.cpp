@@ -258,12 +258,11 @@ double RL::GetReward()
 	double value;
 	double metalGain = game->GetTotalProduction(MEX_ID);
 	//metalGain -= game->GetResourceUsage(MEX_ID);
-	//metalGain -= game->units[LAB_ID]*5;
-	metalGain -= game->GetBuildersUsage(MEX_ID);
+	metalGain -= game->units[LAB_ID]*5;
+
 	double energyGain = game->GetTotalProduction(SOLAR_ID);
 	energyGain -= game->GetResourceUsage(SOLAR_ID);
-	//energyGain -= game->units[LAB_ID]*50;
-	energyGain -= game->GetBuildersUsage(SOLAR_ID);
+	energyGain -= game->units[LAB_ID]*50;
 	
 	float metalValue = (float)((max(REWARD_METAL_MIN, min(REWARD_METAL_MAX, metalGain ) ) - REWARD_METAL_MIN ) / (REWARD_METAL_MAX-REWARD_METAL_MIN)); //metal production-usage [-1;1]
 	float energyValue = (float)((max(REWARD_ENERGY_MIN, min(REWARD_ENERGY_MAX, energyGain ) ) - REWARD_ENERGY_MIN ) / (REWARD_ENERGY_MAX-REWARD_ENERGY_MIN)); //energy production-usage [-1;1]

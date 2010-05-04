@@ -354,6 +354,8 @@ double Game::GetAvailableResources(int resourceId, double time)
 
 double Game::GetBuildTime(int unitId, bool commander)
 {
+	return unitDefs[unitId].realbuildTime;//does not support use of commander
+	//old code from here on
 	if (unitId == ROCKO_ID)
 	{
 		return unitDefs[unitId].realbuildTime;
