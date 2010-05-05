@@ -157,8 +157,6 @@ char* RL::GetFilePath(int type)
 	}
 	delete dirs;
 	dirs = NULL;
-	delete[] dir;
-	dir = NULL;
 	return path;
 
 }
