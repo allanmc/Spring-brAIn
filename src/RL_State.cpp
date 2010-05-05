@@ -449,7 +449,7 @@ char* RL_State::GetFilePath(int type)
 		break;
 	}
 	ai->utility->ChatMsg("RL_STATE file path: %s", path );
-	delete[] dirs;
+	delete dirs;
 	dirs = NULL;
 	return path;
 }

@@ -34,8 +34,10 @@ Utility::Utility( AIClasses* aiClasses )
 
 Utility::~Utility()
 {
-	fclose(fp);	
-	delete map;
+
+	//fclose(fp);
+	
+	/*delete map;
 	map = NULL;
 	delete engine;
 	engine = NULL;
@@ -48,7 +50,7 @@ Utility::~Utility()
 	{
 		delete resources[i];
 		resources[i] = NULL;
-	}
+	}*/
 }
 
 ///@return the safe position whether a building blocks the exit of out base

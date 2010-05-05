@@ -26,16 +26,19 @@ brainSpace::BrAIn::~BrAIn()
 	ai->utility->ChatMsg("Brain; Deleting decision");
 	delete decision;
 	decision = NULL;
-	ai->utility->ChatMsg("Brain;Deleting knowledge");
+	ai->utility->ChatMsg("Brain; Deleting knowledge");
 	delete ai->knowledge;
 	ai->knowledge = NULL;
-	ai->utility->ChatMsg("Brain;Deleting math");
+	ai->utility->ChatMsg("Brain; Deleting math");
 	delete ai->math;
 	ai->math = NULL;
 	ai->utility->ChatMsg("Brain; Deleting utility");
-	delete ai->utility;
+
+	if ( ai->utility != NULL )
+		delete ai->utility;	
 	ai->utility = NULL;
-	delete ai;
+	if ( ai != NULL )
+		delete ai;
 	ai = NULL;
 }
 

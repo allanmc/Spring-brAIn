@@ -365,7 +365,8 @@ void Decision::Update(int frame)
 			else
 			{
 				ai->utility->ChatMsg("DECISION: We got a state with no actions!");
-				ai->utility->Suicide();
+				ai->utility->Suicide(0, true);
+				return;
 			}
 		}
 		else
