@@ -77,7 +77,7 @@ extern double EPSILON_DECAY;
 //TYPE 0 => normal; 
 #define RL_TYPE 0
 
-#define RL_FILE_DELETE false
+#define RL_FILE_DELETE true
 #define RL_FILE_PATH ""
 #define RL_FILE_1 "qn.bin"
 #define RL_FILE_2_BUILDERS "q2.bin"
