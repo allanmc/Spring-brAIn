@@ -17,6 +17,7 @@ RL_Q::RL_Q(vector<QAction> actions, vector<QStateVar> stateVars )
 	this->actions = actions;
 	this->stateVars = stateVars;
 
+
 	size = this->numStates*this->numActions;
 	if(actionValueFunction == NULL)
 	{
@@ -56,6 +57,7 @@ void RL_Q::LoadFromFile(ifstream *readFile, bool doIt)
 			qStateVars[i].LoadFromFile( readFile);
 		}
 		readFile->read( (char*)actionValueFunction, sizeof(double)*qTable.numActions*qTable.numStates );
+		
 		delete qAction;
 		delete qStateVars;
 	}

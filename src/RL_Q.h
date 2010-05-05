@@ -44,6 +44,7 @@ namespace brainSpace
 			qAction.name = new char[nameSize];
 			file->read( (char*)(qAction.name), sizeof(char)*nameSize );
 			file->read( (char*)&(qAction.id), sizeof(short unsigned int) );
+			delete[] qAction.name;
 			//delete[] qAction.name;
 		}
 
