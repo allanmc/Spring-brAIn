@@ -40,7 +40,6 @@ namespace brainSpace
 
 		void LoadFromFile(std::ifstream *file, AIClasses* aiClasses) 
 		{
-			aiClasses->utility->ChatMsg("Before Load HeaderQAction");
 			file->read( (char*)&nameSize, sizeof(short unsigned int) );
 			qAction.name = new char[nameSize];
 			file->read( (char*)(qAction.name), sizeof(char)*nameSize );

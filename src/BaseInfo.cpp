@@ -32,9 +32,11 @@ void BaseInfo::AddBuilding(Unit* building)
 	if(d->GetSpeed() > 0)
 	{
 		delete d;
+		d = NULL;
 		return;
 	}
 	delete d;
+	d = NULL;
 	//ai->utility->Log(ALL, MISC, "Adding base unit...");
 	map<int, UnitInformationContainer> units = quadTree->GetUnits();
 
@@ -86,6 +88,9 @@ void BaseInfo::RemoveBuilding(int building)
 
 	quadTree->RemoveUnit( building );
 	delete buildingU;
+	buildingU = NULL;
+	delete def;
+	def = NULL;
 }
 
 ///@return the number of resource producing buildings

@@ -85,7 +85,9 @@ void ArmyInfo::RemoveUnit(int unit)
 			}
 		}
 		delete unitDef;
+		unitDef = NULL;
 		delete u;
+		u = NULL;
 	}	
 }
 
@@ -97,6 +99,7 @@ void ArmyInfo::UpdateUnit(Unit* unit)
 	if ( wpmt.size() == 0 )
 	{
 		delete unitDef;
+		unitDef = NULL;
 		return;
 	}
 	wpmt.clear();
@@ -124,6 +127,7 @@ void ArmyInfo::UpdateUnit(Unit* unit)
 		}
 	}
 	delete unitDef;
+	unitDef = NULL;
 }
 
 ///@return the UnitDef of a unit in the army, or NULL if we have never seen the unit
