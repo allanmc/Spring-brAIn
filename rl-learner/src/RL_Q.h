@@ -44,7 +44,7 @@ namespace brainSpace
 			qAction.name = new char[nameSize];
 			file->read( (char*)(qAction.name), sizeof(char)*nameSize );
 			file->read( (char*)&(qAction.id), sizeof(short unsigned int) );
-			delete[] qAction.name;
+			//delete[] qAction.name;
 		}
 
 		void SaveToFile(ofstream *file)
@@ -67,7 +67,7 @@ namespace brainSpace
 			qStateVar.name = new char[nameSize];
 			file->read( (char*)(qStateVar.name), sizeof(char)*nameSize );
 			file->read( (char*)&(qStateVar.numStates), sizeof(short unsigned int) );
-			delete[] qStateVar.name;
+			//delete[] qStateVar.name;
 		}
 
 		void SaveToFile(ofstream *file)
@@ -81,7 +81,7 @@ namespace brainSpace
 
 	struct FileHeaderQTable 
 	{
-		short unsigned int numStates;
+		unsigned int numStates;
 		short unsigned int numActions;
 		short unsigned int numStateVars;
 	};
