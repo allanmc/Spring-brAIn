@@ -27,6 +27,10 @@
 #define RL_FILE_ATTACK_SOL "qattacksol.dat"
 #define RL_FILE_ATTACK_WIN "qattackwin.dat"
 
+#define RL_FILE_ATTACK_MEX_VISITS "qattackmex_visits.dat"
+#define RL_FILE_ATTACK_SOL_VISITS "qattacksol_visits.dat"
+#define RL_FILE_ATTACK_WIN_VISITS "qattackwin_visits.dat"
+
 #define FILE_HEADER "QB"
 
 #define RL_UPDATE_TIMEOUT 2400

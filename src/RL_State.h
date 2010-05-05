@@ -10,6 +10,7 @@ using namespace springai;
 using namespace std;
 
 #define RESOURCE_BUILDING_GROUP_TOLERANCE 400.0f
+#define NUM_STATE_RESOURCES_SUBNODES 2304
 
 namespace brainSpace {
 
@@ -18,7 +19,7 @@ namespace brainSpace {
 	{
 	public:
 		RL_State();
-		RL_State(AIClasses* aiClasses, MilitaryUnitGroup* currentGroup, std::vector<QStateVar> stateVars, vector< pair<int, SAIFloat3> > buildings, RL_Q* valueFunction, double epsilon );
+		RL_State(AIClasses* aiClasses, MilitaryUnitGroup* currentGroup, std::vector<QStateVar> stateVars, vector< pair<int, SAIFloat3> > buildings, RL_Q* valueFunction, double epsilon, int type );
 		virtual ~RL_State();
 		int GetID();
 		std::vector<RL_Action*> GetActions();
@@ -37,17 +38,11 @@ namespace brainSpace {
 
 	private:
 
-		int GetVisitsTo( int stateID );
 
-		
-		MilitaryUnitGroup* NearestEnemyGroup;
-		Unit* NearestEnemySolar;
-		Unit* NearestEnemyMex;
-		Unit* NearestEnemyWindGenerator;
-		Unit* EnemyCommander;
+		int GetVisitsTo( int stateID, int type );
+		int UpdateVisitsTo( int stateID, int type );
 
-
-		
+		char* GetFilePath( int type );
 	};
 }
 

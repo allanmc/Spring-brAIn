@@ -10,11 +10,12 @@ RL_State::RL_State()
 {
 }
 
-RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<QStateVar> stateVars, vector<pair<int, SAIFloat3> > resourceBuildings, RL_Q* valueFunction, double epsilon )
+RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<QStateVar> stateVars, vector<pair<int, SAIFloat3> > resourceBuildings, RL_Q* valueFunction, double epsilon, int type )
 {
 	ai = aiClasses;
 	//Reader = new BattleFileReader(ai);
 	vector< vector< pair< int, SAIFloat3> > > groups(4);
+	ExpectedReward = -100000;
 
 	//This one holds the real building clusters
 	//Even though two buildings are inside a short range of the group, does not mean they should belong to the same cluster
@@ -60,10 +61,17 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 		if ( d == NULL )
 		{
 			ai->utility->ChatMsg("RL_State: NULL DEF");
+			delete d;
+			d = NULL;
+			delete u;
+			u = NULL;
+			return;
 		}
 		GroupSpeed += d->GetSpeed();
 		delete d;
+		d = NULL;
 		delete u;
+		u = NULL;
 	}
 	GroupSpeed /= group->GetSize();
 
@@ -219,8 +227,10 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 	}
 
 
+	ai->utility->ChatMsg("RL_STATE: State alternatives: %d", possibleStates.size() );
 	if ( possibleStates.size() > 0 )
 	{
+		
 		//EPSILON-GREEDY STATE CHOICE
 		float r = rand()/(float)RAND_MAX;
 		if ( r <= epsilon ) //non-greedy
@@ -252,6 +262,29 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 		ID = optimalStateID;
 		ExpectedReward = optimalClusterReward;
 		Actions.push_back( possibleStates.find(ID)->second.first );
+		/*
+		ai->utility->ChatMsg("RL_STATE alternatives: %d", possibleStates.size() );
+		int fewestVisits = 1000000;
+		for ( map<unsigned int, pair<RL_Action*, double> >::iterator it = possibleStates.begin() ; it != possibleStates.end() ; it++ )
+		{
+			int v = GetVisitsTo(it->first, type );
+			if ( v < fewestVisits )
+			{
+				fewestVisits = v;
+				optimalStateID = it->first;
+				optimalClusterReward = it->second.second;
+				optimalPath = it->second.first->Path;
+				optimalUnitIDs = it->second.first->unitIDs;
+			}
+		}
+	
+		ai->utility->ChatMsg("Old Visits: %d", fewestVisits ); 
+		ID = optimalStateID;
+		ExpectedReward = optimalClusterReward;
+		Actions.push_back( possibleStates.find(ID)->second.first );
+		UpdateVisitsTo( ID, type );
+		ai->utility->ChatMsg("New visits: %d", GetVisitsTo(ID, type ));
+		*/
 	}
 	else
 	{
@@ -266,6 +299,7 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 		{
 			int a = it->first;
 			delete it->second.first;
+			it->second.first = NULL;
 			it++;
 			possibleStates.erase( a );
 		}
@@ -324,16 +358,39 @@ RL_State & RL_State::operator=(const RL_State &rhs)
 	return *this;
 }
 
-int RL_State::GetVisitsTo(int stateID)
+int RL_State::UpdateVisitsTo(int stateID, int type)
 {
-	DataDirs *dirs = ai->callback->GetDataDirs();
-	const char* dir = dirs->GetWriteableDir();
-
-	char *path = new char[200];
-	strcpy(path, dir);
-	strcat(path, "visits.dat");
-
 	fstream *file = new fstream();
+	char* path = GetFilePath(type);
+	file->open(path, ios::in | ios::binary );
+
+	//file did not exist!!
+	if ( !file->is_open() )
+	{
+		ai->utility->ChatMsg("UpdateStateVisits: FILE NOT OPEN");
+		file->close();
+		delete file;
+		file = NULL;
+		delete path;
+		path = NULL;
+		return 0;
+	}
+	file->close();
+	file->open( path, ios::out | ios::binary | ios::in );
+	int v = ai->utility->ReadFromStateVisitFile( file, stateID );
+	ai->utility->WriteToStateVisitFile( file, v+1, stateID );
+	file->close();
+	delete file;
+	file = NULL;
+	delete[] path;
+	path = NULL;
+	return v;
+}
+
+int RL_State::GetVisitsTo(int stateID, int type)
+{
+	fstream *file = new fstream();
+	char* path = GetFilePath(type);
 	file->open(path, ios::in | ios::binary );
 
 	//file did not exist!!
@@ -341,11 +398,58 @@ int RL_State::GetVisitsTo(int stateID)
 	{
 		ai->utility->ChatMsg("FILE NOT OPEN");
 		file->close();
+		file->open( path, ios::binary | ios::out );
+
+		long a = file->tellp();
+		ai->utility->ChatMsg( "p start: %d", a);
+
+		for ( unsigned int i = 0 ; i < NUM_STATE_RESOURCES_SUBNODES ; i++ )
+		{
+			ai->utility->WriteToStateVisitFile( file, 0 );
+		}
+		a = file->tellp();
+		ai->utility->ChatMsg( "p end: %d", a);
+
+		file->close();
+		delete file;
+		file = NULL;
+		delete[] path;
+		path = NULL;
 		return 0;
 	}
 	file->close();
 	file->open( path, ios::out | ios::binary | ios::in );
 	int v = ai->utility->ReadFromStateVisitFile( file, stateID );
 	file->close();
+	delete file;
+	file = NULL;
+	delete path;
+	path = NULL;
 	return v;
+}
+
+
+char* RL_State::GetFilePath(int type)
+{
+	DataDirs *dirs = ai->callback->GetDataDirs();
+	const char* dir = dirs->GetWriteableDir();
+
+	char *path = new char[200];
+	strcpy(path, dir);
+	switch( type )
+	{
+	case 0:
+		strcat( path, RL_FILE_ATTACK_MEX_VISITS );
+		break;
+	case 1:
+		strcat( path, RL_FILE_ATTACK_SOL_VISITS );
+		break;
+	case 2:
+		strcat( path, RL_FILE_ATTACK_WIN_VISITS );
+		break;
+	}
+	ai->utility->ChatMsg("RL_STATE file path: %s", path );
+	delete[] dirs;
+	dirs = NULL;
+	return path;
 }

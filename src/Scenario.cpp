@@ -144,7 +144,9 @@ Scenario::Scenario( AIClasses* aiClasses )
 					unitPos.x += 30*k;
 					unitPos.z += 30*j;
 					//ai->utility->ChatMsg("Planting unit: (%f,%f,%f)", unitPos.x, unitPos.y, unitPos.z );
-					delete ai->utility->GiveUnit( type, unitPos );
+					Unit* u = ai->utility->GiveUnit( type, unitPos );
+					delete u;
+					u = NULL;
 				}
 			}
 		}
@@ -152,6 +154,7 @@ Scenario::Scenario( AIClasses* aiClasses )
 
 	ai->knowledge->mapInfo->threatMap->Update();
 	delete m;
+	m = NULL;
 }
 
 Scenario::~Scenario()
@@ -195,7 +198,9 @@ void Scenario::MakeMexCluster( unsigned int size )
 				continue;
 			}
 		}
-		delete ai->utility->GiveUnit("armmex", thisClustersPos );
+		Unit* u = ai->utility->GiveUnit("armmex", thisClustersPos );
+		delete u;
+		u = NULL;
 		//ai->utility->ChatMsg("SCENARIO: Mex spawned at (%f,%f,%f)", thisClustersPos.x, thisClustersPos.y, thisClustersPos.z );
 		currentCluster.push_back( thisClustersPos );
 		for ( unsigned int k = 1 ; k < size ; k++ )
@@ -231,6 +236,7 @@ void Scenario::MakeMexCluster( unsigned int size )
 				{
 					Unit* u = ai->utility->GiveUnit("armmex", metalSpots[i] );
 					delete u;
+					u = NULL;
 					currentCluster.push_back( metalSpots[i]);
 					//ai->utility->ChatMsg("SCENARIO: Mex spawned at (%f,%f,%f). New cluster size %d", metalSpots[i].x, metalSpots[i].y, metalSpots[i].z, currentCluster.size() );
 					break;
@@ -307,4 +313,5 @@ void Scenario::MakeMexCluster( unsigned int size )
 		}
 	}
 	delete m;
+	m = NULL;
 }

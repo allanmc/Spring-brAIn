@@ -29,20 +29,25 @@ Utility::Utility( AIClasses* aiClasses )
 
 	safePosition = (SAIFloat3){map->GetWidth()*8/2, 0.0, map->GetHeight()*8/2};
 	delete dirs;
+	dirs = NULL;
 }
 
 Utility::~Utility()
 {
 	fclose(fp);	
 	delete map;
+	map = NULL;
 	delete engine;
+	engine = NULL;
 	for(int i = 0; i < (int)defs.size(); i++)
 	{
 		delete defs[i];
+		defs[i] = NULL;
 	}
 	for(int i = 0; i < (int)resources.size(); i++)
 	{
 		delete resources[i];
+		resources[i] = NULL;
 	}
 }
 

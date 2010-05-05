@@ -85,12 +85,16 @@ RL::~RL()
 		SaveToFile(i);
 	ai->utility->ChatMsg("RL:About to delete valuefunc");
 	for (int i = 0 ; i < 3 ; i++ )
+	{
 		delete ValueFunction[i];
+		ValueFunction[i] = NULL;
+	}
 
 	ai->utility->ChatMsg("RL:About to clear datatrail");
 	dataTrail.clear();
 	ai->utility->ChatMsg("RL:About to delete prevstate");
 	delete PreviousState;
+	PreviousState = NULL;
 	ai->utility->ChatMsg("RL: Deleted prevstate");
 	//delete nullState;
 }
@@ -116,6 +120,7 @@ void RL::LoadFromFile(int type)
 			ValueFunction[type]->LoadFromFile(readFile);
 		}
 		delete readFile;
+		readFile = NULL;
 	}
 
 	delete[] path;
@@ -151,6 +156,9 @@ char* RL::GetFilePath(int type)
 		break;
 	}
 	delete dirs;
+	dirs = NULL;
+	delete[] dir;
+	dir = NULL;
 	return path;
 
 }
@@ -174,12 +182,13 @@ void RL::SaveToFile(int type)
 	file->close();
 	delete[] path;
 	delete file;
+	file = NULL;
 }
 
 
 RL_State* RL::GetState(MilitaryUnitGroup* group, vector<pair<int, SAIFloat3> > resourceBuildings, int type )
 {
-	return new RL_State(ai, group, StateVars[type], resourceBuildings, ValueFunction[type], Epsilon );
+	return new RL_State(ai, group, StateVars[type], resourceBuildings, ValueFunction[type], Epsilon, type );
 }
 
 RL_Action* RL::FindNextAction( RL_State *state, int type )
@@ -255,7 +264,9 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 			windGenePositions.push_back( make_pair( units[i]->GetUnitId(), units[i]->GetPos() ) );
 		
 		delete d;
+		d = NULL;
 		delete units[i];
+		units[i] = NULL;
 	}
 
 
@@ -270,17 +281,17 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 
 		if ( mexPositions.size() > 0 )
 		{
-			ai->utility->ChatMsg("Getting mexstate");
+			ai->utility->ChatMsg("RL:Getting mexstate");
 			mexState = GetState( group, mexPositions );
 		}
 		if ( solarPositions.size() > 0 )
 		{
-			ai->utility->ChatMsg("Getting solarstate");
+			ai->utility->ChatMsg("RL:Getting solarstate");
 			solarState = GetState( group, solarPositions );
 		}
 		if ( windGenePositions.size() > 0 )
 		{
-			ai->utility->ChatMsg("Getting windstate");
+			ai->utility->ChatMsg("RL:Getting windstate");
 			windState = GetState( group, windGenePositions );
 		}
 
@@ -324,30 +335,43 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 			case 0:
 				{
 					if ( solarState != NULL )
+					{
 						delete solarState;
+						solarState = NULL;
+					}
 					if ( windState != NULL )
+					{
 						delete windState;
+						windState = NULL;
+					}
 					break;
 				}
 			case 1:
 				{
 					if ( mexState != NULL )
+					{
 						delete mexState;
+						mexState = NULL;
+					}
 					if ( windState != NULL )
+					{
 						delete windState;
+						windState = NULL;
+					}
 					break;
 				}
 			case 2:
 				{	
 					if ( mexState != NULL )
+					{
 						delete mexState;
+						mexState = NULL;
+					}
 					if ( solarState != NULL )
+					{
 						delete solarState;
-					break;
-				}
-			default:
-				{
-					ai->utility->ChatMsg("RL:CurrentQTable is fucked!CRAP!");
+						solarState = NULL;
+					}
 					break;
 				}
 			}
@@ -362,6 +386,12 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 		PreviousAction = nextAction;
 		PreviousFrame = ai->frame;
 		return nextAction;
+	}
+
+	if ( PreviousAction == NULL )
+	{
+		ai->utility->ChatMsg("RL: PRevAction NULL");
+		return NULL;
 	}
 	//else continue
 
@@ -404,7 +434,9 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 			totalRemainingHealth += unitHealth;
 			
 			delete d;
+			d = NULL;
 			delete u;
+			u = NULL;
 		}
 		unitLossReward = (totalRemainingHealth/totalHealth);
 	}
@@ -449,6 +481,7 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 	//modify gamme according to use_qmsdp
 	double gamma = (float)pow((double)GAMMA, (USE_QSMDP?0:1)+(USE_QSMDP?1:0)*(0.01*((double)ai->frame - (double)PreviousFrame)));
 
+
 	if(!USE_Q_LAMBDA)
 	{
 		//update own value function
@@ -457,11 +490,12 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 			value = ValueFunction[CurrentQTable]->GetValue(*PreviousState,*PreviousAction);
 			//	+ ALPHA*(
 			//	reward + gamma*bestFutureValue 
-			//	- ValueFunction->GetValue(*PreviousState,*PreviousAction) );
-			//ai->utility->ChatMsg("Old Value: %f", value );
+			//	- ValueFunction[CurrentQTable]->GetValue(*PreviousState,*PreviousAction) );
 			ValueFunction[CurrentQTable]->SetValue(*PreviousState,*PreviousAction, value+reward);
+			ai->utility->ChatMsg("---");
+			ai->utility->ChatMsg("Value: %f. QTable: %d. State; %d", ValueFunction[CurrentQTable]->GetValue(*PreviousState, *PreviousAction), CurrentQTable, PreviousState->GetID() );
+			ai->utility->ChatMsg("---");
 		}
-		else ai->utility->ChatMsg("RL:CRAP2");
 		return NULL;
 	}
 	else if(USE_Q_LAMBDA )
@@ -508,6 +542,8 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 	else
 	{
 		delete PreviousState;
+		PreviousState = NULL;
+
 		PreviousState = state;
 		PreviousAction = nextAction;
 		PreviousFrame = ai->frame;

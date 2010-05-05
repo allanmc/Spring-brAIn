@@ -131,10 +131,6 @@ void Decision::UnitDestroyed(int unit, int attacker)
 	//BattleInfoInstance->UnitDestroyed( unit, attacker );
 	UnitDef* d = destroyee->GetDef();
 
-	if ( d->IsCommander() )
-	{
-		ai->utility->ChatMsg("Our commander destroyed");
-	}
 
 	if(d->GetSpeed() > 0)
 	{
@@ -187,11 +183,11 @@ void Decision::EnemyEnterLOS(int enemy)
 ///called when an enemy have been destroyed
 void Decision::EnemyDestroyed(int enemy, int attacker)
 {
-	ai->utility->ChatMsg("EnemyDestroyed");
+	//ai->utility->ChatMsg("EnemyDestroyed");
 	bool b = false;
 	if (ResettingGame)
 	{
-		ai->utility->ChatMsg("EnemyDestroyed, but returning");
+	//	ai->utility->ChatMsg("EnemyDestroyed, but returning");
 		return;
 	}
 	//good job!
@@ -200,7 +196,7 @@ void Decision::EnemyDestroyed(int enemy, int attacker)
 
 	if ( d->IsCommander() )
 	{
-		ai->utility->ChatMsg("Their commander destroyed");
+	//	ai->utility->ChatMsg("Their commander destroyed");
 		b = true;
 	}
 
@@ -222,8 +218,6 @@ void Decision::EnemyDestroyed(int enemy, int attacker)
 		ai->utility->Log( LOG_DEBUG, DECISION, "EnemyDestroyed: Unitdef was %s",d->GetName() );
 	}
 	//BattleInfoInstance->EnemyDestroyed( enemy, attacker );
-	if ( b )
-		ai->utility->ChatMsg("PIKSVIN");
 }
 
 ///used to update the positions of all friendly units in the ArmyInfo
@@ -371,6 +365,7 @@ void Decision::Update(int frame)
 			else
 			{
 				ai->utility->ChatMsg("DECISION: We got a state with no actions!");
+				ai->utility->Suicide();
 			}
 		}
 		else
