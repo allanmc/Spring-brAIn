@@ -16,6 +16,7 @@ namespace QReader
         //private Stream file;
         private string filePath;
         public ushort validVersion;
+        private bool colorText = false;
 
         public Form1(string[] args)
         {
@@ -66,7 +67,7 @@ namespace QReader
             ArrayList highlights = new ArrayList();
             for (int q = 0; q < numQTables; q++)
             {
-                ushort numStates = br.ReadUInt16();
+                uint numStates = br.ReadUInt32();
                 ushort numActions = br.ReadUInt16();
                 ushort numStateVars = br.ReadUInt16();
                 string[] actions = new string[numActions];
@@ -156,22 +157,24 @@ namespace QReader
             s.Close();
             setText(sb.ToString());
 
-            richTextBox1.Hide();
-            Font ourFont = new Font(richTextBox1.Font, FontStyle.Bold | FontStyle.Italic);
-            for (int i = 0 ; i < highlights.Count;i++) {
-                if (i == highlights.Count - 1)
-                    Console.WriteLine();
-                if ((i % 1000) == 0)
-                    Console.WriteLine();
-                int[] highlight = (int[])highlights[i];
-                //richTextBox1.Select(highlight[0], highlight[1]);
-                richTextBox1.SelectionStart = highlight[0];
-                richTextBox1.SelectionLength = highlight[1];
-                richTextBox1.SelectionColor = Color.Green;
-                richTextBox1.SelectionFont = ourFont;
+            if (colorText) {
+                richTextBox1.Hide();
+                Font ourFont = new Font(richTextBox1.Font, FontStyle.Bold | FontStyle.Italic);
+                for (int i = 0 ; i < highlights.Count;i++) {
+                    if (i == highlights.Count - 1)
+                        Console.WriteLine();
+                    if ((i % 1000) == 0)
+                        Console.WriteLine();
+                    int[] highlight = (int[])highlights[i];
+                    //richTextBox1.Select(highlight[0], highlight[1]);
+                    richTextBox1.SelectionStart = highlight[0];
+                    richTextBox1.SelectionLength = highlight[1];
+                    richTextBox1.SelectionColor = Color.Green;
+                    richTextBox1.SelectionFont = ourFont;
+                }
+                richTextBox1.BackColor = Color.White;
+                richTextBox1.Show();
             }
-            richTextBox1.BackColor = Color.White;
-            richTextBox1.Show();
 
         }
 
