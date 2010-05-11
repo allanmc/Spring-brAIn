@@ -45,6 +45,8 @@ private:
 	RL* rl;
 	bool ResettingGame;
 	int LastResetFrame;
+	int NextScenarioStartFrame;
+	bool Suiciding;
 
 	Scenario* m_Scenario;
 	MilitaryUnitGroup* Group;

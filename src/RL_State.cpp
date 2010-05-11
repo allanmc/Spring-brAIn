@@ -13,9 +13,10 @@ RL_State::RL_State()
 RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<QStateVar> stateVars, vector<pair<int, SAIFloat3> > resourceBuildings, RL_Q* valueFunction, double epsilon, int type )
 {
 	ai = aiClasses;
+	Type = type;
 	//Reader = new BattleFileReader(ai);
 	vector< vector< pair< int, SAIFloat3> > > groups(4);
-	ExpectedReward = -100000;
+	ExpectedReward = -10000000;
 
 	//This one holds the real building clusters
 	//Even though two buildings are inside a short range of the group, does not mean they should belong to the same cluster
@@ -24,17 +25,17 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 	for ( unsigned int i = 0 ; i < resourceBuildings.size() ; i++ )
 	{
 		double distance = ai->utility->EuclideanDistance( resourceBuildings[i].second, group->GetPos() );
-		if ( distance < 700 )
+		if ( distance < 500 )
 		{
 			groups[0].push_back( resourceBuildings[i] );
 			//ai->utility->ChatMsg("RL_STATE: Group DistInterval 0 new size %d", groups[0].size() );
 		}
-		else if ( distance < 1400 )
+		else if ( distance < 1000 )
 		{
 			groups[1].push_back( resourceBuildings[i] );
 			//ai->utility->ChatMsg("RL_STATE: Group DistInterval 1 new size %d", groups[1].size() );
 		}
-		else if ( distance < 2500 )
+		else if ( distance < 2000 )
 		{
 			groups[2].push_back( resourceBuildings[i] );
 			//ai->utility->ChatMsg("RL_STATE: Group DistInterval 2 new size %d", groups[2].size() );
@@ -81,19 +82,23 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 	{
 		if ( groups[i].empty() )
 		{
+		//	ai->utility->ChatMsg("Resource type %d group %d empty", type, i );
 			continue;
 		}
+		//ai->utility->ChatMsg("Resource type %d group %d not empty. Size %d", type, i, groups[i].size() );
 		for ( unsigned int j = 0 ; j < groups[i].size() ; j++ )
 		{
-			//ai->utility->ChatMsg("RL_STATE: Group %d not empty. Size %d", i, groups[i].size() );
+		//	ai->utility->ChatMsg("Iterating unit %d in group %d", j, i );
 			bool buildingGood = true;
 			bool inserted = false;
 			for ( unsigned int k = 0 ; k < realClusters.size() ; k++ )
 			{
-				//ai->utility->ChatMsg("RL_STATE: A cluster found");
+			//	ai->utility->ChatMsg("Iter clusters. Numclusters: %d", realClusters.size() );
 				for ( unsigned int l = 0 ; l < realClusters[k].size() ; l++ )
 				{
+				//	ai->utility->ChatMsg("CLuster %d size: %d", k, realClusters[k].size() );
 					double dist = ai->utility->EuclideanDistance( groups[i][j].second, realClusters[k][l].second );
+				//	ai->utility->ChatMsg("Distance between (%f,%f) - (%f,%f): %f", groups[i][j].second.x, groups[i][j].second.z, realClusters[k][l].second.x, realClusters[k][l].second.z, dist );
 					//ai->utility->ChatMsg("RL_STATE: Dist %f between group[%d][%d] and clustermex[%d][%d]", dist, i, j, k, l );
 					if ( dist > RESOURCE_BUILDING_GROUP_TOLERANCE )
 					{
@@ -108,8 +113,10 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 				}
 				if ( buildingGood )
 				{
+				//	ai->utility->ChatMsg("Can insert building in cluster %d", k );
 					realClusters[k].push_back( groups[i][j] );
 					inserted = true;
+				//	ai->utility->ChatMsg("New cluster size for %d: %d", k, realClusters[k].size() );
 				}
 			}
 			//We have now iterated all the currently created clusters
@@ -120,6 +127,7 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 			*/
 			if ( !inserted )
 			{
+				//ai->utility->ChatMsg("Starting a new cluster" );
 				realClusters.push_back( vector<pair<int, SAIFloat3> >() );
 				realClusters.back().push_back( groups[i][j] );
 			}
@@ -144,6 +152,7 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 	//ai->utility->ChatMsg("RL_STATE: %d clusters", realClusters.size());
 	for ( unsigned int j = 0 ; j < realClusters.size() ; j++ )
 	{
+		//ai->utility->ChatMsg("Making state. Cluster %d. Size %d", j, realClusters[j].size() );
 		float DistBuildingSpot = 0.0f;
 		Superiority BuildingSpotImaginaryInf, CurrentSpotInf;
 		int SuperiorPathLength = -1;
@@ -205,7 +214,7 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 			switch( m )
 			{
 			case 0: current = ( realClusters[j].size() < 2 ) ? 0 : ( realClusters[j].size() < 3 ) ? 1 : 2 ; break;
-			case 1: current = ( DistBuildingSpot < 700 ) ? 0 : ( DistBuildingSpot < 1400 ) ? 1 : ( DistBuildingSpot < 2500 ) ? 2 : 3; break;
+			case 1: current = ( DistBuildingSpot < 500 ) ? 0 : ( DistBuildingSpot < 1000 ) ? 1 : ( DistBuildingSpot < 2000 ) ? 2 : 3; break;
 			//case 2: current = MexSpotInf; break;
 			case 2: current = BuildingSpotImaginaryInf; break;
 			case 3: current = AirGroup; break;
@@ -227,10 +236,11 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 	}
 
 
-	ai->utility->ChatMsg("RL_STATE: State alternatives: %d", possibleStates.size() );
+	//ai->utility->ChatMsg("RL_STATE: State alternatives type %d: %d", type, possibleStates.size() );
 	if ( possibleStates.size() > 0 )
 	{
 		
+		/*
 		//EPSILON-GREEDY STATE CHOICE
 		float r = rand()/(float)RAND_MAX;
 		if ( r <= epsilon ) //non-greedy
@@ -262,8 +272,8 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 		ID = optimalStateID;
 		ExpectedReward = optimalClusterReward;
 		Actions.push_back( possibleStates.find(ID)->second.first );
-		/*
-		ai->utility->ChatMsg("RL_STATE alternatives: %d", possibleStates.size() );
+		*/
+		
 		int fewestVisits = 1000000;
 		for ( map<unsigned int, pair<RL_Action*, double> >::iterator it = possibleStates.begin() ; it != possibleStates.end() ; it++ )
 		{
@@ -277,14 +287,10 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 				optimalUnitIDs = it->second.first->unitIDs;
 			}
 		}
-	
-		ai->utility->ChatMsg("Old Visits: %d", fewestVisits ); 
+
 		ID = optimalStateID;
 		ExpectedReward = optimalClusterReward;
 		Actions.push_back( possibleStates.find(ID)->second.first );
-		UpdateVisitsTo( ID, type );
-		ai->utility->ChatMsg("New visits: %d", GetVisitsTo(ID, type ));
-		*/
 	}
 	else
 	{
@@ -448,7 +454,6 @@ char* RL_State::GetFilePath(int type)
 		strcat( path, RL_FILE_ATTACK_WIN_VISITS );
 		break;
 	}
-	ai->utility->ChatMsg("RL_STATE file path: %s", path );
 	delete dirs;
 	dirs = NULL;
 	return path;

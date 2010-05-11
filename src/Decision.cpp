@@ -28,6 +28,7 @@ Decision::Decision(AIClasses* aiClasses)
 	m_Scenario = NULL;
 
 	MayResetVariable = false;
+	Suiciding = false;
 }
 
 Decision::~Decision(void)
@@ -131,6 +132,12 @@ void Decision::UnitDestroyed(int unit, int attacker)
 	//BattleInfoInstance->UnitDestroyed( unit, attacker );
 	UnitDef* d = destroyee->GetDef();
 
+	if ( d->IsCommander() )
+	{
+		ai->utility->Suicide(0, true);
+		Suiciding = true;
+		ai->utility->ChatMsg("Our commander destroyed");
+	}
 
 	if(d->GetSpeed() > 0)
 	{
@@ -184,7 +191,6 @@ void Decision::EnemyEnterLOS(int enemy)
 void Decision::EnemyDestroyed(int enemy, int attacker)
 {
 	//ai->utility->ChatMsg("EnemyDestroyed");
-	bool b = false;
 	if (ResettingGame)
 	{
 	//	ai->utility->ChatMsg("EnemyDestroyed, but returning");
@@ -196,8 +202,9 @@ void Decision::EnemyDestroyed(int enemy, int attacker)
 
 	if ( d->IsCommander() )
 	{
-	//	ai->utility->ChatMsg("Their commander destroyed");
-		b = true;
+		ai->utility->Suicide(0, true);
+		Suiciding = true;
+		ai->utility->ChatMsg("Their commander destroyed");
 	}
 
 	if ( d == NULL )
@@ -252,28 +259,33 @@ void Decision::UpdateFrindlyPositions()
 
 void Decision::Reset()
 {
-	ai->utility->ChatMsg("Decision::Reset()");
+//	ai->utility->ChatMsg("Decision::Reset()");
 	GameCounter++;
 	if ( ai->callback->GetTeamId() == 0 )
-		ai->utility->ChatMsg("DECISION: Resetting to game: %d", GameCounter );
+		if ( ( GameCounter % 10 ) == 0 )
+			ai->utility->ChatMsg("DECISION: Resetting to game: %d", GameCounter );
 
 	vector<Unit*> units = ai->callback->GetFriendlyUnits();
 	if ( ai->callback->GetTeamId() == 0 )
 	{
 		ai->utility->ResetGame(&rl);
-		ai->utility->ChatMsg("Just Reset RL");
+//		ai->utility->ChatMsg("Just Reset RL");
 	}
 
 	if ( GameCounter == 500 )
 	{
 		ai->utility->Suicide(COMMANDERID, true, true);
+		Suiciding = true;
 		return;
 	}
-	else ai->utility->Suicide( COMMANDERID, false, true );
-
+	else
+	{
+		ai->utility->Suicide( COMMANDERID, false, true );
+		Suiciding = true;
+	}
 	delete ai->knowledge;
 	ai->knowledge = NULL;
-	ai->utility->ChatMsg("Deleted ai->knowledge");
+	//ai->utility->ChatMsg("Deleted ai->knowledge");
 	
 	ai->knowledge = new Knowledge( ai );
 	delete ai->utility;
@@ -281,18 +293,21 @@ void Decision::Reset()
 	ai->utility = new Utility( ai );
 	ai->utility->LaterInitialization();
 	delete ai->math;
-	ai->utility->ChatMsg("Deleted ai->math");
+	//ai->utility->ChatMsg("Deleted ai->math");
 	ai->math = NULL;
 	ai->math = new BrainMath( ai );
 	delete bc;
-	ai->utility->ChatMsg("Deleted bc");
+//	ai->utility->ChatMsg("Deleted bc");
 	bc = NULL;
 	bc = new BuildingController( ai );
-	ai->utility->ChatMsg("Reset() done");
+//	ai->utility->ChatMsg("Reset() done");
+	Suiciding = false;
 }
 
 void Decision::Update(int frame)
 {
+	if ( Suiciding )
+		return;
 	if(frame == 1)
 	{
 		ai->utility->ChatMsg("Frame 1!!");
@@ -306,16 +321,20 @@ void Decision::Update(int frame)
 		Cheats* c = ai->callback->GetCheats();
 		c->SetEnabled(true);
 		delete c;
+		c = NULL;
 		COMMANDERID = commander->GetUnitId();
 		SSetFireStateUnitCommand s;
 		s.fireState = 0;
 		s.unitId = COMMANDERID;
 		s.timeOut = 1000000;
 		delete commander;
+		commander = NULL;
+		NextScenarioStartFrame = frame+INITIAL_SCENARIO_DELAY;
 	}
 
 
-	if ( ResettingGame && frame > 1 && frame == LastResetFrame+SCENARIO_DELAY )
+	
+	if ( ResettingGame && frame == NextScenarioStartFrame )
 	{
 		LastResetFrame = frame;
 		ResettingGame = false;
@@ -323,7 +342,9 @@ void Decision::Update(int frame)
 		if ( m_Scenario != NULL )
 		{		
 			delete m_Scenario;
+			m_Scenario = NULL;
 		}
+		ai->utility->ChatMsg("---------RESTARTING SCENARIO---------");
 		m_Scenario = new Scenario(ai);
 		if ( ai->callback->GetTeamId() == 0 )
 			ai->utility->ChatMsg("Scenario started");
@@ -366,6 +387,7 @@ void Decision::Update(int frame)
 			{
 				ai->utility->ChatMsg("DECISION: We got a state with no actions!");
 				ai->utility->Suicide(0, true);
+				Suiciding = true;
 				return;
 			}
 		}
@@ -385,6 +407,7 @@ void Decision::Update(int frame)
 	{
 		ResettingGame = true;
 		LastResetFrame = frame;
+		NextScenarioStartFrame = frame+SCENARIO_DELAY;
 		if ( ai->callback->GetTeamId() == 0 )
 		{
 			vector<MilitaryUnitGroup*> m = ai->knowledge->groupManager->GetMilitaryGroupMgr()->GetAllAttackGroups();

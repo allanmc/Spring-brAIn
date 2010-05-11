@@ -29,7 +29,10 @@ namespace brainSpace {
 		RL_State & operator=(const RL_State &rhs);
 
 		double ExpectedReward;
-		
+		int Type;
+		int GetVisitsTo( int stateID, int type );
+		int UpdateVisitsTo( int stateID, int type );
+
 	protected:
 		bool terminal;
 		unsigned int ID;
@@ -39,8 +42,6 @@ namespace brainSpace {
 	private:
 
 
-		int GetVisitsTo( int stateID, int type );
-		int UpdateVisitsTo( int stateID, int type );
 
 		char* GetFilePath( int type );
 	};

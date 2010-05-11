@@ -14,7 +14,7 @@ namespace brainSpace
 	struct QStateVar
 	{
 		const char *name;
-		short unsigned int numStates;
+		unsigned int numStates;
 
 		QStateVar(const char *n, short unsigned int ns)
 		{
@@ -82,7 +82,7 @@ namespace brainSpace
 
 	struct FileHeaderQTable 
 	{
-		short unsigned int numStates;
+		unsigned int numStates;
 		short unsigned int numActions;
 		short unsigned int numStateVars;
 	};

@@ -55,13 +55,13 @@ RL::RL(AIClasses* aiClasses, double epsilon, int numAgents)
 
 
 			/************************/
-			StateVars[2].push_back( QStateVar( "WindSpotCount", 3 ) );
-			StateVars[2].push_back( QStateVar( "DistWindSpot", 4 ) );
-			StateVars[2].push_back( QStateVar( "ImgWindSpotInf", 4 ) );
+			StateVars[2].push_back( QStateVar( "WGenCount", 3 ) );
+			StateVars[2].push_back( QStateVar( "DistWGen", 4 ) );
+			StateVars[2].push_back( QStateVar( "ImgWGenInf", 4 ) );
 			StateVars[2].push_back( QStateVar( "AirGroup", 2 ) );
-			StateVars[2].push_back( QStateVar( "GroupSpeed", 3 ) );
-			StateVars[2].push_back( QStateVar( "SuperiorPathLength", 2 ) );
-			StateVars[2].push_back( QStateVar( "CurrentSpotInf", 4 ) );
+			StateVars[2].push_back( QStateVar( "GroupSpd", 3 ) );
+			StateVars[2].push_back( QStateVar( "SupPath", 2 ) );
+			StateVars[2].push_back( QStateVar( "CurSpotInf", 4 ) );
 
 			Actions[2].push_back( QAction( "AttackWindSpot", 0 ) );
 
@@ -80,22 +80,22 @@ RL::RL(AIClasses* aiClasses, double epsilon, int numAgents)
 
 RL::~RL()
 {
-	ai->utility->ChatMsg("RL:About to savetofile");
+	//ai->utility->ChatMsg("RL:About to savetofile");
 	for ( int i = 0 ; i < NUM_Q_TABLES ; i++ )
 		SaveToFile(i);
-	ai->utility->ChatMsg("RL:About to delete valuefunc");
+	//ai->utility->ChatMsg("RL:About to delete valuefunc");
 	for (int i = 0 ; i < 3 ; i++ )
 	{
 		delete ValueFunction[i];
 		ValueFunction[i] = NULL;
 	}
 
-	ai->utility->ChatMsg("RL:About to clear datatrail");
+	//ai->utility->ChatMsg("RL:About to clear datatrail");
 	dataTrail.clear();
-	ai->utility->ChatMsg("RL:About to delete prevstate");
+	//ai->utility->ChatMsg("RL:About to delete prevstate");
 	delete PreviousState;
 	PreviousState = NULL;
-	ai->utility->ChatMsg("RL: Deleted prevstate");
+	//ai->utility->ChatMsg("RL: Deleted prevstate");
 	//delete nullState;
 }
 
@@ -244,7 +244,7 @@ RL_Action* RL::SafeNextAction(RL_State* state, int type )
 
 RL_Action* RL::Update(MilitaryUnitGroup* group)
 {
-	ai->utility->ChatMsg("RL: UPDATE");
+	//ai->utility->ChatMsg("RL: UPDATE");
 	bool terminal = false;
 	vector<Unit*> units = ai->callback->GetEnemyUnits();
 	vector< pair<int, SAIFloat3> > mexPositions;
@@ -273,108 +273,87 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 
 	if ( group != NULL )
 	{
-		RL_State* mexState = NULL;
-		RL_State* solarState = NULL;
-		RL_State* windState = NULL;
+		if ( PreviousState == NULL )
+		{
+			vector<RL_State*> states;
+			RL_State* mexState = NULL;
+			RL_State* solarState = NULL;
+			RL_State* windState = NULL;
 
-		if ( mexPositions.size() > 0 )
-		{
-			ai->utility->ChatMsg("RL:Getting mexstate");
-			mexState = GetState( group, mexPositions );
-		}
-		if ( solarPositions.size() > 0 )
-		{
-			ai->utility->ChatMsg("RL:Getting solarstate");
-			solarState = GetState( group, solarPositions );
-		}
-		if ( windGenePositions.size() > 0 )
-		{
-			ai->utility->ChatMsg("RL:Getting windstate");
-			windState = GetState( group, windGenePositions );
-		}
+			if ( mexPositions.size() > 0 )
+			{
+				//ai->utility->ChatMsg("RL:Getting mexstate");
+				mexState = GetState( group, mexPositions, 0 );
+				if ( mexState != NULL && mexState->GetID() != -1 )
+					states.push_back(mexState);
+			}
+			if ( solarPositions.size() > 0 )
+			{
+				//ai->utility->ChatMsg("RL:Getting solarstate");
+				solarState = GetState( group, solarPositions, 1 );
+				if ( solarState != NULL && solarState->GetID() != -1 )
+					states.push_back(solarState);
+			}
+			if ( windGenePositions.size() > 0 )
+			{
+				//ai->utility->ChatMsg("RL:Getting windstate");
+				windState = GetState( group, windGenePositions, 2 );
+				if ( windState != NULL && windState->GetID() != -1 )
+					states.push_back(windState);
+			}
 
-		double bestVal = -1000000000;
+			double bestVal = -1000000000;
+			int index = -1;
+			if ( states.size() > 0 )
+			{
+				index = rand()%states.size();
+				state = states[index];
+				CurrentQTable = state->Type;
+	
+				ai->utility->ChatMsg("Old Visits to %d in table %d: %d", state->GetID(), state->Type, state->GetVisitsTo(state->GetID(), state->Type ));
+			}
+			else return NULL;
 
-		if ( mexState != NULL && mexState->GetID() != -1 )
-		{
+			for ( int i = 0 ; i < states.size() ; i++ )
+			{
+				if ( i == index ) continue;
+				delete states[i];
+				states[i] = NULL;
+			}
+			/*
+			if ( mexState != NULL && mexState->GetID() != -1 )
+			{
 			if ( mexState->ExpectedReward > bestVal )
 			{
-				bestVal = mexState->ExpectedReward;
-				state = mexState;
-				CurrentQTable = 0;
+			bestVal = mexState->ExpectedReward;
+			state = mexState;
+			CurrentQTable = 0;
 			}
-		}
-		if ( solarState != NULL && solarState->GetID() != -1 )
-		{
+			}
+			if ( solarState != NULL && solarState->GetID() != -1 )
+			{
 			if ( solarState->ExpectedReward > bestVal )
 			{
-				bestVal = solarState->ExpectedReward;
-				state = solarState;
-				CurrentQTable = 1;
+			bestVal = solarState->ExpectedReward;
+			state = solarState;
+			CurrentQTable = 1;
 			}
-		}
+			}
 
-		if ( windState != NULL && windState->GetID() != -1 )
-		{
+			if ( windState != NULL && windState->GetID() != -1 )
+			{
 			if ( windState->ExpectedReward > bestVal )
 			{
-				bestVal = windState->ExpectedReward;
-				state = windState;
-				CurrentQTable = 2;
+			bestVal = windState->ExpectedReward;
+			state = windState;
+			CurrentQTable = 2;
 			}
-		}
+			}
+			*/
 
-		nextAction = SafeNextAction(state);
-		ai->utility->ChatMsg("RL Update currentQTable: %d", CurrentQTable );
-		if ( state != NULL )
-		{
-			switch(CurrentQTable)
-			{
-			case 0:
-				{
-					if ( solarState != NULL )
-					{
-						delete solarState;
-						solarState = NULL;
-					}
-					if ( windState != NULL )
-					{
-						delete windState;
-						windState = NULL;
-					}
-					break;
-				}
-			case 1:
-				{
-					if ( mexState != NULL )
-					{
-						delete mexState;
-						mexState = NULL;
-					}
-					if ( windState != NULL )
-					{
-						delete windState;
-						windState = NULL;
-					}
-					break;
-				}
-			case 2:
-				{	
-					if ( mexState != NULL )
-					{
-						delete mexState;
-						mexState = NULL;
-					}
-					if ( solarState != NULL )
-					{
-						delete solarState;
-						solarState = NULL;
-					}
-					break;
-				}
-			}
+			nextAction = SafeNextAction(state);
+			ai->utility->ChatMsg("RL Update currentQTable: %d. State: %d", CurrentQTable, state->GetID() );
 		}
-		ai->utility->ChatMsg("RL: Cleaned up");
 	}
 
 	//Start state
@@ -491,8 +470,10 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 			//	- ValueFunction[CurrentQTable]->GetValue(*PreviousState,*PreviousAction) );
 			ValueFunction[CurrentQTable]->SetValue(*PreviousState,*PreviousAction, value+reward);
 			ai->utility->ChatMsg("---");
-			ai->utility->ChatMsg("Value: %f. QTable: %d. State; %d", ValueFunction[CurrentQTable]->GetValue(*PreviousState, *PreviousAction), CurrentQTable, PreviousState->GetID() );
+			ai->utility->ChatMsg("Value: %f. QTable: %d. State: %d", ValueFunction[CurrentQTable]->GetValue(*PreviousState, *PreviousAction), CurrentQTable, PreviousState->GetID() );
 			ai->utility->ChatMsg("---");
+			PreviousState->UpdateVisitsTo( PreviousState->GetID(), PreviousState->Type );
+			ai->utility->ChatMsg("New visits to %d in table %d: %d", PreviousState->GetID(), PreviousState->Type, PreviousState->GetVisitsTo(PreviousState->GetID(), PreviousState->Type ));
 		}
 		return NULL;
 	}
