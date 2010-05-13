@@ -208,7 +208,8 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 		//Calculate the ID!
 		ID = 0;
 		unsigned int offset = 1;
-		for ( unsigned int m = 0 ; m < stateVars.size() ; m++ )
+		//ai->utility->ChatMsg("STATE SIZE: %d", stateVars.size() );
+		for ( int m = (int)stateVars.size()-1 ; m >= 0 ; m-- )
 		{
 			unsigned int current = 0;
 			switch( m )
@@ -217,13 +218,14 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 			case 1: current = ( DistBuildingSpot < 500 ) ? 0 : ( DistBuildingSpot < 1000 ) ? 1 : ( DistBuildingSpot < 2000 ) ? 2 : 3; break;
 			//case 2: current = MexSpotInf; break;
 			case 2: current = BuildingSpotImaginaryInf; break;
-			case 3: current = AirGroup; break;
+			//case 3: current = AirGroup; break;
 				//Slow = kbots, medium = tanks and slow aircrafts, fast = fighters, bombers
-			case 4: current = ( GroupSpeed < 70 ) ? 0 : ( GroupSpeed < 190 ) ? 1 : 2; break;
-			case 5: current = SuperiorPathLength; break;
-			case 6: current = CurrentSpotInf; break;
+			case 3: current = ( GroupSpeed < 70 ) ? 0 : ( GroupSpeed < 190 ) ? 1 : 2; break;
+			case 4: current = SuperiorPathLength; break;
+			case 5: current = CurrentSpotInf; break;
 			//default: ai->utility->ChatMsg("RL_State: Unexpected Statevar!");
 			}
+				
 			ID += current*offset;
 			offset *= stateVars[m].numStates;
 			//ai->utility->ChatMsg("StateVar: %d. ID: %d. Current: %d", m, ID, current );

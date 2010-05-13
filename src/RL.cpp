@@ -30,7 +30,6 @@ RL::RL(AIClasses* aiClasses, double epsilon, int numAgents)
 			StateVars[0].push_back( QStateVar( "MexSpotCount", 3 ) );
 			StateVars[0].push_back( QStateVar( "DistMexSpot", 4 ) );
 			StateVars[0].push_back( QStateVar( "ImgMexSpotInf", 4 ) );
-			StateVars[0].push_back( QStateVar( "AirGroup", 2 ) );
 			StateVars[0].push_back( QStateVar( "GroupSpeed", 3 ) );
 			StateVars[0].push_back( QStateVar( "SuperiorPathLength", 2 ) );
 			StateVars[0].push_back( QStateVar( "CurrentSpotInf", 4 ) );
@@ -44,7 +43,6 @@ RL::RL(AIClasses* aiClasses, double epsilon, int numAgents)
 			StateVars[1].push_back( QStateVar( "SolarSpotCount", 3 ) );
 			StateVars[1].push_back( QStateVar( "DistSolarSpot", 4 ) );
 			StateVars[1].push_back( QStateVar( "ImgSolarSpotInf", 4 ) );
-			StateVars[1].push_back( QStateVar( "AirGroup", 2 ) );
 			StateVars[1].push_back( QStateVar( "GroupSpeed", 3 ) );
 			StateVars[1].push_back( QStateVar( "SuperiorPathLength", 2 ) );
 			StateVars[1].push_back( QStateVar( "CurrentSpotInf", 4 ) );
@@ -58,7 +56,6 @@ RL::RL(AIClasses* aiClasses, double epsilon, int numAgents)
 			StateVars[2].push_back( QStateVar( "WGenCount", 3 ) );
 			StateVars[2].push_back( QStateVar( "DistWGen", 4 ) );
 			StateVars[2].push_back( QStateVar( "ImgWGenInf", 4 ) );
-			StateVars[2].push_back( QStateVar( "AirGroup", 2 ) );
 			StateVars[2].push_back( QStateVar( "GroupSpd", 3 ) );
 			StateVars[2].push_back( QStateVar( "SupPath", 2 ) );
 			StateVars[2].push_back( QStateVar( "CurSpotInf", 4 ) );
@@ -93,8 +90,11 @@ RL::~RL()
 	//ai->utility->ChatMsg("RL:About to clear datatrail");
 	dataTrail.clear();
 	//ai->utility->ChatMsg("RL:About to delete prevstate");
-	delete PreviousState;
-	PreviousState = NULL;
+	if ( PreviousState != NULL )
+	{
+		delete PreviousState;
+		PreviousState = NULL;
+	}
 	//ai->utility->ChatMsg("RL: Deleted prevstate");
 	//delete nullState;
 }
@@ -275,6 +275,7 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 	{
 		if ( PreviousState == NULL )
 		{
+			ai->utility->ChatMsg("RL:Finding new state");
 			vector<RL_State*> states;
 			RL_State* mexState = NULL;
 			RL_State* solarState = NULL;
@@ -306,11 +307,21 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 			int index = -1;
 			if ( states.size() > 0 )
 			{
-				index = rand()%states.size();
+				//ai->utility->ChatMsg("RL: %d different resource types", states.size() );
+				int fewestVists = 1000000000;
+				for ( int i = 0 ; i < states.size() ; i++ )
+				{
+					int v = states[i]->GetVisitsTo( states[i]->GetID(), states[i]->Type );
+					if ( v < fewestVists )
+					{
+						fewestVists = v;
+						index = i;
+					}
+				}
 				state = states[index];
 				CurrentQTable = state->Type;
-	
-				ai->utility->ChatMsg("Old Visits to %d in table %d: %d", state->GetID(), state->Type, state->GetVisitsTo(state->GetID(), state->Type ));
+				//ai->utility->ChatMsg("CurrentQ: %d. StateType: %d. ID: %d", CurrentQTable, state->Type, state->GetID() );
+				//ai->utility->ChatMsg("Old Visits to %d in table %d: %d", state->GetID(), state->Type, state->GetVisitsTo(state->GetID(), state->Type ));
 			}
 			else return NULL;
 
@@ -359,6 +370,7 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 	//Start state
 	if ( PreviousState == NULL )
 	{
+		ai->utility->ChatMsg("RL:PrevState NULL");
 		PreviousState = state;
 		PreviousAction = nextAction;
 		PreviousFrame = ai->frame;
@@ -473,7 +485,14 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 			ai->utility->ChatMsg("Value: %f. QTable: %d. State: %d", ValueFunction[CurrentQTable]->GetValue(*PreviousState, *PreviousAction), CurrentQTable, PreviousState->GetID() );
 			ai->utility->ChatMsg("---");
 			PreviousState->UpdateVisitsTo( PreviousState->GetID(), PreviousState->Type );
+			char buf[200];
+			sprintf( buf, "New visits to %d in table %d: %d\n", PreviousState->GetID(), PreviousState->Type, PreviousState->GetVisitsTo(PreviousState->GetID(), PreviousState->Type ));
 			ai->utility->ChatMsg("New visits to %d in table %d: %d", PreviousState->GetID(), PreviousState->Type, PreviousState->GetVisitsTo(PreviousState->GetID(), PreviousState->Type ));
+			ofstream of;
+			of.open( "RL-LOGFILE.txt", ios::out | ios::app );
+			of.write( buf, strlen(buf) );
+			of.flush();
+			of.close();
 		}
 		return NULL;
 	}
