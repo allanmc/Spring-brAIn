@@ -93,6 +93,7 @@ int main(int argc, char *argv[])
 				g->BuildUnit(a.Action, x);
 			}
 
+			int last_agent = 0;
 			int runningAgents = NUM_LEARNERS;
 			while( runningAgents > 0 )
 			{
@@ -140,12 +141,25 @@ int main(int argc, char *argv[])
 							cerr << "LastReward: " << r->GetLastReward() << " ";
 							cerr << "StateID: " << r->LastStateID << " " << endl;
 							cerr << "T" << builders[i] << " ";
-							AddToPolicy((int)g->frame, 0, builders[i]);
+							if ( (runningAgents>1 && i == (int)builders.size()-1) || cTerm == numTerm-1 ) {
+								AddToPolicy((int)g->frame, (cTerm == numTerm-1 ? 0 : -1), builders[i]);
+							}
 						}
+						last_agent = builders[i];
 						runningAgents--;
 					}
 				}
 			}
+/*
+			if (debug && !USE_NEW_REWARD_CODE)
+			{
+				for(int x = 0; x < NUM_LEARNERS; x++)
+				{
+					if ( x == last_agent) continue;
+					AddToPolicy((int)g->frame, -1, x);
+				}
+			}*/
+
 			if (TEST_RESULTS)
 			{
 				cout << endl << "Reward ============== " << r->GetTotalReward() << endl;
