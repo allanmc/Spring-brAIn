@@ -303,7 +303,7 @@ RL_Action RL::Update(int agentId)
 	if (USE_NEW_REWARD_CODE)
 	{
 		//new reward code 
-		if(PreviousAction[agentId].Action == LAB_ID)
+		if(PreviousAction[agentId].Action == LAB_ID && game->units[LAB_ID] <= RL_LAB_INDEX)
 		{
 			double value = GetReward();
 			for(int i = 0; i < NUM_LEARNERS; i++)

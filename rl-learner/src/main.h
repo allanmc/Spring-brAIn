@@ -34,9 +34,13 @@ unsigned int *stateVisits;
 unsigned int numActions;
 unsigned int numStates;
 
+ostringstream policy_output;
+
+
+void AddToPolicy(int frame, int action, int agent);
 void ChangeColour(WORD theColour);
 void PrintGameStatus(brainSpace::Game *g);
-void PrintAction(bool debug,brainSpace::RL_Action a, unsigned short builder);
+void PrintAction(bool debug,brainSpace::RL_Action a, unsigned short builder, double frame);
 void PrintOutputHeader();
 
 void PrintStateVisits();

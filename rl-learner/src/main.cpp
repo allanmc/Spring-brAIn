@@ -10,6 +10,8 @@ int main(int argc, char *argv[])
 	PrintOutputHeader();
 	srand((unsigned int)time(NULL));
 
+	policy_output << "[";
+
 	//Delete old Q-file?
 	if (RL_FILE_DELETE && !TEST_RESULTS)
 	{
@@ -86,11 +88,12 @@ int main(int argc, char *argv[])
 					isBuildingLab[x] = false;
 				}
 				UpdateStateVisits(r);
-				PrintAction(debug, a, x);
+				PrintAction(debug, a, x, g->frame);
 				
 				g->BuildUnit(a.Action, x);
 			}
 
+			int last_agent = 0;
 			int runningAgents = NUM_LEARNERS;
 			while( runningAgents > 0 )
 			{
@@ -125,7 +128,7 @@ int main(int argc, char *argv[])
 					if ( a.ID != -1 ) 
 					{
 						g->BuildUnit(a.Action, builders[i]);
-						PrintAction(debug, a, builders[i]);
+						PrintAction(debug, a, builders[i],g->frame);
 						if(a.Action == LAB_ID)
 						{
 							isBuildingLab[builders[i]] = true;
@@ -138,11 +141,25 @@ int main(int argc, char *argv[])
 							cerr << "LastReward: " << r->GetLastReward() << " ";
 							cerr << "StateID: " << r->LastStateID << " " << endl;
 							cerr << "T" << builders[i] << " ";
+							if ( (runningAgents>1 && i == (int)builders.size()-1) || cTerm == numTerm-1 ) {
+								AddToPolicy((int)g->frame, (cTerm == numTerm-1 ? 0 : -1), builders[i]);
+							}
 						}
+						last_agent = builders[i];
 						runningAgents--;
 					}
 				}
 			}
+/*
+			if (debug && !USE_NEW_REWARD_CODE)
+			{
+				for(int x = 0; x < NUM_LEARNERS; x++)
+				{
+					if ( x == last_agent) continue;
+					AddToPolicy((int)g->frame, -1, x);
+				}
+			}*/
+
 			if (TEST_RESULTS)
 			{
 				cout << endl << "Reward ============== " << r->GetTotalReward() << endl;
@@ -208,7 +225,8 @@ int main(int argc, char *argv[])
 	r->SaveToFile(true);
 	delete r;
 	//end save
-
+	policy_output << "]";
+	cerr << endl << policy_output.str() << endl;
 	//cerr << endl << "End epsilon: " << currentEpsilon << endl;
 }
 
@@ -229,10 +247,25 @@ void PrintGameStatus(Game *g)
 	cerr << "Game Frame: " << g->frame << endl; 
 }
 
-void PrintAction(bool debug,RL_Action a, unsigned short builder)
+void AddToPolicy(int frame, int action, int builder)
+{
+	if (!(builder==0 && frame == 0)) 
+	{
+		policy_output << ",";
+	}
+	policy_output << "[";
+	policy_output << frame << ",";
+	policy_output << action << ",";
+	policy_output << builder+1;
+	policy_output << "]";
+}
+
+void PrintAction(bool debug,RL_Action a, unsigned short builder, double frame)
 {
 	if (debug)
 	{
+		AddToPolicy((int)frame, a.Action+1, builder);
+
 		int action;
 
 		action = a.Action;
