@@ -10,7 +10,7 @@ using namespace springai;
 using namespace std;
 
 #define RESOURCE_BUILDING_GROUP_TOLERANCE 400.0f
-#define NUM_STATE_RESOURCES_SUBNODES 1152
+#define NUM_STATE_RESOURCES_SUBNODES 432
 
 namespace brainSpace {
 

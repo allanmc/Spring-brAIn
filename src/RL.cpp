@@ -28,10 +28,10 @@ RL::RL(AIClasses* aiClasses, double epsilon, int numAgents)
 			ValueFunction.resize(3);
 
 			StateVars[0].push_back( QStateVar( "MexSpotCount", 3 ) );
-			StateVars[0].push_back( QStateVar( "DistMexSpot", 4 ) );
+			StateVars[0].push_back( QStateVar( "DistMexSpot", 3 ) );
 			StateVars[0].push_back( QStateVar( "ImgMexSpotInf", 4 ) );
 			StateVars[0].push_back( QStateVar( "GroupSpeed", 3 ) );
-			StateVars[0].push_back( QStateVar( "SuperiorPathLength", 2 ) );
+			//StateVars[0].push_back( QStateVar( "SuperiorPathLength", 2 ) );
 			StateVars[0].push_back( QStateVar( "CurrentSpotInf", 4 ) );
 
 			Actions[0].push_back( QAction( "AttackMexSpot", 0 ) );
@@ -41,10 +41,10 @@ RL::RL(AIClasses* aiClasses, double epsilon, int numAgents)
 
 			/************************/
 			StateVars[1].push_back( QStateVar( "SolarSpotCount", 3 ) );
-			StateVars[1].push_back( QStateVar( "DistSolarSpot", 4 ) );
+			StateVars[1].push_back( QStateVar( "DistSolarSpot", 3 ) );
 			StateVars[1].push_back( QStateVar( "ImgSolarSpotInf", 4 ) );
 			StateVars[1].push_back( QStateVar( "GroupSpeed", 3 ) );
-			StateVars[1].push_back( QStateVar( "SuperiorPathLength", 2 ) );
+			//StateVars[1].push_back( QStateVar( "SuperiorPathLength", 2 ) );
 			StateVars[1].push_back( QStateVar( "CurrentSpotInf", 4 ) );
 
 			Actions[1].push_back( QAction( "AttackSolarSpot", 0 ) );
@@ -54,10 +54,10 @@ RL::RL(AIClasses* aiClasses, double epsilon, int numAgents)
 
 			/************************/
 			StateVars[2].push_back( QStateVar( "WGenCount", 3 ) );
-			StateVars[2].push_back( QStateVar( "DistWGen", 4 ) );
+			StateVars[2].push_back( QStateVar( "DistWGen", 3 ) );
 			StateVars[2].push_back( QStateVar( "ImgWGenInf", 4 ) );
 			StateVars[2].push_back( QStateVar( "GroupSpd", 3 ) );
-			StateVars[2].push_back( QStateVar( "SupPath", 2 ) );
+			//StateVars[2].push_back( QStateVar( "SupPath", 2 ) );
 			StateVars[2].push_back( QStateVar( "CurSpotInf", 4 ) );
 
 			Actions[2].push_back( QAction( "AttackWindSpot", 0 ) );

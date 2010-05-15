@@ -38,10 +38,10 @@ Decision::~Decision(void)
 	bc = NULL;
 	if ( ai->callback->GetTeamId() == 0 )
 	{
-		ai->utility->ChatMsg("Deleting rl");
+	//	ai->utility->ChatMsg("Deleting rl");
 		delete rl;
 		rl = NULL;
-		ai->utility->ChatMsg("Deleted RL");
+	//	ai->utility->ChatMsg("Deleted RL");
 	}
 	//ai->utility->ChatMsg("Deleting BI");
 	//delete BattleInfoInstance;

@@ -40,97 +40,26 @@ Scenario::Scenario( AIClasses* aiClasses )
 	units_all.push_back(ground);
 	units_all.push_back(air);
 
-	//spot 1, 6, 7
-	Map* m = ai->callback->GetMap();
-	vector<SAIFloat3> metalSpots = m->GetResourceMapSpotsPositions(*ai->utility->GetResource("Metal"), NULL);
-	if ( metalSpots.size() > 1000 )
-		IsMetalMap = true;
-	else IsMetalMap = false;
-	if ( !IsMetalMap )
-	{
-		//Find clusters of mex points near each other ( not necessary on metal maps )
-		for ( unsigned int i = 0 ; i < metalSpots.size() ; i++ )
-		{
-			//ai->utility->ChatMsg("Spot %d (%.2f,%.2f,%.2f)", i, metalSpots[i].x, metalSpots[i].y, metalSpots[i].z );
-			int count = 0;
-			metalSpotClusters.push_back( vector<SAIFloat3>() );
-			metalSpotClusters.back().push_back( metalSpots[i] );
-			for ( unsigned int j = 0 ; j < metalSpots.size() ; j++ )
-			{
-				if ( i == j )
-					continue;
-				double dist = ai->utility->EuclideanDistance( metalSpots[i], metalSpots[j] );
-				//ai->utility->ChatMsg("To spot %d (%.2f,%.2f,%.2f): %.2f", j, metalSpots[j].x, metalSpots[j].y, metalSpots[j].z, dist );
-
-				if ( dist < RESOURCE_BUILDING_GROUP_TOLERANCE )
-				{
-					count++;
-					//ai->utility->ChatMsg("i: %d. j: %d", i, j );
-					metalSpotClusters.back().push_back( metalSpots[j] );
-				}
-			}
-		}
-	}
 
 
 	SAIFloat3 groupPos;
+	Map* m = ai->callback->GetMap();
 	groupPos = m->GetStartPos();
 	groupPos.y += 50;
+	delete m;
+	m = NULL;
 
-	vector<SAIFloat3> ourGroups;
-
-	if ( ai->callback->GetTeamId() == 1 )
-	{
-		int clusters = rand()%(SCENARIO_MEX_CLUSTERS+1);
-		if ( clusters < 1 )
-			clusters = 1;
-
-		//ai->utility->ChatMsg("SCENARIO: Starting %d clusters", clusters );
-		for ( int i = 0 ; i < clusters ; i++ )
-		{
-			int size = (rand()%SCENARIO_MEX_CLUSTER_SIZE_MAX+1);
-			if ( size < SCENARIO_MEX_CLUSTER_SIZE_MIN )
-				size = SCENARIO_MEX_CLUSTER_SIZE_MIN;
-			//ai->utility->ChatMsg("SCENARIO: Init cluster, size: %d", size );
-			MakeMexCluster( size );
-		}
-	}
-
+	//ai->utility->ChatMsg("PIK1");
 	for ( int i = 0 ; i < numGroups ; i++ )
 	{
+	//	ai->utility->ChatMsg("PIK2");
 		bool air = rand()%2;
-		bool ok = false;
 
-		groupPos.x = rand()%(m->GetWidth()*8);
-		groupPos.z = rand()%(m->GetHeight()*8);
-		while (!ok )
-		{
-			ok = true;
+		groupPos.x = 2900.0f+rand()%500;//rand()%(m->GetWidth()*8);
+		groupPos.z = 2900.0f;//+rand()%500;//rand()%(m->GetHeight()*8);
 
-			//Too close to another group check
-			for ( unsigned int j = 0 ; j < ourGroups.size() ; j++ )
-			{
-				if ( ( fabs( (ourGroups[j].x - groupPos.x ) ) < 500.0f ) && (fabs( ourGroups[j].z - groupPos.z ) < 500.0f ) )
-				{
-					ok = false;
-					groupPos.x = rand()%(m->GetWidth()*8);
-					groupPos.z = rand()%(m->GetHeight()*8);
-					break;
-				}
-			}
-			//Too close to border check
-			if ( groupPos.x < 350 )
-				groupPos.x += 350;
-			else if ( groupPos.x > ( m->GetWidth()*8 )-350 )
-				groupPos.x -= 350;
-			if ( groupPos.z < 350 )
-				groupPos.z += 350;
-			else if ( groupPos.z > ( m->GetHeight()*8 )-350 )
-				groupPos.z -= 350;
-		}
+		
 
-
-		ourGroups.push_back(groupPos);
 		//ai->utility->ChatMsg("SCENARIO: GroupPos (%f,%f,%f)", groupPos.x, groupPos.y, groupPos.z );
 
 		for ( unsigned int j = 0 ; j < 3 ; j++ )
@@ -144,6 +73,7 @@ Scenario::Scenario( AIClasses* aiClasses )
 					unitPos.x += 30*k;
 					unitPos.z += 30*j;
 					//ai->utility->ChatMsg("Planting unit: (%f,%f,%f)", unitPos.x, unitPos.y, unitPos.z );
+					//ai->utility->ChatMsg("PIK3 %d: %d", j, k);
 					Unit* u = ai->utility->GiveUnit( type, unitPos );
 					delete u;
 					u = NULL;
@@ -153,8 +83,6 @@ Scenario::Scenario( AIClasses* aiClasses )
 	}
 
 	ai->knowledge->mapInfo->threatMap->Update();
-	delete m;
-	m = NULL;
 }
 
 Scenario::~Scenario()

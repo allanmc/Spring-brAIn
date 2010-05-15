@@ -15,7 +15,7 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 	ai = aiClasses;
 	Type = type;
 	//Reader = new BattleFileReader(ai);
-	vector< vector< pair< int, SAIFloat3> > > groups(4);
+	vector< vector< pair< int, SAIFloat3> > > groups(3);
 	ExpectedReward = -10000000;
 
 	//This one holds the real building clusters
@@ -25,30 +25,24 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 	for ( unsigned int i = 0 ; i < resourceBuildings.size() ; i++ )
 	{
 		double distance = ai->utility->EuclideanDistance( resourceBuildings[i].second, group->GetPos() );
-		if ( distance < 500 )
+		if ( distance < 650 )
 		{
 			groups[0].push_back( resourceBuildings[i] );
 			//ai->utility->ChatMsg("RL_STATE: Group DistInterval 0 new size %d", groups[0].size() );
 		}
-		else if ( distance < 1000 )
+		else if ( distance < 1300 )
 		{
 			groups[1].push_back( resourceBuildings[i] );
 			//ai->utility->ChatMsg("RL_STATE: Group DistInterval 1 new size %d", groups[1].size() );
 		}
-		else if ( distance < 2000 )
+		else
 		{
 			groups[2].push_back( resourceBuildings[i] );
 			//ai->utility->ChatMsg("RL_STATE: Group DistInterval 2 new size %d", groups[2].size() );
 		}
-		else
-		{
-			groups[3].push_back( resourceBuildings[i] );
-			//ai->utility->ChatMsg("RL_STATE: Group DistInterval 3 new size %d", groups[3].size() );
-		}
 	}
 
 	//Building-independent statevars
-	bool AirGroup = group->IsAirGroup();
 	float GroupSpeed = 0.0f;
 	vector<int> uIDs = group->GetUnits();	
 	for ( int i = 0 ; i < group->GetSize() ; i++ )
@@ -77,8 +71,7 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 	GroupSpeed /= group->GetSize();
 
 
-	//4 = the number of intervals in the distance state variable
-	for ( unsigned int i = 0 ; i < 4 ; i++ )
+	for ( unsigned int i = 0 ; i < groups.size() ; i++ )
 	{
 		if ( groups[i].empty() )
 		{
@@ -155,7 +148,7 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 		//ai->utility->ChatMsg("Making state. Cluster %d. Size %d", j, realClusters[j].size() );
 		float DistBuildingSpot = 0.0f;
 		Superiority BuildingSpotImaginaryInf, CurrentSpotInf;
-		int SuperiorPathLength = -1;
+		//int SuperiorPathLength = -1;
 
 		vector<int> unitIDs;
 
@@ -197,12 +190,12 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 		Path* p = NULL;
 		if ( BuildingSpotImaginaryInf == INFERIOR || BuildingSpotImaginaryInf == EQUAL )
 		{
-			SuperiorPathLength = 0;
+			//SuperiorPathLength = 0;
 		}
 		else
 		{
 			p = ai->knowledge->mapInfo->pathfindingMap->FindSuperiorPathTo( group, group->GetPos(), average, true );
-			SuperiorPathLength = (p == NULL || p->GetLength() == 0 ) ? 0 : 1;
+			//SuperiorPathLength = (p == NULL || p->GetLength() == 0 ) ? 0 : 1;
 		}
 
 		//Calculate the ID!
@@ -215,14 +208,14 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 			switch( m )
 			{
 			case 0: current = ( realClusters[j].size() < 2 ) ? 0 : ( realClusters[j].size() < 3 ) ? 1 : 2 ; break;
-			case 1: current = ( DistBuildingSpot < 500 ) ? 0 : ( DistBuildingSpot < 1000 ) ? 1 : ( DistBuildingSpot < 2000 ) ? 2 : 3; break;
+			case 1: current = ( DistBuildingSpot < 650 ) ? 0 : ( DistBuildingSpot < 1300 ) ? 1 : 2; break;
 			//case 2: current = MexSpotInf; break;
 			case 2: current = BuildingSpotImaginaryInf; break;
 			//case 3: current = AirGroup; break;
 				//Slow = kbots, medium = tanks and slow aircrafts, fast = fighters, bombers
 			case 3: current = ( GroupSpeed < 70 ) ? 0 : ( GroupSpeed < 190 ) ? 1 : 2; break;
-			case 4: current = SuperiorPathLength; break;
-			case 5: current = CurrentSpotInf; break;
+			//case 4: current = SuperiorPathLength; break;
+			case 4: current = CurrentSpotInf; break;
 			//default: ai->utility->ChatMsg("RL_State: Unexpected Statevar!");
 			}
 				
@@ -231,6 +224,14 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 			//ai->utility->ChatMsg("StateVar: %d. ID: %d. Current: %d", m, ID, current );
 		}
 		//ai->utility->ChatMsg("RL_State: ID %d", ID );
+		if ( BuildingSpotImaginaryInf == SUPERIOR || BuildingSpotImaginaryInf == EQUAL )
+		{
+			//ai->utility->ChatMsg("ID: %d. ImgInf: %d", ID, BuildingSpotImaginaryInf );
+		}
+		if ( CurrentSpotInf == SUPERIOR || CurrentSpotInf == EQUAL )
+		{
+			//ai->utility->ChatMsg("ID: %d. CurInf: %d", ID, CurrentSpotInf );
+		}
 		terminal = true;
 		RL_Action* a = new RL_Action( ai, 0, group, unitIDs, p );
 		double val = valueFunction->GetValue( ID, *a );
