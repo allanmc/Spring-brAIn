@@ -141,9 +141,9 @@ int main(int argc, char *argv[])
 							cerr << "LastReward: " << r->GetLastReward() << " ";
 							cerr << "StateID: " << r->LastStateID << " " << endl;
 							cerr << "T" << builders[i] << " ";
-							if ( (runningAgents>1 && i == (int)builders.size()-1) || cTerm == numTerm-1 ) {
+							//if ( (runningAgents>1 && i == (int)builders.size()-1) || cTerm == numTerm-1 ) {
 								AddToPolicy((int)g->frame, (cTerm == numTerm-1 ? 0 : -1), builders[i]);
-							}
+							//}
 						}
 						last_agent = builders[i];
 						runningAgents--;
