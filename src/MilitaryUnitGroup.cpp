@@ -111,9 +111,13 @@ void MilitaryUnitGroup::Scout(SAIFloat3 pos)
 	{
 		Unit* u = Unit::GetInstance(ai->callback, it->first );
 		com.unitId = it->first;
-		ai->callback->GetEngine()->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &com);
+		Engine* e = ai->callback->GetEngine();
+		e->HandleCommand(0, -1, COMMAND_UNIT_MOVE, &com);
 		it->second = false;
 		delete u;
+		u = NULL;
+		delete e;
+		e = NULL;
 	}
 }
 

@@ -55,8 +55,8 @@ Scenario::Scenario( AIClasses* aiClasses )
 	//	ai->utility->ChatMsg("PIK2");
 		bool air = rand()%2;
 
-		groupPos.x = 2900.0f+rand()%500;//rand()%(m->GetWidth()*8);
-		groupPos.z = 2900.0f;//+rand()%500;//rand()%(m->GetHeight()*8);
+		groupPos.x = 3100.0f+rand()%200;//rand()%(m->GetWidth()*8);
+		groupPos.z = 3100.0f;//+rand()%500;//rand()%(m->GetHeight()*8);
 
 		
 

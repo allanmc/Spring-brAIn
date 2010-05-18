@@ -323,13 +323,9 @@ void Decision::Update(int frame)
 		delete c;
 		c = NULL;
 		COMMANDERID = commander->GetUnitId();
-		SSetFireStateUnitCommand s;
-		s.fireState = 0;
-		s.unitId = COMMANDERID;
-		s.timeOut = 1000000;
+		NextScenarioStartFrame = frame+INITIAL_SCENARIO_DELAY;
 		delete commander;
 		commander = NULL;
-		NextScenarioStartFrame = frame+INITIAL_SCENARIO_DELAY;
 	}
 
 
