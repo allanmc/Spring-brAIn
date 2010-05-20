@@ -49,10 +49,8 @@ Scenario::Scenario( AIClasses* aiClasses )
 	delete m;
 	m = NULL;
 
-	//ai->utility->ChatMsg("PIK1");
 	for ( int i = 0 ; i < numGroups ; i++ )
 	{
-	//	ai->utility->ChatMsg("PIK2");
 		bool air = rand()%2;
 
 		groupPos.x = 3100.0f+rand()%200;//rand()%(m->GetWidth()*8);
