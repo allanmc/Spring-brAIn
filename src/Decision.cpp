@@ -3,6 +3,7 @@
 #include "UnitDef.h"
 #include "Cheats.h"
 #include "WeaponMount.h"
+#include "TestCase.h"
 
 using namespace std;
 using namespace springai;
@@ -39,8 +40,11 @@ Decision::~Decision(void)
 	if ( ai->callback->GetTeamId() == 0 )
 	{
 	//	ai->utility->ChatMsg("Deleting rl");
-		delete rl;
-		rl = NULL;
+		if ( rl != NULL )
+		{
+			delete rl;
+			rl = NULL;
+		}
 	//	ai->utility->ChatMsg("Deleted RL");
 	}
 	//ai->utility->ChatMsg("Deleting BI");
@@ -308,6 +312,7 @@ void Decision::Update(int frame)
 {
 	if ( Suiciding )
 		return;
+
 	if(frame == 1)
 	{
 		ai->utility->ChatMsg("Frame 1!!");
@@ -327,6 +332,66 @@ void Decision::Update(int frame)
 		delete commander;
 		commander = NULL;
 	}
+
+	
+	if ( frame == 1000 )
+	{
+		TestCase* test = new TestCase(ai);
+		delete test;
+		test = NULL;
+	}
+
+	if ( frame == 1100 )
+	{
+		ai->knowledge->mapInfo->threatMap->Update();
+		vector<Unit*> enemyUnits = ai->callback->GetEnemyUnits();
+		for ( vector<Unit*>::iterator it = enemyUnits.begin() ; it != enemyUnits.end() ; it++ )
+		{
+			ai->knowledge->enemyInfo->armyInfo->UpdateUnit( *it );
+			ai->knowledge->enemyInfo->baseInfo->AddBuilding( *it );
+			//delete (*it);
+			//*it = NULL;
+		}
+		ai->knowledge->mapInfo->threatMap->DrawGrid();
+		UpdateFrindlyPositions();
+	}
+
+	if ( frame == 1100 )
+	{
+		if ( ai->callback->GetTeamId() == 0 )
+		{
+			ai->knowledge->mapInfo->threatMap->Update();
+			vector<Unit*> enemyUnits = ai->callback->GetEnemyUnits();
+			for ( vector<Unit*>::iterator it = enemyUnits.begin() ; it != enemyUnits.end() ; it++ )
+			{
+				ai->knowledge->enemyInfo->armyInfo->UpdateUnit( *it );
+				ai->knowledge->enemyInfo->baseInfo->AddBuilding( *it );
+				//delete (*it);
+				//*it = NULL;
+			}
+			UpdateFrindlyPositions();
+
+			vector<MilitaryUnitGroup*> m = ai->knowledge->groupManager->GetMilitaryGroupMgr()->GetAllAttackGroups();
+			ai->utility->ChatMsg("Team 1: MilitaryGroups %d", m.size() );
+			RL_Action* a = rl->Update( m[0] );
+			if ( a != NULL )
+			{
+				m[0]->FireAtWill();
+				if ( a->Path != NULL )
+				{
+					if ( a->Path->GetLength() > 0 )
+					{
+						for ( int i =  a->Path->GetPoints().size()-1 ; i >= 1 ; i-- )
+						{
+							m[0]->Scout( a->Path->GetPoints()[i] );
+						}
+					}
+				}
+				m[0]->Attack( a->unitIDs );
+			}
+		}
+	}
+	/*
 
 
 	
@@ -419,7 +484,7 @@ void Decision::Update(int frame)
 			}
 		}
 		Reset();
-	}
+	}*/
 }
 
 void Decision::UnitIdle( int id )

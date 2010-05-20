@@ -239,11 +239,11 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 	}
 
 
-	//ai->utility->ChatMsg("RL_STATE: State alternatives type %d: %d", type, possibleStates.size() );
+	ai->utility->ChatMsg("RL_STATE: State alternatives type %d: %d", type, possibleStates.size() );
 	if ( possibleStates.size() > 0 )
 	{
 		
-		/*
+		
 		//EPSILON-GREEDY STATE CHOICE
 		float r = rand()/(float)RAND_MAX;
 		if ( r <= epsilon ) //non-greedy
@@ -263,6 +263,8 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 		{
 			for ( map<unsigned int, pair<RL_Action*, double> >::iterator it = possibleStates.begin() ; it != possibleStates.end() ; it++ )
 			{
+				
+				ai->utility->ChatMsg("Reward %f. State %d", it->second.second, it->first ); 
 				if ( it->second.second > optimalClusterReward )
 				{
 					optimalPath = it->second.first->Path;
@@ -275,7 +277,8 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 		ID = optimalStateID;
 		ExpectedReward = optimalClusterReward;
 		Actions.push_back( possibleStates.find(ID)->second.first );
-		*/
+		ai->utility->ChatMsg("OptimalReward %f. State %d", optimalClusterReward, ID );
+		/*
 		
 		int fewestVisits = 1000000;
 		for ( map<unsigned int, pair<RL_Action*, double> >::iterator it = possibleStates.begin() ; it != possibleStates.end() ; it++ )
@@ -289,7 +292,7 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 				optimalPath = it->second.first->Path;
 				optimalUnitIDs = it->second.first->unitIDs;
 			}
-		}
+		}*/
 
 		ID = optimalStateID;
 		ExpectedReward = optimalClusterReward;

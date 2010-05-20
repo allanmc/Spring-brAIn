@@ -120,7 +120,7 @@ void ThreatMap::Update()
 		delete u;
 	}
 	FigureID = 0;
-	/*
+	
 	for ( int i = 0 ; i < MapWidth ; i++ )
 	{
 		for ( int j = 0 ; j < MapHeight ; j++ )
@@ -140,7 +140,7 @@ void ThreatMap::Update()
 			}
 		}
 	}
-	*/
+	
 }
 
 ///udates the map with the information from a single enemy uit

@@ -77,9 +77,12 @@ RL::RL(AIClasses* aiClasses, double epsilon, int numAgents)
 
 RL::~RL()
 {
-	//ai->utility->ChatMsg("RL:About to savetofile");
+	ai->utility->ChatMsg("RL:About to savetofile");
 	for ( int i = 0 ; i < NUM_Q_TABLES ; i++ )
+	{
+		ai->utility->ChatMsg("SAVING FILE %d", i );
 		SaveToFile(i);
+	}
 	//ai->utility->ChatMsg("RL:About to delete valuefunc");
 	for (int i = 0 ; i < 3 ; i++ )
 	{

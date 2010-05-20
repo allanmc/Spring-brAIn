@@ -75,6 +75,8 @@ void RL_Q::SaveToFile(ofstream *file )
 		fileQStateVar[i].qStateVar = StateVars[i];
 		fileQStateVar[i].SaveToFile(file, ai);
 	}
+	long pik = file->tellp();
+	ai->utility->ChatMsg("FILEPOINTER: %d", pik );
 	file->write( (char*)actionValueFunction, sizeof(double)*size );
 	delete qAction;
 	delete fileQStateVar;

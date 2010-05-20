@@ -13,7 +13,7 @@
 
 #define GAMMA 0.9f
 #define ALPHA 0.1f
-#define EPSILON_START 0.1f
+#define EPSILON_START -10.0f
 #define EPSILON_DECAY 1.0f
 
 //TYPE 0 => normal; 1 => 2 builders;
