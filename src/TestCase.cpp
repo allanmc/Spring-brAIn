@@ -21,6 +21,8 @@ TestCase::TestCase( AIClasses* aiClasses )
 					SAIFloat3 tempPos = pos;			
 					tempPos.x += i*45;
 					tempPos.z += j*45;
+					
+					ai->utility->ChatMsg("Spawning flash: (%f,%f,%f)", tempPos.x, tempPos.y, tempPos.z );
 					delete ai->utility->GiveUnit("armflash", tempPos );
 				}
 			}
@@ -53,6 +55,8 @@ TestCase::TestCase( AIClasses* aiClasses )
 					SAIFloat3 tempPos = pos;			
 					tempPos.x += i*45;
 					tempPos.z += j*45;
+					
+					ai->utility->ChatMsg("Spawning flash: (%f,%f,%f)", tempPos.x, tempPos.y, tempPos.z );
 					delete ai->utility->GiveUnit("armflash", tempPos );
 				}
 			}

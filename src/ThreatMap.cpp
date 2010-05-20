@@ -34,6 +34,8 @@ void ThreatMap::Update()
 	map<int, UnitInformationContainer> enemyUnits = ai->knowledge->enemyInfo->armyInfo->GetUnits();
 	map<int, UnitInformationContainer> friendlyUnits = ai->knowledge->selfInfo->armyInfo->GetUnits();
 
+	ai->utility->ChatMsg("ThreatMap: enemyunits: %d", enemyUnits.size() );
+
 	//Reset();
 	if ( ReferenceUnitDefAir == NULL || ReferenceUnitDefGround )
 	{

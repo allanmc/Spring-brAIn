@@ -341,27 +341,16 @@ void Decision::Update(int frame)
 		test = NULL;
 	}
 
-	if ( frame == 1100 )
-	{
-		ai->knowledge->mapInfo->threatMap->Update();
-		vector<Unit*> enemyUnits = ai->callback->GetEnemyUnits();
-		for ( vector<Unit*>::iterator it = enemyUnits.begin() ; it != enemyUnits.end() ; it++ )
-		{
-			ai->knowledge->enemyInfo->armyInfo->UpdateUnit( *it );
-			ai->knowledge->enemyInfo->baseInfo->AddBuilding( *it );
-			//delete (*it);
-			//*it = NULL;
-		}
-		ai->knowledge->mapInfo->threatMap->DrawGrid();
-		UpdateFrindlyPositions();
-	}
+
 
 	if ( frame == 1100 )
 	{
+		ai->utility->ChatMsg("FRAME 1100!!!");
 		if ( ai->callback->GetTeamId() == 0 )
 		{
-			ai->knowledge->mapInfo->threatMap->Update();
+			ai->utility->ChatMsg("PIKSVED");
 			vector<Unit*> enemyUnits = ai->callback->GetEnemyUnits();
+			ai->utility->ChatMsg("EnemyUnits: %d", enemyUnits.size() );
 			for ( vector<Unit*>::iterator it = enemyUnits.begin() ; it != enemyUnits.end() ; it++ )
 			{
 				ai->knowledge->enemyInfo->armyInfo->UpdateUnit( *it );
@@ -369,6 +358,8 @@ void Decision::Update(int frame)
 				//delete (*it);
 				//*it = NULL;
 			}
+			ai->knowledge->mapInfo->threatMap->Update();
+			ai->knowledge->mapInfo->threatMap->DrawGrid();
 			UpdateFrindlyPositions();
 
 			vector<MilitaryUnitGroup*> m = ai->knowledge->groupManager->GetMilitaryGroupMgr()->GetAllAttackGroups();

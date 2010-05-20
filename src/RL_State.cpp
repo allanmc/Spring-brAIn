@@ -246,6 +246,7 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 		
 		//EPSILON-GREEDY STATE CHOICE
 		float r = rand()/(float)RAND_MAX;
+		/*
 		if ( r <= epsilon ) //non-greedy
 		{
 			int index = rand()%possibleStates.size();
@@ -259,7 +260,7 @@ RL_State::RL_State(AIClasses* aiClasses, MilitaryUnitGroup* group, std::vector<Q
 			optimalStateID = it->first;
 			optimalUnitIDs = it->second.first->unitIDs;
 		}
-		else
+		else*/
 		{
 			for ( map<unsigned int, pair<RL_Action*, double> >::iterator it = possibleStates.begin() ; it != possibleStates.end() ; it++ )
 			{
