@@ -34,7 +34,7 @@ void ThreatMap::Update()
 	map<int, UnitInformationContainer> enemyUnits = ai->knowledge->enemyInfo->armyInfo->GetUnits();
 	map<int, UnitInformationContainer> friendlyUnits = ai->knowledge->selfInfo->armyInfo->GetUnits();
 
-	ai->utility->ChatMsg("ThreatMap: enemyunits: %d", enemyUnits.size() );
+	//ai->utility->ChatMsg("ThreatMap: enemyunits: %d", enemyUnits.size() );
 
 	//Reset();
 	if ( ReferenceUnitDefAir == NULL || ReferenceUnitDefGround )
@@ -72,7 +72,7 @@ void ThreatMap::Update()
 				if ( u->GetUnitId() == OverrideCache->units[i] )
 				{
 					Unit* cacheUnit = Unit::GetInstance( ai->callback, OverrideCache->units[i] );
-					ai->utility->ChatMsg("TM: Moving enemy units (OverrideCache)");
+					//ai->utility->ChatMsg("TM: Moving enemy units (OverrideCache)");
 					insert = false;
 					UnitInformationContainer tmp = it->second;
 					int res = ai->knowledge->mapInfo->threatMap->GetMapData()->MapResolution;
@@ -80,6 +80,7 @@ void ThreatMap::Update()
 					tmp.pos.z = OverrideCache->yCell*res+0.5f*res;
 					InsertUnit( cacheUnit, tmp );
 					delete cacheUnit;
+					cacheUnit = NULL;
 					break;
 				}
 			}
@@ -87,6 +88,7 @@ void ThreatMap::Update()
 		if ( insert )
 			InsertUnit( u, it->second );
 		delete u;
+		u = NULL;
 	}
 
 	//Friendly threat vs. enemy units
@@ -120,8 +122,10 @@ void ThreatMap::Update()
 		if ( insert )
 			InsertUnit( u, it->second );
 		delete u;
+		u = NULL;
 	}
 	FigureID = 0;
+	
 	
 	for ( int i = 0 ; i < MapWidth ; i++ )
 	{
@@ -149,6 +153,11 @@ void ThreatMap::Update()
 void ThreatMap::InsertUnit(Unit *u, UnitInformationContainer c )
 {
 	vector<WeaponMount*> weaponMounts = c.def->GetWeaponMounts();
+
+	UnitDef* def = u->GetDef();
+	//ai->utility->ChatMsg("TM: Inserting unit %s. Weapons: %d", def->GetName(), weaponMounts.size() );
+	delete def;
+	def = NULL;
 	//ai->utility->ChatMsg("Inserting %s with %d weapons at (%f,%f)", c.def->GetName(), weaponMounts.size(), c.pos.x, c.pos.z );
 	for ( unsigned int i = 0 ; i < weaponMounts.size() ; i++ )
 	{
@@ -158,6 +167,7 @@ void ThreatMap::InsertUnit(Unit *u, UnitInformationContainer c )
 		if ( strcmp ( "arm_disintegrator", CurrentWeaponDef->GetName() ) == 0 )
 			continue;
 		float range = CurrentWeaponDef->GetRange();
+		//ai->utility->ChatMsg("Weapon %d. Range %f", i, range );
 		//EffectCircle(c.pos, 0, -1 );
 		int currentIndexX = floorf(c.pos.x/Resolution );
 		int currentIndexZ = floorf(c.pos.z/Resolution);
@@ -174,11 +184,16 @@ void ThreatMap::InsertUnit(Unit *u, UnitInformationContainer c )
 				tmpPos.x = tmpX*Resolution + 0.5f*Resolution;
 				tmpPos.z = tmpZ*Resolution + 0.5f*Resolution;
 
-				if ( ai->utility->EuclideanDistance( tmpPos, u->GetPos() ) < range )
-					EffectCell( tmpZ*MapWidth + tmpX, -1 );
+				float dist = ai->utility->EuclideanDistance( tmpPos, u->GetPos() );
+				//ai->utility->ChatMsg("Distance %f, to (%f,%f) from (%f,%f)", dist, tmpPos.x, tmpPos.z, u->GetPos().x, u->GetPos().z );
+				//if ( dist <= range )
+				EffectCell( tmpZ*MapWidth + tmpX, -1 );
+				//else if ( j == 0 && k == 0 )
+				//	EffectCell( tmpZ*MapWidth + tmpX, -1 );
 			}
 		}
 		delete CurrentWeaponDef;
+		CurrentWeaponDef = NULL;
 	}
 }
 
@@ -200,6 +215,7 @@ float ThreatMap::CalculateDPS( int armorType, int numberOfUnitsWithThatArmorType
 	//if ( ( airUnits && !CurrentWeaponDefCanHitAir ) || ( !airUnits && !CurrentWeaponDefCanHitGround ) )
 		//ai->utility->ChatMsg("TM: CalcDPS Val %f", val );
 	delete d;
+	d = NULL;
 	return val;
 }
 
@@ -217,6 +233,7 @@ void ThreatMap::EffectCell(int index, float value )
 	{
 		for ( map<int, pair<int, bool> >::iterator it = OverrideCache->armorTypesInCell.begin() ; it != OverrideCache->armorTypesInCell.end() ; it++ )
 		{
+			//ai->utility->ChatMsg("Using override cache (%d,%d). ForEnemy: %d, CacheSize: %d", OverrideCache->xCell, OverrideCache->yCell, CalcThreatForEnemy, OverrideCache->units.size() );
 			value += CalculateDPS( it->first, it->second.first, it->second.second );
 		}
 		//ai->utility->ChatMsg("TM: Total Value: %f", value );
@@ -261,9 +278,16 @@ void ThreatMap::EffectCell(int index, float value )
 			//NOTE: this info isn't actually used yet
 			UnitInfoCache* cache = MakeUnitInfoCache(tmpUnits, tmpX, tmpZ );
 			if ( CalcThreatForEnemy )
+			{
 				FriendlyUnitInfoCache.push_back( cache );
+				//ai->utility->ChatMsg("TM: Friendly units in (%d,%d) %d", tmpX, tmpZ, FriendlyUnitInfoCache.back()->units.size() );
+			}
 			else
+			{
 				EnemyUnitInfoCache.push_back( cache );
+				//ai->utility->ChatMsg("TM: Enemy units in (%d,%d) %d", tmpX, tmpZ, FriendlyUnitInfoCache.back()->units.size() );
+			}
+			armorTypesInCell = cache->armorTypesInCell;
 
 		}
 		//Find out if there are any units in the specified area
@@ -271,6 +295,7 @@ void ThreatMap::EffectCell(int index, float value )
 		//In case yes, calculate the DPS
 		if ( armorTypesInCell.size() > 0 )
 		{
+			//ai->utility->ChatMsg("ArmorTypesInCell (%d,%d): %d", tmpX, tmpZ, armorTypesInCell.size() );
 			for ( map<int, pair<int, bool> >::iterator it = armorTypesInCell.begin() ; it != armorTypesInCell.end() ; it++ )
 			{
 				value += CalculateDPS( it->first, it->second.first, it->second.second );
@@ -279,7 +304,7 @@ void ThreatMap::EffectCell(int index, float value )
 		else return;
 	}
 	//if ( value > 0 )
-	//	ai->utility->ChatMsg("Adding threat: %f. For enemy: %d. At (%d,%d)", value, CalcThreatForEnemy, tmpX, tmpZ );
+		//ai->utility->ChatMsg("Adding threat: %f. For enemy: %d. At (%d,%d)", value, CalcThreatForEnemy, tmpX, tmpZ );
 	if ( CalcThreatForEnemy )
 		MapArray[index] += value;
 	else OurThreat[index] += value;
@@ -384,12 +409,14 @@ Superiority ThreatMap::GetImaginarySuperiorityAtPos(SAIFloat3 pos, brainSpace::M
 
 	vector<Unit*> unitsInTile;
 
-	if ( enemyUnits )
+	if ( enemyUnits )//inserting enemy units in img position
 	{
+		//finding enemy units already in this tile
 		unitsInTile = ai->knowledge->enemyInfo->armyInfo->RangeQuery( TLX, TLZ, BRX, BRZ );
 	}
-	else
+	else //inserting friendly units in img position
 	{
+		//finding friendly units already in this tile
 		unitsInTile = ai->knowledge->selfInfo->armyInfo->RangeQuery( TLX, TLZ, BRX, BRZ );
 	}
 
@@ -445,9 +472,12 @@ Superiority ThreatMap::GetImaginarySuperiorityAtPos(SAIFloat3 pos, brainSpace::M
 	}
 	if ( makeNewCache )
 	{
-		//ai->utility->ChatMsg("Making new cache for %d and %d", x, z);
+		//ai->utility->ChatMsg("Making new cache for (%d,%d)", x, z);
 		if ( OverrideCache != NULL )
+		{
 			delete OverrideCache;
+			OverrideCache = NULL;
+		}
 		OverrideCache = MakeUnitInfoCache( unitsInTile, x, z );
 		OverrideCacheFriendly = !enemyUnits;
 
@@ -466,7 +496,10 @@ Superiority ThreatMap::GetImaginarySuperiorityAtPos(SAIFloat3 pos, brainSpace::M
 	}
 	delete[] backUp;
 	for ( unsigned int i = 0 ; i < groupUnits.size() ; i++ )
+	{
 		delete groupUnits[i];
+		groupUnits[i] = NULL;
+	}
 	return s;
 }
 
@@ -484,6 +517,7 @@ UnitInfoCache* ThreatMap::MakeUnitInfoCache( std::vector<springai::Unit*> units,
 				ai->knowledge->selfInfo->armyInfo->RemoveUnit(units[i]->GetUnitId());
 			else ai->knowledge->enemyInfo->armyInfo->RemoveUnit(units[i]->GetUnitId());
 			delete d;
+			d = NULL;
 			continue;
 		}
 		int newCount = armorTypesInCell[d->GetArmorType()].first;
@@ -499,6 +533,7 @@ UnitInfoCache* ThreatMap::MakeUnitInfoCache( std::vector<springai::Unit*> units,
 		newCount++;
 		armorTypesInCell[d->GetArmorType()].first = newCount;
 		delete d;
+		d = NULL;
 	}
 	std::vector<int> a;
 	for ( unsigned int i = 0 ; i < units.size() ; i++ )

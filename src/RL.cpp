@@ -28,7 +28,7 @@ RL::RL(AIClasses* aiClasses, double epsilon, int numAgents)
 			ValueFunction.resize(3);
 
 			StateVars[0].push_back( QStateVar( "MexSpotCount", 3 ) );
-			StateVars[0].push_back( QStateVar( "DistMexSpot", 3 ) );
+			StateVars[0].push_back( QStateVar( "DistMexSpot", 4 ) );
 			StateVars[0].push_back( QStateVar( "ImgMexSpotInf", 4 ) );
 			StateVars[0].push_back( QStateVar( "GroupSpeed", 3 ) );
 			//StateVars[0].push_back( QStateVar( "SuperiorPathLength", 2 ) );
@@ -41,7 +41,7 @@ RL::RL(AIClasses* aiClasses, double epsilon, int numAgents)
 
 			/************************/
 			StateVars[1].push_back( QStateVar( "SolarSpotCount", 3 ) );
-			StateVars[1].push_back( QStateVar( "DistSolarSpot", 3 ) );
+			StateVars[1].push_back( QStateVar( "DistSolarSpot", 4 ) );
 			StateVars[1].push_back( QStateVar( "ImgSolarSpotInf", 4 ) );
 			StateVars[1].push_back( QStateVar( "GroupSpeed", 3 ) );
 			//StateVars[1].push_back( QStateVar( "SuperiorPathLength", 2 ) );
@@ -54,7 +54,7 @@ RL::RL(AIClasses* aiClasses, double epsilon, int numAgents)
 
 			/************************/
 			StateVars[2].push_back( QStateVar( "WGenCount", 3 ) );
-			StateVars[2].push_back( QStateVar( "DistWGen", 3 ) );
+			StateVars[2].push_back( QStateVar( "DistWGen", 4 ) );
 			StateVars[2].push_back( QStateVar( "ImgWGenInf", 4 ) );
 			StateVars[2].push_back( QStateVar( "GroupSpd", 3 ) );
 			//StateVars[2].push_back( QStateVar( "SupPath", 2 ) );
@@ -77,10 +77,10 @@ RL::RL(AIClasses* aiClasses, double epsilon, int numAgents)
 
 RL::~RL()
 {
-	ai->utility->ChatMsg("RL:About to savetofile");
+	//ai->utility->ChatMsg("RL:About to savetofile");
 	for ( int i = 0 ; i < NUM_Q_TABLES ; i++ )
 	{
-		ai->utility->ChatMsg("SAVING FILE %d", i );
+		//ai->utility->ChatMsg("SAVING FILE %d", i );
 		SaveToFile(i);
 	}
 	//ai->utility->ChatMsg("RL:About to delete valuefunc");
@@ -247,7 +247,7 @@ RL_Action* RL::SafeNextAction(RL_State* state, int type )
 
 RL_Action* RL::Update(MilitaryUnitGroup* group)
 {
-	//ai->utility->ChatMsg("RL: UPDATE");
+	ai->utility->ChatMsg("RL: UPDATE");
 	bool terminal = false;
 	vector<Unit*> units = ai->callback->GetEnemyUnits();
 	vector< pair<int, SAIFloat3> > mexPositions;
@@ -334,36 +334,6 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 				delete states[i];
 				states[i] = NULL;
 			}
-			/*
-			if ( mexState != NULL && mexState->GetID() != -1 )
-			{
-			if ( mexState->ExpectedReward > bestVal )
-			{
-			bestVal = mexState->ExpectedReward;
-			state = mexState;
-			CurrentQTable = 0;
-			}
-			}
-			if ( solarState != NULL && solarState->GetID() != -1 )
-			{
-			if ( solarState->ExpectedReward > bestVal )
-			{
-			bestVal = solarState->ExpectedReward;
-			state = solarState;
-			CurrentQTable = 1;
-			}
-			}
-
-			if ( windState != NULL && windState->GetID() != -1 )
-			{
-			if ( windState->ExpectedReward > bestVal )
-			{
-			bestVal = windState->ExpectedReward;
-			state = windState;
-			CurrentQTable = 2;
-			}
-			}
-			*/
 
 			nextAction = SafeNextAction(state);
 			ai->utility->ChatMsg("RL Update currentQTable: %d. State: %d", CurrentQTable, state->GetID() );
@@ -373,7 +343,7 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 	//Start state
 	if ( PreviousState == NULL )
 	{
-		ai->utility->ChatMsg("RL:PrevState NULL");
+		//ai->utility->ChatMsg("RL:PrevState NULL");
 		PreviousState = state;
 		PreviousAction = nextAction;
 		PreviousFrame = ai->frame;
@@ -382,7 +352,7 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 
 	if ( PreviousAction == NULL )
 	{
-		ai->utility->ChatMsg("RL: PRevAction NULL");
+		//ai->utility->ChatMsg("RL: PRevAction NULL");
 		return NULL;
 	}
 	//else continue
@@ -405,10 +375,24 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 	float totalHealth = 0.0f;
 	float totalRemainingHealth = 0.0f;
 
+	vector<Unit*> thisWorks = ai->callback->GetEnemyUnits();
 	for ( unsigned int i = 0 ; i < PreviousAction->unitIDs.size() ; i++ )
 	{
-		if ( existingUnits.find(PreviousAction->unitIDs[i] ) == existingUnits.end() )
+		bool foundInExisitng = false;
+		for ( unsigned int j = 0 ; j < thisWorks.size() ; j++ )
+		{
+			//ai->utility->ChatMsg("UnitIDs %d. ExisitngUnit %d", PreviousAction->unitIDs[i], thisWorks[j]->GetUnitId() );
+			if ( thisWorks[j]->GetUnitId() == PreviousAction->unitIDs[i] )
+			{
+				foundInExisitng = true;
+				break;
+			}
+		}
+		if ( !foundInExisitng )
+		{
+			//ai->utility->ChatMsg("%d not found in exisiting", PreviousAction->unitIDs[i] );
 			buildingsKilledCounter++;
+		}
 	}
 	if ( group != NULL )
 	{
@@ -455,16 +439,18 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 		}
 	}
 
-	if ( PreviousAction->unitIDs.size() == buildingsKilledCounter )
-	{
-		reward = 100;
-	}
-	else
-	{
-		reward = buildingsKilledCounter/PreviousAction->unitIDs.size()*100;
-	}
 
-	reward *= unitLossReward;
+	ai->utility->ChatMsg("Buildingskilledcounter: %d. UnitIDs: %d", buildingsKilledCounter, PreviousAction->unitIDs.size() );
+
+	reward = ((float)buildingsKilledCounter/(float)PreviousAction->unitIDs.size())*100.0f;
+
+	//ai->utility->ChatMsg("Reward %f", reward );
+	if ( buildingsKilledCounter > 3 ) buildingsKilledCounter = 3;
+
+	reward *= (float)buildingsKilledCounter/(float)3;//make killing 3 mexes count more than killing 2 mexes
+	ai->utility->ChatMsg("Reward after *= buildingsKilledCounter %f", reward );
+	reward *= unitLossReward;//discount according to unitdamage
+	ai->utility->ChatMsg("Reward after *= unitLossReward %f", reward );
 
 	//ai->utility->ChatMsg("Reward is %f", reward );
 	totalReward += reward;
@@ -480,6 +466,9 @@ RL_Action* RL::Update(MilitaryUnitGroup* group)
 		if ( CurrentQTable != -1 )
 		{
 			value = ValueFunction[CurrentQTable]->GetValue(*PreviousState,*PreviousAction);
+			//non-visited state has negative reward to indicate that they are non-visited.
+			if ( value < 0 )
+				value = 0;
 			//	+ ALPHA*(
 			//	reward + gamma*bestFutureValue 
 			//	- ValueFunction[CurrentQTable]->GetValue(*PreviousState,*PreviousAction) );

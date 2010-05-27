@@ -194,7 +194,7 @@ void Decision::EnemyEnterLOS(int enemy)
 ///called when an enemy have been destroyed
 void Decision::EnemyDestroyed(int enemy, int attacker)
 {
-	//ai->utility->ChatMsg("EnemyDestroyed");
+	//ai->utility->ChatMsg("EnemyDestroyed %d", enemy);
 	if (ResettingGame)
 	{
 	//	ai->utility->ChatMsg("EnemyDestroyed, but returning");
@@ -334,6 +334,7 @@ void Decision::Update(int frame)
 	}
 
 	
+	/*
 	if ( frame == 1000 )
 	{
 		TestCase* test = new TestCase(ai);
@@ -345,25 +346,25 @@ void Decision::Update(int frame)
 
 	if ( frame == 1100 )
 	{
-		ai->utility->ChatMsg("FRAME 1100!!!");
 		if ( ai->callback->GetTeamId() == 0 )
 		{
-			ai->utility->ChatMsg("PIKSVED");
 			vector<Unit*> enemyUnits = ai->callback->GetEnemyUnits();
-			ai->utility->ChatMsg("EnemyUnits: %d", enemyUnits.size() );
+			//ai->utility->ChatMsg("EnemyUnits: %d", enemyUnits.size() );
 			for ( vector<Unit*>::iterator it = enemyUnits.begin() ; it != enemyUnits.end() ; it++ )
 			{
+			//ai->utility->ChatMsg("Updating %d", (*it)->GetUnitId() );
 				ai->knowledge->enemyInfo->armyInfo->UpdateUnit( *it );
 				ai->knowledge->enemyInfo->baseInfo->AddBuilding( *it );
-				//delete (*it);
-				//*it = NULL;
+				delete (*it);
+				*it = NULL;
 			}
 			ai->knowledge->mapInfo->threatMap->Update();
 			ai->knowledge->mapInfo->threatMap->DrawGrid();
 			UpdateFrindlyPositions();
 
+			
 			vector<MilitaryUnitGroup*> m = ai->knowledge->groupManager->GetMilitaryGroupMgr()->GetAllAttackGroups();
-			ai->utility->ChatMsg("Team 1: MilitaryGroups %d", m.size() );
+			//ai->utility->ChatMsg("Team 1: MilitaryGroups %d", m.size() );
 			RL_Action* a = rl->Update( m[0] );
 			if ( a != NULL )
 			{
@@ -382,10 +383,30 @@ void Decision::Update(int frame)
 			}
 		}
 	}
-	/*
 
-
+	if ( frame == 2000 )
+	{
+		vector<Unit*> enemyUnits = ai->callback->GetEnemyUnits();
+		for ( vector<Unit*>::iterator it = enemyUnits.begin() ; it != enemyUnits.end() ; it++ )
+		{
+			ai->knowledge->enemyInfo->armyInfo->UpdateUnit( *it );
+			ai->knowledge->enemyInfo->baseInfo->AddBuilding( *it );
+			delete (*it);
+			*it = NULL;
+		}
+		ai->knowledge->mapInfo->threatMap->Update();
+		
+		UpdateFrindlyPositions();
+		if ( ai->callback->GetTeamId() == 0 )
+		{
+			vector<MilitaryUnitGroup*> m = ai->knowledge->groupManager->GetMilitaryGroupMgr()->GetAllAttackGroups();
+			//ai->utility->ChatMsg("Decision: MiliGroup empty" );
+			rl->Update( m[0] );
+		}
+	}
+*/
 	
+
 	if ( ResettingGame && frame == NextScenarioStartFrame )
 	{
 		LastResetFrame = frame;
@@ -475,7 +496,7 @@ void Decision::Update(int frame)
 			}
 		}
 		Reset();
-	}*/
+	}
 }
 
 void Decision::UnitIdle( int id )

@@ -15,6 +15,9 @@ namespace brainSpace {
 	private:
 		AIClasses* ai;
 
+		void MakeMetalExtractors( int tileX, int tileZ, int count );
+		void MakeThreat( int tileX, int tileZ, bool equal = false );
+
 	};
 
 }

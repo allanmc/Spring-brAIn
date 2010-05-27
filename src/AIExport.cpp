@@ -44,13 +44,11 @@ const static int ERROR_SHIFT = 100;
 
 static std::map<int, brainSpace::BrAIn*> myAIs;
 static std::map<int, springai::AICallback*> myAICallbacks;
-ofstream* brainFile = new ofstream();
 
 
 EXPORT(int) init(int teamId, const struct SSkirmishAICallback* innerCallback) {
 
 	int ret = ERROR_SHIFT + 1;
-brainFile->open("PIK.txt", ios::out );
 	try {
 
 		springai::AICallback* clb = springai::AICallback::GetInstance(innerCallback, teamId);
@@ -83,23 +81,13 @@ EXPORT(int) release(int teamId) {
 		ret = 0;
 	} CATCH_CPP_AI_EXCEPTION(ret);
 
-	char buf[50];
-	sprintf( buf, "AIs: %d", myAIs.size() );
-	brainFile->write( buf, strlen(buf) );
-	brainFile->flush();
+	
 	return ret; // (ret != 0) => error
 }
 
 EXPORT(int) handleEvent(int teamId, int topic, const void* data) {
 	int ret = ERROR_SHIFT + 1;
 
-	std::string str;
-	str.append("Topic: ");
-	char buf[10];
-	itoa(topic, buf, 10);
-	str.append(buf);
-	brainFile->write( str.c_str(), str.length() );
-	brainFile->flush();
 	try {
 		if ( myAIs.size() > 0 )
 		{

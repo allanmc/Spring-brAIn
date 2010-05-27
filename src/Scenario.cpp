@@ -53,8 +53,8 @@ Scenario::Scenario( AIClasses* aiClasses )
 	{
 		bool air = rand()%2;
 
-		groupPos.x = 3100.0f+rand()%200;//rand()%(m->GetWidth()*8);
-		groupPos.z = 3100.0f;//+rand()%500;//rand()%(m->GetHeight()*8);
+		groupPos.x = 1000+rand()%2800;//rand()%(m->GetWidth()*8);
+		groupPos.z = rand()%800;//rand()%(m->GetHeight()*8);
 
 		
 
@@ -72,7 +72,7 @@ Scenario::Scenario( AIClasses* aiClasses )
 					unitPos.z += 30*j;
 					//ai->utility->ChatMsg("Planting unit: (%f,%f,%f)", unitPos.x, unitPos.y, unitPos.z );
 					//ai->utility->ChatMsg("PIK3 %d: %d", j, k);
-					Unit* u = ai->utility->GiveUnit( type, unitPos );
+					Unit* u = ai->utility->GiveUnit( "armflash", unitPos );
 					delete u;
 					u = NULL;
 				}
