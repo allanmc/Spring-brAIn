@@ -57,7 +57,8 @@ RL::RL(Game *g, double epsilon, int numAgents, bool load)
 		PreviousFrame.push_back(0);
 		PreviousState.push_back(nullState);
 		PreviousAction.push_back(nullAction);
-		TempReward.push_back(0);
+		vector<pair<double,double>> v;
+		TempReward.push_back(v);
 	}
 
 	switch(RL_TYPE)
@@ -297,7 +298,16 @@ RL_Action RL::Update(int agentId)
 	double reward = 0.0;
 	if (USE_RS_TIME)
 	{
-		reward += (double)(PreviousFrame[agentId] - game->frame);
+		double time = (double)(PreviousFrame[agentId] - game->frame);
+		if(USE_QSMDP)
+		{
+			double gamma = pow((double)GAMMA, 0.01*((double)game->frame - (double)PreviousFrame[agentId]));
+			reward += time*gamma;
+		}
+		else
+		{
+			reward += time;
+		}
 	}
 
 	if (USE_NEW_REWARD_CODE)
@@ -308,12 +318,23 @@ RL_Action RL::Update(int agentId)
 			double value = GetReward();
 			for(int i = 0; i < NUM_LEARNERS; i++)
 			{
-				TempReward[i] += value;
+				pair<double,double> p;
+				p.first = value;
+				p.second = game->frame;
+				TempReward[i].push_back(p);
 			}
 		}
 		assert(COMMON_TERMINATION_REWARD);
-		reward += TempReward[agentId];
-		TempReward[agentId] = 0;
+		for(int i = 0; i < TempReward[agentId].size();i++)
+		{
+			double gamma = 1.0;
+			if(USE_QSMDP)
+			{
+				gamma = pow((double)GAMMA, 0.01*((double)TempReward[agentId][i].second - (double)PreviousFrame[agentId]));
+			}
+			reward += TempReward[agentId][i].first*gamma;
+		}
+		TempReward[agentId].clear();
 	}
 	else
 	{
@@ -366,11 +387,11 @@ RL_Action RL::Update(int agentId)
 
 	double value;
 	//modify gamma according to use_qmsdp
-	float gamma = (float)pow((double)GAMMA, (USE_QSMDP?0:1)+(USE_QSMDP?1:0)*(0.01*((double)game->frame - (double)PreviousFrame[agentId])));
+	double gamma = pow((double)GAMMA, (USE_QSMDP?0:1)+(USE_QSMDP?1:0)*(0.01*((double)game->frame - (double)PreviousFrame[agentId])));
 
 	if(!USE_Q_LAMBDA)
 	{
-		//update own value function
+	//update own value function
 		value = ValueFunction->GetValue(PreviousState[agentId],PreviousAction[agentId])
 			+ ALPHA*(
 			reward + gamma*bestFutureValue 
